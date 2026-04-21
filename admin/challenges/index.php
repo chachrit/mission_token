@@ -24,16 +24,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setFlash('success', 'เปลี่ยนสถานะภารกิจแล้ว');
 
         } elseif ($action === 'delete') {
-            // Only allow delete if no submissions exist
-            $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM challenge_submissions WHERE challenge_id = ?");
-            $stmt->execute([$cid]);
-            $cnt = (int)$stmt->fetch()['cnt'];
-            if ($cnt > 0) {
-                setFlash('error', 'ไม่สามารถลบได้ เพราะมีงานที่ส่งแล้ว (' . $cnt . ' รายการ) — ปิดการใช้งานแทน');
-            } else {
+            try {
+                $pdo->beginTransaction();
+                // Delete token transactions linked to submissions of this challenge
+                $pdo->prepare("
+                    DELETE FROM token_transactions
+                    WHERE reference_id IN (
+                        SELECT submission_id FROM challenge_submissions WHERE challenge_id = ?
+                    )
+                ")->execute([$cid]);
+                $pdo->prepare("DELETE FROM challenge_submissions WHERE challenge_id = ?")->execute([$cid]);
                 $pdo->prepare("DELETE FROM quiz_questions WHERE challenge_id = ?")->execute([$cid]);
                 $pdo->prepare("DELETE FROM challenges WHERE challenge_id = ?")->execute([$cid]);
-                setFlash('success', 'ลบภารกิจแล้ว');
+                $pdo->commit();
+                setFlash('success', 'ลบภารกิจและข้อมูลที่เกี่ยวข้องทั้งหมดแล้ว');
+            } catch (Throwable $e) {
+                $pdo->rollBack();
+                error_log('[MissionToken] delete challenge error: ' . $e->getMessage());
+                setFlash('error', 'เกิดข้อผิดพลาดในการลบ: ' . $e->getMessage());
             }
         }
     }
@@ -138,9 +146,8 @@ require_once __DIR__ . '/../../includes/header.php';
                     <div class="flex items-center justify-end gap-2">
                         <a href="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= (int)$ch['challenge_id'] ?>"
                            class="btn-outline px-3 py-1.5 text-xs">แก้ไข</a>
-                        <?php if ((int)$ch['submission_count'] === 0): ?>
                         <form method="POST" class="inline"
-                              onsubmit="return confirm('ยืนยันลบภารกิจ "<?= e($ch['title']) ?>"?\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
+                              onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e($ch['title']) ?>&quot;?\nจะลบข้อมูลการส่งงานและประวัติทั้งหมดด้วย\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
                             <?= csrfField() ?>
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="challenge_id" value="<?= (int)$ch['challenge_id'] ?>">
@@ -152,14 +159,6 @@ require_once __DIR__ . '/../../includes/header.php';
                                 </svg>
                             </button>
                         </form>
-                        <?php else: ?>
-                        <span title="ลบไม่ได้ เพราะมีงานส่งแล้ว (<?= (int)$ch['submission_count'] ?> รายการ)"
-                              class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-gray-300 cursor-not-allowed">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                        </span>
-                        <?php endif; ?>
                     </div>
                 </td>
             </tr>

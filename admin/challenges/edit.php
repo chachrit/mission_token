@@ -26,17 +26,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'delete_challenge') {
         $cid = (int)($_POST['challenge_id'] ?? 0);
         if ($cid > 0) {
-            // Check for existing submissions
-            $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM challenge_submissions WHERE challenge_id = ?");
-            $stmt->execute([$cid]);
-            $cnt = (int)$stmt->fetch()['cnt'];
-            if ($cnt > 0) {
-                setFlash('error', 'ไม่สามารถลบได้ เพราะมีงานที่ส่งแล้ว (' . $cnt . ' รายการ) — ปิดการใช้งานแทน');
-                redirect(BASE_URL . '/admin/challenges/edit.php?id=' . $cid);
+            try {
+                $pdo->beginTransaction();
+                $pdo->prepare("
+                    DELETE FROM token_transactions
+                    WHERE reference_id IN (
+                        SELECT submission_id FROM challenge_submissions WHERE challenge_id = ?
+                    )
+                ")->execute([$cid]);
+                $pdo->prepare("DELETE FROM challenge_submissions WHERE challenge_id = ?")->execute([$cid]);
+                $pdo->prepare("DELETE FROM quiz_questions WHERE challenge_id = ?")->execute([$cid]);
+                $pdo->prepare("DELETE FROM challenges WHERE challenge_id = ?")->execute([$cid]);
+                $pdo->commit();
+                setFlash('success', 'ลบภารกิจและข้อมูลที่เกี่ยวข้องทั้งหมดแล้ว');
+            } catch (Throwable $e) {
+                $pdo->rollBack();
+                error_log('[MissionToken] delete challenge error: ' . $e->getMessage());
+                setFlash('error', 'เกิดข้อผิดพลาดในการลบ: ' . $e->getMessage());
             }
-            $pdo->prepare("DELETE FROM quiz_questions WHERE challenge_id = ?")->execute([$cid]);
-            $pdo->prepare("DELETE FROM challenges WHERE challenge_id = ?")->execute([$cid]);
-            setFlash('success', 'ลบภารกิจแล้ว');
         }
         redirect(BASE_URL . '/admin/challenges/index.php');
     }
