@@ -22,6 +22,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $action = (string)($_POST['action'] ?? 'save_challenge');
 
+    // ── Delete entire challenge ──────────────────────────
+    if ($action === 'delete_challenge') {
+        $cid = (int)($_POST['challenge_id'] ?? 0);
+        if ($cid > 0) {
+            // Check for existing submissions
+            $stmt = $pdo->prepare("SELECT COUNT(*) AS cnt FROM challenge_submissions WHERE challenge_id = ?");
+            $stmt->execute([$cid]);
+            $cnt = (int)$stmt->fetch()['cnt'];
+            if ($cnt > 0) {
+                setFlash('error', 'ไม่สามารถลบได้ เพราะมีงานที่ส่งแล้ว (' . $cnt . ' รายการ) — ปิดการใช้งานแทน');
+                redirect(BASE_URL . '/admin/challenges/edit.php?id=' . $cid);
+            }
+            $pdo->prepare("DELETE FROM quiz_questions WHERE challenge_id = ?")->execute([$cid]);
+            $pdo->prepare("DELETE FROM challenges WHERE challenge_id = ?")->execute([$cid]);
+            setFlash('success', 'ลบภารกิจแล้ว');
+        }
+        redirect(BASE_URL . '/admin/challenges/index.php');
+    }
+
     // ── Delete a single quiz question ─────────────────────
     if ($action === 'delete_question') {
         $qid = (int)($_POST['question_id'] ?? 0);
@@ -267,11 +286,29 @@ require_once __DIR__ . '/../../includes/header.php';
 
             </div>
 
-            <div class="mt-6 flex gap-3">
-                <button type="submit" class="btn-gold">
-                    <?= $isEdit ? 'บันทึกการแก้ไข' : 'สร้างภารกิจ' ?>
-                </button>
-                <a href="<?= BASE_URL ?>/admin/challenges/index.php" class="btn-outline">ยกเลิก</a>
+            <div class="mt-6 flex items-center justify-between gap-3 flex-wrap">
+                <div class="flex gap-3">
+                    <button type="submit" class="btn-gold">
+                        <?= $isEdit ? 'บันทึกการแก้ไข' : 'สร้างภารกิจ' ?>
+                    </button>
+                    <a href="<?= BASE_URL ?>/admin/challenges/index.php" class="btn-outline">ยกเลิก</a>
+                </div>
+                <?php if ($isEdit): ?>
+                <form method="POST"
+                      action="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= $challengeId ?>"
+                      onsubmit="return confirm('ยืนยันลบภารกิจ \"<?= e(addslashes($f['title'])) ?>\"?\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="action" value="delete_challenge">
+                    <input type="hidden" name="challenge_id" value="<?= $challengeId ?>">
+                    <button type="submit"
+                            class="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-100 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        ลบภารกิจนี้
+                    </button>
+                </form>
+                <?php endif; ?>
             </div>
         </div>
 
