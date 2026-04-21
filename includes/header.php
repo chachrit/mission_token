@@ -30,7 +30,7 @@ $flash        = getFlash();
 
     <!-- Tailwind CSS Play CDN (v3) — config MUST come before CDN script -->
     <script>
-        tailwind.config = {
+        window.tailwind = { config: {
             theme: {
                 extend: {
                     colors: {

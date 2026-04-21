@@ -193,6 +193,19 @@ if ($focusChallengeId > 0) {
     }
 }
 
+// Load quiz questions for review (rejected) — show correct answers + explanation
+$rejectedQuizReviews = []; // [challenge_id => questions array]
+try {
+    $pdo = getDB();
+    foreach ($challenges as $ch) {
+        if ($ch['type'] === 'quiz' && $ch['my_status'] === 'rejected') {
+            $rejectedQuizReviews[(int)$ch['challenge_id']] = getQuizQuestions((int)$ch['challenge_id']);
+        }
+    }
+} catch (Throwable $e) {
+    error_log('[MissionToken] quiz review load error: ' . $e->getMessage());
+}
+
 $flash = getFlash();
 
 $statusLabel = [
@@ -344,6 +357,31 @@ require_once __DIR__ . '/../includes/header.php';
                      style="background:#fee2e2; color:#991b1b;">
                     ตอบไม่ผ่าน — ไม่สามารถลองใหม่ได้
                 </div>
+                <?php if (!empty($rejectedQuizReviews[$cid])): ?>
+                <div class="border-t border-j-silver pt-4 flex flex-col gap-4">
+                    <p class="text-xs font-semibold text-j-slate uppercase tracking-wider">เฉลยคำตอบ</p>
+                    <?php foreach ($rejectedQuizReviews[$cid] as $qi => $q): ?>
+                    <div class="text-sm">
+                        <p class="font-medium text-j-dark mb-1.5">
+                            <?= ($qi + 1) ?>. <?= e($q['question_text']) ?>
+                        </p>
+                        <p class="text-xs font-semibold mb-1" style="color:#166534;">
+                            ✓ คำตอบที่ถูก: <?= e(strtoupper($q['correct_option'])) ?>
+                            <?php
+                            $correctKey = 'option_' . strtolower($q['correct_option']);
+                            if (!empty($q[$correctKey])):
+                            ?> — <?= e($q[$correctKey]) ?><?php endif; ?>
+                        </p>
+                        <?php if (!empty($q['explanation'])): ?>
+                        <p class="text-xs text-j-slate leading-5 rounded-lg px-3 py-2"
+                           style="background:#faf0cf;">
+                            💡 <?= e($q['explanation']) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
 
                 <?php else: ?>
                 <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>#challenge-<?= $cid ?>"

@@ -163,7 +163,8 @@ function getQuizQuestions(int $challengeId): array
 {
     $pdo  = getDB();
     $stmt = $pdo->prepare("
-        SELECT question_id, question_text, option_a, option_b, option_c, option_d, display_order
+        SELECT question_id, question_text, option_a, option_b, option_c, option_d,
+               correct_option, explanation, display_order
         FROM   quiz_questions
         WHERE  challenge_id = ?
         ORDER BY display_order ASC
