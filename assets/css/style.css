@@ -1,0 +1,532 @@
+/* ================================================================
+   Mission Token | JOURNAL — Main Stylesheet
+   Colours sourced from JOURNAL Brand Book
+   ================================================================
+
+   Primary palette
+     #eeebe1  ขาวผ่อง     (j-white)
+     #fdfcdf  ขาวงาช้าง   (j-ivory)
+     #cecdcd  ขาวกะบัง    (j-silver / Cool grey 4C)
+     #6b6e77  สวาด        (j-slate  / Cool grey 10C)
+     #3a3e43  หมึกจีน      (j-charcoal / 432C)
+     #091113  ดำเขม่า      (j-dark   / BLACK 6C)
+
+   Secondary palette
+     #dab937  รงทอง       (j-gold   / 116C)
+     #f8e769  ดอกกวน      (j-gold-l / 106C)
+     #518e5c  บรกต        (j-green  / 3405C)
+     #d2592a  เสน         (j-orange / 172C)
+     #4f8b98  ขนคอหางนกยูง (j-teal  / 7711C)
+   ================================================================ */
+
+/* ---------------------------------------------------------------
+   CSS Custom Properties
+--------------------------------------------------------------- */
+:root {
+    --j-white:    #eeebe1;
+    --j-ivory:    #fdfcdf;
+    --j-silver:   #cecdcd;
+    --j-dark:     #091113;
+    --j-charcoal: #3a3e43;
+    --j-slate:    #6b6e77;
+    --j-gold:     #dab937;
+    --j-gold-dk:  #c9a830;
+    --j-gold-l:   #f8e769;
+    --j-green:    #518e5c;
+    --j-orange:   #d2592a;
+    --j-teal:     #4f8b98;
+    --j-panel:    #0d1618;
+}
+
+/* ---------------------------------------------------------------
+   Base
+--------------------------------------------------------------- */
+body {
+    font-family: 'Prompt', sans-serif;
+    min-height: 100vh;
+}
+/* Login page needs flex to split left-panel / right-panel */
+body.layout-login {
+    display: flex;
+}
+
+/* ---------------------------------------------------------------
+   Left branding panel
+--------------------------------------------------------------- */
+.mountain-bg {
+    background: linear-gradient(160deg, #fdfcdf 0%, #faf0cf 45%, #eeebe1 100%);
+    border-right: 1px solid #e6e2d6;
+    position: relative;
+    overflow: hidden;
+}
+/* Gold glow — top right */
+.mountain-bg::before {
+    content: '';
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    top: -100px;
+    right: -120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(218,185,55,0.18), transparent 65%);
+    filter: blur(36px);
+    pointer-events: none;
+}
+/* Gold glow — bottom left */
+.mountain-bg::after {
+    content: '';
+    position: absolute;
+    width: 260px;
+    height: 260px;
+    bottom: -60px;
+    left: -60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(218,185,55,0.12), transparent 65%);
+    filter: blur(24px);
+    pointer-events: none;
+}
+
+/* ---------------------------------------------------------------
+   Animations
+--------------------------------------------------------------- */
+@keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position:  200% center; }
+}
+
+@keyframes float-up {
+    0%   { opacity: 0;   transform: translateY(0)      scale(0.6); }
+    20%  { opacity: 0.5; }
+    100% { opacity: 0;   transform: translateY(-130px) scale(1.1); }
+}
+
+@keyframes coin-bounce {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+
+/* ---------------------------------------------------------------
+   Typography
+--------------------------------------------------------------- */
+.text-shimmer {
+    background: linear-gradient(90deg, var(--j-gold) 0%, var(--j-gold-l) 45%, var(--j-gold-dk) 55%, var(--j-gold) 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+}
+
+/* ---------------------------------------------------------------
+   Floating particles
+--------------------------------------------------------------- */
+.particle {
+    animation: float-up linear infinite;
+    position: absolute;
+    border-radius: 50%;
+}
+
+/* ---------------------------------------------------------------
+   Coin icon
+--------------------------------------------------------------- */
+.coin-icon {
+    animation: coin-bounce 2.5s ease-in-out infinite;
+    display: inline-flex;
+}
+
+.coin-gold {
+    background: linear-gradient(135deg, var(--j-gold) 0%, var(--j-gold-l) 50%, var(--j-gold-dk) 100%);
+    box-shadow: 0 8px 40px rgba(218, 185, 55, 0.45);
+}
+
+/* ---------------------------------------------------------------
+   Right login panel
+--------------------------------------------------------------- */
+.login-panel {
+    background: #ffffff;
+}
+
+/* ---------------------------------------------------------------
+   Feature badges
+--------------------------------------------------------------- */
+.badge-gold {
+    background: rgba(218, 185, 55, 0.10);
+    border: 1px solid rgba(218, 185, 55, 0.20);
+    color: var(--j-gold);
+}
+
+.badge-green {
+    background: rgba(81, 142, 92, 0.10);
+    border: 1px solid rgba(81, 142, 92, 0.20);
+    color: var(--j-green);
+}
+
+.badge-teal {
+    background: rgba(79, 139, 152, 0.10);
+    border: 1px solid rgba(79, 139, 152, 0.20);
+    color: var(--j-teal);
+}
+
+/* ---------------------------------------------------------------
+   Form elements
+--------------------------------------------------------------- */
+.j-input {
+    width: 100%;
+    background: #f8f7f2;
+    border: 1.5px solid var(--j-silver);
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    color: var(--j-dark);
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+}
+.j-input:focus {
+    background: #ffffff;
+    border-color: var(--j-gold);
+    box-shadow: 0 0 0 3px rgba(218, 185, 55, 0.14);
+}
+.j-input::placeholder {
+    color: var(--j-silver);
+}
+.j-input-pr {
+    padding-right: 2.75rem;
+}
+
+.btn-login {
+    width: 100%;
+    background: var(--j-gold);
+    color: var(--j-dark);
+    border: none;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-family: 'Prompt', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+}
+.btn-login:hover {
+    background: var(--j-gold-dk);
+    box-shadow: 0 4px 16px rgba(218, 185, 55, 0.30);
+}
+.btn-login:active  { transform: scale(0.98); }
+.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* ---------------------------------------------------------------
+   Password toggle
+--------------------------------------------------------------- */
+.pass-wrap { position: relative; }
+.pass-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--j-silver);
+    padding: 4px; transition: color 0.2s; line-height: 0;
+}
+.pass-toggle:hover { color: var(--j-gold); }
+
+/* ---------------------------------------------------------------
+   Alert banners
+--------------------------------------------------------------- */
+.alert-timeout {
+    background: rgba(218, 185, 55, 0.10);
+    border: 1px solid rgba(218, 185, 55, 0.30);
+    color: var(--j-gold-dk);
+}
+
+.alert-error {
+    background: rgba(210, 89, 42, 0.08);
+    border: 1px solid rgba(210, 89, 42, 0.22);
+    color: var(--j-orange);
+}
+
+/* ---------------------------------------------------------------
+   Page footer
+--------------------------------------------------------------- */
+.footer-divider {
+    border-top: 1px solid #1e2628;
+}
+
+/* ================================================================
+   Public Home Page (index.php) — page-specific styles
+   Palette: ขาว–ดำ–ทอง (JOURNAL primary palette only)
+   ================================================================ */
+
+/* ---- Page background ---- */
+.home-page {
+    background: #eeebe1;
+    color: var(--j-dark);
+}
+/* Wrapper used when header.php provides <body> */
+.home-page-wrap {
+    background: #eeebe1;
+    color: var(--j-dark);
+}
+
+/* ---- Hero section ---- */
+.hero-shell {
+    /* White shades: ขาวสังข์ → ขาวงาช้าง → ขาวผ่อง */
+    background: linear-gradient(135deg, #fdfcdf 0%, #eeebe1 55%, #eeebe1 100%);
+    border: 1px solid #e6e2d6;
+    position: relative;
+    overflow: hidden;
+}
+/* Subtle gold warm glow — top-right */
+.hero-shell::before {
+    content: '';
+    position: absolute;
+    width: 480px;
+    height: 480px;
+    top: -140px;
+    right: -120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(218,185,55,0.16), transparent 65%);
+    filter: blur(32px);
+    pointer-events: none;
+}
+/* Subtle gold warm glow — bottom-left */
+.hero-shell::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    left: -60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(218,185,55,0.09), transparent 65%);
+    filter: blur(24px);
+    pointer-events: none;
+}
+
+/* ---- Quest label (small uppercase heading) ---- */
+/* Default: slate — used on light-bg panels */
+.quest-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--j-slate);
+}
+/* On light (hero) background, use deep gold for contrast */
+.quest-label-gold {
+    color: var(--j-gold-dk);
+}
+
+/* ---- Hero stat row ---- */
+.hero-stat-value {
+    font-size: 2.1rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--j-dark);
+}
+.hero-stat-label {
+    margin-top: 0.4rem;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--j-slate);
+}
+.hero-stat-divider {
+    width: 1px;
+    align-self: stretch;
+    background: rgba(9,17,19,0.14);
+    flex-shrink: 0;
+}
+
+/* ---- Stat blocks ---- */
+.stat-block {
+    background: #ffffff;
+    border: 1px solid var(--j-silver);
+    border-radius: 20px;
+    padding: 1.25rem 1.5rem;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.stat-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(9,17,19,0.07);
+}
+.stat-block-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--j-slate);
+}
+.stat-block-value {
+    margin-top: 0.75rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--j-dark);
+    line-height: 1;
+}
+.stat-block-value.gold { color: var(--j-gold); }
+.stat-block-sub {
+    margin-top: 0.5rem;
+    font-size: 0.78rem;
+    color: var(--j-slate);
+}
+
+/* ---- Quest board panel ---- */
+.quest-board {
+    background: #ffffff;
+    border: 1px solid var(--j-silver);
+}
+.quest-count-badge {
+    background: rgba(218,185,55,0.12);
+    border: 1px solid rgba(218,185,55,0.28);
+    color: var(--j-gold-dk);
+    border-radius: 999px;
+    padding: 0.2rem 0.85rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+/* ---- Quest cards ---- */
+.quest-card {
+    background: #f8f7f2;
+    border: 1px solid #e8e6df;
+    border-radius: 16px;
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.quest-card:hover {
+    border-color: var(--j-gold);
+    box-shadow: 0 4px 20px rgba(218,185,55,0.10);
+}
+.quest-card-inner {
+    display: flex;
+    gap: 1rem;
+    padding: 1.25rem;
+    align-items: flex-start;
+}
+.quest-reward {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.85rem 1rem;
+    background: #f6f1dc;
+    border-radius: 12px;
+    min-width: 72px;
+    text-align: center;
+}
+.quest-reward-coin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--j-gold), var(--j-gold-l));
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--j-dark);
+}
+.quest-reward-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--j-dark);
+    line-height: 1;
+}
+.quest-reward-label {
+    font-size: 0.58rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--j-slate);
+}
+
+/* ---- Challenge type pill ---- */
+.challenge-type-badge {
+    background: #eceae2;
+    color: var(--j-charcoal);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* ---- Trend chart bars ---- */
+.trend-bar {
+    min-height: 6px;
+    border-radius: 999px 999px 3px 3px;
+    transition: height 0.35s ease;
+}
+
+/* ---- Hero floating coins ---- */
+@keyframes hcoin-float {
+    0%   { transform: translateY(0px)   rotate(0deg)   scale(1); }
+    30%  { transform: translateY(-18px) rotate(8deg)   scale(1.04); }
+    60%  { transform: translateY(-8px)  rotate(-5deg)  scale(0.97); }
+    100% { transform: translateY(0px)   rotate(0deg)   scale(1); }
+}
+@keyframes hcoin-spin {
+    0%   { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+
+.hero-coins {
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 42%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.hcoin {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: hcoin-float ease-in-out infinite;
+    filter: drop-shadow(0 6px 12px rgba(218,185,55,0.40));
+}
+.hcoin img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+/* Position + size + timing per coin */
+.hcoin-1 { width: 72px; height: 72px; font-size: 1.4rem; right: 22%;  top: 12%;  animation-duration: 4.2s; animation-delay: 0s;    opacity: 0.95; }
+.hcoin-2 { width: 48px; height: 48px; font-size: 0.9rem; right: 8%;   top: 30%;  animation-duration: 3.6s; animation-delay: 0.8s;  opacity: 0.80; }
+.hcoin-3 { width: 88px; height: 88px; font-size: 1.7rem; right: 38%;  top: 42%;  animation-duration: 5.0s; animation-delay: 1.4s;  opacity: 0.70; }
+.hcoin-4 { width: 36px; height: 36px; font-size: 0.7rem; right: 52%;  top: 10%;  animation-duration: 3.2s; animation-delay: 0.4s;  opacity: 0.50; }
+.hcoin-5 { width: 56px; height: 56px; font-size: 1.1rem; right: 14%;  top: 62%;  animation-duration: 4.6s; animation-delay: 2.0s;  opacity: 0.65; }
+.hcoin-6 { width: 28px; height: 28px; font-size: 0.55rem;right: 44%;  top: 68%;  animation-duration: 3.8s; animation-delay: 1.0s;  opacity: 0.40; }
+
+/* ---- Tiny label (kept for compatibility) ---- */
+.tiny-label {
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+}
+
+/* ================================================================
+   Site Footer — Black shades (shared across all pages)
+   ================================================================ */
+.site-footer {
+    background: #091113;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    margin-top: 4rem;
+}
+.site-footer-brand {
+    color: #eeebe1;
+    font-size: 0.875rem;
+    font-weight: 300;
+    letter-spacing: 0.25em;
+}
+.site-footer-divider {
+    background: rgba(255,255,255,0.14);
+}
+.site-footer-sub {
+    color: #6b6e77;
+    font-size: 0.75rem;
+}

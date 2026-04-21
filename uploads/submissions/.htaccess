@@ -1,0 +1,16 @@
+# Apache configuration for Mission Token uploads folder
+# Prevents direct execution of uploaded files
+
+# Deny direct access to all files (serve as download only if needed)
+<FilesMatch ".*">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Explicitly deny PHP execution
+Options -ExecCGI
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .jsp .asp .htm .html .shtml
+
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>
