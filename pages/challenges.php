@@ -7,6 +7,10 @@
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+// Prevent browser from caching this page so back button reloads fresh state
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Pragma: no-cache');
+
 $employeeId = (int)$_SESSION['employee_id'];
 $flash      = null;
 $dataError  = null;
@@ -34,6 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── QUIZ submission ──────────────────────────────────────
     if ($action === 'submit_quiz') {
+        // Quiz allows only ONE attempt ever — block even rejected submissions
+        $chkStmt = $pdo->prepare("
+            SELECT COUNT(*) AS cnt FROM challenge_submissions
+            WHERE employee_id = ? AND challenge_id = ?
+        ");
+        $chkStmt->execute([$employeeId, $challengeId]);
+        if ((int)$chkStmt->fetch()['cnt'] > 0) {
+            setFlash('error', 'คุณทำ Quiz นี้ไปแล้ว ไม่สามารถทำซ้ำได้');
+            redirect(BASE_URL . '/pages/challenges.php');
+        }
+
         $questions = getQuizQuestions($challengeId);
         if (empty($questions)) {
             setFlash('error', 'ภารกิจนี้ยังไม่มีคำถาม');
