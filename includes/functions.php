@@ -364,8 +364,13 @@ function getWeeklyTokenTrend(): array
     $pdo  = getDB();
     $stmt = $pdo->query("
         WITH last_7_days AS (
-            SELECT CAST(DATEADD(DAY, -offset_day, CAST(GETDATE() AS DATE)) AS DATE) AS trend_date
-            FROM (VALUES (0), (1), (2), (3), (4), (5), (6)) AS offsets(offset_day)
+            SELECT CAST(DATEADD(DAY, 0, CAST(GETDATE() AS DATE)) AS DATE) AS trend_date UNION ALL
+            SELECT CAST(DATEADD(DAY, -1, CAST(GETDATE() AS DATE)) AS DATE) UNION ALL
+            SELECT CAST(DATEADD(DAY, -2, CAST(GETDATE() AS DATE)) AS DATE) UNION ALL
+            SELECT CAST(DATEADD(DAY, -3, CAST(GETDATE() AS DATE)) AS DATE) UNION ALL
+            SELECT CAST(DATEADD(DAY, -4, CAST(GETDATE() AS DATE)) AS DATE) UNION ALL
+            SELECT CAST(DATEADD(DAY, -5, CAST(GETDATE() AS DATE)) AS DATE) UNION ALL
+            SELECT CAST(DATEADD(DAY, -6, CAST(GETDATE() AS DATE)) AS DATE)
         ),
         tx_daily AS (
             SELECT CAST(created_at AS DATE) AS trend_date,

@@ -94,8 +94,8 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
                 <div class="hero-stat-divider hidden sm:block"></div>
                 <div>
-                    <p class="hero-stat-value"><?= formatTokens((int)$overview['submissions_today']) ?></p>
-                    <p class="hero-stat-label">TODAY</p>
+                    <p class="hero-stat-value"><?= (int)$overview['active_challenges'] ?></p>
+                    <p class="hero-stat-label">ACTIVE QUEST</p>
                 </div>
             </div>
         </div>
@@ -108,20 +108,15 @@ require_once __DIR__ . '/includes/header.php';
     <?php endif; ?>
 
     <!-- ── STAT BLOCKS ────────────────────────────────────────── -->
-    <section class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <article class="stat-block">
-            <p class="stat-block-label">Token คงเหลือรวม</p>
-            <p class="stat-block-value gold" data-counter="<?= (int)$overview['team_balance'] ?>"><?= formatTokens((int)$overview['team_balance']) ?></p>
-            <p class="stat-block-sub">ยอดคงเหลือ wallet ทั้งทีม</p>
-        </article>
+    <section class="mt-6 grid gap-4 sm:grid-cols-2">
         <article class="stat-block">
             <p class="stat-block-label">Quest ที่เปิดอยู่</p>
-            <p class="stat-block-value" data-counter="<?= (int)$overview['active_challenges'] ?>"><?= formatTokens((int)$overview['active_challenges']) ?></p>
+            <p class="stat-block-value" data-counter="<?= (int)$overview['active_challenges'] ?>"><?= (int)$overview['active_challenges'] ?></p>
             <p class="stat-block-sub">ภารกิจรอให้รับวันนี้</p>
         </article>
         <article class="stat-block">
             <p class="stat-block-label">ส่งงานวันนี้</p>
-            <p class="stat-block-value" data-counter="<?= (int)$overview['submissions_today'] ?>"><?= formatTokens((int)$overview['submissions_today']) ?></p>
+            <p class="stat-block-value" data-counter="<?= (int)$overview['submissions_today'] ?>"><?= (int)$overview['submissions_today'] ?></p>
             <p class="stat-block-sub">Submission ล่าสุดของทีม</p>
         </article>
     </section>

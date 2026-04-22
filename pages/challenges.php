@@ -205,6 +205,15 @@ if ($focusChallengeId > 0) {
         } catch (Throwable $e) {
             error_log('[MissionToken] quiz questions load error: ' . $e->getMessage());
         }
+        // If no questions found, clear focus so we fall back to list view
+        if (empty($quizQuestions)) {
+            $focusChallenge   = null;
+            $focusChallengeId = 0;
+        }
+    } else {
+        // Not a valid quiz focus — show list view
+        $focusChallenge   = null;
+        $focusChallengeId = 0;
     }
 }
 
@@ -259,6 +268,95 @@ require_once __DIR__ . '/../includes/header.php';
         <p class="mt-1 text-sm text-j-slate">เลือกภารกิจที่ต้องการทำ แล้วส่งหลักฐานเพื่อรับ Token</p>
     </div>
 
+    <?php if ($focusChallenge && !empty($quizQuestions)): ?>
+    <!-- ── QUIZ VIEW: single challenge focused ── -->
+    <?php
+        $ch        = $focusChallenge;
+        $cid       = (int)$ch['challenge_id'];
+    ?>
+    <div class="mb-6 flex items-center gap-2 text-sm text-j-slate">
+        <a href="<?= BASE_URL ?>/pages/challenges.php"
+           class="inline-flex items-center gap-1.5 hover:text-j-gold transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+            กลับรายการภารกิจ
+        </a>
+        <span>›</span>
+        <span class="text-j-dark"><?= e($ch['title']) ?></span>
+    </div>
+
+    <div class="max-w-2xl">
+        <article class="journal-card p-6 flex flex-col gap-5">
+            <!-- Challenge header -->
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0 flex-1">
+                    <span class="badge text-xs font-medium mb-2 inline-block"
+                          style="background:#091113; color:#dab937;">📝 Quiz</span>
+                    <h2 class="text-xl font-semibold text-j-dark leading-snug"><?= e($ch['title']) ?></h2>
+                    <p class="mt-1.5 text-sm leading-6 text-j-slate"><?= e((string)$ch['description']) ?></p>
+                    <p class="mt-1 text-xs text-j-slate"><?= count($quizQuestions) ?> คำถาม • ต้องตอบถูกทั้งหมด</p>
+                </div>
+                <div class="flex flex-col items-center flex-shrink-0 text-center">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token" class="h-10 w-10">
+                    <p class="text-base font-bold text-j-gold">+<?= formatTokens((int)$ch['token_reward']) ?></p>
+                    <p class="text-[10px] text-j-slate uppercase tracking-wider">TOKEN</p>
+                </div>
+            </div>
+
+            <!-- Quiz form -->
+            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
+                  class="border-t border-j-silver pt-5 flex flex-col gap-6">
+                <?= csrfField() ?>
+                <input type="hidden" name="action" value="submit_quiz">
+                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
+
+                <?php foreach ($quizQuestions as $qi => $q): ?>
+                <div>
+                    <p class="mb-3 text-sm font-semibold text-j-dark">
+                        <?= ($qi + 1) ?>. <?= e($q['question_text']) ?>
+                    </p>
+                    <div class="grid gap-2">
+                        <?php
+                        $opts = [
+                            'A' => $q['option_a'],
+                            'B' => $q['option_b'],
+                            'C' => $q['option_c'] ?? null,
+                            'D' => $q['option_d'] ?? null,
+                        ];
+                        foreach ($opts as $letter => $text):
+                            if ($text === null) continue;
+                        ?>
+                        <label class="quiz-option flex items-center gap-3 cursor-pointer rounded-xl border border-j-silver px-4 py-3 text-sm text-j-dark hover:border-j-gold hover:bg-[#faf0cf] transition-colors">
+                            <input type="radio" name="q_<?= (int)$q['question_id'] ?>"
+                                   value="<?= $letter ?>" required
+                                   class="accent-[#dab937]">
+                            <span class="font-medium text-j-gold w-5 flex-shrink-0"><?= $letter ?>.</span>
+                            <?= e($text) ?>
+                        </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+
+                <div class="border-t border-j-silver pt-4">
+                    <p class="mb-4 text-xs text-j-slate">⚠️ ตอบได้ 1 ครั้งเท่านั้น ไม่สามารถแก้ไขได้ภายหลัง</p>
+                    <div class="flex gap-3">
+                        <button type="submit" class="btn-gold flex-1 justify-center py-2.5">
+                            ส่งคำตอบ
+                        </button>
+                        <a href="<?= BASE_URL ?>/pages/challenges.php"
+                           class="btn-outline justify-center px-5 py-2.5">
+                            ยกเลิก
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </article>
+    </div>
+
+    <?php else: ?>
+    <!-- ── LIST VIEW: all challenges ── -->
     <?php if ($challenges): ?>
     <div class="grid gap-6 lg:grid-cols-2">
         <?php foreach ($challenges as $ch): ?>
@@ -268,7 +366,6 @@ require_once __DIR__ . '/../includes/header.php';
             $isDone    = in_array($myStatus, ['approved', 'auto_approved'], true);
             $isPending = $myStatus === 'pending';
             $sl        = $statusLabel[$myStatus] ?? null;
-            $isOpen    = ($focusChallengeId === $cid);
         ?>
         <article class="journal-card p-6 flex flex-col gap-4 <?= $isDone ? 'opacity-60' : '' ?>"
                  id="challenge-<?= $cid ?>">
@@ -319,55 +416,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
 
             <?php elseif ($ch['type'] === 'quiz'): ?>
-                <?php if ($isOpen && !empty($quizQuestions)): ?>
-                <!-- Quiz form -->
-                <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
-                      class="border-t border-j-silver pt-4 flex flex-col gap-5">
-                    <?= csrfField() ?>
-                    <input type="hidden" name="action" value="submit_quiz">
-                    <input type="hidden" name="challenge_id" value="<?= $cid ?>">
-
-                    <?php foreach ($quizQuestions as $qi => $q): ?>
-                    <div>
-                        <p class="mb-3 text-sm font-semibold text-j-dark">
-                            <?= ($qi + 1) ?>. <?= e($q['question_text']) ?>
-                        </p>
-                        <div class="grid gap-2">
-                            <?php
-                            $opts = [
-                                'A' => $q['option_a'],
-                                'B' => $q['option_b'],
-                                'C' => $q['option_c'] ?? null,
-                                'D' => $q['option_d'] ?? null,
-                            ];
-                            foreach ($opts as $letter => $text):
-                                if ($text === null) continue;
-                            ?>
-                            <label class="quiz-option flex items-center gap-3 cursor-pointer rounded-xl border border-j-silver px-4 py-3 text-sm text-j-dark hover:border-j-gold hover:bg-[#faf0cf] transition-colors">
-                                <input type="radio" name="q_<?= (int)$q['question_id'] ?>"
-                                       value="<?= $letter ?>" required
-                                       class="accent-[#dab937]">
-                                <span class="font-medium text-j-gold w-5 flex-shrink-0"><?= $letter ?>.</span>
-                                <?= e($text) ?>
-                            </label>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-
-                    <div class="flex gap-3 pt-1">
-                        <button type="submit" class="btn-gold flex-1 justify-center py-2.5">
-                            ส่งคำตอบ
-                        </button>
-                        <a href="<?= BASE_URL ?>/pages/challenges.php"
-                           class="btn-outline justify-center px-5 py-2.5">
-                            ยกเลิก
-                        </a>
-                    </div>
-                    <p class="text-xs text-j-slate">⚠️ ตอบได้ 1 ครั้งเท่านั้น ไม่สามารถแก้ไขได้ภายหลัง</p>
-                </form>
-
-                <?php elseif ($myStatus === 'rejected'): ?>
+                <?php if ($myStatus === 'rejected'): ?>
                 <div class="rounded-xl px-4 py-3 mb-2 text-sm"
                      style="background:#fee2e2; color:#991b1b;">
                     ตอบไม่ผ่าน — ไม่สามารถลองใหม่ได้
@@ -399,7 +448,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endif; ?>
 
                 <?php else: ?>
-                <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>#challenge-<?= $cid ?>"
+                <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>"
                    class="btn-gold w-full justify-center py-2.5">
                     เริ่มทำ Quiz
                 </a>
@@ -465,6 +514,8 @@ require_once __DIR__ . '/../includes/header.php';
         ไม่มีภารกิจเปิดรับในช่วงเวลานี้
     </div>
     <?php endif; ?>
+
+    <?php endif; /* end list view */ ?>
 
 </div>
 
