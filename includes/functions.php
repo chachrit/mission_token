@@ -288,7 +288,7 @@ function getLeaderboard(int $limit = 10): array
 }
 
 /**
- * Get homepage summary stats for the team overview.
+ * Get homepage summary stats.
  */
 function getHomeOverviewStats(): array
 {
@@ -298,14 +298,10 @@ function getHomeOverviewStats(): array
             (SELECT COUNT(*)
              FROM employees
              WHERE role = 'employee' AND is_active = 1) AS active_employees,
-            (SELECT ISNULL(SUM(w.balance), 0)
-             FROM token_wallets w
-             JOIN employees e ON e.employee_id = w.employee_id
-             WHERE e.role = 'employee' AND e.is_active = 1) AS team_balance,
             (SELECT ISNULL(SUM(w.total_earned), 0)
              FROM token_wallets w
              JOIN employees e ON e.employee_id = w.employee_id
-             WHERE e.role = 'employee' AND e.is_active = 1) AS team_earned,
+             WHERE e.role = 'employee' AND e.is_active = 1) AS total_earned,
             (SELECT COUNT(*)
              FROM challenges
              WHERE is_active = 1
@@ -322,18 +318,17 @@ function getHomeOverviewStats(): array
 
     return $row ?: [
         'active_employees' => 0,
-        'team_balance' => 0,
-        'team_earned' => 0,
+        'total_earned'     => 0,
         'active_challenges' => 0,
-        'pending_reviews' => 0,
+        'pending_reviews'  => 0,
         'submissions_today' => 0,
     ];
 }
 
 /**
- * Get recent team activity feed for the homepage.
+ * Get recent activity feed for the homepage.
  */
-function getRecentTeamActivity(int $limit = 6): array
+function getRecentActivity(int $limit = 6): array
 {
     $pdo  = getDB();
     $limit = max(1, $limit);

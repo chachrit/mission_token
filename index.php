@@ -10,11 +10,10 @@ require_once __DIR__ . '/includes/functions.php';
 initSession();
 
 $overview = [
-    'active_employees' => 0,
-    'team_balance' => 0,
-    'team_earned' => 0,
+    'active_employees'  => 0,
+    'total_earned'      => 0,
     'active_challenges' => 0,
-    'pending_reviews' => 0,
+    'pending_reviews'   => 0,
     'submissions_today' => 0,
 ];
 $activeChallenges = [];
@@ -27,7 +26,7 @@ try {
     $overview = getHomeOverviewStats();
     $activeChallenges = getActiveChallenges();
     $leaderboard = getLeaderboard(5);
-    $recentActivity = getRecentTeamActivity(6);
+    $recentActivity = getRecentActivity(6);
     $weeklyTrend = getWeeklyTokenTrend();
 } catch (Throwable $e) {
     error_log('[MissionToken] homepage load error: ' . $e->getMessage());
@@ -83,13 +82,13 @@ require_once __DIR__ . '/includes/header.php';
             </h1>
             <p class="mt-4 max-w-lg text-sm leading-7 text-j-slate">
                 สะสม Token จากภารกิจ พิชิตทุก challenge<br class="hidden sm:block">
-                และเฝ้าดูยอดสะสมของทีมเติบโตขึ้นทุกวัน
+                และเฝ้าดูยอดสะสมของคุณเติบโตขึ้นทุกวัน
             </p>
 
             <!-- Stat row -->
             <div class="mt-8 flex flex-wrap items-stretch gap-6 sm:gap-10">
                 <div>
-                    <p class="hero-stat-value text-j-gold"><?= formatTokens((int)$overview['team_earned']) ?></p>
+                    <p class="hero-stat-value text-j-gold"><?= formatTokens((int)$overview['total_earned']) ?></p>
                     <p class="hero-stat-label">TOKEN EARNED</p>
                 </div>
                 <div class="hero-stat-divider hidden sm:block"></div>

@@ -285,11 +285,7 @@ $flash        = getFlash();
                     <?php if (!$isAdmin): ?>
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
                          style="background:#1a1f20; border: 1px solid #3a3e43;">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" fill="#dab937"/>
-                            <circle cx="12" cy="12" r="7" fill="#c9a830"/>
-                            <text x="12" y="16.5" text-anchor="middle" fill="#091113" font-size="9" font-weight="700" font-family="sans-serif">T</text>
-                        </svg>
+                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;">
                         <span class="text-sm font-semibold text-gold-shimmer" id="nav-balance"><?php echo formatTokens($navBalance); ?></span>
                         <span class="text-xs" style="color:#6b6e77;">token</span>
                     </div>
