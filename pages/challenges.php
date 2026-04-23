@@ -343,6 +343,16 @@ require_once __DIR__ . '/../includes/header.php';
     }
     .quiz-step { display: none; }
     .quiz-step.active { display: block; }
+    .quiz-step.step-enter-fwd  { animation: quiz-step-fwd  0.32s cubic-bezier(0.4,0,0.2,1) both; }
+    .quiz-step.step-enter-back { animation: quiz-step-back 0.32s cubic-bezier(0.4,0,0.2,1) both; }
+    @keyframes quiz-step-fwd {
+        from { opacity: 0; transform: translateX(32px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes quiz-step-back {
+        from { opacity: 0; transform: translateX(-32px); }
+        to   { opacity: 1; transform: translateX(0); }
+    }
     .quiz-opt {
         position: relative;
         display: flex; align-items: center; gap: 0.875rem;
@@ -596,9 +606,19 @@ require_once __DIR__ . '/../includes/header.php';
 
         /* ── Step navigation ─────────────────────────────── */
         window.quizGoStep = function (idx) {
-            document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
+            const currentStep = document.querySelector('.quiz-step.active');
+            const currentIdx  = currentStep ? parseInt(currentStep.dataset.step, 10) : -1;
+            const forward     = idx > currentIdx;
+
+            if (currentStep) {
+                currentStep.classList.remove('active', 'step-enter-fwd', 'step-enter-back');
+            }
+
             const step = document.getElementById('step-' + idx);
-            step.classList.add('active');
+            step.classList.add('active', forward ? 'step-enter-fwd' : 'step-enter-back');
+            setTimeout(function () {
+                step.classList.remove('step-enter-fwd', 'step-enter-back');
+            }, 340);
 
             // Update counter + progress bar
             document.getElementById('q-current').textContent = idx + 1;
@@ -773,41 +793,70 @@ require_once __DIR__ . '/../includes/header.php';
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
+    /* ── Token reward badge (animated) ── */
+    .token-reward-badge {
+        display: inline-flex; align-items: center; gap: 0.45rem;
+        background: linear-gradient(135deg,#1c1400 0%,#0f0d00 100%);
+        border: 1px solid rgba(218,185,55,0.50);
+        border-radius: 12px;
+        padding: 0.35rem 0.72rem 0.35rem 0.45rem;
+        box-shadow: 0 0 14px rgba(218,185,55,0.25), inset 0 1px 0 rgba(248,231,105,0.07);
+        position: relative; overflow: hidden; flex-shrink: 0;
+    }
+    .token-reward-badge::after {
+        content: '';
+        position: absolute; top: 0; left: -120%; width: 80%; height: 100%;
+        background: linear-gradient(90deg,transparent,rgba(248,231,105,0.12),transparent);
+        animation: trb-shine 3.5s ease-in-out infinite;
+        pointer-events: none;
+    }
+    @keyframes trb-shine {
+        0%, 25% { left: -120%; }
+        65%, 100% { left: 160%; }
+    }
+    .token-coin-anim {
+        animation: tca-pulse 2.4s ease-in-out infinite;
+        filter: drop-shadow(0 0 5px rgba(218,185,55,0.80));
+    }
+    @keyframes tca-pulse {
+        0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 4px rgba(218,185,55,0.70)); }
+        50%       { transform: scale(1.18); filter: drop-shadow(0 0 11px rgba(248,231,105,1.0)); }
+    }
     </style>
 
     <?php if ($challenges): ?>
 
     <!-- Quest Board header -->
-    <div class="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-10 relative overflow-hidden"
-         style="background:linear-gradient(135deg,#091113 0%,#0f1d20 60%,#162022 100%);">
+    <div class="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-20 relative overflow-hidden"
+         style="background:linear-gradient(135deg,#fdfcdf 0%,#faf0cf 60%,#eeebe1 100%);
+                border-bottom:1px solid #e0ddd4;">
         <!-- subtle dot grid texture -->
         <div style="position:absolute;inset:0;pointer-events:none;
-                    background-image:radial-gradient(rgba(218,185,55,0.10) 1px, transparent 1px);
+                    background-image:radial-gradient(rgba(9,17,19,0.05) 1px, transparent 1px);
                     background-size:22px 22px;"></div>
-        <!-- bottom gold divider line -->
-        <div style="position:absolute;bottom:0;left:0;right:0;height:2px;
-                    background:linear-gradient(90deg,transparent,#dab937 30%,#f8e769 50%,#dab937 70%,transparent);
-                    opacity:0.55;"></div>
-        <div class="relative max-w-7xl mx-auto flex items-center justify-between gap-6">
+        <!-- ambient gold glow top-right -->
+        <div style="position:absolute;top:-100px;right:-100px;width:580px;height:480px;pointer-events:none;
+                    background:radial-gradient(circle,rgba(218,185,55,0.24) 0%,transparent 65%);"></div>
+        <div class="relative max-w-7xl mx-auto flex items-center justify-between gap-8">
             <div>
-                <p class="text-[11px] font-bold uppercase tracking-widest mb-1.5" style="color:#dab937; letter-spacing:0.2em;">&#9876; Quest Board</p>
-                <h1 class="text-3xl font-bold leading-tight" style="color:#fdfcdf; text-shadow:0 2px 24px rgba(218,185,55,0.18);">ภารกิจทั้งหมด</h1>
-                <p class="text-sm mt-1.5" style="color:#6b6e77;">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
+                <p class="text-[14px] font-bold uppercase tracking-widest mb-2.5" style="color:#c9a830; letter-spacing:0.24em;">&#9876; Quest Board</p>
+                <h1 class="text-5xl font-bold leading-tight" style="color:#091113;">ภารกิจทั้งหมด</h1>
+                <p class="text-base mt-2.5" style="color:#6b6e77;">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
             </div>
-            <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                <div class="flex items-center gap-2">
-                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-5 h-5 opacity-80">
-                    <p class="text-base font-bold" style="color:#f8e769;">
-                        <?= $_done ?><span class="font-normal text-sm" style="color:#6b6e77;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
+            <div class="flex flex-col items-end gap-3 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-7 h-7">
+                    <p class="text-xl font-bold" style="color:#c9a830;">
+                        <?= $_done ?><span class="font-normal text-base" style="color:#6b6e77;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
                     </p>
                 </div>
-                <div style="width:130px;height:6px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden;">
+                <div style="width:180px;height:8px;background:rgba(9,17,19,0.08);border-radius:99px;overflow:hidden;">
                     <div style="height:100%;border-radius:99px;
                                 background:linear-gradient(90deg,#dab937,#f8e769);
                                 width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;
-                                box-shadow:0 0 8px rgba(218,185,55,0.6);"></div>
+                                box-shadow:0 0 10px rgba(218,185,55,0.45);"></div>
                 </div>
-                <p class="text-[10px] uppercase tracking-widest" style="color:#3a3e43;"><?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete</p>
+                <p class="text-xs font-semibold uppercase tracking-widest" style="color:#6b6e77;"><?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete</p>
             </div>
         </div>
     </div>
@@ -826,8 +875,8 @@ require_once __DIR__ . '/../includes/header.php';
             $myStatus = $ch['my_status'];
             $isRejected = $myStatus === 'rejected';
         ?>
-        <article style="background:#fff;border:1.5px solid <?= $isRejected ? '#f3c4b8' : '#e0ddd4' ?>;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 12px rgba(9,17,19,0.06);transition:transform 0.22s,box-shadow 0.22s,border-color 0.22s;"
-                 onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 36px rgba(9,17,19,0.13)';this.style.borderColor='<?= $isRejected ? '#d2592a' : '#dab937' ?>'"
+        <article style="background:#fff;border:1.5px solid <?= $isRejected ? '#f3c4b8' : '#e0ddd4' ?>;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 12px rgba(9,17,19,0.06);transition:transform 0.26s cubic-bezier(0.34,1.3,0.64,1),box-shadow 0.26s ease,border-color 0.18s;"
+                 onmouseover="this.style.transform='translateY(-12px) scale(1.03)';this.style.boxShadow='<?= $isRejected ? '0 32px 64px rgba(9,17,19,0.20),0 0 28px rgba(210,89,42,0.28)' : '0 32px 64px rgba(9,17,19,0.20),0 0 32px rgba(218,185,55,0.35)' ?>';this.style.borderColor='<?= $isRejected ? '#d2592a' : '#dab937' ?>'"
                  onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(9,17,19,0.06)';this.style.borderColor='<?= $isRejected ? '#f3c4b8' : '#e0ddd4' ?>'">
             <div style="height:4px;background:<?= $isRejected ? '#d2592a' : 'linear-gradient(90deg,#dab937,#f8e769)' ?>;"></div>
             <div style="padding:1.25rem;display:flex;flex-direction:column;gap:0.875rem;flex:1;">
@@ -835,9 +884,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:0.22rem 0.65rem;border-radius:6px;background:#091113;color:#dab937;">
                         <?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
                     </span>
-                    <div style="display:flex;align-items:center;gap:0.35rem;">
-                        <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:16px;height:16px;object-fit:contain;">
-                        <span style="font-size:0.9rem;font-weight:800;color:#c9a830;">+<?= formatTokens((int)$ch['token_reward']) ?></span>
+                    <div class="token-reward-badge">
+                        <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim" style="width:26px;height:26px;object-fit:contain;">
+                        <div style="display:flex;flex-direction:column;line-height:1.1;">
+                            <span style="font-size:0.95rem;font-weight:900;color:#f8e769;text-shadow:0 0 8px rgba(248,231,105,0.6);">+<?= formatTokens((int)$ch['token_reward']) ?></span>
+                            <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(218,185,55,0.75);">Token</span>
+                        </div>
                     </div>
                 </div>
                 <div style="flex:1;">
@@ -926,9 +978,9 @@ require_once __DIR__ . '/../includes/header.php';
                             <?= $isDone ? 'สำเร็จ' : 'รอตรวจ' ?>
                         </span>
                         <?php if ($isDone && !empty($ch['my_token_awarded']) && $ch['my_token_awarded'] > 0): ?>
-                        <div style="display:flex;align-items:center;gap:0.35rem;">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:14px;height:14px;object-fit:contain;">
-                            <span style="font-size:0.82rem;font-weight:700;color:#518e5c;">+<?= formatTokens($ch['my_token_awarded']) ?></span>
+                        <div style="display:inline-flex;align-items:center;gap:0.4rem;background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:0.22rem 0.55rem 0.22rem 0.38rem;">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(81,142,92,0.55));">
+                            <span style="font-size:0.85rem;font-weight:800;color:#166534;">+<?= formatTokens($ch['my_token_awarded']) ?></span>
                         </div>
                         <?php endif; ?>
                     </div>
