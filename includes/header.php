@@ -215,6 +215,16 @@ $flash        = getFlash();
             opacity: 1;
             filter: brightness(1.12) drop-shadow(0 0 6px rgba(218,185,55,0.35));
         }
+
+        /* Token spin */
+        @keyframes token-spin {
+            0%   { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+        .token-spin {
+            animation: token-spin 5s linear infinite;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -245,17 +255,28 @@ $flash        = getFlash();
                 <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center">
                     <?php
+                    // Pending redemptions count for admin badge
+                    $pendingRedemptionCount = 0;
+                    if ($isAdmin) {
+                        try {
+                            $r = getDB()->query("SELECT COUNT(*) AS c FROM dbo.reward_redemptions WHERE status='pending'")->fetch();
+                            $pendingRedemptionCount = (int)($r['c'] ?? 0);
+                        } catch (Throwable $e) { /* table may not exist yet */ }
+                    }
+
                     if ($isAdmin) {
                         $navLinks = [
                             'admin_dashboard'    => ['label' => 'ภาพรวม',    'href' => BASE_URL . '/admin/dashboard.php'],
                             'admin_challenges'   => ['label' => 'ภารกิจ',    'href' => BASE_URL . '/admin/challenges/index.php'],
                             'admin_submissions'  => ['label' => 'ตรวจสอบงาน', 'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
+                            'admin_rewards'      => ['label' => 'รางวัล',     'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
                             'admin_employees'    => ['label' => 'พนักงาน',    'href' => BASE_URL . '/admin/employees.php'],
                         ];
                     } else {
                         $navLinks = [
                             'dashboard'   => ['label' => 'หน้าแรก',  'href' => BASE_URL . '/index.php'],
                             'challenges'  => ['label' => 'ภารกิจ',   'href' => BASE_URL . '/pages/challenges.php'],
+                            'rewards'     => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
                             'history'     => ['label' => 'ประวัติ',   'href' => BASE_URL . '/pages/history.php'],
                         ];
                     }
@@ -285,9 +306,8 @@ $flash        = getFlash();
                     <?php if (!$isAdmin): ?>
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
                          style="background:#1a1f20; border: 1px solid #3a3e43;">
-                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;">
+                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
                         <span class="text-sm font-semibold text-gold-shimmer" id="nav-balance"><?php echo formatTokens($navBalance); ?></span>
-                        <span class="text-xs" style="color:#6b6e77;">token</span>
                     </div>
                     <?php endif; ?>
 
