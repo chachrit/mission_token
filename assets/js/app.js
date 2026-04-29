@@ -232,3 +232,124 @@ function setButtonLoading(btn, loading = true) {
         btn.disabled  = false;
     }
 }
+
+// ============================================================
+// Home Page — Morphing Slide Transition (clip-path expand)
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+    var scrollBtn  = document.getElementById('hero-scroll-btn');
+    var aboutSlide = document.getElementById('about');
+    var backBtn    = document.getElementById('about-back-btn');
+
+    if (!scrollBtn || !aboutSlide) return;
+
+    var isOpen = false;
+    var wheelAccum = 0;
+    var wheelResetTimer = null;
+    var WHEEL_THRESHOLD = 350; // accumulated px before triggering
+
+    function openAbout() {
+        if (isOpen) return;
+        isOpen = true;
+        wheelAccum = 0;
+        aboutSlide.classList.add('slide-open');
+        document.body.classList.add('about-open');
+        if (backBtn) backBtn.classList.add('btn-visible');
+    }
+
+    function closeAbout() {
+        if (!isOpen) return;
+        isOpen = false;
+        wheelAccum = 0;
+        aboutSlide.classList.remove('slide-open');
+        document.body.classList.remove('about-open');
+        if (backBtn) backBtn.classList.remove('btn-visible');
+    }
+
+    // Click on scroll indicator
+    scrollBtn.addEventListener('click', openAbout);
+
+    // Mouse wheel: accumulate delta — only trigger after sustained scrolling
+    window.addEventListener('wheel', function (e) {
+        if (isOpen) {
+            // Close: only when already scrolled to top of about panel
+            if (e.deltaY < 0 && aboutSlide.scrollTop <= 0) {
+                wheelAccum += e.deltaY; // negative
+                if (wheelAccum < -WHEEL_THRESHOLD) closeAbout();
+            } else {
+                wheelAccum = 0;
+            }
+            return;
+        }
+
+        // Open: accumulate downward scroll
+        if (e.deltaY > 0) {
+            wheelAccum += e.deltaY;
+            // Reset accumulation if user pauses
+            clearTimeout(wheelResetTimer);
+            wheelResetTimer = setTimeout(function () { wheelAccum = 0; }, 250);
+            if (wheelAccum >= WHEEL_THRESHOLD) openAbout();
+        }
+    }, { passive: true });
+
+    // Touch swipe: swipe up → open, swipe down (at top) → close
+    var touchStartY = 0;
+    window.addEventListener('touchstart', function (e) {
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', function (e) {
+        var delta = touchStartY - e.changedTouches[0].clientY;
+        if (!isOpen && delta > 50) {
+            openAbout();
+        } else if (isOpen && delta < -50 && aboutSlide.scrollTop <= 0) {
+            closeAbout();
+        }
+    }, { passive: true });
+
+    // Back button click
+    if (backBtn) backBtn.addEventListener('click', closeAbout);
+
+    // ESC key closes
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && isOpen) closeAbout();
+    });
+});
+
+// ============================================================
+// Login Page — Password Toggle & Form Submit
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Password show/hide toggle
+    var passInput = document.getElementById('password');
+    var eyeShow   = document.getElementById('eye-show');
+    var eyeHide   = document.getElementById('eye-hide');
+    var toggleBtn = document.querySelector('.pass-toggle');
+
+    if (toggleBtn && passInput) {
+        toggleBtn.addEventListener('click', function () {
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                if (eyeShow) eyeShow.classList.add('hidden');
+                if (eyeHide) eyeHide.classList.remove('hidden');
+            } else {
+                passInput.type = 'password';
+                if (eyeShow) eyeShow.classList.remove('hidden');
+                if (eyeHide) eyeHide.classList.add('hidden');
+            }
+        });
+    }
+
+    // Login form: show loading state on submit
+    var loginForm = document.getElementById('login-form');
+    var loginBtn  = document.getElementById('login-btn');
+    if (loginForm && loginBtn) {
+        loginForm.addEventListener('submit', function () {
+            loginBtn.disabled    = true;
+            loginBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+        });
+    }
+});
+

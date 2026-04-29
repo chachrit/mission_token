@@ -249,22 +249,14 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- Flash: Winning Moment (success) or error bar -->
     <?php if ($flash && $flash['type'] === 'success'): ?>
-    <div id="win-card" class="mb-8 relative overflow-hidden rounded-2xl px-6 py-10 text-center"
-         style="background:linear-gradient(140deg,#091113 0%,#162022 100%);
-                border:1.5px solid #dab937;
-                box-shadow:0 8px 48px rgba(218,185,55,0.22);">
-        <!-- ambient glow -->
-        <div style="position:absolute;top:-60px;left:50%;transform:translateX(-50%);
-                    width:280px;height:120px;pointer-events:none;
-                    background:radial-gradient(ellipse,rgba(218,185,55,0.30),transparent 68%);"></div>
+    <div id="win-card" class="mb-8 relative overflow-hidden rounded-2xl px-6 py-10 text-center ch-win-card">
+        <div class="ch-win-glow"></div>
         <div class="relative z-10">
             <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token"
                  id="win-token"
-                 class="h-20 w-20 mx-auto mb-4"
-                 style="animation:win-pop 0.6s cubic-bezier(0.34,1.56,0.64,1) both;">
-            <h2 class="text-2xl font-bold mb-2"
-                style="color:#f8e769;text-shadow:0 0 28px rgba(218,185,55,0.55);">ยินดีด้วย! 🎉</h2>
-            <p class="text-sm leading-relaxed mb-6 max-w-xs mx-auto" style="color:#cecdcd;">
+                 class="h-20 w-20 mx-auto mb-4 ch-win-token">
+            <h2 class="text-2xl font-bold mb-2 ch-win-title">ยินดีด้วย! 🎉</h2>
+            <p class="text-sm leading-relaxed mb-6 max-w-xs mx-auto ch-win-desc">
                 <?= e($flash['message']) ?>
             </p>
             <a href="<?= BASE_URL ?>/pages/challenges.php"
@@ -276,13 +268,6 @@ require_once __DIR__ . '/../includes/header.php';
             </a>
         </div>
     </div>
-    <style>
-    @keyframes win-pop {
-        0%   { transform:scale(0.2) rotate(-15deg); opacity:0; }
-        65%  { transform:scale(1.22) rotate(4deg); }
-        100% { transform:scale(1) rotate(0deg); opacity:1; }
-    }
-    </style>
     <script>
     (function () {
         function fireWinConfetti() {
@@ -327,91 +312,6 @@ require_once __DIR__ . '/../includes/header.php';
         $totalQ = count($quizQuestions);
     ?>
 
-    <!-- Quiz-specific styles -->
-    <style>
-    .quiz-progress-track {
-        height: 6px;
-        background: rgba(255,255,255,0.15);
-        border-radius: 999px;
-        overflow: hidden;
-    }
-    .quiz-progress-fill {
-        height: 100%;
-        background: linear-gradient(90deg, #dab937, #f8e769);
-        border-radius: 999px;
-        transition: width 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .quiz-step { display: none; }
-    .quiz-step.active { display: block; }
-    .quiz-step.step-enter-fwd  { animation: quiz-step-fwd  0.32s cubic-bezier(0.4,0,0.2,1) both; }
-    .quiz-step.step-enter-back { animation: quiz-step-back 0.32s cubic-bezier(0.4,0,0.2,1) both; }
-    @keyframes quiz-step-fwd {
-        from { opacity: 0; transform: translateX(32px); }
-        to   { opacity: 1; transform: translateX(0); }
-    }
-    @keyframes quiz-step-back {
-        from { opacity: 0; transform: translateX(-32px); }
-        to   { opacity: 1; transform: translateX(0); }
-    }
-    .quiz-opt {
-        position: relative;
-        display: flex; align-items: center; gap: 0.875rem;
-        padding: 0.9rem 1rem;
-        border: 1.5px solid #cecdcd;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: border-color 0.18s, background 0.18s, transform 0.1s, box-shadow 0.18s;
-        background: #fff;
-        user-select: none;
-    }
-    .quiz-opt:hover {
-        border-color: #dab937;
-        background: #fdfcdf;
-        box-shadow: 0 2px 8px rgba(218,185,55,0.18);
-    }
-    .quiz-opt:active { transform: scale(0.98); }
-    .quiz-opt.selected {
-        border-color: #dab937;
-        border-width: 2px;
-        background: linear-gradient(100deg, #faf0cf 0%, #fef9e0 100%);
-        box-shadow: 0 4px 20px rgba(218,185,55,0.38);
-        transform: translateX(5px);
-    }
-    .quiz-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-    .quiz-opt-letter {
-        width: 32px; height: 32px;
-        border-radius: 8px;
-        background: #eeebe1;
-        border: 1.5px solid #cecdcd;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 0.78rem; font-weight: 700; color: #6b6e77;
-        flex-shrink: 0;
-        transition: background 0.18s, border-color 0.18s, color 0.18s;
-    }
-    .quiz-opt.selected .quiz-opt-letter {
-        background: #dab937;
-        border-color: #dab937;
-        color: #091113;
-    }
-    .quiz-opt .opt-check {
-        margin-left: auto;
-        flex-shrink: 0;
-        opacity: 0;
-        transition: opacity 0.18s;
-    }
-    .quiz-opt.selected .opt-check { opacity: 1; }
-    @keyframes token-float {
-        0%, 100% { transform: translateY(0); }
-        50%       { transform: translateY(-5px); }
-    }
-    .token-float { animation: token-float 2.2s ease-in-out infinite; }
-    .btn-gold:disabled {
-        opacity: 0.45;
-        cursor: not-allowed;
-        pointer-events: none;
-    }
-    </style>
-
     <!-- Back breadcrumb -->
     <div class="mb-5 flex items-center gap-2 text-sm text-j-slate">
         <a href="<?= BASE_URL ?>/pages/challenges.php"
@@ -425,13 +325,12 @@ require_once __DIR__ . '/../includes/header.php';
         <span class="text-j-dark font-medium"><?= e($ch['title']) ?></span>
     </div>
 
-    <div class="max-w-2xl">
+    <div class="max-w-2xl mx-auto">
 
         <!-- Mission info strip -->
         <div class="journal-card p-5 mb-4 flex items-center gap-4">
             <div class="flex-1 min-w-0">
-                <span class="badge text-xs font-semibold mb-1.5 inline-block"
-                      style="background:#091113; color:#dab937;">📝 Quiz Mission</span>
+                <span class="badge ch-badge-quiz text-xs font-semibold mb-1.5 inline-block">📝 Quiz Mission</span>
                 <h2 class="text-lg font-semibold text-j-dark leading-snug"><?= e($ch['title']) ?></h2>
                 <p class="mt-1 text-sm text-j-slate leading-relaxed"><?= e((string)$ch['description']) ?></p>
             </div>
@@ -444,21 +343,20 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Main quiz card -->
-        <div class="rounded-2xl overflow-hidden" style="border:1px solid #cecdcd; box-shadow:0 4px 24px rgba(9,17,19,0.10);">
+        <div class="ch-quiz-card">
 
             <!-- Dark progress header -->
-            <div class="px-6 py-4" style="background:#091113;">
+            <div class="px-6 py-4 ch-quiz-header">
                 <div class="flex items-center justify-between mb-3">
-                    <span class="text-xs font-semibold uppercase tracking-widest" style="color:#dab937;">
+                    <span class="text-xs font-semibold uppercase tracking-widest text-j-gold">
                         Mission Progress
                     </span>
                     <div class="flex items-center gap-2.5">
-                        <span class="text-xs font-mono" style="color:#f8e769;">
+                        <span class="text-xs font-mono ch-quiz-counter">
                             ข้อที่ <span id="q-current">1</span> / <?= $totalQ ?>
                         </span>
-                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
-                              style="background:rgba(218,185,55,0.14);color:#f8e769;border:1px solid rgba(218,185,55,0.3);">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:12px;height:12px;">
+                        <span class="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full ch-quiz-token-badge">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-3 h-3">
                             +<?= formatTokens((int)$ch['token_reward']) ?>
                         </span>
                     </div>
@@ -470,7 +368,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
 
             <!-- Steps area -->
-            <div style="background:#fdfcdf;">
+            <div class="ch-quiz-body">
                 <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
                       id="quiz-form">
                     <?= csrfField() ?>
@@ -492,8 +390,10 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <!-- Question number badge + text -->
                         <div class="flex items-start gap-3 mb-5">
-                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold flex-shrink-0 mt-0.5"
-                                  style="background:#dab937; color:#091113;"><?= $qi + 1 ?></span>
+                            <span class="inline-flex items-center justify-center w-8 h-8 rounded-full
+                                         text-xs font-bold flex-shrink-0 mt-0.5 ch-quiz-qnum">
+                                <?= $qi + 1 ?>
+                            </span>
                             <p class="text-base font-semibold text-j-dark leading-snug">
                                 <?= e($q['question_text']) ?>
                             </p>
@@ -542,8 +442,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
 
                     <!-- Warning footnote -->
-                    <div class="px-6 py-3 flex items-center gap-2 text-xs text-j-slate border-t border-[#e6e2d6]"
-                         style="background:#eeebe1;">
+                    <div class="px-6 py-3 flex items-center gap-2 text-xs text-j-slate
+                                border-t border-[#e6e2d6] ch-quiz-footnote">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="#dab937" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -559,46 +459,17 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Processing Modal ── -->
     <div id="quiz-processing-modal"
          aria-live="assertive" role="status"
-         style="display:none; position:fixed; inset:0; z-index:9999;
-                background:rgba(9,17,19,0.72); backdrop-filter:blur(4px);
-                align-items:center; justify-content:center;">
-        <div style="background:#fdfcdf; border:1px solid #cecdcd;
-                    border-radius:16px; padding:2.25rem 2.75rem;
-                    box-shadow:0 12px 48px rgba(9,17,19,0.28);
-                    text-align:center; max-width:320px; width:90%;">
-
-            <!-- Orbit spinner -->
-            <div style="position:relative; width:64px; height:64px; margin:0 auto 1.25rem;">
-                <div id="qpm-orbit"
-                     style="position:absolute; inset:0; border-radius:50%;
-                            border:3px solid #e6e2d6;
-                            border-top-color:#dab937;
-                            animation:qpm-spin 0.9s linear infinite;"></div>
-                <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
-                     style="position:absolute; inset:0; margin:auto;
-                            width:32px; height:32px;
-                            animation:qpm-pulse 0.9s ease-in-out infinite;">
+         class="ch-processing-modal"
+         style="display:none;">
+        <div class="ch-processing-modal-inner">
+            <div class="ch-qpm-spinner">
+                <div class="ch-qpm-orbit"></div>
+                <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="ch-qpm-token">
             </div>
-
-            <p style="font-size:1rem; font-weight:600; color:#091113; margin-bottom:0.4rem;">
-                กำลังตรวจสอบคำตอบ…
-            </p>
-            <!-- animated dots -->
-            <p style="font-size:0.8rem; color:#6b6e77; letter-spacing:0.04em;"
-               id="qpm-dots">กรุณารอสักครู่</p>
+            <p class="text-base font-semibold text-j-dark mb-1.5">กำลังตรวจสอบคำตอบ…</p>
+            <p class="text-sm text-j-slate" id="qpm-dots">กรุณารอสักครู่</p>
         </div>
     </div>
-
-    <style>
-    @keyframes qpm-spin  { to { transform: rotate(360deg); } }
-    @keyframes qpm-pulse { 0%,100% { transform:scale(1); opacity:1; }
-                           50%      { transform:scale(1.15); opacity:0.75; } }
-    @keyframes qpm-fadein { from { opacity:0; transform:scale(0.94); }
-                            to   { opacity:1; transform:scale(1); } }
-    #quiz-processing-modal[style*="flex"] > div {
-        animation: qpm-fadein 0.22s ease-out both;
-    }
-    </style>
 
     <script>
     (function () {
@@ -609,23 +480,13 @@ require_once __DIR__ . '/../includes/header.php';
             const currentStep = document.querySelector('.quiz-step.active');
             const currentIdx  = currentStep ? parseInt(currentStep.dataset.step, 10) : -1;
             const forward     = idx > currentIdx;
-
-            if (currentStep) {
-                currentStep.classList.remove('active', 'step-enter-fwd', 'step-enter-back');
-            }
-
+            if (currentStep) currentStep.classList.remove('active', 'step-enter-fwd', 'step-enter-back');
             const step = document.getElementById('step-' + idx);
             step.classList.add('active', forward ? 'step-enter-fwd' : 'step-enter-back');
-            setTimeout(function () {
-                step.classList.remove('step-enter-fwd', 'step-enter-back');
-            }, 340);
-
-            // Update counter + progress bar
+            setTimeout(function () { step.classList.remove('step-enter-fwd', 'step-enter-back'); }, 340);
             document.getElementById('q-current').textContent = idx + 1;
             const pct = Math.round(((idx + 1) / totalQ) * 100);
             document.getElementById('quiz-progress').style.width = pct + '%';
-
-            // Re-enable next/submit if this step was already answered
             const checked = step.querySelector('input[type="radio"]:checked');
             if (checked) {
                 const nb = document.getElementById('next-' + idx);
@@ -633,7 +494,6 @@ require_once __DIR__ . '/../includes/header.php';
                 const sb = document.getElementById('quiz-submit-btn');
                 if (sb && idx === totalQ - 1) sb.disabled = false;
             }
-
             step.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         };
 
@@ -644,17 +504,9 @@ require_once __DIR__ . '/../includes/header.php';
                 if (!radio) return;
                 const stepEl  = this.closest('.quiz-step');
                 const stepIdx = parseInt(stepEl.dataset.step, 10);
-
-                // Deselect all options in this question
-                stepEl.querySelectorAll('.quiz-opt').forEach(function (l) {
-                    l.classList.remove('selected');
-                });
-
-                // Select clicked option
+                stepEl.querySelectorAll('.quiz-opt').forEach(function (l) { l.classList.remove('selected'); });
                 radio.checked = true;
                 this.classList.add('selected');
-
-                // Enable next / submit button
                 const nb = document.getElementById('next-' + stepIdx);
                 if (nb) nb.disabled = false;
                 const sb = document.getElementById('quiz-submit-btn');
@@ -662,11 +514,10 @@ require_once __DIR__ . '/../includes/header.php';
             });
         });
 
-        /* ── Processing modal helper ─────────────────────── */
+        /* ── Processing modal ────────────────────────────── */
         function showProcessingModal() {
-            const modal = document.getElementById('quiz-processing-modal');
+            const modal  = document.getElementById('quiz-processing-modal');
             modal.style.display = 'flex';
-            // Animate dots: cycle through "กรุณารอสักครู่" → "." → ".." → "..."
             const dotsEl = document.getElementById('qpm-dots');
             const base   = 'กรุณารอสักครู่';
             let tick = 0;
@@ -676,39 +527,25 @@ require_once __DIR__ . '/../includes/header.php';
             }, 280);
         }
 
-        /* ── Submit: processing modal → confetti → submit ── */
+        /* ── Submit handler ──────────────────────────────── */
         document.getElementById('quiz-form').addEventListener('submit', function (e) {
             e.preventDefault();
-            const form    = this;
+            const form = this;
             const dotsTimer = showProcessingModal();
-
-            function doSubmit() {
-                clearInterval(dotsTimer);
-                form.submit();
-            }
-
+            function doSubmit() { clearInterval(dotsTimer); form.submit(); }
             function fireAndSubmit() {
-                confetti({
-                    particleCount : 70,
-                    spread        : 65,
-                    origin        : { y: 0.72 },
-                    colors        : ['#dab937', '#f8e769', '#c9a830', '#fdfcdf', '#3a3e43'],
-                    scalar        : 0.85,
-                    ticks         : 130,
-                    gravity       : 1.3,
-                });
+                confetti({ particleCount:70, spread:65, origin:{y:0.72},
+                           colors:['#dab937','#f8e769','#c9a830','#fdfcdf','#3a3e43'],
+                           scalar:0.85, ticks:130, gravity:1.3 });
                 setTimeout(doSubmit, 480);
             }
-
-            // Show processing for ~1 s, then fire confetti + submit
             setTimeout(function () {
                 if (typeof confetti !== 'undefined') {
                     fireAndSubmit();
                 } else {
-                    const s   = document.createElement('script');
-                    s.src     = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';
-                    s.onload  = fireAndSubmit;
-                    s.onerror = doSubmit;
+                    const s  = document.createElement('script');
+                    s.src    = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js';
+                    s.onload = fireAndSubmit; s.onerror = doSubmit;
                     document.head.appendChild(s);
                 }
             }, 1050);
@@ -725,138 +562,38 @@ require_once __DIR__ . '/../includes/header.php';
         }
         $_total = count($challenges);
 
-        // Split challenges into 2 groups
-        $questsAvailable = array_values(array_filter($challenges, fn($c) =>
-            $c['my_status'] === null || $c['my_status'] === 'rejected'
-        ));
-        $questsDone = array_values(array_filter($challenges, fn($c) =>
-            in_array($c['my_status'], ['approved','auto_approved','pending'], true)
+        $questsAvailable = array_values(array_filter($challenges, fn($c) => $c['my_status'] === null));
+        $questsDone      = array_values(array_filter($challenges, fn($c) =>
+            in_array($c['my_status'], ['approved','auto_approved','pending','rejected'], true)
         ));
     ?>
 
-    <style>
-    .quest-card {
-        background: #fdfcdf;
-        border: 1px solid #cecdcd;
-        border-left: 4px solid #cecdcd;
-        border-radius: 16px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        transition: transform 0.22s ease, box-shadow 0.22s ease;
-    }
-    .quest-card:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 28px 60px rgba(9,17,19,0.30), 0 0 36px rgba(218,185,55,0.20);
-    }
-    .quest-card.quest-done:hover     { box-shadow: 0 28px 60px rgba(9,17,19,0.28), 0 0 32px rgba(81,142,92,0.30); }
-    .quest-card.quest-rejected:hover { box-shadow: 0 28px 60px rgba(9,17,19,0.28), 0 0 32px rgba(210,89,42,0.28); }
-    .quest-card.quest-open:hover,
-    .quest-card.quest-pending:hover  { box-shadow: 0 28px 60px rgba(9,17,19,0.30), 0 0 36px rgba(218,185,55,0.35); }
-    /* Left-border state colours */
-    .quest-open     { border-left-color: #dab937; }
-    .quest-pending  { border-left-color: #c9a830; }
-    .quest-rejected { border-left-color: #d2592a; }
-    .quest-done     { border-left-color: #518e5c; }
-    /* Universal card header (collapsible) */
-    .quest-card-header {
-        cursor: pointer;
-        user-select: none;
-    }
-    /* Hover highlight on header */
-    .quest-card-header:hover {
-        background: rgba(9,17,19,0.05);
-    }
-    /* Token chip */
-    .token-reward-chip {
-        display: inline-flex; align-items: center; gap: 0.4rem;
-        border-radius: 10px; padding: 0.4rem 0.7rem;
-        background: #091113;
-        border: 1px solid rgba(218,185,55,0.25);
-        box-shadow: 0 0 10px rgba(218,185,55,0.30);
-        transition: box-shadow 0.2s;
-        white-space: nowrap;
-    }
-    .quest-card.quest-open:hover .token-reward-chip,
-    .quest-card.quest-pending:hover .token-reward-chip {
-        box-shadow: 0 0 18px rgba(218,185,55,0.55);
-    }
-    /* Lock border-left colour for non-actionable states */
-    .quest-card.quest-rejected,
-    .quest-card.quest-rejected:hover { border-left-color: #d2592a !important; }
-    .quest-card.quest-done,
-    .quest-card.quest-done:hover    { border-left-color: #518e5c !important; }
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    /* ── Token reward badge (animated) ── */
-    .token-reward-badge {
-        display: inline-flex; align-items: center; gap: 0.45rem;
-        background: linear-gradient(135deg,#1c1400 0%,#0f0d00 100%);
-        border: 1px solid rgba(218,185,55,0.50);
-        border-radius: 12px;
-        padding: 0.35rem 0.72rem 0.35rem 0.45rem;
-        box-shadow: 0 0 14px rgba(218,185,55,0.25), inset 0 1px 0 rgba(248,231,105,0.07);
-        position: relative; overflow: hidden; flex-shrink: 0;
-    }
-    .token-reward-badge::after {
-        content: '';
-        position: absolute; top: 0; left: -120%; width: 80%; height: 100%;
-        background: linear-gradient(90deg,transparent,rgba(248,231,105,0.12),transparent);
-        animation: trb-shine 3.5s ease-in-out infinite;
-        pointer-events: none;
-    }
-    @keyframes trb-shine {
-        0%, 25% { left: -120%; }
-        65%, 100% { left: 160%; }
-    }
-    .token-coin-anim {
-        animation: tca-pulse 2.4s ease-in-out infinite;
-        filter: drop-shadow(0 0 5px rgba(218,185,55,0.80));
-    }
-    @keyframes tca-pulse {
-        0%, 100% { transform: scale(1);    filter: drop-shadow(0 0 4px rgba(218,185,55,0.70)); }
-        50%       { transform: scale(1.18); filter: drop-shadow(0 0 11px rgba(248,231,105,1.0)); }
-    }
-    </style>
-
     <?php if ($challenges): ?>
 
-    <!-- Quest Board header -->
-    <div class="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-20 relative overflow-hidden"
-         style="background:linear-gradient(135deg,#fdfcdf 0%,#faf0cf 60%,#eeebe1 100%);
-                border-bottom:1px solid #e0ddd4;">
-        <!-- subtle dot grid texture -->
-        <div style="position:absolute;inset:0;pointer-events:none;
-                    background-image:radial-gradient(rgba(9,17,19,0.05) 1px, transparent 1px);
-                    background-size:22px 22px;"></div>
-        <!-- ambient gold glow top-right -->
-        <div style="position:absolute;top:-100px;right:-100px;width:580px;height:480px;pointer-events:none;
-                    background:radial-gradient(circle,rgba(218,185,55,0.24) 0%,transparent 65%);"></div>
+    <!-- Quest Board hero header -->
+    <div class="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-20 relative overflow-hidden ch-board-hero">
+        <div class="ch-board-dot-grid"></div>
+        <div class="ch-board-glow"></div>
         <div class="relative max-w-7xl mx-auto flex items-center justify-between gap-8">
             <div>
-                <p class="text-[14px] font-bold uppercase tracking-widest mb-2.5" style="color:#c9a830; letter-spacing:0.24em;">&#9876; Quest Board</p>
-                <h1 class="text-5xl font-bold leading-tight" style="color:#091113;">ภารกิจทั้งหมด</h1>
-                <p class="text-base mt-2.5" style="color:#6b6e77;">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
+                <p class="text-[14px] font-bold uppercase mb-2.5 ch-board-hero-label">&#9876; Quest Board</p>
+                <h1 class="text-5xl font-bold leading-tight text-j-dark">ภารกิจทั้งหมด</h1>
+                <p class="text-base mt-2.5 text-j-slate">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
             </div>
             <div class="flex flex-col items-end gap-3 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-7 h-7">
-                    <p class="text-xl font-bold" style="color:#c9a830;">
-                        <?= $_done ?><span class="font-normal text-base" style="color:#6b6e77;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
+                    <p class="text-xl font-bold text-j-gold-dk">
+                        <?= $_done ?><span class="font-normal text-base text-j-slate"> / <?= $_total ?> ภารกิจสำเร็จ</span>
                     </p>
                 </div>
-                <div style="width:180px;height:8px;background:rgba(9,17,19,0.08);border-radius:99px;overflow:hidden;">
-                    <div style="height:100%;border-radius:99px;
-                                background:linear-gradient(90deg,#dab937,#f8e769);
-                                width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;
-                                box-shadow:0 0 10px rgba(218,185,55,0.45);"></div>
+                <div class="ch-board-progress-track">
+                    <div class="ch-board-progress-fill"
+                         style="width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;"></div>
                 </div>
-                <p class="text-xs font-semibold uppercase tracking-widest" style="color:#6b6e77;"><?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete</p>
+                <p class="text-xs font-semibold uppercase tracking-widest text-j-slate">
+                    <?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete
+                </p>
             </div>
         </div>
     </div>
@@ -865,71 +602,81 @@ require_once __DIR__ . '/../includes/header.php';
     <?php if ($questsAvailable): ?>
     <div class="mb-12">
         <div class="flex items-center gap-3 mb-6">
-            <div style="width:4px;height:28px;background:linear-gradient(180deg,#dab937,#c9a830);border-radius:999px;flex-shrink:0;"></div>
-            <h2 style="font-size:1.15rem;font-weight:700;color:#091113;margin:0;">ภารกิจรอคุณอยู่</h2>
-            <span style="font-size:0.72rem;font-weight:700;color:#091113;background:#dab937;border-radius:999px;padding:0.2rem 0.65rem;"><?= count($questsAvailable) ?></span>
+            <div class="ch-section-bar"></div>
+            <h2 class="ch-section-heading">ภารกิจรอคุณอยู่</h2>
+            <span class="ch-count-badge"><?= count($questsAvailable) ?></span>
         </div>
         <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         <?php foreach ($questsAvailable as $ch):
-            $cid = (int)$ch['challenge_id'];
-            $myStatus = $ch['my_status'];
-            $isRejected = $myStatus === 'rejected';
+            $cid        = (int)$ch['challenge_id'];
+            $isRejected = $ch['my_status'] === 'rejected';
         ?>
-        <article style="background:#fff;border:1.5px solid <?= $isRejected ? '#f3c4b8' : '#e0ddd4' ?>;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 2px 12px rgba(9,17,19,0.06);transition:transform 0.26s cubic-bezier(0.34,1.3,0.64,1),box-shadow 0.26s ease,border-color 0.18s;"
-                 onmouseover="this.style.transform='translateY(-12px) scale(1.03)';this.style.boxShadow='<?= $isRejected ? '0 32px 64px rgba(9,17,19,0.20),0 0 28px rgba(210,89,42,0.28)' : '0 32px 64px rgba(9,17,19,0.20),0 0 32px rgba(218,185,55,0.35)' ?>';this.style.borderColor='<?= $isRejected ? '#d2592a' : '#dab937' ?>'"
-                 onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(9,17,19,0.06)';this.style.borderColor='<?= $isRejected ? '#f3c4b8' : '#e0ddd4' ?>'">
-            <div style="height:4px;background:<?= $isRejected ? '#d2592a' : 'linear-gradient(90deg,#dab937,#f8e769)' ?>;"></div>
-            <div style="padding:1.25rem;display:flex;flex-direction:column;gap:0.875rem;flex:1;">
-                <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
-                    <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:0.22rem 0.65rem;border-radius:6px;background:#091113;color:#dab937;">
+        <article class="ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>">
+            <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"></div>
+            <div class="ch-quest-inner">
+                <div class="ch-quest-top-row">
+                    <span class="ch-type-badge">
                         <?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
                     </span>
                     <div class="token-reward-badge">
                         <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim" style="width:26px;height:26px;object-fit:contain;">
                         <div style="display:flex;flex-direction:column;line-height:1.1;">
-                            <span style="font-size:0.95rem;font-weight:900;color:#f8e769;text-shadow:0 0 8px rgba(248,231,105,0.6);">+<?= formatTokens((int)$ch['token_reward']) ?></span>
-                            <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(218,185,55,0.75);">Token</span>
+                            <span class="token-reward-value">+<?= formatTokens((int)$ch['token_reward']) ?></span>
+                            <span class="token-reward-label">Token</span>
                         </div>
                     </div>
                 </div>
-                <div style="flex:1;">
-                    <h3 style="font-size:0.95rem;font-weight:700;color:#091113;margin:0 0 0.35rem;line-height:1.35;"><?= e($ch['title']) ?></h3>
+                <div class="ch-quest-content">
+                    <h3 class="ch-quest-title"><?= e($ch['title']) ?></h3>
                     <?php if (!empty($ch['description'])): ?>
-                    <p style="font-size:0.78rem;color:#6b6e77;margin:0;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;"><?= e((string)$ch['description']) ?></p>
+                    <p class="ch-quest-desc"><?= e((string)$ch['description']) ?></p>
                     <?php endif; ?>
                     <?php if ($ch['type'] === 'quiz' && isset($ch['question_count'])): ?>
-                    <p style="font-size:0.7rem;color:#6b6e77;margin:0.4rem 0 0;"><?= $ch['question_count'] ?> คำถาม &bull; ตอบถูกทุกข้อเพื่อรับ Token</p>
+                    <p class="ch-quest-meta"><?= $ch['question_count'] ?> คำถาม &bull; ตอบถูกทุกข้อเพื่อรับ Token</p>
+                    <?php endif; ?>
+                    <?php
+                        $_ed = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
+                        $_daysLeft = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
+                    ?>
+                    <?php if ($_ed): ?>
+                    <p class="ch-quest-meta" style="margin-top:0.35rem;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:2px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        สิ้นสุด <?= $_ed ?>
+                        <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
+                        <span style="color:#d2592a; font-weight:600;"> &bull; เหลืออีก <?= $_daysLeft === 0 ? 'วันนี้!' : $_daysLeft . ' วัน' ?></span>
+                        <?php endif; ?>
+                    </p>
                     <?php endif; ?>
                 </div>
-                <div style="padding-top:0.75rem;border-top:1px solid #ece9e0;">
+                <div class="ch-quest-footer">
                     <?php if ($isRejected): ?>
-                    <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.78rem;font-weight:600;color:#991b1b;">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <div class="ch-rejected-msg">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                         ไม่ผ่านเกณฑ์ &bull; ไม่สามารถส่งซ้ำ
                     </div>
                     <?php elseif ($ch['type'] === 'quiz'): ?>
-                    <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>"
-                       style="display:flex;align-items:center;justify-content:center;gap:0.4rem;background:#dab937;color:#091113;font-size:0.82rem;font-weight:700;padding:0.6rem 1rem;border-radius:10px;text-decoration:none;transition:background 0.15s;"
-                       onmouseover="this.style.background='#c9a830'" onmouseout="this.style.background='#dab937'">
+                    <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>" class="ch-btn-start">
                         เริ่มทำ Quiz
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                        </svg>
                     </a>
                     <?php else: ?>
-                    <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php" enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">
+                    <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
+                          enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="submit_photo">
                         <input type="hidden" name="challenge_id" value="<?= $cid ?>">
                         <?php if (!empty($ch['instructions'])): ?>
-                        <p style="font-size:0.72rem;color:#6b6e77;margin:0;background:#faf0cf;border-radius:8px;padding:0.5rem 0.7rem;"><?= e((string)$ch['instructions']) ?></p>
+                        <p class="ch-instructions"><?= e((string)$ch['instructions']) ?></p>
                         <?php endif; ?>
-                        <input type="file" name="photo" accept="image/*" required
-                               style="font-size:0.75rem;color:#091113;background:#f9f9f9;border:1.5px solid #e0ddd4;border-radius:8px;padding:0.4rem 0.6rem;width:100%;cursor:pointer;box-sizing:border-box;">
-                        <p style="font-size:0.65rem;color:#9ca3af;margin:0;">JPG, PNG, WebP &bull; สูงสุด 5MB</p>
-                        <button type="submit"
-                                style="background:#dab937;color:#091113;font-size:0.82rem;font-weight:700;padding:0.6rem 1rem;border-radius:10px;border:none;cursor:pointer;transition:background 0.15s;"
-                                onmouseover="this.style.background='#c9a830'" onmouseout="this.style.background='#dab937'">
-                            ส่งหลักฐาน
-                        </button>
+                        <input type="file" name="photo" accept="image/*" required class="ch-file-input">
+                        <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5MB</p>
+                        <button type="submit" class="ch-btn-start">ส่งหลักฐาน</button>
                     </form>
                     <?php endif; ?>
                 </div>
@@ -939,54 +686,64 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
     <?php else: ?>
-    <div style="border-radius:16px;border:1.5px dashed #d4d0c8;padding:3rem 1rem;text-align:center;font-size:0.85rem;color:#6b6e77;margin-bottom:2.5rem;background:#fff;">
-        ไม่มีภารกิจรอดำเนินการในช่วงนี้
-    </div>
+    <div class="ds-empty-state mb-10" style="background:#fff;">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
     <?php endif; ?>
 
     <!-- ── SECTION 2: ดำเนินการแล้ว ── -->
     <?php if ($questsDone): ?>
     <div>
-        <button onclick="toggleDoneSection()"
-                style="width:100%;display:flex;align-items:center;justify-content:space-between;background:transparent;border:none;cursor:pointer;padding:0;margin-bottom:1rem;"
-                id="done-section-btn">
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-                <div style="width:4px;height:28px;background:#cecdcd;border-radius:999px;flex-shrink:0;"></div>
-                <span style="font-size:1.05rem;font-weight:600;color:#6b6e77;">ภารกิจที่ดำเนินการแล้ว</span>
-                <span style="font-size:0.72rem;font-weight:700;color:#6b6e77;background:#e6e2d6;border-radius:999px;padding:0.2rem 0.65rem;"><?= count($questsDone) ?></span>
+        <button onclick="toggleDoneSection()" class="ch-done-toggle-btn" id="done-section-btn">
+            <div class="flex items-center gap-3">
+                <div class="ch-section-bar ch-section-bar--muted"></div>
+                <span class="ch-section-heading--muted">ภารกิจที่ดำเนินการแล้ว</span>
+                <span class="ch-count-badge ch-count-badge--muted"><?= count($questsDone) ?></span>
             </div>
-            <svg id="done-chevron" width="18" height="18" fill="none" stroke="#6b6e77" viewBox="0 0 24 24" style="transition:transform 0.22s;flex-shrink:0;">
+            <svg id="done-chevron" width="18" height="18" fill="none" stroke="#6b6e77" viewBox="0 0 24 24"
+                 class="transition-transform flex-shrink-0">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
         </button>
         <div id="done-section-grid" style="display:none;">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($questsDone as $ch):
-                $cid = (int)$ch['challenge_id'];
-                $myStatus = $ch['my_status'];
-                $isDone   = in_array($myStatus, ['approved','auto_approved'], true);
-                $isPending= $myStatus === 'pending';
-                $accentClr = $isDone ? '#518e5c' : '#c9a830';
-                $bgClr     = $isDone ? '#f0fdf4' : '#fefce8';
-                $borderClr = $isDone ? '#bbf7d0' : '#fde68a';
+                $cid        = (int)$ch['challenge_id'];
+                $isDone     = in_array($ch['my_status'], ['approved','auto_approved'], true);
+                $isPending  = $ch['my_status'] === 'pending';
+                $isRejected = $ch['my_status'] === 'rejected';
+                if ($isRejected)     $stateClass = 'ch-done-card--rejected';
+                elseif ($isDone)     $stateClass = 'ch-done-card--done';
+                else                 $stateClass = 'ch-done-card--pending';
+                if ($isRejected)     $accentClass = 'ch-done-accent--rejected';
+                elseif ($isDone)     $accentClass = 'ch-done-accent--done';
+                else                 $accentClass = 'ch-done-accent--pending';
+                if ($isRejected)     $badgeClass = 'ch-status-badge--rejected';
+                elseif ($isDone)     $badgeClass = 'ch-status-badge--done';
+                else                 $badgeClass = 'ch-status-badge--pending';
+                $badgeText = $isRejected ? 'ไม่ผ่าน' : ($isDone ? 'สำเร็จ' : 'รอตรวจ');
             ?>
-            <article style="background:<?= $bgClr ?>;border:1.5px solid <?= $borderClr ?>;border-radius:20px;display:flex;flex-direction:column;overflow:hidden;opacity:0.85;box-shadow:0 1px 6px rgba(9,17,19,0.04);">
-                <div style="height:4px;background:<?= $accentClr ?>;"></div>
-                <div style="padding:1.1rem 1.25rem;display:flex;flex-direction:column;gap:0.6rem;">
-                    <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
-                        <span style="font-size:0.65rem;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;padding:0.22rem 0.65rem;border-radius:6px;background:<?= $isDone ? '#dcfce7' : '#fef9c3' ?>;color:<?= $isDone ? '#166534' : '#854d0e' ?>;">
-                            <?= $isDone ? 'สำเร็จ' : 'รอตรวจ' ?>
-                        </span>
+            <article class="ch-done-card <?= $stateClass ?>">
+                <div class="ch-done-accent <?= $accentClass ?>"></div>
+                <div class="ch-done-inner">
+                    <div class="ch-done-top-row">
+                        <span class="ch-status-badge <?= $badgeClass ?>"><?= $badgeText ?></span>
                         <?php if ($isDone && !empty($ch['my_token_awarded']) && $ch['my_token_awarded'] > 0): ?>
-                        <div style="display:inline-flex;align-items:center;gap:0.4rem;background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:0.22rem 0.55rem 0.22rem 0.38rem;">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(81,142,92,0.55));">
-                            <span style="font-size:0.85rem;font-weight:800;color:#166534;">+<?= formatTokens($ch['my_token_awarded']) ?></span>
+                        <div class="ch-token-earned-chip">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                                 style="width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(81,142,92,0.55));">
+                            <span class="ch-token-earned-value">+<?= formatTokens($ch['my_token_awarded']) ?></span>
                         </div>
                         <?php endif; ?>
                     </div>
-                    <h3 style="font-size:0.9rem;font-weight:600;color:#3a3e43;margin:0;line-height:1.3;"><?= e($ch['title']) ?></h3>
+                    <h3 class="ch-done-title"><?= e($ch['title']) ?></h3>
+                    <?php if (!empty($ch['end_date'])): ?>
+                    <p class="ch-pending-text" style="color:#9ca3af;">
+                        สิ้นสุด <?= date('d/m/Y', strtotime((string)$ch['end_date'])) ?>
+                    </p>
+                    <?php endif; ?>
                     <?php if ($isPending): ?>
-                    <p style="font-size:0.72rem;color:#92400e;margin:0;">&#9203; รอการตรวจสอบจาก HR/Manager</p>
+                    <p class="ch-pending-text">&#9203; รอการตรวจสอบจาก HR/Manager</p>
+                    <?php elseif ($isRejected): ?>
+                    <p class="ch-rejected-text">&#x2715; ไม่ผ่านเกณฑ์ &bull; ไม่สามารถส่งซ้ำได้</p>
                     <?php endif; ?>
                 </div>
             </article>
@@ -1001,13 +758,14 @@ require_once __DIR__ . '/../includes/header.php';
         var grid    = document.getElementById('done-section-grid');
         var chevron = document.getElementById('done-chevron');
         var isOpen  = grid && grid.style.display !== 'none';
-        if (grid)    grid.style.display    = isOpen ? 'none' : 'block';
+        if (grid)    grid.style.display      = isOpen ? 'none' : 'block';
         if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
     }
     </script>
 
     <?php else: ?>
-    <div class="rounded-2xl border border-dashed border-j-silver bg-white px-5 py-16 text-center text-sm text-j-slate">
+    <div class="rounded-2xl border border-dashed border-j-silver bg-white px-5 py-16
+                text-center text-sm text-j-slate">
         ไม่มีภารกิจเปิดรับในช่วงเวลานี้
     </div>
     <?php endif; ?>
@@ -1015,5 +773,9 @@ require_once __DIR__ . '/../includes/header.php';
     <?php endif; /* end list view */ ?>
 
 </div>
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
+
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

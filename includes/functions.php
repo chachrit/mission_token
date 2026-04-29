@@ -288,7 +288,7 @@ function getLeaderboard(int $limit = 10): array
 }
 
 /**
- * Get homepage summary stats.
+ * Get homepage summary stats for the team overview.
  */
 function getHomeOverviewStats(): array
 {
@@ -298,10 +298,14 @@ function getHomeOverviewStats(): array
             (SELECT COUNT(*)
              FROM employees
              WHERE role = 'employee' AND is_active = 1) AS active_employees,
+            (SELECT ISNULL(SUM(w.balance), 0)
+             FROM token_wallets w
+             JOIN employees e ON e.employee_id = w.employee_id
+             WHERE e.role = 'employee' AND e.is_active = 1) AS team_balance,
             (SELECT ISNULL(SUM(w.total_earned), 0)
              FROM token_wallets w
              JOIN employees e ON e.employee_id = w.employee_id
-             WHERE e.role = 'employee' AND e.is_active = 1) AS total_earned,
+             WHERE e.role = 'employee' AND e.is_active = 1) AS team_earned,
             (SELECT COUNT(*)
              FROM challenges
              WHERE is_active = 1
@@ -318,17 +322,18 @@ function getHomeOverviewStats(): array
 
     return $row ?: [
         'active_employees' => 0,
-        'total_earned'     => 0,
+        'team_balance' => 0,
+        'team_earned' => 0,
         'active_challenges' => 0,
-        'pending_reviews'  => 0,
+        'pending_reviews' => 0,
         'submissions_today' => 0,
     ];
 }
 
 /**
- * Get recent activity feed for the homepage.
+ * Get recent team activity feed for the homepage.
  */
-function getRecentActivity(int $limit = 6): array
+function getRecentTeamActivity(int $limit = 6): array
 {
     $pdo  = getDB();
     $limit = max(1, $limit);
@@ -447,4 +452,76 @@ function statusBadge(string $status): array
         'rejected'      => ['label' => 'ไม่ผ่าน',        'color' => '#d2592a',  'bg' => '#fdf0ea'],
         default         => ['label' => $status,          'color' => '#6b6e77',  'bg' => '#f5f5f4'],
     };
+}
+
+// ============================================================
+// Employee Profile & Tenure
+// ============================================================
+
+/**
+ * คำนวณอายุงานจาก start_date string (YYYY-MM-DD)
+ * คืน array: [ years, months, days, text (Thai), total_days ]
+ * ถ้า start_date เป็น null หรือวันที่ไม่ถูกต้อง คืน null
+ */
+function getWorkTenure(?string $startDate): ?array
+{
+    if (!$startDate || str_starts_with($startDate, '1900')) return null;
+
+    try {
+        $start = new DateTime($startDate);
+    } catch (Exception $e) {
+        return null;
+    }
+
+    $now = new DateTime('today');
+    if ($start > $now) return null;
+
+    $diff   = $start->diff($now);
+    $years  = (int)$diff->y;
+    $months = (int)$diff->m;
+    $days   = (int)$diff->d;
+
+    $parts = [];
+    if ($years  > 0) $parts[] = $years  . ' ปี';
+    if ($months > 0) $parts[] = $months . ' เดือน';
+    if ($days   > 0) $parts[] = $days   . ' วัน';
+    $text = $parts ? implode(' ', $parts) : 'น้อยกว่า 1 วัน';
+
+    return [
+        'years'      => $years,
+        'months'     => $months,
+        'days'       => $days,
+        'text'       => $text,
+        'total_days' => (int)$diff->days,
+        'start_date' => $startDate,
+    ];
+}
+
+/**
+ * ดึงข้อมูลอายุงานของพนักงานจาก DB
+ */
+function getEmployeeTenure(int $employeeId): ?array
+{
+    $pdo  = getDB();
+    $stmt = $pdo->prepare("SELECT start_date FROM dbo.employees WHERE employee_id = ?");
+    $stmt->execute([$employeeId]);
+    $row  = $stmt->fetch();
+    return $row ? getWorkTenure($row['start_date']) : null;
+}
+
+/**
+ * ดึงข้อมูลโปรไฟล์เต็มของพนักงาน (รวม start_date, email)
+ */
+function getEmployeeProfile(int $employeeId): ?array
+{
+    $pdo  = getDB();
+    $stmt = $pdo->prepare("
+        SELECT employee_id, employee_code, full_name, department, position,
+               email, role, avatar_url, is_active, start_date, created_at
+        FROM   dbo.employees
+        WHERE  employee_id = ?
+    ");
+    $stmt->execute([$employeeId]);
+    $row = $stmt->fetch();
+    return $row ?: null;
 }

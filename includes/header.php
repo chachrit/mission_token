@@ -266,11 +266,11 @@ $flash        = getFlash();
 
                     if ($isAdmin) {
                         $navLinks = [
-                            'admin_dashboard'    => ['label' => 'ภาพรวม',    'href' => BASE_URL . '/admin/dashboard.php'],
-                            'admin_challenges'   => ['label' => 'ภารกิจ',    'href' => BASE_URL . '/admin/challenges/index.php'],
-                            'admin_submissions'  => ['label' => 'ตรวจสอบงาน', 'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
-                            'admin_rewards'      => ['label' => 'รางวัล',     'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
-                            'admin_employees'    => ['label' => 'พนักงาน',    'href' => BASE_URL . '/admin/employees.php'],
+                            'admin_dashboard'    => ['label' => 'ภาพรวมระบบ',    'href' => BASE_URL . '/admin/dashboard.php'],
+                            'admin_challenges'   => ['label' => 'จัดการภารกิจ',  'href' => BASE_URL . '/admin/challenges/index.php'],
+                            'admin_submissions'  => ['label' => 'อนุมัติงาน',     'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
+                            'admin_rewards'      => ['label' => 'จัดการรางวัล',   'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
+                            'admin_employees'    => ['label' => 'จัดการพนักงาน',  'href' => BASE_URL . '/admin/employees.php'],
                         ];
                     } else {
                         $navLinks = [
@@ -300,7 +300,7 @@ $flash        = getFlash();
                 </div>
 
                 <!-- Right: Token Balance + User Menu -->
-                <div class="flex items-center gap-3">
+                <div id="nav-right" class="flex items-center gap-3">
 
                     <!-- Token Balance (employee only) -->
                     <?php if (!$isAdmin): ?>
@@ -346,6 +346,19 @@ $flash        = getFlash();
                                 <?php endif; ?>
                             </div>
                             <!-- Links -->
+                            <?php if (!$isAdmin): ?>
+                            <a href="<?php echo BASE_URL; ?>/pages/profile.php"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
+                               style="color:#9ca3af; border-color:#3a3e43;"
+                               onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
+                               onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                โปรไฟล์ของฉัน
+                            </a>
+                            <?php endif; ?>
                             <a href="<?php echo BASE_URL; ?>/logout.php"
                                class="flex items-center gap-2 px-4 py-3 text-sm transition-colors"
                                style="color:#9ca3af;"

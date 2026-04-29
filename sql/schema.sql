@@ -40,6 +40,7 @@ CREATE TABLE dbo.employees (
     role          NVARCHAR(20)  NOT NULL DEFAULT 'employee', -- 'employee' | 'admin'
     avatar_url    NVARCHAR(255) NULL,
     is_active     BIT           NOT NULL DEFAULT 1,
+    start_date    DATE          NULL,                        -- วันเริ่มงาน (sync จาก API)
     created_at    DATETIME      NOT NULL DEFAULT GETDATE(),
     CONSTRAINT uq_employee_code UNIQUE (employee_code)
 );

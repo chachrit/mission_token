@@ -19,6 +19,100 @@ $error   = null;
 $timeout = isset($_GET['timeout']);
 $redirect = isset($_GET['redirect']) ? (string)$_GET['redirect'] : '';
 
+// ── External API Auth Helper ────────────────────────────────
+/**
+ * ดึงข้อมูลพนักงานจาก webportal_dev API โดย employee_id
+ * คืน array ข้อมูลพนักงาน หรือ null ถ้าไม่พบ / API ล้มเหลว
+ */
+function fetchEmployeeFromAPI(string $employeeCode): ?array
+{
+    $apiUrl = 'http://203.154.130.236/emp_api/api/employee.php';
+    $apiKey = 'my-secret-key-12345';
+
+    $ch = curl_init($apiUrl);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 8,
+        CURLOPT_HTTPHEADER     => [
+            'X-API-KEY: ' . $apiKey,
+            'Accept: application/json',
+        ],
+    ]);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($httpCode !== 200 || !$response) return null;
+
+    $data      = json_decode($response, true);
+    $employees = $data['data'] ?? [];
+    if (empty($employees)) return null;
+
+    // กรองโดย employee_id หรือ pws_user
+    foreach ($employees as $emp) {
+        if ((string)($emp['employee_id'] ?? '') === $employeeCode
+            || (string)($emp['pws_user']    ?? '') === $employeeCode) {
+            return $emp;
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Sync / upsert ข้อมูลพนักงานจาก API เข้า local DB (mission_token.dbo.employees)
+ * คืน local employee_id
+ */
+function syncEmployeeFromAPI(PDO $pdo, array $apiEmp, string $employeeCode, string $localHash): int
+{
+    $fullName = trim(
+        ($apiEmp['prefix_th']    ?? '') . ' ' .
+        ($apiEmp['first_name_th'] ?? '') . ' ' .
+        ($apiEmp['last_name_th']  ?? '')
+    );
+    $department = $apiEmp['department'] ?? '';
+    $position   = $apiEmp['position_th'] ?? $apiEmp['position'] ?? '';
+    $email      = $apiEmp['email']       ?? '';
+
+    // parse start_date — API ส่งมาเป็น "YYYY-MM-DD HH:MM:SS" หรือ "YYYY-MM-DD"
+    $startDateRaw = $apiEmp['start_date'] ?? null;
+    $startDate    = null;
+    if ($startDateRaw && !str_starts_with($startDateRaw, '1900')) {
+        $dt = DateTime::createFromFormat('Y-m-d H:i:s', $startDateRaw)
+           ?: DateTime::createFromFormat('Y-m-d', $startDateRaw);
+        $startDate = $dt ? $dt->format('Y-m-d') : null;
+    }
+
+    // ตรวจสอบว่ามีใน local แล้วหรือยัง
+    $stmt = $pdo->prepare("SELECT employee_id FROM dbo.employees WHERE employee_code = ?");
+    $stmt->execute([$employeeCode]);
+    $localId = $stmt->fetchColumn();
+
+    if (!$localId) {
+        // Insert ใหม่
+        $ins = $pdo->prepare("
+            INSERT INTO dbo.employees (employee_code, full_name, department, position, email, password_hash, role, start_date)
+            VALUES (?, ?, ?, ?, ?, ?, 'employee', ?)
+        ");
+        $ins->execute([$employeeCode, $fullName, $department, $position, $email, $localHash, $startDate]);
+
+        // ดึง ID ที่เพิ่งสร้าง — re-query เพราะ SCOPE_IDENTITY() คืน NULL กับ pdo_sqlsrv
+        $sel = $pdo->prepare("SELECT employee_id FROM dbo.employees WHERE employee_code = ?");
+        $sel->execute([$employeeCode]);
+        $localId = (int)$sel->fetchColumn();
+    } else {
+        // Update ข้อมูลล่าสุดจาก API (ยกเว้น role/password_hash)
+        $upd = $pdo->prepare("
+            UPDATE dbo.employees
+            SET full_name  = ?, department = ?, position = ?, email = ?, start_date = ?
+            WHERE employee_code = ?
+        ");
+        $upd->execute([$fullName, $department, $position, $email, $startDate, $employeeCode]);
+    }
+
+    return (int)$localId;
+}
+
 // ── POST: handle login ──────────────────────────────────────
 if (isPost()) {
     validateCsrf();
@@ -30,56 +124,133 @@ if (isPost()) {
         $error = 'กรุณากรอกรหัสพนักงานและรหัสผ่าน';
     } else {
         try {
-            $pdo  = getDB();
-            $stmt = $pdo->prepare("
-                SELECT e.employee_id, e.employee_code, e.full_name,
-                       e.department,  e.position,      e.role,
-                       e.password_hash, e.avatar_url,  e.is_active,
-                       COALESCE(w.balance, 0) AS token_balance
-                FROM   dbo.employees e
-                LEFT JOIN dbo.token_wallets w ON w.employee_id = e.employee_id
-                WHERE  e.employee_code = ?
-            ");
-            $stmt->execute([$code]);
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $pdo     = getDB();
+            $apiEmp  = fetchEmployeeFromAPI($code);
+            $useAPI  = $apiEmp !== null;
 
-            if (!$user) {
-                $error = 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง';
-            } elseif (!(bool)$user['is_active']) {
-                $error = 'บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อ HR';
-            } elseif (!password_verify($password, (string)$user['password_hash'])) {
-                $error = 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง';
-            } else {
-                // Auto-create wallet if missing
-                $wStmt = $pdo->prepare("
-                    IF NOT EXISTS (SELECT 1 FROM dbo.token_wallets WHERE employee_id = ?)
-                        INSERT INTO dbo.token_wallets (employee_id) VALUES (?)
-                ");
-                $wStmt->execute([$user['employee_id'], $user['employee_id']]);
+            if ($useAPI) {
+                // ── API Auth ─────────────────────────────────
+                // API ไม่ส่ง password กลับมา → ตรวจจาก local DB ก่อน
+                // ถ้ายังไม่มีใน local → ใช้ pws_user เป็น default password
+                $passOk    = false;
+                $localHash = null;
 
-                // Regenerate session ID to prevent fixation
-                session_regenerate_id(true);
+                // ตรวจว่ามี local record + password hash อยู่แล้วไหม
+                $chkStmt = $pdo->prepare("SELECT password_hash FROM dbo.employees WHERE employee_code = ?");
+                $chkStmt->execute([$code]);
+                $existingHash = $chkStmt->fetchColumn();
 
-                $_SESSION['employee_id']    = (int)$user['employee_id'];
-                $_SESSION['employee_code']  = $user['employee_code'];
-                $_SESSION['full_name']      = $user['full_name'];
-                $_SESSION['department']     = $user['department'] ?? '';
-                $_SESSION['position']       = $user['position']  ?? '';
-                $_SESSION['role']           = $user['role'];
-                $_SESSION['avatar_url']     = $user['avatar_url'] ?? '';
-                $_SESSION['token_balance']  = (int)$user['token_balance'];
-                $_SESSION['last_activity']  = time();
-
-                // Safe redirect — only allow relative paths within our app
-                $dest = BASE_URL . '/pages/dashboard.php';
-                if ($redirect !== '') {
-                    $decoded = urldecode($redirect);
-                    if (str_starts_with($decoded, '/mission_token/')) {
-                        $dest = 'http://localhost' . $decoded;
+                if ($existingHash) {
+                    // มี local hash → verify ปกติ
+                    $passOk    = password_verify($password, (string)$existingHash);
+                    $localHash = (string)$existingHash;
+                } else {
+                    // ยังไม่เคย login → ใช้ pws_user เป็น default password
+                    $pwsUser = (string)($apiEmp['pws_user'] ?? '');
+                    if ($pwsUser !== '' && hash_equals($pwsUser, $password)) {
+                        $passOk    = true;
+                        $localHash = password_hash($password, PASSWORD_DEFAULT);
                     }
                 }
 
-                redirect($dest);
+                if (!$passOk) {
+                    $error = 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง';
+                } else {
+
+                    // Sync ข้อมูลพนักงานเข้า local DB
+                    $localEmpId = syncEmployeeFromAPI($pdo, $apiEmp, $code, $localHash);
+
+                    // สร้าง wallet ถ้ายังไม่มี
+                    $pdo->prepare("
+                        IF NOT EXISTS (SELECT 1 FROM dbo.token_wallets WHERE employee_id = ?)
+                            INSERT INTO dbo.token_wallets (employee_id) VALUES (?)
+                    ")->execute([$localEmpId, $localEmpId]);
+
+                    // ดึงข้อมูลล่าสุดจาก local DB (รวม balance)
+                    $stmt = $pdo->prepare("
+                        SELECT e.employee_id, e.employee_code, e.full_name,
+                               e.department, e.position, e.role,
+                               e.avatar_url, e.is_active,
+                               COALESCE(w.balance, 0) AS token_balance
+                        FROM   dbo.employees e
+                        LEFT JOIN dbo.token_wallets w ON w.employee_id = e.employee_id
+                        WHERE  e.employee_id = ?
+                    ");
+                    $stmt->execute([$localEmpId]);
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                    if (!$user || !(bool)$user['is_active']) {
+                        $error = 'บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อ HR';
+                    } else {
+                        session_regenerate_id(true);
+                        $_SESSION['employee_id']   = (int)$user['employee_id'];
+                        $_SESSION['employee_code'] = $user['employee_code'];
+                        $_SESSION['full_name']     = $user['full_name'];
+                        $_SESSION['department']    = $user['department'] ?? '';
+                        $_SESSION['position']      = $user['position']  ?? '';
+                        $_SESSION['role']          = $user['role'];
+                        $_SESSION['avatar_url']    = $user['avatar_url'] ?? '';
+                        $_SESSION['token_balance'] = (int)$user['token_balance'];
+                        $_SESSION['last_activity'] = time();
+
+                        $dest = BASE_URL . '/pages/dashboard.php';
+                        if ($redirect !== '') {
+                            $decoded = urldecode($redirect);
+                            if (str_starts_with($decoded, '/mission_token/')) {
+                                $dest = 'http://localhost' . $decoded;
+                            }
+                        }
+                        redirect($dest);
+                    }
+                }
+
+            } else {
+                // ── Fallback: Local DB Auth ───────────────────
+                $stmt = $pdo->prepare("
+                    SELECT e.employee_id, e.employee_code, e.full_name,
+                           e.department,  e.position,      e.role,
+                           e.password_hash, e.avatar_url,  e.is_active,
+                           COALESCE(w.balance, 0) AS token_balance
+                    FROM   dbo.employees e
+                    LEFT JOIN dbo.token_wallets w ON w.employee_id = e.employee_id
+                    WHERE  e.employee_code = ?
+                ");
+                $stmt->execute([$code]);
+                $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+                if (!$user) {
+                    $error = 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง';
+                } elseif (!(bool)$user['is_active']) {
+                    $error = 'บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อ HR';
+                } elseif (!password_verify($password, (string)$user['password_hash'])) {
+                    $error = 'รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง';
+                } else {
+                    // Auto-create wallet if missing
+                    $pdo->prepare("
+                        IF NOT EXISTS (SELECT 1 FROM dbo.token_wallets WHERE employee_id = ?)
+                            INSERT INTO dbo.token_wallets (employee_id) VALUES (?)
+                    ")->execute([$user['employee_id'], $user['employee_id']]);
+
+                    session_regenerate_id(true);
+                    $_SESSION['employee_id']   = (int)$user['employee_id'];
+                    $_SESSION['employee_code'] = $user['employee_code'];
+                    $_SESSION['full_name']     = $user['full_name'];
+                    $_SESSION['department']    = $user['department'] ?? '';
+                    $_SESSION['position']      = $user['position']  ?? '';
+                    $_SESSION['role']          = $user['role'];
+                    $_SESSION['avatar_url']    = $user['avatar_url'] ?? '';
+                    $_SESSION['token_balance'] = (int)$user['token_balance'];
+                    $_SESSION['last_activity'] = time();
+
+                    $dest = BASE_URL . '/pages/dashboard.php';
+                    if ($redirect !== '') {
+                        $decoded = urldecode($redirect);
+                        if (str_starts_with($decoded, '/mission_token/')) {
+                            $dest = 'http://localhost' . $decoded;
+                        }
+                    }
+                    redirect($dest);
+                }
             }
         } catch (Throwable $e) {
             error_log('[MissionToken] login error: ' . $e->getMessage());
@@ -124,169 +295,112 @@ if (isPost()) {
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/assets/css/style.css">
 </head>
-<body class="layout-login font-prompt min-h-screen">
+<body class="layout-login font-prompt">
 
-    <!-- ── LEFT: Branding Panel ─────────────────────────────── -->
-    <div class="mountain-bg hidden w-[52%] flex-col justify-between p-12 lg:flex xl:p-16">
+    <!-- Background glow orbs -->
+    <div class="login-bg-orb login-orb-1" aria-hidden="true"></div>
+    <div class="login-bg-orb login-orb-2" aria-hidden="true"></div>
 
-        <!-- Floating particles (subtle, gold tones on light bg) -->
-        <div class="pointer-events-none absolute inset-0 overflow-hidden">
-            <?php for ($i = 0; $i < 10; $i++):
-                $size  = rand(3, 8);
-                $left  = rand(5, 90);
-                $delay = rand(0, 6000) / 1000;
-                $dur   = rand(5000, 10000) / 1000;
-                $gold  = $i % 2 === 0;
-            ?>
-            <div class="particle <?php echo $gold ? 'bg-j-gold opacity-20' : 'bg-j-charcoal opacity-10'; ?>"
-                 style="width:<?php echo $size; ?>px;height:<?php echo $size; ?>px;left:<?php echo $left; ?>%;bottom:0;animation-delay:<?php echo $delay; ?>s;animation-duration:<?php echo $dur; ?>s;">
-            </div>
-            <?php endfor; ?>
-        </div>
+    <!-- Floating coins -->
+    <div class="login-coins" aria-hidden="true">
+        <div class="lcoin lcoin-1"><img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt=""></div>
+        <div class="lcoin lcoin-2"><img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt=""></div>
+        <div class="lcoin lcoin-3"><img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt=""></div>
+        <div class="lcoin lcoin-4"><img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt=""></div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="login-card">
 
         <!-- Logo -->
-        <div class="relative z-10">
-            <p class="text-xs font-semibold tracking-[0.35em] text-j-gold uppercase">JOURNAL</p>
+        <div class="text-center mb-8">
+            <img src="<?php echo BASE_URL; ?>/assets/images/logo.png" alt="JOURNAL" class="login-logo mx-auto mb-5">
+            <p class="text-xs font-semibold tracking-[0.32em] uppercase" style="color:#dab937;">MISSION TOKEN</p>
         </div>
 
-        <!-- Center content -->
-        <div class="relative z-10 -mt-16">
-
-            <h1 class="text-4xl font-semibold leading-tight tracking-wide text-j-dark xl:text-5xl">
-                MISSION<br>
-                <span class="text-j-gold">TOKEN</span>
-            </h1>
-            <p class="mt-4 max-w-xs text-sm leading-7 text-j-slate">
-                สะสม Token จากภารกิจ พิชิตทุก challenge<br>
-            </p>
-
-            <!-- Feature badges -->
-
+        <div class="mb-7">
+            <h2 class="text-xl font-semibold tracking-wide" style="color:#eeebe1;">เข้าสู่ระบบ</h2>
+            <p class="mt-1.5 text-sm" style="color:#6b6e77;">ใช้รหัสพนักงานและรหัสผ่านของคุณ</p>
         </div>
 
-        <!-- Footer -->
-        <div class="relative z-10">
-            <p class="text-xs text-j-slate">© <?php echo date('Y'); ?> JOURNAL. All rights reserved.</p>
+        <!-- Timeout alert -->
+        <?php if ($timeout): ?>
+        <div class="alert-timeout mb-5 flex items-start gap-3 px-4 py-3 text-sm">
+            <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Session หมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่</span>
         </div>
-    </div>
+        <?php endif; ?>
 
-    <!-- ── RIGHT: Login Panel ────────────────────────────────── -->
-    <div class="login-panel flex flex-1 flex-col items-center justify-center border-l border-[#e6e2d6] px-6 py-12 sm:px-10">
-
-        <!-- Mobile logo -->
-        <div class="mb-8 text-center lg:hidden">
-            <div class="coin-icon mx-auto mb-4 inline-flex">
-                <div class="coin-gold flex h-16 w-16 items-center justify-center rounded-full text-2xl font-bold text-j-dark">
-                
-                </div>
-            </div>
-            <p class="text-sm font-semibold tracking-[0.3em] text-j-gold">JOURNAL · MISSION TOKEN</p>
+        <!-- Error alert -->
+        <?php if ($error): ?>
+        <div class="alert-error mb-5 flex items-start gap-3 px-4 py-3 text-sm" id="error-alert">
+            <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span><?php echo e($error); ?></span>
         </div>
+        <?php endif; ?>
 
-        <div class="w-full max-w-sm">
-            <div class="mb-8">
-                <h2 class="text-2xl font-semibold tracking-wide text-j-dark">เข้าสู่ระบบ</h2>
-                <p class="mt-1.5 text-sm text-j-slate">ใช้รหัสพนักงานและรหัสผ่านของคุณ</p>
-            </div>
-
-            <!-- Timeout alert -->
-            <?php if ($timeout): ?>
-            <div class="alert-timeout mb-5 flex items-start gap-3 rounded-xl px-4 py-3 text-sm">
-                <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span>Session หมดอายุแล้ว กรุณาเข้าสู่ระบบใหม่</span>
-            </div>
+        <!-- Login Form -->
+        <form method="POST" action="" id="login-form" novalidate>
+            <?php echo csrfField(); ?>
+            <?php if ($redirect !== ''): ?>
+                <input type="hidden" name="redirect" value="<?php echo e($redirect); ?>">
             <?php endif; ?>
 
-            <!-- Error alert -->
-            <?php if ($error): ?>
-            <div class="alert-error mb-5 flex items-start gap-3 rounded-xl px-4 py-3 text-sm" id="error-alert">
-                <svg class="mt-0.5 h-4 w-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <span><?php echo e($error); ?></span>
+            <!-- Employee Code -->
+            <div class="mb-4">
+                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase" style="color:#6b6e77;" for="employee_code">
+                    รหัสพนักงาน
+                </label>
+                <input
+                    id="employee_code"
+                    name="employee_code"
+                    type="text"
+                    class="j-input"
+                    placeholder="เช่น EMP001"
+                    value="<?php echo e((string)($_POST['employee_code'] ?? '')); ?>"
+                    autocomplete="username"
+                    required
+                    autofocus
+                >
             </div>
-            <?php endif; ?>
 
-            <!-- Login Form -->
-            <form method="POST" action="" id="login-form" novalidate>
-                <?php echo csrfField(); ?>
-                <?php if ($redirect !== ''): ?>
-                    <input type="hidden" name="redirect" value="<?php echo e($redirect); ?>">
-                <?php endif; ?>
-
-                <!-- Employee Code -->
-                <div class="mb-4">
-                    <label class="mb-1.5 block text-xs font-medium tracking-wider text-j-slate uppercase" for="employee_code">
-                        รหัสพนักงาน
-                    </label>
+            <!-- Password -->
+            <div class="mb-7">
+                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase" style="color:#6b6e77;" for="password">
+                    รหัสผ่าน
+                </label>
+                <div class="pass-wrap">
                     <input
-                        id="employee_code"
-                        name="employee_code"
-                        type="text"
-                        class="j-input"
-                        placeholder="เช่น EMP001"
-                        value="<?php echo e((string)($_POST['employee_code'] ?? '')); ?>"
-                        autocomplete="username"
+                        id="password"
+                        name="password"
+                        type="password"
+                        class="j-input j-input-pr"
+                        placeholder="••••••••"
+                        autocomplete="current-password"
                         required
-                        autofocus
                     >
+                    <button type="button" class="pass-toggle" aria-label="แสดง/ซ่อนรหัสผ่าน">
+                        <svg id="eye-show" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <svg id="eye-hide" class="hidden h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
+                    </button>
                 </div>
-
-                <!-- Password -->
-                <div class="mb-6">
-                    <label class="mb-1.5 block text-xs font-medium tracking-wider text-j-slate uppercase" for="password">
-                        รหัสผ่าน
-                    </label>
-                    <div class="pass-wrap">
-                        <input
-                            id="password"
-                            name="password"
-                            type="password"
-                            class="j-input j-input-pr"
-                            placeholder="••••••••"
-                            autocomplete="current-password"
-                            required
-                        >
-                        <button type="button" class="pass-toggle" onclick="togglePassword()" aria-label="แสดง/ซ่อนรหัสผ่าน">
-                            <svg id="eye-show" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                            <svg id="eye-hide" class="hidden h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-login" id="login-btn">
-                    เข้าสู่ระบบ
-                </button>
-            </form>
-
-            <!-- Back to home -->
-            <div class="mt-6 text-center">
-                <a href="<?php echo BASE_URL; ?>/index.php" class="text-xs text-j-slate transition-colors hover:text-j-gold">
-                    ← กลับหน้าแรก
-                </a>
             </div>
+
+            <button type="submit" class="btn-login" id="login-btn">
+                เข้าสู่ระบบ
+            </button>
+        </form>
+
+        <!-- Back to home -->
+        <div class="mt-6 text-center">
+            <a href="<?php echo BASE_URL; ?>/index.php" class="text-xs transition-colors" style="color:#6b6e77;"
+               onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#6b6e77'">
+                ← กลับหน้าแรก
+            </a>
         </div>
+
     </div>
 
+    <script src="<?php echo BASE_URL; ?>/assets/js/app.js"></script>
 </body>
-<script>
-    function togglePassword() {
-        const input   = document.getElementById('password');
-        const eyeShow = document.getElementById('eye-show');
-        const eyeHide = document.getElementById('eye-hide');
-        if (input.type === 'password') {
-            input.type = 'text';
-            eyeShow.classList.add('hidden');
-            eyeHide.classList.remove('hidden');
-        } else {
-            input.type = 'password';
-            eyeShow.classList.remove('hidden');
-            eyeHide.classList.add('hidden');
-        }
-    }
-
-    document.getElementById('login-form').addEventListener('submit', function () {
-        const btn = document.getElementById('login-btn');
-        btn.disabled    = true;
-        btn.textContent = 'กำลังเข้าสู่ระบบ...';
-    });
-</script>
 </html>
