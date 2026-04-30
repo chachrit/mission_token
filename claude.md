@@ -1,5 +1,5 @@
 # claude.md — Mission Token Project Context
-> อัปเดตล่าสุด: 30 เมษายน 2569
+> อัปเดตล่าสุด: 30 เมษายน 2569 (session 2)
 
 ---
 
@@ -203,7 +203,7 @@ mission_token/
 | Prefix | Page / Component |
 |---|---|
 | `ds-` | Dashboard (dark theme) |
-| `ch-` | Challenges page |
+| `ch-` | Challenges page (dark theme) |
 | `quiz-` | Quiz component |
 | `home-` | Home page |
 | `hero-` | Hero section ของ index |
@@ -295,12 +295,13 @@ mission_token/
 | `index.php` | Dark (`#091113` bg), gold hero, floating token coins |
 | `login.php` | Dark split layout — left dark panel + right form |
 | `pages/dashboard.php` | Dark "Operative Dossier" — aurora blobs, glassmorphism cards, `ds-*` classes |
-| `pages/challenges.php` | Light cream base + dark quiz/win overlay |
+| `pages/challenges.php` | **Dark** — same Operative Dossier theme as dashboard (`ch-*` classes, aurora blobs, glassmorphism), เต็มหน้า |
 | `pages/rewards.php` | Light cream |
 | `pages/profile.php` | Light cream |
 | Admin pages | Light cream (Tailwind + journal-card) |
 
 Dashboard มี `body:has(.ds-dashboard-wrap) { background-color: #091113 }` override ใน style.css
+Challenges มี `body:has(.ch-challenges-wrap) { background-color: #091113 }` override เช่นกัน
 
 ---
 
@@ -341,7 +342,12 @@ $flash = getFlash();               // คืน ['type' => ..., 'message' => ...
 ### เสร็จแล้ว ✅
 - Login page (dark theme, API sync)
 - Dashboard (dark Operative Dossier theme)
-- Challenges page (quiz + photo submission)
+- Challenges page (dark Operative Dossier theme + flip card interaction)
+  - Quest card แบบ 3D hover-flip: hover → พลิก, กดการ์ดหลัง (quiz) → navigate ทำ quiz
+  - Front face: token reward hero + ชื่อ + animated mystery bars
+  - Back face: รายละเอียดเต็ม + photo upload form (photo type) / onclick navigate (quiz type)
+  - CSS classes: `.ch-quest-flip-scene`, `.ch-flip-card`, `.ch-flip-front`, `.ch-flip-back`
+  - `.ch-flip-back-body` ใช้ `position: absolute; inset: 0` เพื่อป้องกัน overflow ทำให้ปุ่มหาย
 - Rewards page (token shop + AJAX redeem)
 - Profile page (info + change password)
 - Admin: challenges CRUD + quiz builder
