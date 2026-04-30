@@ -154,15 +154,6 @@ require_once __DIR__ . '/../../includes/header.php';
 .ar-row:last-child { border-bottom: none; }
 .ar-row:hover { background: rgba(218,185,55,0.03); }
 
-.ar-stock-input {
-    width: 66px; background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(255,255,255,0.12);
-    border-radius: 8px; padding: 0.28rem 0.5rem;
-    font-size: 0.8rem; font-family: 'Prompt', sans-serif; color: #eeebe1;
-}
-.ar-stock-input:focus { border-color: rgba(218,185,55,0.45); outline: none; }
-.ar-stock-input::placeholder { color: #3a3e43; }
-
 #create-form {
     display: none;
     background: rgba(255,255,255,0.025); border: 1px solid rgba(218,185,55,0.18);
@@ -349,7 +340,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <span>ราคา</span>
                 <span>สต็อก</span>
                 <span>แลกแล้ว</span>
-                <span>สถานะ</span>
+                <span>สถานะ / จัดการ</span>
             </div>
 
             <?php if (empty($rewards)): ?>
@@ -411,20 +402,15 @@ require_once __DIR__ . '/../../includes/header.php';
                     </span>
                 </div>
 
-                <!-- Stock (inline edit) -->
-                <form method="POST" action="" style="display:flex; gap:0.35rem; align-items:center;">
-                    <?php echo csrfField(); ?>
-                    <input type="hidden" name="action"    value="update_stock">
-                    <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
-                    <input type="number" name="stock" min="0"
-                           value="<?= $rw['stock'] === null ? '' : (int)$rw['stock'] ?>"
-                           placeholder="∞"
-                           class="ar-stock-input"
-                           title="เว้นว่าง = ไม่จำกัด">
-                    <button type="submit" title="บันทึกสต็อก"
-                            style="background:none; border:none; cursor:pointer;
-                                   color:#518e5c; font-size:1rem; padding:2px; line-height:1;">✓</button>
-                </form>
+                <!-- Stock (read-only) -->
+                <div>
+                    <span style="font-size:0.9rem; font-weight:600; color:#eeebe1;">
+                        <?= $rw['stock'] === null ? '∞' : (int)$rw['stock'] ?>
+                    </span>
+                    <span style="font-size:0.68rem; color:#3a3e43; display:block;">
+                        <?= $rw['stock'] === null ? 'ไม่จำกัด' : 'คงเหลือ' ?>
+                    </span>
+                </div>
 
                 <!-- Total redeemed + pending -->
                 <div>
@@ -438,9 +424,9 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- Toggle active -->
-                <div style="display:flex; align-items:center; gap:0.55rem;">
-                    <form method="POST" action="" style="display:inline;">
+                <!-- Toggle active + edit link -->
+                <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
+                    <form method="POST" action="" style="display:inline-flex; align-items:center; gap:0.4rem;">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="toggle">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
@@ -449,20 +435,26 @@ require_once __DIR__ . '/../../includes/header.php';
                                 title="<?= $isOn ? 'ปิดการใช้งาน' : 'เปิดการใช้งาน' ?>"
                                 aria-label="Toggle reward active status">
                         </button>
+                        <span style="font-size:0.68rem; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
+                            <?= $isOn ? 'เปิด' : 'ปิด' ?>
+                        </span>
                     </form>
-                    <span style="font-size:0.68rem; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
-                        <?= $isOn ? 'เปิด' : 'ปิด' ?>
-                    </span>
+                    <a href="<?php echo BASE_URL; ?>/admin/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
+                       style="font-size:0.70rem; padding:0.22rem 0.65rem; border-radius:6px;
+                              background:rgba(218,185,55,0.10); color:#dab937;
+                              border:1px solid rgba(218,185,55,0.25);
+                              font-family:'Prompt',sans-serif; font-weight:600;
+                              text-decoration:none; white-space:nowrap; transition:background 0.15s;"
+                       onmouseover="this.style.background='rgba(218,185,55,0.20)'"
+                       onmouseout="this.style.background='rgba(218,185,55,0.10)'">
+                        ✏ แก้ไข
+                    </a>
                 </div>
 
             </div>
             <?php endforeach; ?>
             <?php endif; ?>
         </div>
-
-        <p style="font-size:0.72rem; color:#3a3e43; margin-top:0.85rem; text-align:right;">
-            💡 แก้ไขสต็อกโดยพิมพ์ตัวเลขแล้วกด ✓ &nbsp;|&nbsp; เว้นว่างสต็อก = ไม่จำกัด
-        </p>
 
     </div><!-- /inner -->
 </div><!-- /ar-rewards-wrap -->
