@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * pages/rewards.php
  * Token Shop — employees redeem earned tokens for rewards
@@ -180,402 +180,490 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
-    /* ── Reward card ──────────────────────────────────── */
-    .reward-card {
-        background: #fdfcdf;
-        border: 1px solid #e6e2d6;
-        border-radius: 18px;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
-        transition: transform 0.22s cubic-bezier(.22,.97,.5,1.18),
-                    box-shadow 0.22s ease;
-        cursor: default;
-    }
-    .reward-card:hover {
-        transform: translateY(-6px) scale(1.02);
-        box-shadow: 0 12px 32px rgba(9,17,19,0.12);
-    }
-    .reward-card.reward-no-balance {
-        opacity: 0.58;
-    }
-    .reward-card.reward-hidden { display: none; }
+/* ─────────────────────────────────────────────────────────────
+   REWARDS PAGE  "The Vault"  prefix: rw-
+───────────────────────────────────────────────────────────── */
 
-    /* ── Category filter pills ───────────────────────── */
-    .cat-pill {
-        padding: 0.35rem 1rem;
-        border-radius: 999px;
-        font-size: 0.78rem;
-        font-weight: 500;
-        border: 1.5px solid #d4d0c8;
-        background: transparent;
-        color: #6b6e77;
-        cursor: pointer;
-        transition: all 0.18s;
-        font-family: 'Prompt', sans-serif;
-    }
-    .cat-pill:hover  { border-color: #dab937; color: #091113; }
-    .cat-pill.active { background: #091113; border-color: #091113; color: #eeebe1; }
+/* ── Category filter pills ───────────────────────────────── */
+.rw-cat-pill {
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1.5px solid rgba(255,255,255,0.10);
+    background: transparent;
+    color: #6b6e77;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: 'Prompt', sans-serif;
+    letter-spacing: 0.03em;
+}
+.rw-cat-pill:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
+.rw-cat-pill.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
 
-    /* ── Modal backdrop ──────────────────────────────── */
-    #redeem-modal {
-        display: none;
-        position: fixed; inset: 0; z-index: 9000;
-        background: rgba(9,17,19,0.55);
-        backdrop-filter: blur(3px);
-        align-items: center;
-        justify-content: center;
-        padding: 1.5rem;
-    }
-    #redeem-modal.open { display: flex; }
+/* ── Reward card ─────────────────────────────────────────── */
+.rw-reward-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.22s cubic-bezier(.22,.97,.5,1.18),
+                box-shadow 0.22s ease,
+                border-color 0.22s ease;
+    cursor: default;
+    backdrop-filter: blur(8px);
+}
+.rw-reward-card:hover {
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 0 0 1px rgba(218,185,55,0.35),
+                0 16px 40px rgba(9,17,19,0.55),
+                0 0 32px rgba(218,185,55,0.08);
+    border-color: rgba(218,185,55,0.35);
+}
+.rw-reward-card.rw-no-balance {
+    opacity: 0.40;
+}
+.rw-reward-card.rw-hidden { display: none; }
 
-    .modal-box {
-        background: #fdfcdf;
-        border: 1px solid #e6e2d6;
-        border-radius: 22px;
-        width: 100%;
-        max-width: 440px;
-        box-shadow: 0 24px 80px rgba(9,17,19,0.22);
-        overflow: hidden;
-        animation: modal-in 0.28s cubic-bezier(.22,.97,.5,1.18);
-    }
-    @keyframes modal-in {
-        from { opacity:0; transform: scale(0.88) translateY(24px); }
-        to   { opacity:1; transform: scale(1) translateY(0); }
-    }
+/* ── Card top accent bar ─────────────────────────────────── */
+.rw-card-top-bar { height: 2px; background: linear-gradient(90deg, #dab937, #f8e769); flex-shrink: 0; }
 
-    /* ── Table rows ───────────────────────────────────── */
-    .hist-row { border-bottom: 1px solid #ece9e0; }
-    .hist-row:last-child { border-bottom: none; }
-    .hist-row:hover { background: #faf8f2; }
+/* ── Emoji circle ────────────────────────────────────────── */
+.rw-emoji-wrap {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.85rem;
+    flex-shrink: 0;
+}
 
-    /* ── Success state in modal ───────────────────────── */
-    @keyframes pop-in {
-        0%   { transform: scale(0.5); opacity: 0; }
-        70%  { transform: scale(1.15); }
-        100% { transform: scale(1);   opacity: 1; }
-    }
-    .success-pop { animation: pop-in 0.4s cubic-bezier(.22,.97,.5,1.18) both; }
+/* ── Modal backdrop ──────────────────────────────────────── */
+#redeem-modal {
+    display: none;
+    position: fixed; inset: 0; z-index: 9000;
+    background: rgba(9,17,19,0.72);
+    backdrop-filter: blur(6px);
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+#redeem-modal.open { display: flex; }
+
+.rw-modal-box {
+    background: rgba(15,20,23,0.97);
+    border: 1px solid rgba(218,185,55,0.20);
+    border-radius: 22px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04),
+                0 32px 80px rgba(9,17,19,0.80);
+    overflow: hidden;
+    animation: rw-modal-in 0.28s cubic-bezier(.22,.97,.5,1.18);
+    backdrop-filter: blur(20px);
+}
+@keyframes rw-modal-in {
+    from { opacity:0; transform: scale(0.88) translateY(24px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+/* ── History table rows ──────────────────────────────────── */
+.rw-hist-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
+.rw-hist-row:last-child { border-bottom: none; }
+.rw-hist-row:hover { background: rgba(218,185,55,0.04); }
+
+/* ── Success animation ───────────────────────────────────── */
+@keyframes pop-in {
+    0%   { transform: scale(0.5); opacity: 0; }
+    70%  { transform: scale(1.15); }
+    100% { transform: scale(1);   opacity: 1; }
+}
+.success-pop { animation: pop-in 0.4s cubic-bezier(.22,.97,.5,1.18) both; }
+
+/* ── Low-stock pulse ─────────────────────────────────────── */
+@keyframes rw-stock-pulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+.rw-stock-low { animation: rw-stock-pulse 1.4s ease-in-out infinite; }
 </style>
 
-<!-- ══════════════════════════════════════════════════════════
-     SHOP HEADER — full-bleed, ivory gradient (mirrors challenges.php)
-═══════════════════════════════════════════════════════════ -->
-<div style="position:relative; left:50%; margin-left:-50vw; width:100vw;
-            background: linear-gradient(135deg,#fdfcdf 0%,#eeebe1 55%,#eeebe1 100%);
-            border-bottom: 1px solid #e6e2d6;
-            margin-top:-2rem; margin-bottom:2.5rem;">
+<div class="rw-rewards-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
-    <!-- Gold glow top-right -->
-    <div style="position:absolute;top:-80px;right:-80px;width:360px;height:360px;border-radius:50%;
-                background:radial-gradient(circle,rgba(218,185,55,0.14),transparent 65%);
-                filter:blur(40px);pointer-events:none;"></div>
+    <!-- ── Aurora background blobs ────────────────────────── -->
+    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
+        <div style="position:absolute; width:700px; height:700px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
+                    top:-150px; right:-150px; filter:blur(70px);
+                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute; width:550px; height:550px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(79,139,152,0.06) 0%,transparent 65%);
+                    bottom:-130px; left:-100px; filter:blur(80px);
+                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+        <div style="position:absolute; width:320px; height:320px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(218,185,55,0.04) 0%,transparent 65%);
+                    top:45%; left:38%; filter:blur(50px);
+                    animation:ch-aurora-drift 16s ease-in-out infinite alternate;"></div>
+    </div>
 
-    <div style="max-width:80rem; margin:0 auto; padding:2.5rem 2rem 2.25rem; position:relative;">
+    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:0 1.5rem 5rem;">
 
-        <!-- Eyebrow -->
-        <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.35em;
-                  text-transform:uppercase; color:#c9a830; margin-bottom:0.45rem;">
-            Token Shop
-        </p>
+        <!-- ══════════════════════════════════════════════════
+             VAULT ACCESS HEADER
+        ══════════════════════════════════════════════════ -->
+        <div style="padding:2.75rem 0 2.5rem;">
 
-        <!-- Main row: title + coin decoration -->
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem;">
-            <div>
-                <h1 style="font-size:2.1rem; font-weight:700; color:#091113; line-height:1.1; margin:0;">
-                    ร้านแลกรางวัล
-                </h1>
-                <p style="font-size:0.88rem; color:#6b6e77; margin-top:0.35rem;">
-                    ใช้ Token สะสมแลกรับรางวัลและสิทธิประโยชน์พิเศษจาก JOURNAL
-                </p>
-            </div>
-            <!-- Decorative coin stack -->
-            <div style="flex-shrink:0; opacity:0.30; display:flex; gap:-4px; align-items:center;"
-                 aria-hidden="true">
-                <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                     style="width:52px;height:52px;object-fit:contain;
-                            filter:drop-shadow(0 4px 8px rgba(218,185,55,0.4));" alt="">
-                <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                     style="width:38px;height:38px;object-fit:contain; margin-left:-14px; margin-top:10px;
-                            filter:drop-shadow(0 4px 8px rgba(218,185,55,0.3));" alt="">
-            </div>
-        </div>
+            <p style="font-size:0.57rem; font-weight:700; letter-spacing:0.44em;
+                      text-transform:uppercase; color:rgba(218,185,55,0.65); margin:0 0 0.6rem;">
+                ⬡ &nbsp;VAULT ACCESS
+            </p>
 
-        <!-- Stats row -->
-        <div style="display:flex; flex-wrap:wrap; gap:0 2rem; margin-top:1.4rem;
-                    padding-top:1.2rem; border-top:1px solid #e6e2d6; align-items:center;">
-            <!-- Balance -->
-            <div style="display:flex; flex-direction:column; gap:0.15rem;">
-                <div style="display:flex; align-items:center; gap:0.45rem;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;">
+                <div>
+                    <h1 style="font-size:2.35rem; font-weight:800; color:#eeebe1; line-height:1.08;
+                                margin:0 0 0.35rem; letter-spacing:-0.02em;">
+                        ร้านแลกรางวัล
+                    </h1>
+                    <p style="font-size:0.88rem; color:#6b6e77; margin:0; line-height:1.5;">
+                        ใช้ Token สะสมแลกรับรางวัลและสิทธิประโยชน์พิเศษจาก JOURNAL
+                    </p>
+                </div>
+                <div style="flex-shrink:0; display:flex; align-items:center;" aria-hidden="true">
                     <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="22" height="22" style="object-fit:contain;" alt="">
-                    <span id="hdr-balance"
-                          style="font-size:1.65rem; font-weight:700; color:#dab937; line-height:1;">
-                        <?php echo formatTokens((int)$wallet['balance']); ?>
+                         style="width:58px;height:58px;object-fit:contain;opacity:0.65;
+                                filter:drop-shadow(0 0 18px rgba(218,185,55,0.55));" alt="">
+                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                         style="width:36px;height:36px;object-fit:contain;opacity:0.28;
+                                margin-left:-10px; margin-top:16px;
+                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.30));" alt="">
+                </div>
+            </div>
+
+            <!-- Stats bar -->
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;
+                        margin-top:1.75rem; padding-top:1.5rem;
+                        border-top:1px solid rgba(255,255,255,0.07);">
+
+                <!-- Balance pill -->
+                <div style="display:flex; align-items:center; gap:0.65rem;
+                             background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.22);
+                             border-radius:14px; padding:0.65rem 1.15rem;">
+                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                         width="22" height="22"
+                         style="object-fit:contain; filter:drop-shadow(0 0 8px rgba(218,185,55,0.65));" alt="">
+                    <div>
+                        <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.16em;
+                                    text-transform:uppercase; color:rgba(218,185,55,0.55); margin-bottom:0.08rem;">
+                            ยอดคงเหลือ
+                        </div>
+                        <div id="hdr-balance"
+                             style="font-size:1.5rem; font-weight:800; color:#f8e769;
+                                    line-height:1; letter-spacing:-0.02em;">
+                            <?php echo formatTokens((int)$wallet['balance']); ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+
+                <div style="padding:0 0.25rem;">
+                    <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
+                        <?php echo formatTokens((int)$wallet['total_spent']); ?>
+                    </div>
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#3a3e43; margin-top:0.15rem;">
+                        Token ที่ใช้ไป
+                    </div>
+                </div>
+
+                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+
+                <div style="padding:0 0.25rem;">
+                    <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
+                        <?php echo count($myRedemptions); ?>
+                    </div>
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#3a3e43; margin-top:0.15rem;">
+                        รายการแลกแล้ว
+                    </div>
+                </div>
+
+                <?php if ($myPending > 0): ?>
+                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+                <div style="display:flex; align-items:center; gap:0.5rem;
+                             background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
+                             border-radius:999px; padding:0.35rem 0.9rem;">
+                    <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;
+                                  flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
+                    <span style="font-size:0.78rem; font-weight:600; color:#fbbf24;">
+                        <?php echo $myPending; ?> รายการรอดำเนินการ
                     </span>
                 </div>
-                <span style="font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:#6b6e77;">
-                    ยอดคงเหลือ
-                </span>
-            </div>
-
-            <div style="width:1px; height:36px; background:#e0ddd4; flex-shrink:0;"></div>
-
-            <!-- Total spent -->
-            <div style="display:flex; flex-direction:column; gap:0.15rem;">
-                <span style="font-size:1.65rem; font-weight:700; color:#091113; line-height:1;">
-                    <?php echo formatTokens((int)$wallet['total_spent']); ?>
-                </span>
-                <span style="font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:#6b6e77;">
-                    Token ที่ใช้ไป
-                </span>
-            </div>
-
-            <div style="width:1px; height:36px; background:#e0ddd4; flex-shrink:0;"></div>
-
-            <!-- Redemption count -->
-            <div style="display:flex; flex-direction:column; gap:0.15rem;">
-                <span style="font-size:1.65rem; font-weight:700; color:#091113; line-height:1;">
-                    <?php echo count($myRedemptions); ?>
-                </span>
-                <span style="font-size:0.62rem; letter-spacing:0.12em; text-transform:uppercase; color:#6b6e77;">
-                    รายการแลกแล้ว
-                </span>
-            </div>
-
-            <?php if ($myPending > 0): ?>
-            <div style="width:1px; height:36px; background:#e0ddd4; flex-shrink:0;"></div>
-            <div style="display:flex; align-items:center; gap:0.5rem;
-                        background:#fffbeb; border:1px solid #fcd34d;
-                        border-radius:999px; padding:0.3rem 0.85rem;">
-                <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;
-                              flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
-                <span style="font-size:0.78rem; font-weight:600; color:#b45309;">
-                    <?php echo $myPending; ?> รายการรอดำเนินการ
-                </span>
-            </div>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
-<!-- end shop header -->
-
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-<?php if ($dataError): ?>
-<div class="mb-6 rounded-xl border border-[#edc3b2] bg-[#fff1ea] px-5 py-4 text-sm"
-     style="color:#d2592a;">
-    <?= e($dataError) ?>
-</div>
-<?php endif; ?>
-
-<!-- ══════════════════════════════════════════════════════
-     CATEGORY FILTER PILLS
-═══════════════════════════════════════════════════════ -->
-<div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.75rem; align-items:center;">
-    <button class="cat-pill active" data-cat="all" onclick="filterCat(this,'all')">
-        ทั้งหมด <span style="font-weight:700;">(<?php echo count($rewards); ?>)</span>
-    </button>
-    <?php foreach ($activeCategories as $cat):
-        $meta  = $catMeta[$cat] ?? $catMeta['general'];
-        $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
-    ?>
-    <button class="cat-pill" data-cat="<?= e($cat) ?>" onclick="filterCat(this,'<?= e($cat) ?>')">
-        <?= e($meta['label']) ?> <span style="font-weight:700;">(<?= $count ?>)</span>
-    </button>
-    <?php endforeach; ?>
-</div>
-
-<!-- ══════════════════════════════════════════════════════
-     REWARDS GRID
-═══════════════════════════════════════════════════════ -->
-<?php if (empty($rewards)): ?>
-<div style="text-align:center; padding:4rem 1rem; color:#6b6e77;">
-    <div style="font-size:3.5rem; margin-bottom:1rem;">🛍️</div>
-    <p style="font-size:1.1rem; font-weight:500; color:#3a3e43;">ยังไม่มีรางวัลในขณะนี้</p>
-    <p style="font-size:0.85rem; margin-top:0.35rem;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
-</div>
-<?php else: ?>
-<div id="rewards-grid"
-     style="display:grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap:1.25rem;
-            margin-bottom:3rem;">
-    <?php
-    $myBalance = (int)$wallet['balance'];
-    foreach ($rewards as $rw):
-        $cat     = $rw['category'];
-        $meta    = $catMeta[$cat] ?? $catMeta['general'];
-        $cost    = (int)$rw['token_cost'];
-        $canAfford = $myBalance >= $cost;
-        $stockLeft = $rw['stock'] === null ? null : (int)$rw['stock'];
-    ?>
-    <div class="reward-card <?php echo $canAfford ? '' : 'reward-no-balance'; ?>"
-         data-category="<?= e($cat) ?>">
-
-        <!-- Top: emoji + category -->
-        <div style="padding:1.5rem 1.5rem 1rem; display:flex; align-items:flex-start; justify-content:space-between;">
-            <div style="font-size:2.8rem; line-height:1; user-select:none;">
-                <?= e($rw['image_emoji'] ?: '🎁') ?>
-            </div>
-            <span style="font-size:0.68rem; font-weight:600; padding:0.22rem 0.65rem;
-                         border-radius:999px; letter-spacing:0.04em;
-                         background:<?= $meta['bg'] ?>; color:<?= $meta['color'] ?>;">
-                <?= e($meta['label']) ?>
-            </span>
-        </div>
-
-        <!-- Body: title + description -->
-        <div style="padding:0 1.5rem 1rem; flex:1;">
-            <h3 style="font-size:1rem; font-weight:600; color:#091113; margin:0 0 0.35rem;">
-                <?= e($rw['title']) ?>
-            </h3>
-            <?php if (!empty($rw['description'])): ?>
-            <p style="font-size:0.82rem; color:#6b6e77; line-height:1.5; margin:0;
-                      display:-webkit-box; -webkit-line-clamp:2;
-                      -webkit-box-orient:vertical; overflow:hidden;">
-                <?= e($rw['description']) ?>
-            </p>
-            <?php endif; ?>
-        </div>
-
-        <!-- Footer: cost + stock + button -->
-        <div style="padding:1rem 1.5rem 1.25rem; border-top:1px solid #ece9e0;
-                    display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
-            <div>
-                <!-- Cost chip -->
-                <div style="display:flex; align-items:center; gap:0.3rem; margin-bottom:0.2rem;">
-                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="16" height="16" style="object-fit:contain;" alt="">
-                    <span style="font-size:1.1rem; font-weight:700; color:#091113;"><?= $cost ?></span>
-                    <span style="font-size:0.72rem; color:#6b6e77;">token</span>
-                </div>
-                <!-- Stock -->
-                <?php if ($stockLeft !== null): ?>
-                <span style="font-size:0.68rem; color:<?php echo $stockLeft <= 3 ? '#d2592a' : '#6b6e77'; ?>;">
-                    เหลือ <?= $stockLeft ?> ชิ้น
-                </span>
-                <?php else: ?>
-                <span style="font-size:0.68rem; color:#aaa8a3;">ไม่จำกัดจำนวน</span>
                 <?php endif; ?>
+
             </div>
+        </div><!-- end header -->
 
-            <?php if ($canAfford): ?>
-            <button class="btn-dark"
-                    style="padding:0.5rem 1.1rem; font-size:0.82rem; border-radius:10px; flex-shrink:0;"
-                    onclick='openRedeem(<?= (int)$rw['reward_id'] ?>, <?= json_encode($rw['title']) ?>, <?= $cost ?>)'>
-                แลกเลย
-            </button>
-            <?php else: ?>
-            <button disabled
-                    style="padding:0.5rem 1.1rem; font-size:0.82rem; border-radius:10px; flex-shrink:0;
-                           background:#e0ddd6; color:#aaa8a3; border:none; cursor:not-allowed;
-                           font-family:'Prompt',sans-serif; font-weight:500;">
-                Token ไม่พอ
-            </button>
-            <?php endif; ?>
+        <?php if ($dataError): ?>
+        <div style="margin-bottom:1.5rem; border-radius:12px;
+                    border:1px solid rgba(210,89,42,0.28); background:rgba(210,89,42,0.08);
+                    padding:0.9rem 1.2rem; font-size:0.85rem; color:#d2592a;">
+            <?= e($dataError) ?>
         </div>
-    </div>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
+        <?php endif; ?>
 
-<!-- ══════════════════════════════════════════════════════
-     MY REDEMPTIONS
-═══════════════════════════════════════════════════════ -->
-<?php if (!empty($myRedemptions)): ?>
-<section style="margin-bottom:3rem;">
-    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem;">
-        <h2 class="section-title">📋 การแลกรางวัลของฉัน</h2>
-    </div>
-
-    <div style="background:#fdfcdf; border:1px solid #e6e2d6; border-radius:16px; overflow:hidden;">
-        <!-- Header row -->
-        <div style="display:grid; grid-template-columns:1fr auto auto auto;
-                    gap:1rem; padding:0.75rem 1.25rem;
-                    background:#f4f1e8; border-bottom:1px solid #e6e2d6;
-                    font-size:0.72rem; font-weight:600; letter-spacing:0.06em;
-                    text-transform:uppercase; color:#6b6e77;">
-            <span>รางวัล</span>
-            <span>Token ที่ใช้</span>
-            <span>วันที่แลก</span>
-            <span>สถานะ</span>
+        <!-- ══════════════════════════════════════════════════
+             SECTION LABEL + CATEGORY PILLS
+        ══════════════════════════════════════════════════ -->
+        <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1.35rem; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:0.55rem; margin-right:0.4rem;">
+                <div style="width:4px; height:24px; background:linear-gradient(180deg,#dab937,#c9a830); border-radius:999px; flex-shrink:0;"></div>
+                <span style="font-size:0.98rem; font-weight:700; color:#eeebe1;">สินค้า</span>
+                <span style="font-size:0.68rem; font-weight:700; color:#091113; background:#dab937;
+                             border-radius:999px; padding:0.15rem 0.55rem;"><?= count($rewards) ?></span>
+            </div>
+            <button class="rw-cat-pill active" data-cat="all" onclick="filterCat(this,'all')">ทั้งหมด</button>
+            <?php foreach ($activeCategories as $cat):
+                $meta  = $catMeta[$cat] ?? $catMeta['general'];
+                $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
+            ?>
+            <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" onclick="filterCat(this,'<?= e($cat) ?>')">
+                <?= e($meta['label']) ?> <span style="opacity:0.55; font-size:0.70rem;">(<?= $count ?>)</span>
+            </button>
+            <?php endforeach; ?>
         </div>
 
-        <?php foreach ($myRedemptions as $rd):
-            $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
-        ?>
-        <div class="hist-row"
-             style="display:grid; grid-template-columns:1fr auto auto auto;
-                    gap:1rem; padding:0.9rem 1.25rem; align-items:center;">
-            <!-- Reward info -->
-            <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                <span style="font-size:1.4rem; flex-shrink:0; user-select:none;">
-                    <?= e($rd['image_emoji'] ?: '🎁') ?>
-                </span>
-                <div style="min-width:0;">
-                    <p style="font-size:0.88rem; font-weight:500; color:#091113; margin:0;
-                               white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        <?= e($rd['reward_title']) ?>
-                    </p>
-                    <?php if (!empty($rd['admin_note'])): ?>
-                    <p style="font-size:0.74rem; color:#6b6e77; margin:0.1rem 0 0;">
-                        หมายเหตุ: <?= e($rd['admin_note']) ?>
-                    </p>
+        <!-- ══════════════════════════════════════════════════
+             REWARDS GRID
+        ══════════════════════════════════════════════════ -->
+        <?php if (empty($rewards)): ?>
+        <div style="text-align:center; padding:5rem 1rem;">
+            <div style="font-size:3rem; margin-bottom:1rem; opacity:0.22;">🔒</div>
+            <p style="font-size:1rem; font-weight:600; color:#6b6e77; margin:0 0 0.3rem;">Vault ว่างอยู่ในขณะนี้</p>
+            <p style="font-size:0.82rem; color:#3a3e43; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
+        </div>
+        <?php else: ?>
+        <div id="rewards-grid"
+             style="display:grid; grid-template-columns:repeat(auto-fill,minmax(265px,1fr));
+                    gap:1.25rem; margin-bottom:3rem;">
+            <?php
+            $myBalance = (int)$wallet['balance'];
+            foreach ($rewards as $rw):
+                $cat       = $rw['category'];
+                $meta      = $catMeta[$cat] ?? $catMeta['general'];
+                $cost      = (int)$rw['token_cost'];
+                $canAfford = $myBalance >= $cost;
+                $stockLeft = $rw['stock'] === null ? null : (int)$rw['stock'];
+                $glowMap   = [
+                    'voucher' => ['bg' => 'rgba(47,78,157,0.16)',   'border' => 'rgba(47,78,157,0.32)'],
+                    'leave'   => ['bg' => 'rgba(81,142,92,0.16)',   'border' => 'rgba(81,142,92,0.32)'],
+                    'merch'   => ['bg' => 'rgba(98,48,122,0.16)',   'border' => 'rgba(98,48,122,0.32)'],
+                    'perk'    => ['bg' => 'rgba(201,168,48,0.16)',  'border' => 'rgba(201,168,48,0.32)'],
+                    'general' => ['bg' => 'rgba(107,110,119,0.14)','border' => 'rgba(107,110,119,0.28)'],
+                ];
+                $glow     = $glowMap[$cat] ?? $glowMap['general'];
+                $emojiStr = e($rw['image_emoji'] ?: '🎁');
+            ?>
+            <div class="rw-reward-card <?= $canAfford ? '' : 'rw-no-balance' ?>"
+                 data-category="<?= e($cat) ?>"
+                 data-emoji="<?= $emojiStr ?>">
+
+                <div class="rw-card-top-bar"></div>
+
+                <div style="padding:1.35rem 1.35rem 0.75rem; display:flex;
+                             flex-direction:column; gap:0.85rem; flex:1;">
+
+                    <!-- Top: emoji + category badge -->
+                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.75rem;">
+                        <div class="rw-emoji-wrap"
+                             style="background:<?= $glow['bg'] ?>; border:1px solid <?= $glow['border'] ?>;">
+                            <?= $emojiStr ?>
+                        </div>
+                        <span style="font-size:0.63rem; font-weight:700; padding:0.22rem 0.65rem;
+                                     border-radius:999px; letter-spacing:0.04em; white-space:nowrap; margin-top:4px;
+                                     background:<?= $glow['bg'] ?>; color:<?= $meta['color'] ?>;
+                                     border:1px solid <?= $glow['border'] ?>;">
+                            <?= e($meta['label']) ?>
+                        </span>
+                    </div>
+
+                    <!-- Title + description -->
+                    <div style="flex:1;">
+                        <h3 style="font-size:0.97rem; font-weight:700; color:#eeebe1;
+                                   margin:0 0 0.3rem; line-height:1.35;">
+                            <?= e($rw['title']) ?>
+                        </h3>
+                        <?php if (!empty($rw['description'])): ?>
+                        <p style="font-size:0.78rem; color:#6b6e77; line-height:1.55; margin:0;
+                                  display:-webkit-box; -webkit-line-clamp:2;
+                                  -webkit-box-orient:vertical; overflow:hidden;">
+                            <?= e($rw['description']) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Footer: cost + action -->
+                <div style="padding:0.85rem 1.35rem 1.25rem;
+                             border-top:1px solid rgba(255,255,255,0.07);
+                             display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
+                    <div>
+                        <div style="display:flex; align-items:center; gap:0.35rem; margin-bottom:0.18rem;">
+                            <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                                 width="15" height="15"
+                                 style="object-fit:contain; filter:drop-shadow(0 0 5px rgba(218,185,55,0.55));" alt="">
+                            <span style="font-size:1.2rem; font-weight:800; color:#f8e769; letter-spacing:-0.02em;"><?= $cost ?></span>
+                            <span style="font-size:0.67rem; color:#4a4e57; font-weight:500;">token</span>
+                        </div>
+                        <?php if ($stockLeft !== null): ?>
+                        <span class="<?= $stockLeft <= 3 ? 'rw-stock-low' : '' ?>"
+                              style="font-size:0.65rem; display:block;
+                                     color:<?= $stockLeft <= 3 ? '#d2592a' : '#4a4e57' ?>;">
+                            <?= $stockLeft <= 3 ? '⚠ ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
+                        </span>
+                        <?php else: ?>
+                        <span style="font-size:0.65rem; color:#3a3e43; display:block;">ไม่จำกัดจำนวน</span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($canAfford): ?>
+                    <button class="ch-btn-start"
+                            style="padding:0.48rem 1rem; font-size:0.8rem; border-radius:10px;
+                                   flex-shrink:0; white-space:nowrap;"
+                            onclick='openRedeem(<?= (int)$rw['reward_id'] ?>, <?= json_encode($rw['title']) ?>, <?= $cost ?>)'>
+                        แลกเลย
+                    </button>
+                    <?php else: ?>
+                    <div style="display:flex; align-items:center; gap:0.3rem; flex-shrink:0;
+                                 background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
+                                 border-radius:10px; padding:0.44rem 0.8rem;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                             stroke="rgba(107,110,119,0.65)" stroke-width="2.5"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        <span style="font-size:0.73rem; color:#3a3e43; font-weight:500;">Token ไม่พอ</span>
+                    </div>
                     <?php endif; ?>
                 </div>
             </div>
-            <!-- Cost -->
-            <div style="display:flex; align-items:center; gap:0.3rem; white-space:nowrap;">
-                <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                     width="14" height="14" style="object-fit:contain;" alt="">
-                <span style="font-size:0.88rem; font-weight:600; color:#091113;">
-                    <?= (int)$rd['tokens_spent'] ?>
-                </span>
-            </div>
-            <!-- Date -->
-            <span style="font-size:0.8rem; color:#6b6e77; white-space:nowrap;">
-                <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
-            </span>
-            <!-- Status badge -->
-            <span style="font-size:0.72rem; font-weight:600; padding:0.2rem 0.7rem;
-                         border-radius:999px; white-space:nowrap;
-                         background:<?= $sm['bg'] ?>; color:<?= $sm['color'] ?>;
-                         border:1px solid <?= $sm['border'] ?>;">
-                <?= $sm['label'] ?>
-            </span>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
-</section>
-<?php endif; ?>
+        <?php endif; ?>
 
-</div><!-- /max-w-7xl -->
+        <!-- ══════════════════════════════════════════════════
+             MISSION LOGS — MY REDEMPTIONS
+        ══════════════════════════════════════════════════ -->
+        <?php if (!empty($myRedemptions)): ?>
+        <section style="margin-bottom:3rem;">
+            <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1.2rem;">
+                <div style="width:4px; height:24px; background:rgba(255,255,255,0.10); border-radius:999px; flex-shrink:0;"></div>
+                <span style="font-size:0.98rem; font-weight:700; color:#6b6e77;">Mission Logs</span>
+                <span style="font-size:0.65rem; font-weight:700; color:#4a4e57;
+                             background:rgba(255,255,255,0.06); border-radius:999px;
+                             padding:0.15rem 0.55rem;"><?= count($myRedemptions) ?></span>
+            </div>
 
-<!-- ══════════════════════════════════════════════════════
+            <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                        border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+                <!-- Table header -->
+                <div style="display:grid; grid-template-columns:1fr auto auto auto;
+                             gap:1rem; padding:0.7rem 1.25rem;
+                             background:rgba(255,255,255,0.03);
+                             border-bottom:1px solid rgba(255,255,255,0.07);
+                             font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
+                             text-transform:uppercase; color:#3a3e43;">
+                    <span>รางวัล</span>
+                    <span>Token</span>
+                    <span>วันที่</span>
+                    <span>สถานะ</span>
+                </div>
+
+                <?php
+                $dsDark = [
+                    'pending'   => ['color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.10)',  'border' => 'rgba(245,158,11,0.25)'],
+                    'fulfilled' => ['color' => '#518e5c', 'bg' => 'rgba(81,142,92,0.12)',   'border' => 'rgba(81,142,92,0.28)'],
+                    'cancelled' => ['color' => '#d2592a', 'bg' => 'rgba(210,89,42,0.10)',   'border' => 'rgba(210,89,42,0.25)'],
+                ];
+                foreach ($myRedemptions as $rd):
+                    $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
+                    $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+                ?>
+                <div class="rw-hist-row"
+                     style="display:grid; grid-template-columns:1fr auto auto auto;
+                             gap:1rem; padding:0.85rem 1.25rem; align-items:center;">
+                    <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
+                        <span style="font-size:1.3rem; flex-shrink:0; user-select:none; line-height:1;">
+                            <?= e($rd['image_emoji'] ?: '🎁') ?>
+                        </span>
+                        <div style="min-width:0;">
+                            <p style="font-size:0.85rem; font-weight:500; color:#eeebe1; margin:0;
+                                       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                <?= e($rd['reward_title']) ?>
+                            </p>
+                            <?php if (!empty($rd['admin_note'])): ?>
+                            <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
+                                <?= e($rd['admin_note']) ?>
+                            </p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
+                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                             width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
+                        <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
+                            <?= (int)$rd['tokens_spent'] ?>
+                        </span>
+                    </div>
+                    <span style="font-size:0.75rem; color:#3a3e43; white-space:nowrap;">
+                        <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
+                    </span>
+                    <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
+                                 border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
+                                 background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                                 border:1px solid <?= $ds['border'] ?>;">
+                        <?= $sm['label'] ?>
+                    </span>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+        <?php endif; ?>
+
+    </div><!-- /inner -->
+</div><!-- /rw-rewards-wrap -->
+
+<!-- ══════════════════════════════════════════════════════════
      REDEEM CONFIRM MODAL
-═══════════════════════════════════════════════════════ -->
+══════════════════════════════════════════════════════════ -->
 <div id="redeem-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
      onclick="if(event.target===this && !_redeemBusy) closeRedeem();">
-    <div class="modal-box">
+    <div class="rw-modal-box">
 
-        <!-- ── Default state: confirm ─────────────────── -->
+        <!-- confirm state -->
         <div id="modal-confirm">
+
             <!-- Header bar -->
-            <div style="background:linear-gradient(135deg,#091113,#1a2022);
-                        padding:1.25rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:36px;height:36px;border-radius:50%;background:#dab937;
+            <div style="background:linear-gradient(135deg,rgba(218,185,55,0.12),rgba(218,185,55,0.03));
+                        border-bottom:1px solid rgba(218,185,55,0.16);
+                        padding:1.15rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
+                <div style="width:34px;height:34px;border-radius:50%;
+                             background:rgba(218,185,55,0.15); border:1px solid rgba(218,185,55,0.38);
                              display:flex;align-items:center;justify-content:center;flex-shrink:0;">
                     <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="20" height="20" style="object-fit:contain;" alt="">
+                         width="18" height="18" style="object-fit:contain;" alt="">
                 </div>
-                <h2 id="modal-title"
-                    style="font-size:1rem; font-weight:600; color:#eeebe1; margin:0;">
+                <h2 id="modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;">
                     ยืนยันการแลกรางวัล
                 </h2>
                 <button onclick="closeRedeem()"
                         style="margin-left:auto; background:none; border:none; cursor:pointer;
-                               color:#6b6e77; padding:4px; border-radius:6px; line-height:0;"
+                               color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
+                               transition:color 0.15s;"
+                        onmouseover="this.style.color='#eeebe1'"
+                        onmouseout="this.style.color='#4a4e57'"
                         aria-label="ปิด">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -583,98 +671,109 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
 
             <!-- Body -->
-            <div style="padding:1.5rem 1.75rem;">
+            <div style="padding:1.4rem 1.65rem;">
+
                 <!-- Reward display -->
-                <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;
-                             background:#f4f1e8; border-radius:14px; padding:1rem 1.25rem;">
-                    <span id="modal-emoji" style="font-size:2.5rem; user-select:none;"></span>
+                <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem;
+                             background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+                             border-radius:14px; padding:0.9rem 1.15rem;">
+                    <span id="modal-emoji" style="font-size:2.4rem; user-select:none; line-height:1;"></span>
                     <div>
-                        <p style="font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
-                                  color:#6b6e77; margin:0 0 0.2rem;">รางวัลที่เลือก</p>
+                        <p style="font-size:0.60rem; letter-spacing:0.12em; text-transform:uppercase;
+                                  color:#3a3e43; margin:0 0 0.18rem; font-weight:700;">รางวัลที่เลือก</p>
                         <p id="modal-reward-name"
-                           style="font-size:1.05rem; font-weight:600; color:#091113; margin:0;"></p>
+                           style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></p>
                     </div>
                 </div>
 
                 <!-- Cost breakdown -->
-                <div style="display:flex; flex-direction:column; gap:0.6rem; margin-bottom:1.5rem;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.85rem; color:#6b6e77;">ราคา</span>
-                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                             border-radius:12px; padding:0.9rem 1.1rem; margin-bottom:1.35rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
+                        <span style="font-size:0.82rem; color:#6b6e77;">ราคา</span>
+                        <div style="display:flex; align-items:center; gap:0.28rem;">
                             <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="14" height="14" style="object-fit:contain;" alt="">
-                            <span id="modal-cost"
-                                  style="font-size:0.95rem; font-weight:700; color:#d2592a;"></span>
-                            <span style="font-size:0.78rem; color:#6b6e77;">token</span>
+                                 width="12" height="12" style="object-fit:contain;" alt="">
+                            <span id="modal-cost" style="font-size:0.92rem; font-weight:700; color:#d2592a;"></span>
+                            <span style="font-size:0.70rem; color:#4a4e57;">token</span>
                         </div>
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.85rem; color:#6b6e77;">ยอดปัจจุบัน</span>
-                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
+                        <span style="font-size:0.82rem; color:#6b6e77;">ยอดปัจจุบัน</span>
+                        <div style="display:flex; align-items:center; gap:0.28rem;">
                             <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="14" height="14" style="object-fit:contain;" alt="">
+                                 width="12" height="12" style="object-fit:contain;" alt="">
                             <span id="modal-balance-before"
-                                  style="font-size:0.95rem; font-weight:600; color:#091113;"></span>
+                                  style="font-size:0.92rem; font-weight:600; color:#eeebe1;"></span>
                         </div>
                     </div>
-                    <div style="height:1px; background:#e6e2d6;"></div>
+                    <div style="height:1px; background:rgba(255,255,255,0.07); margin-bottom:0.55rem;"></div>
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.85rem; font-weight:600; color:#091113;">ยอดหลังแลก</span>
-                        <div style="display:flex; align-items:center; gap:0.3rem;">
+                        <span style="font-size:0.85rem; font-weight:600; color:#eeebe1;">ยอดหลังแลก</span>
+                        <div style="display:flex; align-items:center; gap:0.28rem;">
                             <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="14" height="14" style="object-fit:contain;" alt="">
+                                 width="12" height="12"
+                                 style="object-fit:contain; filter:drop-shadow(0 0 4px rgba(218,185,55,0.55));" alt="">
                             <span id="modal-balance-after"
-                                  style="font-size:1.1rem; font-weight:700; color:#518e5c;"></span>
+                                  style="font-size:1.05rem; font-weight:800; color:#f8e769;"></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Notice -->
-                <div style="background:#fffbeb; border:1px solid #fcd34d; border-radius:10px;
-                             padding:0.75rem 1rem; margin-bottom:1.5rem;
-                             display:flex; gap:0.6rem; align-items:flex-start;">
-                    <span style="flex-shrink:0; font-size:1rem;">ℹ️</span>
-                    <p style="font-size:0.78rem; color:#92400e; margin:0; line-height:1.55;">
+                <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.20);
+                             border-radius:10px; padding:0.7rem 0.95rem; margin-bottom:1.35rem;
+                             display:flex; gap:0.55rem; align-items:flex-start;">
+                    <span style="flex-shrink:0; font-size:0.85rem; opacity:0.75; margin-top:1px;">ℹ️</span>
+                    <p style="font-size:0.77rem; color:#d4a52a; margin:0; line-height:1.55;">
                         หลังยืนยัน HR จะติดต่อกลับเพื่อดำเนินการมอบรางวัลให้คุณ
                     </p>
                 </div>
 
                 <!-- Error message -->
                 <div id="modal-error"
-                     style="display:none; background:#fff1f2; border:1px solid #fca5a5;
-                            border-radius:10px; padding:0.65rem 1rem; margin-bottom:1rem;
-                            font-size:0.82rem; color:#9f1239;"></div>
+                     style="display:none; background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28);
+                            border-radius:10px; padding:0.6rem 0.95rem; margin-bottom:1rem;
+                            font-size:0.82rem; color:#d2592a;"></div>
 
-                <!-- Action buttons -->
-                <div style="display:flex; gap:0.75rem;">
+                <!-- Buttons -->
+                <div style="display:flex; gap:0.65rem;">
                     <button onclick="closeRedeem()"
-                            class="btn-outline" style="flex:1; justify-content:center;"
-                            id="modal-cancel-btn">
+                            id="modal-cancel-btn"
+                            style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+                                   color:#eeebe1; transition:background 0.18s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.10)'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.06)'">
                         ยกเลิก
                     </button>
                     <button onclick="submitRedeem()"
-                            class="btn-gold" style="flex:1.5; justify-content:center;"
+                            class="ch-btn-start"
+                            style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; border-radius:10px;
+                                   display:flex; align-items:center; justify-content:center; gap:0.5rem;"
                             id="modal-confirm-btn">
                         <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                             width="16" height="16" style="object-fit:contain;" alt="">
+                             width="15" height="15" style="object-fit:contain;" alt="">
                         ยืนยันแลกรางวัล
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- ── Success state ──────────────────────────── -->
-        <div id="modal-success" style="display:none; padding:2.5rem 1.75rem; text-align:center;">
-            <div class="success-pop" style="font-size:4rem; margin-bottom:1rem;">🎉</div>
-            <h3 style="font-size:1.25rem; font-weight:700; color:#091113; margin:0 0 0.5rem;">
+        <!-- success state -->
+        <div id="modal-success" style="display:none; padding:2.75rem 1.75rem; text-align:center;">
+            <div class="success-pop" style="font-size:4rem; margin-bottom:1rem; line-height:1;">🎉</div>
+            <h3 style="font-size:1.2rem; font-weight:700; color:#eeebe1; margin:0 0 0.45rem;">
                 แลกรางวัลสำเร็จ!
             </h3>
-            <p style="font-size:0.88rem; color:#6b6e77; line-height:1.6; margin:0 0 0.25rem;">
+            <p style="font-size:0.85rem; color:#6b6e77; line-height:1.6; margin:0 0 0.2rem;">
                 HR จะติดต่อกลับเพื่อดำเนินการมอบรางวัลให้คุณเร็วๆ นี้
             </p>
-            <p id="success-balance-text"
-               style="font-size:0.88rem; color:#6b6e77; margin:0 0 2rem;"></p>
-            <button onclick="closeRedeem()" class="btn-dark" style="width:100%; justify-content:center;">
+            <p id="success-balance-text" style="font-size:0.85rem; color:#4a4e57; margin:0 0 2rem;"></p>
+            <button onclick="closeRedeem()" class="ch-btn-start"
+                    style="width:100%; padding:0.62rem 1rem;
+                           display:flex; align-items:center; justify-content:center;">
                 รับทราบ
             </button>
         </div>
@@ -689,20 +788,17 @@ require_once __DIR__ . '/../includes/header.php';
     var _currentRewardId = 0;
     var _currentCost     = 0;
     var _redeemBusy      = false;
-
-    /* Make _redeemBusy accessible for the backdrop click handler */
-    window._redeemBusy = false;
+    window._redeemBusy   = false;
 
     // ── Category filter ────────────────────────────────────
     window.filterCat = function (btn, cat) {
-        document.querySelectorAll('.cat-pill').forEach(function (p) {
+        document.querySelectorAll('.rw-cat-pill').forEach(function (p) {
             p.classList.remove('active');
         });
         btn.classList.add('active');
-
-        document.querySelectorAll('.reward-card').forEach(function (card) {
+        document.querySelectorAll('.rw-reward-card').forEach(function (card) {
             var show = (cat === 'all' || card.dataset.category === cat);
-            card.classList.toggle('reward-hidden', !show);
+            card.classList.toggle('rw-hidden', !show);
         });
     };
 
@@ -715,29 +811,25 @@ require_once __DIR__ . '/../includes/header.php';
             document.getElementById('hdr-balance').textContent.replace(/,/g, ''), 10
         ) || <?php echo (int)$wallet['balance']; ?>;
 
-        /* Find emoji from card */
+        /* Read emoji from data attribute */
         var emoji = '🎁';
-        document.querySelectorAll('.reward-card').forEach(function (card) {
+        document.querySelectorAll('.rw-reward-card').forEach(function (card) {
             var btn = card.querySelector('button[onclick*="openRedeem(' + id + ',"]');
-            if (btn) {
-                var emojiEl = card.querySelector('[style*="font-size:2.8rem"]');
-                if (emojiEl) emoji = emojiEl.textContent.trim();
-            }
+            if (btn && card.dataset.emoji) emoji = card.dataset.emoji;
         });
 
-        document.getElementById('modal-emoji').textContent        = emoji;
-        document.getElementById('modal-reward-name').textContent  = title;
-        document.getElementById('modal-cost').textContent         = cost;
+        document.getElementById('modal-emoji').textContent          = emoji;
+        document.getElementById('modal-reward-name').textContent    = title;
+        document.getElementById('modal-cost').textContent           = cost;
         document.getElementById('modal-balance-before').textContent = balance;
         document.getElementById('modal-balance-after').textContent  = (balance - cost);
+        document.getElementById('modal-error').style.display        = 'none';
+        document.getElementById('modal-confirm').style.display      = '';
+        document.getElementById('modal-success').style.display      = 'none';
 
-        document.getElementById('modal-error').style.display = 'none';
-        document.getElementById('modal-confirm').style.display = '';
-        document.getElementById('modal-success').style.display = 'none';
-        document.getElementById('modal-confirm-btn').disabled  = false;
-        document.getElementById('modal-confirm-btn').textContent = '';
-        var btn = document.getElementById('modal-confirm-btn');
-        btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="16" height="16" style="object-fit:contain;margin-right:6px" alt=""> ยืนยันแลกรางวัล';
+        var confirmBtn = document.getElementById('modal-confirm-btn');
+        confirmBtn.disabled  = false;
+        confirmBtn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
 
         document.getElementById('redeem-modal').classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -757,11 +849,11 @@ require_once __DIR__ . '/../includes/header.php';
         window._redeemBusy = true;
 
         var btn = document.getElementById('modal-confirm-btn');
-        btn.disabled     = true;
-        btn.textContent  = 'กำลังดำเนินการ…';
+        btn.disabled    = true;
+        btn.textContent = 'กำลังดำเนินการ…';
 
-        document.getElementById('modal-error').style.display = 'none';
-        document.getElementById('modal-cancel-btn').disabled = true;
+        document.getElementById('modal-error').style.display    = 'none';
+        document.getElementById('modal-cancel-btn').disabled    = true;
 
         var csrf = document.querySelector('meta[name="csrf-token"]')
                        ? document.querySelector('meta[name="csrf-token"]').content : '';
@@ -781,34 +873,29 @@ require_once __DIR__ . '/../includes/header.php';
             window._redeemBusy = false;
 
             if (data.success) {
-                /* Update balance in header */
                 var newBal = data.new_balance;
                 document.getElementById('hdr-balance').textContent = newBal.toLocaleString('th-TH');
                 var navBal = document.getElementById('nav-balance');
                 if (navBal) navBal.textContent = newBal.toLocaleString('th-TH');
 
-                /* Show success panel */
                 document.getElementById('success-balance-text').textContent =
                     'ยอด Token คงเหลือ: ' + newBal.toLocaleString('th-TH') + ' token';
 
                 document.getElementById('modal-confirm').style.display = 'none';
                 document.getElementById('modal-success').style.display = '';
 
-                /* Disable the "แลกเลย" button for this reward to avoid re-click */
-                document.querySelectorAll('.reward-card').forEach(function (card) {
+                document.querySelectorAll('.rw-reward-card').forEach(function (card) {
                     var anyBtn = card.querySelector('button[onclick*="openRedeem(' + _currentRewardId + ',"]');
                     if (anyBtn) { anyBtn.disabled = true; anyBtn.textContent = 'แลกแล้ว'; }
                 });
 
-                /* Reload page after dismiss to refresh redemption list */
                 window.__reloadOnClose = true;
             } else {
                 var errEl = document.getElementById('modal-error');
                 errEl.textContent   = data.message || 'เกิดข้อผิดพลาด';
                 errEl.style.display = 'block';
-
-                btn.disabled     = false;
-                btn.innerHTML    = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="16" height="16" style="object-fit:contain;margin-right:6px" alt=""> ยืนยันแลกรางวัล';
+                btn.disabled = false;
+                btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
                 document.getElementById('modal-cancel-btn').disabled = false;
             }
         })
@@ -818,8 +905,9 @@ require_once __DIR__ . '/../includes/header.php';
             var errEl = document.getElementById('modal-error');
             errEl.textContent   = 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่';
             errEl.style.display = 'block';
-            btn.disabled = false;
-            btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="16" height="16" style="object-fit:contain;margin-right:6px" alt=""> ยืนยันแลกรางวัล';
+            var btn = document.getElementById('modal-confirm-btn');
+            btn.disabled  = false;
+            btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
             document.getElementById('modal-cancel-btn').disabled = false;
         });
     };
