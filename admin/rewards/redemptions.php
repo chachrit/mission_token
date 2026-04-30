@@ -162,227 +162,290 @@ require_once __DIR__ . '/../../includes/header.php';
 ?>
 
 <style>
-    .rdm-row { border-bottom: 1px solid #ece9e0; }
-    .rdm-row:last-child { border-bottom: none; }
-    .rdm-row:hover { background: #faf8f2; }
+/* ── Admin Redemptions  prefix: ard- ────────────────────── */
+.ard-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.12s; }
+.ard-row:last-child { border-bottom: none; }
+.ard-row:hover { background: rgba(218,185,55,0.03); }
 
-    /* Action form modal */
-    #action-modal {
-        display: none; position: fixed; inset: 0; z-index: 9000;
-        background: rgba(9,17,19,0.55); backdrop-filter: blur(3px);
-        align-items: center; justify-content: center; padding: 1.5rem;
-    }
-    #action-modal.open { display: flex; }
-    .modal-box {
-        background: #fdfcdf; border: 1px solid #e6e2d6; border-radius: 20px;
-        width: 100%; max-width: 440px; overflow: hidden;
-        box-shadow: 0 24px 80px rgba(9,17,19,0.22);
-        animation: modal-in 0.25s cubic-bezier(.22,.97,.5,1.18);
-    }
-    @keyframes modal-in {
-        from { opacity:0; transform: scale(0.9) translateY(20px); }
-        to   { opacity:1; transform: scale(1) translateY(0); }
-    }
+#action-modal {
+    display: none; position: fixed; inset: 0; z-index: 9000;
+    background: rgba(9,17,19,0.75); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 1.5rem;
+}
+#action-modal.open { display: flex; }
 
-    .filter-tab {
-        padding: 0.45rem 1.1rem; border-radius: 999px;
-        font-size: 0.8rem; font-weight: 500; font-family: 'Prompt', sans-serif;
-        border: 1.5px solid #d4d0c8; background: transparent; color: #6b6e77;
-        cursor: pointer; transition: all 0.18s; text-decoration: none;
-        display: inline-flex; align-items: center; gap: 0.4rem;
-    }
-    .filter-tab:hover  { border-color: #091113; color: #091113; }
-    .filter-tab.active { background: #091113; border-color: #091113; color: #eeebe1; }
+.ard-modal-box {
+    background: rgba(15,20,23,0.97); border: 1px solid rgba(218,185,55,0.18);
+    border-radius: 20px; width: 100%; max-width: 440px; overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
+    backdrop-filter: blur(20px);
+    animation: ard-modal-in 0.25s cubic-bezier(.22,.97,.5,1.18);
+}
+@keyframes ard-modal-in {
+    from { opacity:0; transform: scale(0.9) translateY(20px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+}
+
+.ard-filter-tab {
+    padding: 0.4rem 1rem; border-radius: 999px;
+    font-size: 0.77rem; font-weight: 600; font-family: 'Prompt', sans-serif;
+    border: 1.5px solid rgba(255,255,255,0.10); background: transparent; color: #6b6e77;
+    cursor: pointer; transition: all 0.18s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.ard-filter-tab:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
+.ard-filter-tab.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
+
+.ard-wrap .journal-input {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.12);
+    color: #eeebe1;
+}
+.ard-wrap .journal-input:focus {
+    border-color: rgba(218,185,55,0.45);
+    background: rgba(255,255,255,0.09);
+}
+.ard-wrap .journal-input::placeholder { color: #3a3e43; }
 </style>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="ar-redemptions-wrap ard-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
-    <!-- Page header -->
-    <div style="display:flex; align-items:center; justify-content:space-between;
-                flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem;">
-        <div>
-            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.25rem;">
-                <a href="<?php echo BASE_URL; ?>/admin/rewards/index.php"
-                   style="font-size:0.82rem; color:#6b6e77; text-decoration:none;"
-                   onmouseover="this.style.color='#091113'" onmouseout="this.style.color='#6b6e77'">
-                    ← จัดการรางวัล
-                </a>
+    <!-- Aurora blobs -->
+    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
+        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
+                    top:-120px; right:-120px; filter:blur(70px);
+                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
+                    bottom:-100px; left:-80px; filter:blur(80px);
+                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+    </div>
+
+    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+
+        <!-- Page header -->
+        <div style="display:flex; align-items:flex-start; justify-content:space-between;
+                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
+                    padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div>
+                <div style="margin-bottom:0.5rem;">
+                    <a href="<?php echo BASE_URL; ?>/admin/rewards/index.php"
+                       style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
+                              letter-spacing:0.06em; text-transform:uppercase; transition:color 0.15s;"
+                       onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#4a4e57'">
+                        ← จัดการรางวัล
+                    </a>
+                </div>
+                <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
+                          text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                    ⬡ &nbsp;ADMIN — REDEMPTION REQUESTS
+                </p>
+                <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                    คำขอแลกรางวัล
+                </h1>
+                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                    ดูและดำเนินการคำขอแลกรางวัลของพนักงาน
+                </p>
             </div>
-            <h1 style="font-size:1.6rem; font-weight:700; color:#091113; margin:0;">
-                📋 คำขอแลกรางวัล
-            </h1>
-            <p style="font-size:0.85rem; color:#6b6e77; margin:0.25rem 0 0;">
-                ดูและดำเนินการคำขอแลกรางวัลของพนักงาน
-            </p>
+            <!-- Summary chips -->
+            <div style="display:flex; gap:0.55rem; align-items:center; flex-wrap:wrap;">
+                <?php
+                $dsDark = [
+                    'pending'   => ['color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.10)', 'border' => 'rgba(245,158,11,0.25)'],
+                    'fulfilled' => ['color' => '#7ec98a', 'bg' => 'rgba(81,142,92,0.12)',  'border' => 'rgba(81,142,92,0.28)'],
+                    'cancelled' => ['color' => '#d2592a', 'bg' => 'rgba(210,89,42,0.10)',  'border' => 'rgba(210,89,42,0.25)'],
+                ];
+                foreach (['pending','fulfilled','cancelled'] as $s):
+                    $ds = $dsDark[$s];
+                ?>
+                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem;
+                             border-radius:999px; background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                             border:1px solid <?= $ds['border'] ?>;">
+                    <?= $statusMeta[$s]['label'] ?>: <?= $counts[$s] ?>
+                </span>
+                <?php endforeach; ?>
+            </div>
         </div>
-        <!-- Summary chips -->
-        <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap;">
-            <?php foreach (['pending','fulfilled','cancelled'] as $s):
-                $sm = $statusMeta[$s];
+
+        <?php $flash = getFlash(); if ($flash): ?>
+        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
+                    <?= $flash['type'] === 'success'
+                        ? 'background:rgba(81,142,92,0.12); border:1px solid rgba(81,142,92,0.28); color:#7ec98a;'
+                        : 'background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;' ?>">
+            <?= e($flash['message']) ?>
+        </div>
+        <?php endif; ?>
+
+        <?php if ($dataError): ?>
+        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
+                    background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;">
+            <?= e($dataError) ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Status filter tabs -->
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
+            <?php
+            $tabDefs = [
+                'pending'   => 'รอดำเนินการ',
+                'fulfilled' => 'จัดส่งแล้ว',
+                'cancelled' => 'ยกเลิก',
+                'all'       => 'ทั้งหมด',
+            ];
+            foreach ($tabDefs as $k => $label):
             ?>
-            <span style="font-size:0.78rem; font-weight:600; padding:0.3rem 0.9rem;
-                         border-radius:999px; background:<?= $sm['bg'] ?>; color:<?= $sm['color'] ?>;
-                         border:1px solid <?= $sm['border'] ?>;">
-                <?= $sm['label'] ?>: <?= $counts[$s] ?>
-            </span>
+            <a href="?status=<?= e($k) ?>"
+               class="ard-filter-tab <?php echo $filterStatus === $k ? 'active' : ''; ?>">
+                <?= e($label) ?>
+                <span style="font-size:0.68rem; font-weight:700; opacity:0.65;">(<?= $counts[$k] ?? 0 ?>)</span>
+            </a>
             <?php endforeach; ?>
         </div>
-    </div>
 
-    <?php if ($dataError): ?>
-    <div class="mb-6 rounded-xl border px-5 py-4 text-sm"
-         style="border-color:#edc3b2; background:#fff1ea; color:#d2592a;">
-        <?= e($dataError) ?>
-    </div>
-    <?php endif; ?>
+        <!-- Redemptions table -->
+        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
 
-    <!-- ── Status filter tabs ────────────────────────────── -->
-    <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.5rem;">
-        <?php
-        $tabDefs = [
-            'pending'   => 'รอดำเนินการ',
-            'fulfilled' => 'จัดส่งแล้ว',
-            'cancelled' => 'ยกเลิก',
-            'all'       => 'ทั้งหมด',
-        ];
-        foreach ($tabDefs as $k => $label):
-        ?>
-        <a href="?status=<?= e($k) ?>"
-           class="filter-tab <?php echo $filterStatus === $k ? 'active' : ''; ?>">
-            <?= e($label) ?>
-            <span style="font-size:0.72rem; font-weight:700;">(<?= $counts[$k] ?? 0 ?>)</span>
-        </a>
-        <?php endforeach; ?>
-    </div>
-
-    <!-- ── Redemptions table ─────────────────────────────── -->
-    <div style="background:#fdfcdf; border:1px solid #e6e2d6; border-radius:16px; overflow:hidden;">
-
-        <div style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
-                    gap:1rem; padding:0.75rem 1.25rem;
-                    background:#f4f1e8; border-bottom:1px solid #e6e2d6;
-                    font-size:0.72rem; font-weight:600; letter-spacing:0.06em;
-                    text-transform:uppercase; color:#6b6e77;">
-            <span>พนักงาน / รางวัล</span>
-            <span>รางวัล</span>
-            <span>Token</span>
-            <span>วันที่ขอ</span>
-            <span>สถานะ / จัดการ</span>
-        </div>
-
-        <?php if (empty($redemptions)): ?>
-        <div style="padding:3rem; text-align:center; color:#6b6e77;">
-            <p style="font-size:1.5rem; margin-bottom:0.5rem;">🎉</p>
-            <p>ไม่มีรายการในสถานะนี้</p>
-        </div>
-        <?php else: ?>
-        <?php foreach ($redemptions as $rd):
-            $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
-        ?>
-        <div class="rdm-row"
-             style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
-                    gap:1rem; padding:0.9rem 1.25rem; align-items:center;">
-
-            <!-- Employee -->
-            <div>
-                <p style="font-size:0.88rem; font-weight:600; color:#091113; margin:0;">
-                    <?= e($rd['full_name']) ?>
-                </p>
-                <p style="font-size:0.74rem; color:#6b6e77; margin:0.1rem 0 0;">
-                    <?= e($rd['employee_code']) ?>
-                    <?php if (!empty($rd['department'])): ?>
-                    · <?= e($rd['department']) ?>
-                    <?php endif; ?>
-                </p>
+            <div style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
+                        gap:1rem; padding:0.7rem 1.25rem;
+                        background:rgba(255,255,255,0.03);
+                        border-bottom:1px solid rgba(255,255,255,0.07);
+                        font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
+                        text-transform:uppercase; color:#3a3e43;">
+                <span>พนักงาน</span>
+                <span>รางวัล</span>
+                <span>Token</span>
+                <span>วันที่ขอ</span>
+                <span>สถานะ / จัดการ</span>
             </div>
 
-            <!-- Reward -->
-            <div style="display:flex; align-items:center; gap:0.5rem; min-width:0;">
-                <span style="font-size:1.25rem; flex-shrink:0;"><?= e($rd['image_emoji'] ?: '🎁') ?></span>
-                <div style="min-width:0;">
-                    <p style="font-size:0.85rem; font-weight:500; color:#091113; margin:0;
-                               white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                        <?= e($rd['reward_title']) ?>
+            <?php if (empty($redemptions)): ?>
+            <div style="padding:3.5rem; text-align:center;">
+                <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20;">🎉</p>
+                <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ไม่มีรายการในสถานะนี้</p>
+            </div>
+            <?php else: ?>
+            <?php foreach ($redemptions as $rd):
+                $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
+                $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+            ?>
+            <div class="ard-row"
+                 style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
+                        gap:1rem; padding:0.9rem 1.25rem; align-items:center;">
+
+                <!-- Employee -->
+                <div>
+                    <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;">
+                        <?= e($rd['full_name']) ?>
                     </p>
-                    <?php if (!empty($rd['admin_note'])): ?>
-                    <p style="font-size:0.7rem; color:#6b6e77; margin:0;">
-                        หมายเหตุ: <?= e($rd['admin_note']) ?>
+                    <p style="font-size:0.72rem; color:#3a3e43; margin:0.08rem 0 0;">
+                        <?= e($rd['employee_code']) ?>
+                        <?php if (!empty($rd['department'])): ?>
+                        · <?= e($rd['department']) ?>
+                        <?php endif; ?>
                     </p>
+                </div>
+
+                <!-- Reward -->
+                <div style="display:flex; align-items:center; gap:0.5rem; min-width:0;">
+                    <span style="font-size:1.2rem; flex-shrink:0; line-height:1;"><?= e($rd['image_emoji'] ?: '🎁') ?></span>
+                    <div style="min-width:0;">
+                        <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
+                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <?= e($rd['reward_title']) ?>
+                        </p>
+                        <?php if (!empty($rd['admin_note'])): ?>
+                        <p style="font-size:0.68rem; color:#6b6e77; margin:0;">
+                            <?= e($rd['admin_note']) ?>
+                        </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- Tokens spent -->
+                <div style="display:flex; align-items:center; gap:0.28rem;">
+                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                         width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
+                    <span style="font-size:0.9rem; font-weight:700; color:#dab937;">
+                        <?= (int)$rd['tokens_spent'] ?>
+                    </span>
+                </div>
+
+                <!-- Date -->
+                <div>
+                    <span style="font-size:0.82rem; color:#eeebe1;">
+                        <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
+                    </span>
+                    <br>
+                    <span style="font-size:0.70rem; color:#3a3e43;">
+                        <?= date('H:i', strtotime($rd['redeemed_at'])) ?>
+                    </span>
+                </div>
+
+                <!-- Status + actions -->
+                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:flex-start;">
+                    <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
+                                 border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
+                                 background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                                 border:1px solid <?= $ds['border'] ?>;">
+                        <?= $sm['label'] ?>
+                    </span>
+
+                    <?php if ($rd['status'] === 'pending'): ?>
+                    <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                        <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
+                                                     <?= json_encode($rd['full_name']) ?>,
+                                                     <?= json_encode($rd['reward_title']) ?>)'
+                                style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
+                                       background:rgba(81,142,92,0.15); color:#7ec98a;
+                                       border:1px solid rgba(81,142,92,0.30);
+                                       cursor:pointer; font-family:'Prompt',sans-serif; font-weight:600;
+                                       transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(81,142,92,0.25)'"
+                                onmouseout="this.style.background='rgba(81,142,92,0.15)'">
+                            ✓ จัดส่งแล้ว
+                        </button>
+                        <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
+                                                     <?= json_encode($rd['full_name']) ?>,
+                                                     <?= json_encode($rd['reward_title']) ?>)'
+                                style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
+                                       background:rgba(210,89,42,0.12); color:#d2592a;
+                                       border:1px solid rgba(210,89,42,0.28);
+                                       cursor:pointer; font-family:'Prompt',sans-serif; font-weight:600;
+                                       transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                            ✕ ยกเลิก
+                        </button>
+                    </div>
+                    <?php elseif ($rd['processed_at']): ?>
+                    <span style="font-size:0.68rem; color:#3a3e43;">
+                        <?= date('d/m/y H:i', strtotime($rd['processed_at'])) ?>
+                    </span>
                     <?php endif; ?>
                 </div>
             </div>
-
-            <!-- Tokens spent -->
-            <div style="display:flex; align-items:center; gap:0.3rem;">
-                <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                     width="14" height="14" style="object-fit:contain;" alt="">
-                <span style="font-size:0.9rem; font-weight:600; color:#091113;">
-                    <?= (int)$rd['tokens_spent'] ?>
-                </span>
-            </div>
-
-            <!-- Date -->
-            <div>
-                <span style="font-size:0.82rem; color:#091113;">
-                    <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
-                </span>
-                <br>
-                <span style="font-size:0.72rem; color:#6b6e77;">
-                    <?= date('H:i', strtotime($rd['redeemed_at'])) ?>
-                </span>
-            </div>
-
-            <!-- Status + actions -->
-            <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:flex-start;">
-                <span style="font-size:0.72rem; font-weight:600; padding:0.2rem 0.7rem;
-                             border-radius:999px; background:<?= $sm['bg'] ?>; color:<?= $sm['color'] ?>;
-                             border:1px solid <?= $sm['border'] ?>;">
-                    <?= $sm['label'] ?>
-                </span>
-
-                <?php if ($rd['status'] === 'pending'): ?>
-                <div style="display:flex; gap:0.35rem;">
-                    <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
-                                                 <?= json_encode($rd['full_name']) ?>,
-                                                 <?= json_encode($rd['reward_title']) ?>)'
-                            style="font-size:0.72rem; padding:0.22rem 0.65rem; border-radius:6px;
-                                   background:#e6f4e9; color:#166534; border:1px solid #86efac;
-                                   cursor:pointer; font-family:'Prompt',sans-serif; font-weight:500;">
-                        ✓ จัดส่งแล้ว
-                    </button>
-                    <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
-                                                 <?= json_encode($rd['full_name']) ?>,
-                                                 <?= json_encode($rd['reward_title']) ?>)'
-                            style="font-size:0.72rem; padding:0.22rem 0.65rem; border-radius:6px;
-                                   background:#fff1f2; color:#9f1239; border:1px solid #fca5a5;
-                                   cursor:pointer; font-family:'Prompt',sans-serif; font-weight:500;">
-                        ✕ ยกเลิก
-                    </button>
-                </div>
-                <?php elseif ($rd['processed_at']): ?>
-                <span style="font-size:0.7rem; color:#6b6e77;">
-                    <?= date('d/m/y H:i', strtotime($rd['processed_at'])) ?>
-                </span>
-                <?php endif; ?>
-            </div>
+            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
-        <?php endforeach; ?>
-        <?php endif; ?>
-    </div>
 
-</div><!-- /max-w-7xl -->
+    </div><!-- /inner -->
+</div><!-- /ar-redemptions-wrap -->
 
-<!-- ══ ACTION MODAL ════════════════════════════════════════ -->
+<!-- ACTION MODAL -->
 <div id="action-modal" onclick="if(event.target===this) closeAction();">
-    <div class="modal-box">
-        <div style="background:linear-gradient(135deg,#091113,#1a2022);
-                    padding:1.25rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
-            <h2 id="modal-title"
-                style="font-size:1rem; font-weight:600; color:#eeebe1; margin:0;"></h2>
+    <div class="ard-modal-box">
+        <div style="background:linear-gradient(135deg,rgba(218,185,55,0.10),rgba(218,185,55,0.02));
+                    border-bottom:1px solid rgba(218,185,55,0.14);
+                    padding:1.15rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
+            <h2 id="modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></h2>
             <button onclick="closeAction()"
                     style="margin-left:auto; background:none; border:none; cursor:pointer;
-                           color:#6b6e77; padding:4px; border-radius:6px; line-height:0;">
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
+                           transition:color 0.15s;"
+                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#4a4e57'">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -390,30 +453,37 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
         <form id="action-form" method="POST" action="">
             <?php echo csrfField(); ?>
-            <input type="hidden" id="form-action"       name="action"        value="">
+            <input type="hidden" id="form-action"        name="action"        value="">
             <input type="hidden" id="form-redemption-id" name="redemption_id" value="">
 
-            <div style="padding:1.5rem 1.75rem;">
+            <div style="padding:1.4rem 1.65rem;">
                 <p id="modal-desc"
-                   style="font-size:0.9rem; color:#091113; margin:0 0 1.25rem; line-height:1.6;"></p>
+                   style="font-size:0.88rem; color:#c8c4b8; margin:0 0 1.25rem; line-height:1.65;"></p>
 
                 <div style="margin-bottom:1.25rem;">
-                    <label style="font-size:0.78rem; font-weight:600; color:#3a3e43;
-                                  letter-spacing:0.04em; margin-bottom:0.35rem; display:block;">
-                        หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#6b6e77;">(ไม่บังคับ)</span>
+                    <label style="font-size:0.68rem; font-weight:700; color:#4a4e57;
+                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
+                        หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#3a3e43; text-transform:none;">(ไม่บังคับ)</span>
                     </label>
                     <textarea name="admin_note" id="form-note" rows="3" maxlength="500"
                               placeholder="เช่น จะส่งให้ในวันศุกร์นี้ / วันลาใช้ได้ภายใน 3 เดือน"
                               class="journal-input" style="resize:vertical;"></textarea>
                 </div>
 
-                <div style="display:flex; gap:0.75rem;">
+                <div style="display:flex; gap:0.65rem;">
                     <button type="button" onclick="closeAction()"
-                            class="btn-outline" style="flex:1; justify-content:center;">
+                            style="flex:1; padding:0.58rem 1rem; font-size:0.85rem; font-weight:600;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+                                   color:#eeebe1; transition:background 0.15s; text-align:center;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.10)'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.06)'">
                         ยกเลิก
                     </button>
                     <button type="submit" id="modal-submit-btn"
-                            class="btn-dark" style="flex:1.5; justify-content:center;">
+                            style="flex:1.5; padding:0.58rem 1rem; font-size:0.85rem; font-weight:700;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   border:none; color:#fff; transition:opacity 0.15s; text-align:center;">
                         ยืนยัน
                     </button>
                 </div>
@@ -424,9 +494,9 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <script>
 function openAction(id, action, empName, rewardTitle) {
-    document.getElementById('form-action').value         = action;
-    document.getElementById('form-redemption-id').value  = id;
-    document.getElementById('form-note').value           = '';
+    document.getElementById('form-action').value          = action;
+    document.getElementById('form-redemption-id').value   = id;
+    document.getElementById('form-note').value            = '';
 
     var isFulfill = (action === 'fulfill');
     document.getElementById('modal-title').textContent =
@@ -439,10 +509,10 @@ function openAction(id, action, empName, rewardTitle) {
 
     var btn = document.getElementById('modal-submit-btn');
     if (isFulfill) {
-        btn.textContent  = '✓ ยืนยันจัดส่ง';
+        btn.textContent      = '✓ ยืนยันจัดส่ง';
         btn.style.background = '#518e5c';
     } else {
-        btn.textContent  = '✕ ยืนยันยกเลิก';
+        btn.textContent      = '✕ ยืนยันยกเลิก';
         btn.style.background = '#d2592a';
     }
 
