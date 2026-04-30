@@ -126,195 +126,304 @@ $activePage = 'admin_submissions';
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
+<style>
+/* ── Admin Submissions  prefix: asb- ───────────────────── */
+.asb-filter-tab {
+    padding: 0.4rem 1.1rem; border-radius: 999px;
+    font-size: 0.77rem; font-weight: 600; font-family: 'Prompt', sans-serif;
+    border: 1.5px solid rgba(255,255,255,0.10); background: transparent; color: #6b6e77;
+    cursor: pointer; transition: all 0.18s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+}
+.asb-filter-tab:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
+.asb-filter-tab.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+.asb-card {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    backdrop-filter: blur(8px);
+    transition: border-color 0.2s;
+}
+.asb-card.pending   { border-color: rgba(245,158,11,0.25); }
+.asb-card.approved  { border-color: rgba(81,142,92,0.28);  }
+.asb-card.rejected  { border-color: rgba(210,89,42,0.28);  }
+.asb-card:hover     { border-color: rgba(218,185,55,0.28); }
 
-    <?php if ($flash): ?>
-    <div class="mb-6 rounded-xl px-5 py-4 text-sm font-medium
-        <?= $flash['type'] === 'success' ? 'border border-green-200 bg-green-50 text-green-800' : 'border border-red-200 bg-red-50 text-red-800' ?>">
-        <?= e($flash['message']) ?>
+.asb-card.approved:hover { border-color: rgba(81,142,92,0.45); }
+.asb-card.rejected:hover { border-color: rgba(210,89,42,0.45); }
+
+.asb-wrap .asb-note-input {
+    width: 100%; background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.12); border-radius: 10px;
+    padding: 0.5rem 0.75rem; font-size: 0.78rem;
+    font-family: 'Prompt', sans-serif; color: #eeebe1; resize: none;
+    transition: border-color 0.15s;
+}
+.asb-wrap .asb-note-input:focus { border-color: rgba(218,185,55,0.45); outline: none; background: rgba(255,255,255,0.09); }
+.asb-wrap .asb-note-input::placeholder { color: #3a3e43; }
+</style>
+
+<div class="asb-submissions-wrap asb-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+
+    <!-- Aurora blobs -->
+    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
+        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
+                    top:-120px; right:-120px; filter:blur(70px);
+                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
+        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
+                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
+                    bottom:-100px; left:-80px; filter:blur(80px);
+                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
     </div>
-    <?php endif; ?>
 
-    <!-- Page header -->
-    <div class="mb-6 flex items-center justify-between gap-4 flex-wrap">
-        <div>
-            <h1 class="text-2xl font-semibold text-j-dark">อนุมัติงานที่ส่ง</h1>
-            <p class="mt-1 text-sm text-j-slate">ตรวจสอบหลักฐานรูปภาพจากพนักงานและให้คะแนน Token</p>
-        </div>
-        <!-- Quick stats -->
-        <div class="flex items-center gap-3 flex-wrap text-sm">
-            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                 style="background:#fef9c3; color:#854d0e; border:1px solid #fde68a;">
-                <span class="font-semibold"><?= (int)($stats['pending_count'] ?? 0) ?></span>
-                <span>รอตรวจ</span>
+    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+
+        <!-- Page header -->
+        <div style="display:flex; align-items:flex-start; justify-content:space-between;
+                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
+                    padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+            <div>
+                <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
+                          text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                    ⬡ &nbsp;ADMIN — SUBMISSIONS
+                </p>
+                <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                    อนุมัติงานที่ส่ง
+                </h1>
+                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                    ตรวจสอบหลักฐานรูปภาพจากพนักงานและให้คะแนน Token
+                </p>
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                 style="background:#dcfce7; color:#166534; border:1px solid #bbf7d0;">
-                <span class="font-semibold"><?= (int)($stats['approved_count'] ?? 0) ?></span>
-                <span>อนุมัติแล้ว</span>
+            <!-- Stats chips -->
+            <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
+                             background:rgba(245,158,11,0.10); color:#fbbf24; border:1px solid rgba(245,158,11,0.25);">
+                    รอตรวจ: <?= (int)($stats['pending_count'] ?? 0) ?>
+                </span>
+                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
+                             background:rgba(81,142,92,0.12); color:#7ec98a; border:1px solid rgba(81,142,92,0.28);">
+                    อนุมัติ: <?= (int)($stats['approved_count'] ?? 0) ?>
+                </span>
+                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
+                             background:rgba(210,89,42,0.10); color:#d2592a; border:1px solid rgba(210,89,42,0.25);">
+                    ปฏิเสธ: <?= (int)($stats['rejected_count'] ?? 0) ?>
+                </span>
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                 style="background:#fee2e2; color:#991b1b; border:1px solid #fecaca;">
-                <span class="font-semibold"><?= (int)($stats['rejected_count'] ?? 0) ?></span>
-                <span>ปฏิเสธ</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Filter tabs -->
-    <div class="flex gap-1 mb-6 p-1 rounded-xl w-fit" style="background:#e8e4d6;">
-        <a href="<?= BASE_URL ?>/admin/submissions.php"
-           class="px-5 py-2 rounded-lg text-sm font-medium transition-all
-                  <?= $filter !== 'all' ? 'bg-white text-j-dark shadow-sm' : 'text-j-slate hover:text-j-dark' ?>">
-            รอตรวจสอบ
-            <?php if ((int)($stats['pending_count'] ?? 0) > 0): ?>
-            <span class="ml-1.5 px-1.5 py-0.5 text-xs rounded-full font-bold"
-                  style="background:#d2592a; color:#fff;"><?= (int)$stats['pending_count'] ?></span>
-            <?php endif; ?>
-        </a>
-        <a href="<?= BASE_URL ?>/admin/submissions.php?filter=all"
-           class="px-5 py-2 rounded-lg text-sm font-medium transition-all
-                  <?= $filter === 'all' ? 'bg-white text-j-dark shadow-sm' : 'text-j-slate hover:text-j-dark' ?>">
-            ทั้งหมด
-        </a>
-    </div>
-
-    <?php if (empty($submissions)): ?>
-    <div class="rounded-2xl border border-dashed border-j-silver bg-white px-5 py-20
-                text-center text-sm text-j-slate">
-        <?= $filter === 'all' ? 'ยังไม่มีการส่งงานในระบบ' : '&#10003; ไม่มีงานรอตรวจสอบในขณะนี้' ?>
-    </div>
-
-    <?php else: ?>
-    <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-    <?php foreach ($submissions as $sub):
-        $isPending  = $sub['status'] === 'pending';
-        $isApproved = in_array($sub['status'], ['approved', 'auto_approved'], true);
-        $isRejected = $sub['status'] === 'rejected';
-
-        if ($isApproved)     { $borderColor = '#bbf7d0'; $bgColor = '#f0fdf4'; }
-        elseif ($isRejected) { $borderColor = '#fecaca'; $bgColor = '#fff5f5'; }
-        else                 { $borderColor = '#fde68a'; $bgColor = '#fffbeb'; }
-
-        $photoUrl = !empty($sub['photo_path'])
-            ? BASE_URL . '/uploads/submissions/' . rawurlencode($sub['photo_path'])
-            : null;
-
-        $submittedDate = date('d/m/Y H:i', strtotime((string)$sub['submitted_at']));
-    ?>
-    <div class="journal-card overflow-hidden flex flex-col"
-         style="border-color:<?= $borderColor ?>; background:<?= $isApproved || $isRejected ? $bgColor : '#fdfcdf' ?>;">
-
-        <!-- Card header: status bar -->
-        <div class="px-4 py-2.5 flex items-center justify-between text-xs font-semibold"
-             style="background:<?= $borderColor ?>; color:<?= $isApproved ? '#166534' : ($isRejected ? '#991b1b' : '#854d0e') ?>;">
-            <span>
-                <?php if ($isPending):  ?>&#9203; รอตรวจสอบ
-                <?php elseif ($isApproved): ?>&#10003; อนุมัติแล้ว
-                <?php else: ?>&#10005; ปฏิเสธ<?php endif; ?>
-            </span>
-            <span class="font-normal opacity-75"><?= $submittedDate ?></span>
         </div>
 
-        <!-- Photo preview -->
-        <?php if ($photoUrl): ?>
-        <a href="<?= $photoUrl ?>" target="_blank" rel="noopener"
-           class="block overflow-hidden flex-shrink-0"
-           style="background:#e8e4d6; height:180px;">
-            <img src="<?= $photoUrl ?>" alt="หลักฐาน"
-                 loading="lazy"
-                 class="w-full h-full object-cover transition-transform hover:scale-105"
-                 onerror="this.parentElement.innerHTML='<div class=\'w-full h-full flex items-center justify-center text-xs text-j-slate\'>ไม่สามารถโหลดรูปภาพได้</div>'">
-        </a>
+        <?php if ($flash): ?>
+        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
+                    <?= $flash['type'] === 'success'
+                        ? 'background:rgba(81,142,92,0.12); border:1px solid rgba(81,142,92,0.28); color:#7ec98a;'
+                        : 'background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;' ?>">
+            <?= e($flash['message']) ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- Filter tabs -->
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.75rem;">
+            <a href="<?= BASE_URL ?>/admin/submissions.php"
+               class="asb-filter-tab <?= $filter !== 'all' ? 'active' : '' ?>">
+                รอตรวจสอบ
+                <?php if ((int)($stats['pending_count'] ?? 0) > 0): ?>
+                <span style="background:#d2592a; color:#fff; border-radius:999px;
+                             padding:0.05rem 0.45rem; font-size:0.65rem; font-weight:700;">
+                    <?= (int)$stats['pending_count'] ?>
+                </span>
+                <?php endif; ?>
+            </a>
+            <a href="<?= BASE_URL ?>/admin/submissions.php?filter=all"
+               class="asb-filter-tab <?= $filter === 'all' ? 'active' : '' ?>">
+                ทั้งหมด
+            </a>
+        </div>
+
+        <?php if (empty($submissions)): ?>
+        <div style="border-radius:16px; padding:5rem 2rem; text-align:center;
+                    background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08);">
+            <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem;">✓</p>
+            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">
+                <?= $filter === 'all' ? 'ยังไม่มีการส่งงานในระบบ' : 'ไม่มีงานรอตรวจสอบในขณะนี้' ?>
+            </p>
+        </div>
+
         <?php else: ?>
-        <div class="flex items-center justify-center text-xs text-j-slate flex-shrink-0"
-             style="height:80px; background:#f5f3ea;">
-            ไม่มีไฟล์แนบ
+        <div style="display:grid; gap:1.25rem;
+                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <?php foreach ($submissions as $sub):
+            $isPending  = $sub['status'] === 'pending';
+            $isApproved = in_array($sub['status'], ['approved', 'auto_approved'], true);
+            $isRejected = $sub['status'] === 'rejected';
+
+            $cardClass = $isPending ? 'pending' : ($isApproved ? 'approved' : 'rejected');
+
+            if ($isApproved) {
+                $barBg    = 'rgba(81,142,92,0.18)';
+                $barColor = '#7ec98a';
+                $barBorder= 'rgba(81,142,92,0.28)';
+            } elseif ($isRejected) {
+                $barBg    = 'rgba(210,89,42,0.14)';
+                $barColor = '#d2592a';
+                $barBorder= 'rgba(210,89,42,0.28)';
+            } else {
+                $barBg    = 'rgba(245,158,11,0.12)';
+                $barColor = '#fbbf24';
+                $barBorder= 'rgba(245,158,11,0.25)';
+            }
+
+            $photoUrl = !empty($sub['photo_path'])
+                ? BASE_URL . '/uploads/submissions/' . rawurlencode($sub['photo_path'])
+                : null;
+
+            $submittedDate = date('d/m/Y H:i', strtotime((string)$sub['submitted_at']));
+        ?>
+        <div class="asb-card <?= $cardClass ?>">
+
+            <!-- Status bar -->
+            <div style="padding:0.55rem 1rem; display:flex; align-items:center; justify-content:space-between;
+                        background:<?= $barBg ?>; border-bottom:1px solid <?= $barBorder ?>;
+                        font-size:0.72rem; font-weight:700; color:<?= $barColor ?>;">
+                <span>
+                    <?php if ($isPending): ?>⏳ รอตรวจสอบ
+                    <?php elseif ($isApproved): ?>✓ อนุมัติแล้ว
+                    <?php else: ?>✕ ปฏิเสธ<?php endif; ?>
+                </span>
+                <span style="font-weight:400; opacity:0.70; font-size:0.68rem;"><?= $submittedDate ?></span>
+            </div>
+
+            <!-- Photo preview -->
+            <?php if ($photoUrl): ?>
+            <a href="<?= $photoUrl ?>" target="_blank" rel="noopener"
+               style="display:block; overflow:hidden; flex-shrink:0;
+                      background:rgba(255,255,255,0.04); height:180px;">
+                <img src="<?= $photoUrl ?>" alt="หลักฐาน"
+                     loading="lazy"
+                     style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
+                     onmouseover="this.style.transform='scale(1.04)'"
+                     onmouseout="this.style.transform='scale(1)'"
+                     onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#3a3e43;\'>ไม่สามารถโหลดรูปภาพได้</div>'">
+            </a>
+            <?php else: ?>
+            <div style="height:72px; background:rgba(255,255,255,0.03);
+                        display:flex; align-items:center; justify-content:center;
+                        font-size:0.75rem; color:#3a3e43;">
+                ไม่มีไฟล์แนบ
+            </div>
+            <?php endif; ?>
+
+            <!-- Info -->
+            <div style="padding:0.9rem 1rem 0.75rem; flex:1;">
+                <p style="font-size:0.60rem; font-weight:700; letter-spacing:0.10em;
+                          text-transform:uppercase; color:#4a4e57; margin:0 0 0.3rem;">ภารกิจ</p>
+                <p style="font-size:0.88rem; font-weight:600; color:#eeebe1; margin:0 0 0.75rem; line-height:1.4;">
+                    <?= e($sub['challenge_title']) ?>
+                    <span style="font-size:0.73rem; font-weight:500; color:#dab937; margin-left:0.35rem;">
+                        +<?= formatTokens((int)$sub['token_reward']) ?> Token
+                    </span>
+                </p>
+
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
+                                background:linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
+                                border:1px solid rgba(218,185,55,0.25);
+                                display:flex; align-items:center; justify-content:center;
+                                font-size:0.85rem; font-weight:700; color:#dab937;">
+                        <?= mb_substr($sub['full_name'], 0, 1) ?>
+                    </div>
+                    <div style="min-width:0;">
+                        <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0;
+                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <?= e($sub['full_name']) ?>
+                        </p>
+                        <p style="font-size:0.70rem; color:#4a4e57; margin:0;
+                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <?= e($sub['department'] ?? '-') ?> · <?= e($sub['employee_code']) ?>
+                        </p>
+                    </div>
+                </div>
+
+                <?php if (!empty($sub['review_note'])): ?>
+                <p style="margin:0.75rem 0 0; font-size:0.72rem; color:#6b6e77; font-style:italic;
+                          padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.06);">
+                    หมายเหตุ: <?= e($sub['review_note']) ?>
+                </p>
+                <?php endif; ?>
+
+                <?php if ($isApproved && $sub['token_awarded'] > 0): ?>
+                <p style="margin:0.6rem 0 0; font-size:0.75rem; font-weight:700; color:#7ec98a;">
+                    ✓ มอบ +<?= formatTokens((int)$sub['token_awarded']) ?> Token แล้ว
+                </p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Action area (pending only) -->
+            <?php if ($isPending): ?>
+            <div style="padding:0 1rem 1rem;">
+                <div id="note-area-<?= $sub['submission_id'] ?>" class="hidden" style="margin-bottom:0.6rem;">
+                    <textarea id="note-input-<?= $sub['submission_id'] ?>"
+                              rows="2"
+                              placeholder="หมายเหตุถึงพนักงาน (ไม่บังคับ)…"
+                              class="asb-note-input"></textarea>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
+                          style="flex:1;"
+                          onsubmit="syncNote(<?= $sub['submission_id'] ?>, 'approve-note-<?= $sub['submission_id'] ?>')">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="approve">
+                        <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
+                        <input type="hidden" name="filter" value="<?= e($filter) ?>">
+                        <input type="hidden" name="review_note" id="approve-note-<?= $sub['submission_id'] ?>">
+                        <button type="submit"
+                                style="width:100%; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
+                                       border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                       background:rgba(81,142,92,0.15); color:#7ec98a;
+                                       border:1px solid rgba(81,142,92,0.30); transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(81,142,92,0.28)'"
+                                onmouseout="this.style.background='rgba(81,142,92,0.15)'">
+                            ✓ อนุมัติ
+                        </button>
+                    </form>
+                    <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
+                          style="flex:1;"
+                          onsubmit="return confirmReject(<?= $sub['submission_id'] ?>)">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="reject">
+                        <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
+                        <input type="hidden" name="filter" value="<?= e($filter) ?>">
+                        <input type="hidden" name="review_note" id="reject-note-<?= $sub['submission_id'] ?>">
+                        <button type="submit"
+                                style="width:100%; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
+                                       border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                       background:rgba(210,89,42,0.12); color:#d2592a;
+                                       border:1px solid rgba(210,89,42,0.28); transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.25)'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                            ✕ ปฏิเสธ
+                        </button>
+                    </form>
+                </div>
+                <button onclick="toggleNote(<?= $sub['submission_id'] ?>)"
+                        style="margin-top:0.5rem; width:100%; font-size:0.73rem; color:#4a4e57;
+                               background:none; border:none; cursor:pointer; font-family:'Prompt',sans-serif;
+                               padding:0.3rem; transition:color 0.15s;"
+                        onmouseover="this.style.color='#eeebe1'"
+                        onmouseout="this.style.color='#4a4e57'">
+                    + เพิ่มหมายเหตุ
+                </button>
+            </div>
+            <?php endif; ?>
+
+        </div>
+        <?php endforeach; ?>
         </div>
         <?php endif; ?>
 
-        <!-- Info -->
-        <div class="px-4 pt-3 pb-2 flex-1">
-            <p class="text-xs font-semibold uppercase tracking-wider text-j-slate mb-1">ภารกิจ</p>
-            <p class="font-semibold text-j-dark leading-snug text-sm mb-3">
-                <?= e($sub['challenge_title']) ?>
-                <span class="ml-1.5 font-normal text-j-gold text-xs">+<?= formatTokens((int)$sub['token_reward']) ?> Token</span>
-            </p>
-
-            <div class="flex items-center gap-2 text-sm">
-                <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm"
-                     style="background:#091113; color:#dab937;">
-                    <?= mb_substr($sub['full_name'], 0, 1) ?>
-                </div>
-                <div class="min-w-0">
-                    <p class="font-medium text-j-dark truncate"><?= e($sub['full_name']) ?></p>
-                    <p class="text-xs text-j-slate truncate"><?= e($sub['department'] ?? '-') ?> &bull; <?= e($sub['employee_code']) ?></p>
-                </div>
-            </div>
-
-            <?php if (!empty($sub['review_note'])): ?>
-            <p class="mt-2.5 text-xs text-j-slate italic border-t border-[#e6e2d6] pt-2">
-                หมายเหตุ: <?= e($sub['review_note']) ?>
-            </p>
-            <?php endif; ?>
-
-            <?php if ($isApproved && $sub['token_awarded'] > 0): ?>
-            <p class="mt-2 text-xs font-semibold text-green-700">
-                &#10003; มอบ +<?= formatTokens((int)$sub['token_awarded']) ?> Token แล้ว
-            </p>
-            <?php endif; ?>
-        </div>
-
-        <!-- Action buttons (pending only) -->
-        <?php if ($isPending): ?>
-        <div class="px-4 pb-4">
-            <div id="note-area-<?= $sub['submission_id'] ?>" class="hidden mb-2">
-                <textarea name="review_note_display"
-                          id="note-input-<?= $sub['submission_id'] ?>"
-                          rows="2"
-                          placeholder="หมายเหตุถึงพนักงาน (ไม่บังคับ)…"
-                          class="journal-input text-xs resize-none"></textarea>
-            </div>
-            <div class="flex gap-2">
-                <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
-                      class="flex-1"
-                      onsubmit="syncNote(<?= $sub['submission_id'] ?>, 'approve-note-<?= $sub['submission_id'] ?>')">
-                    <?= csrfField() ?>
-                    <input type="hidden" name="action" value="approve">
-                    <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
-                    <input type="hidden" name="filter" value="<?= e($filter) ?>">
-                    <input type="hidden" name="review_note" id="approve-note-<?= $sub['submission_id'] ?>">
-                    <button type="submit" class="btn-gold w-full text-sm py-2">
-                        &#10003; อนุมัติ
-                    </button>
-                </form>
-                <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
-                      class="flex-1"
-                      onsubmit="return confirmReject(<?= $sub['submission_id'] ?>)">
-                    <?= csrfField() ?>
-                    <input type="hidden" name="action" value="reject">
-                    <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
-                    <input type="hidden" name="filter" value="<?= e($filter) ?>">
-                    <input type="hidden" name="review_note" id="reject-note-<?= $sub['submission_id'] ?>">
-                    <button type="submit" class="btn-danger w-full text-sm py-2">
-                        &#10005; ปฏิเสธ
-                    </button>
-                </form>
-            </div>
-            <button onclick="toggleNote(<?= $sub['submission_id'] ?>)"
-                    class="mt-2 w-full text-xs text-j-slate hover:text-j-dark transition-colors py-1">
-                + เพิ่มหมายเหตุ
-            </button>
-        </div>
-        <?php endif; ?>
-
-    </div>
-    <?php endforeach; ?>
-    </div>
-    <?php endif; ?>
-
-</div>
+    </div><!-- /inner -->
+</div><!-- /asb-submissions-wrap -->
 
 <script>
 function toggleNote(id) {
