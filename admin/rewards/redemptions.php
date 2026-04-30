@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->commit();
 
             $msg = $action === 'fulfill'
-                ? 'จัดส่งรางวัล "' . $rd['reward_title'] . '" แล้ว'
+                ? 'มอบรางวัล "' . $rd['reward_title'] . '" แล้ว'
                 : 'ยกเลิกและคืน Token ให้พนักงานแล้ว';
             setFlash('success', $msg);
 
@@ -144,7 +144,7 @@ try {
 
 $statusMeta = [
     'pending'   => ['label' => 'รอดำเนินการ', 'color' => '#b45309', 'bg' => '#fffbeb', 'border' => '#fcd34d'],
-    'fulfilled' => ['label' => 'จัดส่งแล้ว',  'color' => '#166534', 'bg' => '#f0fdf4', 'border' => '#86efac'],
+    'fulfilled' => ['label' => 'มอบแล้ว',     'color' => '#166534', 'bg' => '#f0fdf4', 'border' => '#86efac'],
     'cancelled' => ['label' => 'ยกเลิก',       'color' => '#9f1239', 'bg' => '#fff1f2', 'border' => '#fca5a5'],
 ];
 
@@ -289,7 +289,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php
             $tabDefs = [
                 'pending'   => 'รอดำเนินการ',
-                'fulfilled' => 'จัดส่งแล้ว',
+                'fulfilled' => 'มอบแล้ว',
                 'cancelled' => 'ยกเลิก',
                 'all'       => 'ทั้งหมด',
             ];
@@ -404,7 +404,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                        transition:background 0.15s;"
                                 onmouseover="this.style.background='rgba(81,142,92,0.25)'"
                                 onmouseout="this.style.background='rgba(81,142,92,0.15)'">
-                            ✓ จัดส่งแล้ว
+                            ✓ มอบรางวัลแล้ว
                         </button>
                         <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
                                                      <?= json_encode($rd['full_name']) ?>,
@@ -500,16 +500,16 @@ function openAction(id, action, empName, rewardTitle) {
 
     var isFulfill = (action === 'fulfill');
     document.getElementById('modal-title').textContent =
-        isFulfill ? '✓ ยืนยันการจัดส่งรางวัล' : '✕ ยืนยันการยกเลิก';
+        isFulfill ? '✓ ยืนยันการมอบรางวัล' : '✕ ยืนยันการยกเลิก';
 
     document.getElementById('modal-desc').textContent =
         isFulfill
-            ? empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันว่าได้จัดส่งหรือมอบรางวัลให้เรียบร้อยแล้ว'
+            ? empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันว่าได้มอบรางวัลให้พนักงานเรียบร้อยแล้ว'
             : empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันการยกเลิก Token จะถูกคืนให้พนักงานทันที';
 
     var btn = document.getElementById('modal-submit-btn');
     if (isFulfill) {
-        btn.textContent      = '✓ ยืนยันจัดส่ง';
+        btn.textContent      = '✓ ยืนยันมอบรางวัล';
         btn.style.background = '#518e5c';
     } else {
         btn.textContent      = '✕ ยืนยันยกเลิก';
