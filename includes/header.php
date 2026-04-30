@@ -238,7 +238,7 @@ $flash        = getFlash();
             <div class="flex items-center justify-between h-16">
 
                 <!-- Logo -->
-                <a href="<?php echo BASE_URL; ?>/<?php echo $isAdmin ? 'admin/dashboard.php' : 'pages/dashboard.php'; ?>"
+                <a href="<?php echo BASE_URL; ?>/<?php echo $isAdmin ? 'admin/dashboard.php' : 'index.php'; ?>"
                    class="nav-logo-link flex items-center gap-3 flex-shrink-0">
                     <img src="<?php echo BASE_URL; ?>/assets/images/logo.png"
                          alt="JOURNAL"
@@ -274,7 +274,7 @@ $flash        = getFlash();
                         ];
                     } else {
                         $navLinks = [
-                            'dashboard'   => ['label' => 'หน้าแรก',  'href' => BASE_URL . '/index.php'],
+                            'dashboard'   => ['label' => 'หน้าแรก',  'href' => BASE_URL . '/pages/dashboard.php'],
                             'challenges'  => ['label' => 'ภารกิจ',   'href' => BASE_URL . '/pages/challenges.php'],
                             'rewards'     => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
                             'history'     => ['label' => 'ประวัติ',   'href' => BASE_URL . '/pages/history.php'],

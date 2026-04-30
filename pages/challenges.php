@@ -244,13 +244,20 @@ $activePage = 'challenges';
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
-
+<div class="ch-challenges-wrap">
+<div class="ch-aurora ch-aurora-1"></div>
+<div class="ch-aurora ch-aurora-2"></div>
+<div class="ds-page-inner">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <!-- Flash: Winning Moment (success) or error bar -->
     <?php if ($flash && $flash['type'] === 'success'): ?>
     <div id="win-card" class="mb-8 relative overflow-hidden rounded-2xl px-6 py-10 text-center ch-win-card">
         <div class="ch-win-glow"></div>
+        <div class="ch-win-corner ch-win-corner--tl"></div>
+        <div class="ch-win-corner ch-win-corner--tr"></div>
+        <div class="ch-win-corner ch-win-corner--bl"></div>
+        <div class="ch-win-corner ch-win-corner--br"></div>
         <div class="relative z-10">
             <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token"
                  id="win-token"
@@ -292,14 +299,13 @@ require_once __DIR__ . '/../includes/header.php';
     })();
     </script>
     <?php elseif ($flash): ?>
-    <div class="mb-6 rounded-xl px-5 py-4 text-sm font-medium
-                border border-red-200 bg-red-50 text-red-800">
+    <div class="ch-error-flash">
         <?= e($flash['message']) ?>
     </div>
     <?php endif; ?>
 
     <?php if ($dataError): ?>
-    <div class="mb-6 rounded-xl border border-[#edc3b2] bg-[#fff1ea] px-5 py-4 text-sm text-j-orange">
+    <div class="ch-error-flash">
         <?= e($dataError) ?>
     </div>
     <?php endif; ?>
@@ -313,28 +319,28 @@ require_once __DIR__ . '/../includes/header.php';
     ?>
 
     <!-- Back breadcrumb -->
-    <div class="mb-5 flex items-center gap-2 text-sm text-j-slate">
+    <div class="mb-5 flex items-center gap-2 text-sm ch-breadcrumb">
         <a href="<?= BASE_URL ?>/pages/challenges.php"
-           class="inline-flex items-center gap-1.5 hover:text-j-gold transition-colors">
+           class="ch-breadcrumb-link inline-flex items-center gap-1.5 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
             </svg>
             กลับรายการภารกิจ
         </a>
-        <span>›</span>
-        <span class="text-j-dark font-medium"><?= e($ch['title']) ?></span>
+        <span class="ch-breadcrumb-sep">›</span>
+        <span class="ch-breadcrumb-current"><?= e($ch['title']) ?></span>
     </div>
 
     <div class="max-w-2xl mx-auto">
 
         <!-- Mission info strip -->
-        <div class="journal-card p-5 mb-4 flex items-center gap-4">
+        <div class="ch-mission-strip p-5 mb-4 flex items-center gap-4">
             <div class="flex-1 min-w-0">
                 <span class="badge ch-badge-quiz text-xs font-semibold mb-1.5 inline-block">📝 Quiz Mission</span>
-                <h2 class="text-lg font-semibold text-j-dark leading-snug"><?= e($ch['title']) ?></h2>
-                <p class="mt-1 text-sm text-j-slate leading-relaxed"><?= e((string)$ch['description']) ?></p>
+                <h2 class="text-lg font-semibold ch-mission-title leading-snug"><?= e($ch['title']) ?></h2>
+                <p class="mt-1 text-sm ch-mission-desc leading-relaxed"><?= e((string)$ch['description']) ?></p>
             </div>
-            <div class="flex flex-col items-center flex-shrink-0 text-center pl-4 border-l border-j-silver">
+            <div class="flex flex-col items-center flex-shrink-0 text-center pl-4 ch-mission-divider">
                 <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token"
                      class="h-12 w-12 token-float">
                 <p class="text-base font-bold text-j-gold mt-1">+<?= formatTokens((int)$ch['token_reward']) ?></p>
@@ -394,7 +400,7 @@ require_once __DIR__ . '/../includes/header.php';
                                          text-xs font-bold flex-shrink-0 mt-0.5 ch-quiz-qnum">
                                 <?= $qi + 1 ?>
                             </span>
-                            <p class="text-base font-semibold text-j-dark leading-snug">
+                            <p class="text-base font-semibold ch-quiz-qtext leading-snug">
                                 <?= e($q['question_text']) ?>
                             </p>
                         </div>
@@ -406,7 +412,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <label class="quiz-opt" id="opt-<?= $qid ?>-<?= $letter ?>">
                                 <input type="radio" name="q_<?= $qid ?>" value="<?= $letter ?>" required>
                                 <span class="quiz-opt-letter"><?= $letter ?></span>
-                                <span class="text-sm text-j-dark flex-1"><?= e($text) ?></span>
+                                <span class="text-sm ch-quiz-opt-text flex-1"><?= e($text) ?></span>
                                 <svg class="opt-check w-4 h-4" fill="none" stroke="#dab937" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
                                 </svg>
@@ -415,7 +421,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
 
                         <!-- Step navigation -->
-                        <div class="flex items-center gap-3 pt-4 border-t border-[#e6e2d6]">
+                        <div class="flex items-center gap-3 pt-4 ch-step-nav-border">
                             <?php if ($qi > 0): ?>
                             <button type="button"
                                     class="btn-outline text-sm px-4 py-2.5"
@@ -442,8 +448,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
 
                     <!-- Warning footnote -->
-                    <div class="px-6 py-3 flex items-center gap-2 text-xs text-j-slate
-                                border-t border-[#e6e2d6] ch-quiz-footnote">
+                    <div class="ch-quiz-footnote px-6 py-3 flex items-center gap-2 text-xs">
                         <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="#dab937" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
@@ -466,8 +471,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="ch-qpm-orbit"></div>
                 <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="ch-qpm-token">
             </div>
-            <p class="text-base font-semibold text-j-dark mb-1.5">กำลังตรวจสอบคำตอบ…</p>
-            <p class="text-sm text-j-slate" id="qpm-dots">กรุณารอสักครู่</p>
+            <p class="text-base font-semibold ch-qpm-title mb-1.5">กำลังตรวจสอบคำตอบ…</p>
+            <p class="text-sm ch-qpm-sub" id="qpm-dots">กรุณารอสักครู่</p>
         </div>
     </div>
 
@@ -571,27 +576,27 @@ require_once __DIR__ . '/../includes/header.php';
     <?php if ($challenges): ?>
 
     <!-- Quest Board hero header -->
-    <div class="mb-8 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 py-20 relative overflow-hidden ch-board-hero">
+    <div class="mb-8 px-8 py-16 relative overflow-hidden ch-board-hero">
         <div class="ch-board-dot-grid"></div>
         <div class="ch-board-glow"></div>
         <div class="relative max-w-7xl mx-auto flex items-center justify-between gap-8">
             <div>
                 <p class="text-[14px] font-bold uppercase mb-2.5 ch-board-hero-label">&#9876; Quest Board</p>
-                <h1 class="text-5xl font-bold leading-tight text-j-dark">ภารกิจทั้งหมด</h1>
-                <p class="text-base mt-2.5 text-j-slate">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
+                <h1 class="text-5xl font-bold leading-tight ch-hero-title">ภารกิจทั้งหมด</h1>
+                <p class="text-base mt-2.5 ch-hero-sub">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
             </div>
             <div class="flex flex-col items-end gap-3 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-7 h-7">
-                    <p class="text-xl font-bold text-j-gold-dk">
-                        <?= $_done ?><span class="font-normal text-base text-j-slate"> / <?= $_total ?> ภารกิจสำเร็จ</span>
+                    <p class="text-xl font-bold text-j-gold">
+                        <?= $_done ?><span class="font-normal text-base" style="color:#9ca3a8;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
                     </p>
                 </div>
                 <div class="ch-board-progress-track">
                     <div class="ch-board-progress-fill"
                          style="width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;"></div>
                 </div>
-                <p class="text-xs font-semibold uppercase tracking-widest text-j-slate">
+                <p class="text-xs font-semibold uppercase tracking-widest" style="color:#6b7278;">
                     <?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete
                 </p>
             </div>
@@ -610,83 +615,139 @@ require_once __DIR__ . '/../includes/header.php';
         <?php foreach ($questsAvailable as $ch):
             $cid        = (int)$ch['challenge_id'];
             $isRejected = $ch['my_status'] === 'rejected';
+            $_ed        = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
+            $_daysLeft  = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
         ?>
-        <article class="ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>">
-            <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"></div>
-            <div class="ch-quest-inner">
-                <div class="ch-quest-top-row">
-                    <span class="ch-type-badge">
-                        <?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
-                    </span>
-                    <div class="token-reward-badge">
-                        <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim" style="width:26px;height:26px;object-fit:contain;">
-                        <div style="display:flex;flex-direction:column;line-height:1.1;">
-                            <span class="token-reward-value">+<?= formatTokens((int)$ch['token_reward']) ?></span>
-                            <span class="token-reward-label">Token</span>
+        <div class="ch-quest-flip-scene">
+            <div class="ch-flip-card" id="flip-<?= $cid ?>">
+
+                <!-- ── FRONT FACE ── -->
+                <div class="ch-flip-front ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>">
+                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"></div>
+                    <div class="ch-quest-inner">
+                        <!-- Top: type badge + urgency (if near deadline) -->
+                        <div class="ch-quest-top-row">
+                            <span class="ch-type-badge">
+                                <?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
+                            </span>
+                            <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
+                            <span style="font-size:0.65rem;font-weight:700;color:#d2592a;background:rgba(210,89,42,0.10);border:1px solid rgba(210,89,42,0.25);border-radius:6px;padding:0.18rem 0.55rem;">
+                                <?= $_daysLeft === 0 ? '⚡ วันนี้!' : '⚡ เหลือ ' . $_daysLeft . ' วัน' ?>
+                            </span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Token reward hero — the prize hook -->
+                        <div class="ch-front-token-hero">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim"
+                                 style="width:36px;height:36px;object-fit:contain;">
+                            <span class="ch-front-token-amt">+<?= formatTokens((int)$ch['token_reward']) ?></span>
+                            <span class="ch-front-token-lbl">Token Reward</span>
+                        </div>
+
+                        <!-- Title + mystery (classified) lines -->
+                        <div>
+                            <h3 class="ch-quest-title"><?= e($ch['title']) ?></h3>
+                            <div class="ch-mystery-lines">
+                                <div class="ch-mystery-line ch-mystery-line--long"></div>
+                                <div class="ch-mystery-line ch-mystery-line--medium"></div>
+                                <div class="ch-mystery-line ch-mystery-line--short"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="ch-quest-content">
-                    <h3 class="ch-quest-title"><?= e($ch['title']) ?></h3>
-                    <?php if (!empty($ch['description'])): ?>
-                    <p class="ch-quest-desc"><?= e((string)$ch['description']) ?></p>
-                    <?php endif; ?>
-                    <?php if ($ch['type'] === 'quiz' && isset($ch['question_count'])): ?>
-                    <p class="ch-quest-meta"><?= $ch['question_count'] ?> คำถาม &bull; ตอบถูกทุกข้อเพื่อรับ Token</p>
-                    <?php endif; ?>
-                    <?php
-                        $_ed = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
-                        $_daysLeft = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
-                    ?>
-                    <?php if ($_ed): ?>
-                    <p class="ch-quest-meta" style="margin-top:0.35rem;">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display:inline;vertical-align:middle;margin-right:2px;">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                        </svg>
-                        สิ้นสุด <?= $_ed ?>
-                        <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
-                        <span style="color:#d2592a; font-weight:600;"> &bull; เหลืออีก <?= $_daysLeft === 0 ? 'วันนี้!' : $_daysLeft . ' วัน' ?></span>
+
+                <!-- ── BACK FACE ── -->
+                <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>"
+                     <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
+                     onclick="window.location='<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>'" style="cursor:pointer;"
+                     <?php endif; ?>>
+                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"></div>
+                    <div class="ch-flip-back-body">
+                        <!-- Header: type badge + click hint for quiz -->
+                        <div class="ch-flip-back-header">
+                            <span class="ch-type-badge"><?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?></span>
+                            <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
+                            <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อเริ่ม →</span>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Token reward -->
+                        <div class="ch-flip-back-reward">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(218,185,55,0.6));">
+                            +<?= formatTokens((int)$ch['token_reward']) ?> Token
+                        </div>
+
+                        <!-- Title -->
+                        <h3 class="ch-flip-back-title"><?= e($ch['title']) ?></h3>
+
+                        <!-- Full description (no clamp) -->
+                        <?php if (!empty($ch['description'])): ?>
+                        <p class="ch-flip-back-desc"><?= e((string)$ch['description']) ?></p>
                         <?php endif; ?>
-                    </p>
-                    <?php endif; ?>
-                </div>
-                <div class="ch-quest-footer">
-                    <?php if ($isRejected): ?>
-                    <div class="ch-rejected-msg">
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                        ไม่ผ่านเกณฑ์ &bull; ไม่สามารถส่งซ้ำ
+
+                        <!-- Instructions (photo type) -->
+                        <?php if ($ch['type'] === 'photo' && !empty($ch['instructions'])): ?>
+                        <div class="ch-flip-back-instructions">
+                            <p class="ch-flip-back-instructions-label">วิธีส่งหลักฐาน</p>
+                            <p class="ch-flip-back-instructions-text"><?= e((string)$ch['instructions']) ?></p>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Quiz info row -->
+                        <?php if ($ch['type'] === 'quiz' && isset($ch['question_count'])): ?>
+                        <div class="ch-flip-back-info-row">
+                            <svg width="13" height="13" fill="none" stroke="#dab937" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <span><?= $ch['question_count'] ?> คำถาม &bull; ต้องตอบถูกทุกข้อจึงจะได้ Token</span>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- End date row -->
+                        <?php if ($_ed): ?>
+                        <div class="ch-flip-back-info-row">
+                            <svg width="13" height="13" fill="none" stroke="#6b6e77" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span>สิ้นสุด <?= $_ed ?></span>
+                            <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
+                            <span style="color:#d2592a;font-weight:600;">&bull; เหลืออีก <?= $_daysLeft === 0 ? 'วันนี้!' : $_daysLeft . ' วัน' ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Action area -->
+                        <div class="ch-flip-action">
+                            <?php if ($isRejected): ?>
+                            <div class="ch-rejected-msg">
+                                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                คุณทำภารกิจไม่ผ่าน &bull;
+                            </div>
+                            <?php elseif ($ch['type'] === 'photo'): ?>
+                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
+                                  enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="action" value="submit_photo">
+                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
+                                <input type="file" name="photo" accept="image/*" required class="ch-file-input">
+                                <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5MB</p>
+                                <button type="submit" class="ch-btn-start">ส่งหลักฐาน</button>
+                            </form>
+                            <?php endif; ?>
+                        </div>
                     </div>
-                    <?php elseif ($ch['type'] === 'quiz'): ?>
-                    <a href="<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>" class="ch-btn-start">
-                        เริ่มทำ Quiz
-                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
-                    <?php else: ?>
-                    <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
-                          enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">
-                        <?= csrfField() ?>
-                        <input type="hidden" name="action" value="submit_photo">
-                        <input type="hidden" name="challenge_id" value="<?= $cid ?>">
-                        <?php if (!empty($ch['instructions'])): ?>
-                        <p class="ch-instructions"><?= e((string)$ch['instructions']) ?></p>
-                        <?php endif; ?>
-                        <input type="file" name="photo" accept="image/*" required class="ch-file-input">
-                        <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5MB</p>
-                        <button type="submit" class="ch-btn-start">ส่งหลักฐาน</button>
-                    </form>
-                    <?php endif; ?>
                 </div>
-            </div>
-        </article>
+
+            </div><!-- /ch-flip-card -->
+        </div><!-- /ch-quest-flip-scene -->
         <?php endforeach; ?>
         </div>
     </div>
     <?php else: ?>
-    <div class="ds-empty-state mb-10" style="background:#fff;">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
+    <div class="ch-empty-board mb-10">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
     <?php endif; ?>
 
     <!-- ── SECTION 2: ดำเนินการแล้ว ── -->
@@ -764,18 +825,15 @@ require_once __DIR__ . '/../includes/header.php';
     </script>
 
     <?php else: ?>
-    <div class="rounded-2xl border border-dashed border-j-silver bg-white px-5 py-16
-                text-center text-sm text-j-slate">
+    <div class="ch-empty-board">
         ไม่มีภารกิจเปิดรับในช่วงเวลานี้
     </div>
     <?php endif; ?>
 
     <?php endif; /* end list view */ ?>
 
-</div>
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
-
-
+</div><!-- /max-w-7xl -->
+</div><!-- /ds-page-inner -->
+</div><!-- /ch-challenges-wrap -->
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
