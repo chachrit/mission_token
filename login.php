@@ -65,14 +65,27 @@ function fetchEmployeeFromAPI(string $employeeCode): ?array
  */
 function syncEmployeeFromAPI(PDO $pdo, array $apiEmp, string $employeeCode, string $localHash): int
 {
-    $fullName = trim(
-        ($apiEmp['prefix_th']    ?? '') . ' ' .
+    $fullName   = trim(
+        ($apiEmp['prefix_th']     ?? '') . ' ' .
         ($apiEmp['first_name_th'] ?? '') . ' ' .
         ($apiEmp['last_name_th']  ?? '')
     );
-    $department = $apiEmp['department'] ?? '';
+    $department = $apiEmp['department']  ?? '';
+    $division   = $apiEmp['division']    ?? '';
+    $level      = $apiEmp['level']       ?? '';
     $position   = $apiEmp['position_th'] ?? $apiEmp['position'] ?? '';
     $email      = $apiEmp['email']       ?? '';
+
+    // Auto-determine role from API:
+    // JD011 = ฝ่าย HR, JL002+ = ระดับเจ้าหน้าที่ขึ้นไป (ไม่นับพ่อบ้าน/แมสเซนเจอร์ JL000-JL001)
+    // JD001 = ฝ่าย IT, ทุกคนได้ it role (เข้าหน้า admin ได้ แต่แยก badge)
+    if ($division === 'JD011' && $level >= 'JL002') {
+        $autoRole = 'hr';
+    } elseif ($division === 'JD001') {
+        $autoRole = 'it';
+    } else {
+        $autoRole = 'employee';
+    }
 
     // parse start_date — API ส่งมาเป็น "YYYY-MM-DD HH:MM:SS" หรือ "YYYY-MM-DD"
     $startDateRaw = $apiEmp['start_date'] ?? null;
@@ -84,33 +97,42 @@ function syncEmployeeFromAPI(PDO $pdo, array $apiEmp, string $employeeCode, stri
     }
 
     // ตรวจสอบว่ามีใน local แล้วหรือยัง
-    $stmt = $pdo->prepare("SELECT employee_id FROM dbo.employees WHERE employee_code = ?");
+    $stmt = $pdo->prepare("SELECT employee_id, role FROM dbo.employees WHERE employee_code = ?");
     $stmt->execute([$employeeCode]);
-    $localId = $stmt->fetchColumn();
+    $existing = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$localId) {
-        // Insert ใหม่
+    if (!$existing) {
+        // Insert ใหม่ — ใช้ autoRole ที่คำนวณไว้
         $ins = $pdo->prepare("
-            INSERT INTO dbo.employees (employee_code, full_name, department, position, email, password_hash, role, start_date)
-            VALUES (?, ?, ?, ?, ?, ?, 'employee', ?)
+            INSERT INTO dbo.employees
+                (employee_code, full_name, department, division, level, position, email, password_hash, role, start_date)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ");
-        $ins->execute([$employeeCode, $fullName, $department, $position, $email, $localHash, $startDate]);
+        $ins->execute([$employeeCode, $fullName, $department, $division, $level,
+                       $position, $email, $localHash, $autoRole, $startDate]);
 
         // ดึง ID ที่เพิ่งสร้าง — re-query เพราะ SCOPE_IDENTITY() คืน NULL กับ pdo_sqlsrv
         $sel = $pdo->prepare("SELECT employee_id FROM dbo.employees WHERE employee_code = ?");
         $sel->execute([$employeeCode]);
         $localId = (int)$sel->fetchColumn();
     } else {
-        // Update ข้อมูลล่าสุดจาก API (ยกเว้น role/password_hash)
+        // Update — ไม่ทับ role 'admin' ที่ set ไว้แบบ manual
+        $currentRole = (string)($existing['role'] ?? 'employee');
+        $newRole     = ($currentRole === 'admin') ? 'admin' : $autoRole;
+
         $upd = $pdo->prepare("
             UPDATE dbo.employees
-            SET full_name  = ?, department = ?, position = ?, email = ?, start_date = ?
+            SET full_name  = ?, department = ?, division = ?, level = ?,
+                position   = ?, email = ?, start_date = ?, role = ?
             WHERE employee_code = ?
         ");
-        $upd->execute([$fullName, $department, $position, $email, $startDate, $employeeCode]);
+        $upd->execute([$fullName, $department, $division, $level,
+                       $position, $email, $startDate, $newRole, $employeeCode]);
+
+        $localId = (int)$existing['employee_id'];
     }
 
-    return (int)$localId;
+    return $localId;
 }
 
 // ── POST: handle login ──────────────────────────────────────

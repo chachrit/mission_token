@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var isOpen = false;
     var wheelAccum = 0;
     var wheelResetTimer = null;
-    var WHEEL_THRESHOLD = 350; // accumulated px before triggering
+    var WHEEL_THRESHOLD = 300; // accumulated px before triggering
 
     function openAbout() {
         if (isOpen) return;

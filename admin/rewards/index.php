@@ -4,7 +4,7 @@
  * Admin: manage rewards catalogue (create, edit stock, toggle active)
  */
 
-require_once __DIR__ . '/../../includes/admin_check.php';
+require_once __DIR__ . '/../../includes/hr_check.php';
 require_once __DIR__ . '/../../includes/functions.php';
 
 $adminId = (int)$_SESSION['employee_id'];

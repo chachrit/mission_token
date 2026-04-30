@@ -8,7 +8,7 @@
  * POST → save challenge + questions
  */
 
-require_once __DIR__ . '/../../includes/admin_check.php';
+require_once __DIR__ . '/../../includes/hr_check.php';
 require_once __DIR__ . '/../../includes/functions.php';
 
 $adminId     = (int)$_SESSION['employee_id'];

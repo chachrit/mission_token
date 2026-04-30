@@ -1,5 +1,5 @@
 # claude.md — Mission Token Project Context
-> อัปเดตล่าสุด: 30 เมษายน 2569 (session 2)
+> อัปเดตล่าสุด: 30 เมษายน 2569 (session 3)
 
 ---
 
@@ -50,16 +50,18 @@ mission_token/
 ├── pages/
 │   ├── dashboard.php          # Employee dashboard (dark Operative theme)
 │   ├── challenges.php         # Challenge list + quiz/photo submission handler
-│   ├── rewards.php            # Token shop — redeem rewards (AJAX)
+│   ├── rewards.php            # Token shop — redeem rewards (AJAX) + coupon reveal
+│   ├── history.php            # Employee transaction + redemption history (dark theme)
 │   └── profile.php            # Employee profile + change password + work tenure
 ├── admin/
-│   ├── submissions.php        # Approve/reject photo submissions
+│   ├── submissions.php        # Approve/reject photo submissions (dark theme)
 │   ├── challenges/
-│   │   ├── index.php          # List/toggle/delete challenges
-│   │   └── edit.php           # Create/edit challenge + quiz questions
+│   │   ├── index.php          # List/toggle/delete challenges (dark theme)
+│   │   └── edit.php           # Create/edit challenge + quiz questions (dark theme)
 │   └── rewards/
-│       ├── index.php          # Manage rewards catalogue (CRUD + stock)
-│       └── redemptions.php    # Review pending redemption requests
+│       ├── index.php          # Manage rewards catalogue (CRUD + stock + coupon_code)
+│       ├── edit.php           # Edit reward + coupon_code field
+│       └── redemptions.php    # Review pending redemption requests (dark theme)
 ├── assets/
 │   ├── css/style.css          # Main stylesheet (ดูหัวข้อ 8)
 │   ├── js/app.js              # Counter, confetti, quiz UI, login form UX
@@ -67,6 +69,7 @@ mission_token/
 ├── sql/
 │   ├── schema.sql             # DDL — สร้าง DB + 6 tables ทั้งหมด
 │   ├── rewards_migration.sql  # DDL เพิ่มเติม rewards + reward_redemptions tables
+│   ├── coupon_migration.sql   # ALTER TABLE rewards ADD coupon_code NVARCHAR(200) NULL
 │   └── seed.php               # Seed data (run in browser once)
 └── uploads/
     └── submissions/           # ไฟล์รูปที่พนักงานส่ง (photo submission)
@@ -86,7 +89,7 @@ mission_token/
 | `token_wallets` | กระเป๋า Token 1:1 กับ employees |
 | `challenge_submissions` | การส่งงาน (quiz/photo) + status + token_awarded |
 | `token_transactions` | ประวัติ transaction ทุกรายการ |
-| `rewards` | รายการรางวัลใน Token Shop |
+| `rewards` | รายการรางวัลใน Token Shop (+ `coupon_code` NVARCHAR(200) NULL) |
 | `reward_redemptions` | คำขอแลกรางวัลจากพนักงาน |
 
 ### Key Columns
@@ -96,6 +99,7 @@ mission_token/
 - `token_transactions.tx_type` → `'quiz_reward'` | `'photo_reward'` | `'admin_adjust'` | `'bonus'` | `'redemption'`
 - `reward_redemptions.status` → `'pending'` | `'fulfilled'` | `'cancelled'`
 - `rewards.stock` → `NULL` = unlimited
+- `rewards.coupon_code` → `NULL` หรือ รหัสคูปอง — แสดงให้พนักงานเห็นเฉพาะเมื่อ redemption = `fulfilled`
 
 ---
 
@@ -197,7 +201,7 @@ mission_token/
 | 290–903 | Public Home Page (`.home-page-wrap`, `.hero-*`, `.about-*`) |
 | 904–926 | Site Footer (`.site-footer`, `.site-footer-*`) |
 | 927–1243 | **Dashboard Page** — Dark Operative theme (`ds-*`) |
-| 1244+ | **Challenges Page** — quiz UI (`ch-*`, `.quiz-*`) |
+| 1244+ | **Challenges Page** + body overrides สำหรับทุก dark pages |
 
 ### CSS Class Prefixes
 | Prefix | Page / Component |
@@ -205,6 +209,13 @@ mission_token/
 | `ds-` | Dashboard (dark theme) |
 | `ch-` | Challenges page (dark theme) |
 | `quiz-` | Quiz component |
+| `rw-` | Rewards page (dark theme) |
+| `hy-` | History page (dark theme) |
+| `ar-` | Admin rewards index + edit (dark theme) |
+| `ard-` | Admin redemptions (dark theme) |
+| `asb-` | Admin submissions (dark theme) |
+| `ac-` | Admin challenges index (dark theme) |
+| `ace-` | Admin challenges edit (dark theme) |
 | `home-` | Home page |
 | `hero-` | Hero section ของ index |
 | `about-` | About section ของ index |
@@ -212,6 +223,19 @@ mission_token/
 | `journal-` | Global card/input utilities |
 | `btn-` | Global button variants |
 | `nav-` | Navigation bar |
+
+### Dark Theme Body Overrides (ใน style.css)
+```css
+body:has(.ds-dashboard-wrap)   { background-color: #091113; }
+body:has(.ch-challenges-wrap)  { background-color: #091113; }
+body:has(.rw-rewards-wrap)     { background-color: #091113; }
+body:has(.hy-history-wrap)     { background-color: #091113; }
+body:has(.ar-rewards-wrap)     { background-color: #091113; }
+body:has(.ar-redemptions-wrap) { background-color: #091113; }
+body:has(.asb-submissions-wrap){ background-color: #091113; }
+body:has(.ac-challenges-wrap)  { background-color: #091113; }
+body:has(.ace-edit-wrap)       { background-color: #091113; }
+```
 
 ### Global Utilities (ใน header.php inline `<style>`)
 - `.btn-dark` / `.btn-gold` / `.btn-outline` / `.btn-danger` — button variants
@@ -295,13 +319,18 @@ mission_token/
 | `index.php` | Dark (`#091113` bg), gold hero, floating token coins |
 | `login.php` | Dark split layout — left dark panel + right form |
 | `pages/dashboard.php` | Dark "Operative Dossier" — aurora blobs, glassmorphism cards, `ds-*` classes |
-| `pages/challenges.php` | **Dark** — same Operative Dossier theme as dashboard (`ch-*` classes, aurora blobs, glassmorphism), เต็มหน้า |
-| `pages/rewards.php` | Light cream |
+| `pages/challenges.php` | **Dark** — Operative Dossier theme (`ch-*`, aurora blobs, glassmorphism) |
+| `pages/rewards.php` | **Dark** — token shop (`rw-*`) |
+| `pages/history.php` | **Dark** — transaction + redemption history (`hy-*`) |
 | `pages/profile.php` | Light cream |
-| Admin pages | Light cream (Tailwind + journal-card) |
-
-Dashboard มี `body:has(.ds-dashboard-wrap) { background-color: #091113 }` override ใน style.css
-Challenges มี `body:has(.ch-challenges-wrap) { background-color: #091113 }` override เช่นกัน
+| `admin/challenges/index.php` | **Dark** — challenge list (`ac-*`) |
+| `admin/challenges/edit.php` | **Dark** — create/edit challenge (`ace-*`) |
+| `admin/submissions.php` | **Dark** — photo approval (`asb-*`) |
+| `admin/rewards/index.php` | **Dark** — rewards catalogue (`ar-*`) |
+| `admin/rewards/edit.php` | **Dark** — edit reward (`ar-*`) |
+| `admin/rewards/redemptions.php` | **Dark** — redemption requests (`ard-*`) |
+| `admin/dashboard.php` | ยังไม่มีไฟล์ |
+| `admin/employees.php` | ยังไม่มีไฟล์ |
 
 ---
 
@@ -348,14 +377,20 @@ $flash = getFlash();               // คืน ['type' => ..., 'message' => ...
   - Back face: รายละเอียดเต็ม + photo upload form (photo type) / onclick navigate (quiz type)
   - CSS classes: `.ch-quest-flip-scene`, `.ch-flip-card`, `.ch-flip-front`, `.ch-flip-back`
   - `.ch-flip-back-body` ใช้ `position: absolute; inset: 0` เพื่อป้องกัน overflow ทำให้ปุ่มหาย
-- Rewards page (token shop + AJAX redeem)
+- Rewards page (dark theme, token shop + AJAX redeem + coupon reveal after fulfilled)
+- History page (`pages/history.php`) — dark theme, wallet summary + tabs (Token / รางวัล)
 - Profile page (info + change password)
-- Admin: challenges CRUD + quiz builder
-- Admin: submissions approve/reject
-- Admin: rewards management + redemptions
+- Admin: challenges index — dark theme redesign (`ac-*`)
+- Admin: challenges edit — dark theme + back button (`ace-*`)
+- Admin: submissions approve/reject (dark theme, `asb-*`)
+- Admin: rewards management + redemptions (dark theme, `ar-*` / `ard-*`)
+- Admin: rewards create/edit — เพิ่ม coupon_code field
 - Home page (dark hero, leaderboard, weekly trend)
+- `sql/coupon_migration.sql` — ต้อง run ใน SSMS ก่อนใช้ฟีเจอร์ coupon_code
+  ```sql
+  ALTER TABLE dbo.rewards ADD coupon_code NVARCHAR(200) NULL;
+  ```
 
-### หน้าที่มีใน Nav แต่ยังไม่มีไฟล์ หรือ TODO
-- `pages/history.php` — ประวัติ transactions ของพนักงาน (nav link ชี้ไปแล้ว แต่ต้องตรวจสอบ)
+### หน้าที่มีใน Nav แต่ยังไม่มีไฟล์ (TODO)
 - `admin/dashboard.php` — admin overview (nav link ชี้ไปแล้ว)
 - `admin/employees.php` — จัดการพนักงาน (nav link ชี้ไปแล้ว)

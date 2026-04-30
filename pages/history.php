@@ -13,24 +13,38 @@ $pdo        = getDB();
 // ══════════════════════════════════════════════════════════════
 // LOAD DATA
 // ══════════════════════════════════════════════════════════════
-$transactions  = [];
-$redemptions   = [];
-$wallet        = getWalletInfo($employeeId);
-$dataError     = null;
+$txAll       = [];
+    $quizHistory = [];
+    $redemptions = [];
+    $wallet      = getWalletInfo($employeeId);
+    $dataError   = null;
 
 try {
-    // Token transactions
-    $transactions = $pdo->prepare("
+    // All token transactions
+    $stmt = $pdo->prepare("
         SELECT tx_id, amount, tx_type, note, created_at
         FROM   dbo.token_transactions
         WHERE  employee_id = ?
         ORDER BY created_at DESC
     ");
-    $transactions->execute([$employeeId]);
-    $transactions = $transactions->fetchAll();
+    $stmt->execute([$employeeId]);
+    $txAll = $stmt->fetchAll();
+
+    // Quiz + Photo submission history
+    $stmt = $pdo->prepare("
+        SELECT cs.submission_id, cs.submission_type, cs.status,
+               cs.token_awarded, cs.submitted_at, cs.review_note,
+               c.title AS challenge_title, c.token_reward, c.type AS challenge_type
+        FROM   dbo.challenge_submissions cs
+        JOIN   dbo.challenges c ON c.challenge_id = cs.challenge_id
+        WHERE  cs.employee_id = ?
+        ORDER BY cs.submitted_at DESC
+    ");
+    $stmt->execute([$employeeId]);
+    $quizHistory = $stmt->fetchAll();
 
     // Redemption history with coupon_code
-    $redemptions = $pdo->prepare("
+    $stmt = $pdo->prepare("
         SELECT rd.redemption_id, rd.tokens_spent, rd.status,
                rd.redeemed_at, rd.processed_at, rd.admin_note,
                rw.title      AS reward_title,
@@ -42,8 +56,8 @@ try {
         WHERE  rd.employee_id = ?
         ORDER BY rd.redeemed_at DESC
     ");
-    $redemptions->execute([$employeeId]);
-    $redemptions = $redemptions->fetchAll();
+    $stmt->execute([$employeeId]);
+    $redemptions = $stmt->fetchAll();
 
 } catch (Throwable $e) {
     error_log('[MissionToken] history page load error: ' . $e->getMessage());
@@ -124,140 +138,154 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
 
         <!-- ══════════════════════════════════════════════════════
-             TAB: สลับ Token Transactions / Redemptions
+             TABS
         ══════════════════════════════════════════════════════ -->
-        <div style="display:flex; gap:0.6rem; margin-bottom:1.5rem;">
-            <button id="tab-tx" onclick="switchTab('tx')"
-                    class="hy-tab hy-tab--active"
-                    style="display:flex; align-items:center; gap:0.45rem;">
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-                    <polyline points="17 6 23 6 23 12"/>
-                </svg>
-                Token
-                <span class="hy-tab-badge"><?= count($transactions) ?></span>
+        <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <?php
+            $tabs = [
+                'token' => ['label' => 'Token',   'icon' => '◈', 'count' => count($txAll)],
+                'quest' => ['label' => 'ภารกิจ',  'icon' => '◎', 'count' => count($quizHistory)],
+                'reward'=> ['label' => 'รางวัล',  'icon' => '✦', 'count' => count($redemptions)],
+            ];
+            foreach ($tabs as $key => $t):
+            ?>
+            <button id="tab-<?= $key ?>" onclick="switchTab('<?= $key ?>')"
+                    class="hy-tab <?= $key === 'token' ? 'hy-tab--active' : '' ?>"
+                    style="display:flex; align-items:center; gap:0.4rem;">
+                <span style="font-size:0.75rem; opacity:0.7;"><?= $t['icon'] ?></span>
+                <?= $t['label'] ?>
+                <span class="hy-tab-badge"><?= $t['count'] ?></span>
             </button>
-            <button id="tab-rd" onclick="switchTab('rd')"
-                    class="hy-tab"
-                    style="display:flex; align-items:center; gap:0.45rem;">
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M20 12v10H4V12"/>
-                    <path d="M22 7H2v5h20V7z"/>
-                    <path d="M12 22V7"/>
-                    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-                    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-                </svg>
-                รางวัล
-                <span class="hy-tab-badge"><?= count($redemptions) ?></span>
-            </button>
+            <?php endforeach; ?>
         </div>
 
         <!-- ══════════════════════════════════════════════════
-             TOKEN TRANSACTIONS PANEL
+             PANEL: Token (รับ + ใช้ รวมกัน)
         ══════════════════════════════════════════════════ -->
-        <div id="panel-tx">
-        <?php if (empty($transactions)): ?>
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; padding:3.5rem; text-align:center; backdrop-filter:blur(8px);">
+        <div id="panel-token">
+        <?php if (empty($txAll)): ?>
+        <div class="hy-empty-state">
             <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">📊</p>
-            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติการทำรายการ</p>
+            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติ Token</p>
         </div>
         <?php else: ?>
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
-            <!-- Header -->
-            <div style="display:grid; grid-template-columns:1fr auto auto;
-                        gap:1rem; padding:0.65rem 1.25rem;
-                        background:rgba(255,255,255,0.03);
-                        border-bottom:1px solid rgba(255,255,255,0.07);
-                        font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                        text-transform:uppercase; color:#6b6e77;">
+        <div class="hy-table-wrap">
+            <div class="hy-table-head" style="grid-template-columns:1fr auto auto;">
                 <span>รายการ</span>
                 <span style="text-align:right;">Token</span>
                 <span>วันที่</span>
             </div>
-            <?php foreach ($transactions as $tx):
-                $isEarn  = (int)$tx['amount'] > 0;
-                $amtDisp = ($isEarn ? '+' : '') . number_format((int)$tx['amount']);
+            <?php foreach ($txAll as $tx):
+                $amt    = (int)$tx['amount'];
+                $isEarn = $amt > 0;
+                $amtDisp = ($isEarn ? '+' : '') . number_format($amt);
                 $amtClr  = $isEarn ? '#518e5c' : '#d2592a';
             ?>
-            <div class="hy-tx-row"
-                 style="display:grid; grid-template-columns:1fr auto auto;
-                        gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
+            <div class="hy-tx-row" style="display:grid; grid-template-columns:1fr auto auto;
+                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
                 <div>
-                    <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.08rem;">
+                    <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
                         <?= e(txTypeLabel($tx['tx_type'])) ?>
                     </p>
                     <?php if (!empty($tx['note'])): ?>
-                    <p style="font-size:0.70rem; color:#6b6e77; margin:0;">
-                        <?= e($tx['note']) ?>
-                    </p>
+                    <p style="font-size:0.70rem; color:#6b6e77; margin:0;"><?= e($tx['note']) ?></p>
                     <?php endif; ?>
                 </div>
-                <span style="font-size:0.88rem; font-weight:800; color:<?= $amtClr ?>;
-                             white-space:nowrap; letter-spacing:-0.01em;">
+                <span style="font-size:0.88rem; font-weight:800; color:<?= $amtClr ?>; white-space:nowrap;">
                     <?= $amtDisp ?>
                 </span>
-                <span style="font-size:0.73rem; color:#eeebe1; white-space:nowrap;">
+                <span style="font-size:0.73rem; color:#9ca3af; white-space:nowrap;">
                     <?= date('d/m/y', strtotime($tx['created_at'])) ?>
                 </span>
             </div>
             <?php endforeach; ?>
         </div>
         <?php endif; ?>
-        </div><!-- /panel-tx -->
+        </div>
 
         <!-- ══════════════════════════════════════════════════
-             REDEMPTIONS PANEL
+             PANEL: ภารกิจ (Quiz + Photo submissions)
         ══════════════════════════════════════════════════ -->
-        <div id="panel-rd" style="display:none;">
+        <div id="panel-quest" style="display:none;">
+        <?php if (empty($quizHistory)): ?>
+        <div class="hy-empty-state">
+            <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎯</p>
+            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติการทำภารกิจ</p>
+        </div>
+        <?php else: ?>
+        <div class="hy-table-wrap">
+            <div class="hy-table-head" style="grid-template-columns:1fr auto auto auto;">
+                <span>ภารกิจ</span>
+                <span>ประเภท</span>
+                <span>Token</span>
+                <span>สถานะ</span>
+            </div>
+            <?php
+            $qStatusStyle = [
+                'auto_approved' => ['color'=>'#518e5c', 'bg'=>'rgba(81,142,92,0.12)',  'border'=>'rgba(81,142,92,0.28)',  'label'=>'ผ่าน'],
+                'approved'      => ['color'=>'#518e5c', 'bg'=>'rgba(81,142,92,0.12)',  'border'=>'rgba(81,142,92,0.28)',  'label'=>'อนุมัติ'],
+                'pending'       => ['color'=>'#fbbf24', 'bg'=>'rgba(245,158,11,0.10)', 'border'=>'rgba(245,158,11,0.25)', 'label'=>'รอตรวจ'],
+                'rejected'      => ['color'=>'#d2592a', 'bg'=>'rgba(210,89,42,0.10)',  'border'=>'rgba(210,89,42,0.25)',  'label'=>'ไม่ผ่าน'],
+            ];
+            foreach ($quizHistory as $q):
+                $qs = $qStatusStyle[$q['status']] ?? $qStatusStyle['pending'];
+            ?>
+            <div class="hy-tx-row" style="display:grid; grid-template-columns:1fr auto auto auto;
+                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
+                <div>
+                    <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
+                        <?= e($q['challenge_title']) ?>
+                    </p>
+                    <p style="font-size:0.70rem; color:#6b6e77; margin:0;">
+                        <?= date('d/m/y', strtotime($q['submitted_at'])) ?>
+                        <?php if (!empty($q['review_note'])): ?>
+                        · <?= e($q['review_note']) ?>
+                        <?php endif; ?>
+                    </p>
+                </div>
+                <span style="font-size:0.72rem; color:#9ca3af; white-space:nowrap;">
+                    <?= $q['challenge_type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
+                </span>
+                <span style="font-size:0.85rem; font-weight:700; color:<?= (int)$q['token_awarded'] > 0 ? '#dab937' : '#3a3e43' ?>; white-space:nowrap;">
+                    <?= (int)$q['token_awarded'] > 0 ? '+' . number_format((int)$q['token_awarded']) : '—' ?>
+                </span>
+                <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
+                             border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
+                             background:<?= $qs['bg'] ?>; color:<?= $qs['color'] ?>;
+                             border:1px solid <?= $qs['border'] ?>;">
+                    <?= $qs['label'] ?>
+                </span>
+            </div>
+            <?php endforeach; ?>
+        </div>
+        <?php endif; ?>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════
+             PANEL: รางวัล
+        ══════════════════════════════════════════════════ -->
+        <div id="panel-reward" style="display:none;">
         <?php if (empty($redemptions)): ?>
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; padding:3.5rem; text-align:center; backdrop-filter:blur(8px);">
+        <div class="hy-empty-state">
             <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎁</p>
             <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติการแลกรางวัล</p>
         </div>
         <?php else: ?>
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
-            <!-- Header -->
-            <div style="display:grid; grid-template-columns:1fr auto auto auto;
-                        gap:1rem; padding:0.65rem 1.25rem;
-                        background:rgba(255,255,255,0.03);
-                        border-bottom:1px solid rgba(255,255,255,0.07);
-                        font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                        text-transform:uppercase; color:#6b6e77;">
-                <span>รางวัล</span>
-                <span>Token</span>
-                <span>วันที่</span>
-                <span>สถานะ</span>
-            </div>
+        <div class="hy-table-wrap">
             <?php
-            $dsDark = [
-                'pending'   => ['color' => '#fbbf24', 'bg' => 'rgba(245,158,11,0.10)',  'border' => 'rgba(245,158,11,0.25)'],
-                'fulfilled' => ['color' => '#518e5c', 'bg' => 'rgba(81,142,92,0.12)',   'border' => 'rgba(81,142,92,0.28)'],
-                'cancelled' => ['color' => '#d2592a', 'bg' => 'rgba(210,89,42,0.10)',   'border' => 'rgba(210,89,42,0.25)'],
-            ];
-            $rdLabels = [
-                'pending'   => 'รอดำเนินการ',
-                'fulfilled' => 'มอบแล้ว',
-                'cancelled' => 'ยกเลิก',
+            $rdStyle = [
+                'pending'   => ['color'=>'#fbbf24', 'bg'=>'rgba(245,158,11,0.10)',  'border'=>'rgba(245,158,11,0.25)', 'label'=>'รอดำเนินการ'],
+                'fulfilled' => ['color'=>'#518e5c', 'bg'=>'rgba(81,142,92,0.12)',   'border'=>'rgba(81,142,92,0.28)',  'label'=>'มอบแล้ว'],
+                'cancelled' => ['color'=>'#d2592a', 'bg'=>'rgba(210,89,42,0.10)',   'border'=>'rgba(210,89,42,0.25)',  'label'=>'ยกเลิก'],
             ];
             foreach ($redemptions as $rd):
-                $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+                $rs = $rdStyle[$rd['status']] ?? $rdStyle['pending'];
             ?>
-            <div class="hy-rd-row"
-                 style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
-                        gap:0.65rem;">
-                <!-- Main row -->
+            <div class="hy-rd-row" style="padding:0.85rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem;">
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
                              gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                        <span style="font-size:1.25rem; flex-shrink:0; user-select:none; line-height:1;">
+                        <span style="font-size:1.2rem; flex-shrink:0; line-height:1; user-select:none;">
                             <?= e($rd['image_emoji'] ?: '🎁') ?>
                         </span>
                         <div style="min-width:0;">
@@ -266,32 +294,31 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?= e($rd['reward_title']) ?>
                             </p>
                             <?php if (!empty($rd['admin_note'])): ?>
-                            <p style="font-size:0.70rem; color:#6b6e77; margin:0.06rem 0 0;">
+                            <p style="font-size:0.70rem; color:#6b6e77; margin:0.04rem 0 0;">
                                 <?= e($rd['admin_note']) ?>
                             </p>
                             <?php endif; ?>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
+                    <div style="display:flex; align-items:center; gap:0.25rem; white-space:nowrap;">
                         <img src="<?= BASE_URL ?>/assets/images/token.png"
-                             width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
+                             width="12" height="12" style="object-fit:contain; opacity:0.6;" alt="">
                         <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
                             <?= (int)$rd['tokens_spent'] ?>
                         </span>
                     </div>
-                    <span style="font-size:0.73rem; color:#eeebe1; white-space:nowrap;">
+                    <span style="font-size:0.73rem; color:#9ca3af; white-space:nowrap;">
                         <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                     </span>
                     <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
                                  border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
-                                 background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                                 border:1px solid <?= $ds['border'] ?>;">
-                        <?= $rdLabels[$rd['status']] ?? $rd['status'] ?>
+                                 background:<?= $rs['bg'] ?>; color:<?= $rs['color'] ?>;
+                                 border:1px solid <?= $rs['border'] ?>;">
+                        <?= $rs['label'] ?>
                     </span>
-                </div><!-- /grid row -->
+                </div>
 
                 <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
-                <!-- Coupon code reveal -->
                 <div style="display:inline-flex; align-items:center; gap:0.55rem;
                             background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.22);
                             border-radius:10px; padding:0.42rem 0.85rem; align-self:flex-start;">
@@ -320,12 +347,11 @@ require_once __DIR__ . '/../includes/header.php';
                     <span style="font-size:0.68rem; color:#3a3e43;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
                 </div>
                 <?php endif; ?>
-
-            </div><!-- /hy-rd-row -->
+            </div>
             <?php endforeach; ?>
         </div>
         <?php endif; ?>
-        </div><!-- /panel-rd -->
+        </div>
 
     </div><!-- /inner -->
 </div><!-- /hy-history-wrap -->
@@ -359,6 +385,33 @@ require_once __DIR__ . '/../includes/header.php';
     border-radius: 999px;
     padding: 0.10rem 0.42rem;
 }
+.hy-table-wrap {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+.hy-table-head {
+    display: grid;
+    gap: 1rem;
+    padding: 0.65rem 1.25rem;
+    background: rgba(255,255,255,0.03);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #6b6e77;
+}
+.hy-empty-state {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 3.5rem;
+    text-align: center;
+    backdrop-filter: blur(8px);
+}
 .hy-tx-row, .hy-rd-row {
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
@@ -371,23 +424,12 @@ require_once __DIR__ . '/../includes/header.php';
 </style>
 
 <script>
+const ALL_PANELS = ['token','quest','reward'];
 function switchTab(tab) {
-    const panelTx = document.getElementById('panel-tx');
-    const panelRd = document.getElementById('panel-rd');
-    const btnTx   = document.getElementById('tab-tx');
-    const btnRd   = document.getElementById('tab-rd');
-
-    if (tab === 'tx') {
-        panelTx.style.display = '';
-        panelRd.style.display = 'none';
-        btnTx.classList.add('hy-tab--active');
-        btnRd.classList.remove('hy-tab--active');
-    } else {
-        panelTx.style.display = 'none';
-        panelRd.style.display = '';
-        btnRd.classList.add('hy-tab--active');
-        btnTx.classList.remove('hy-tab--active');
-    }
+    ALL_PANELS.forEach(p => {
+        document.getElementById('panel-' + p).style.display = p === tab ? '' : 'none';
+        document.getElementById('tab-'   + p).classList.toggle('hy-tab--active', p === tab);
+    });
 }
 </script>
 

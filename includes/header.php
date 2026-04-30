@@ -15,9 +15,13 @@
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-$isAdmin      = ($_SESSION['role'] ?? '') === 'admin';
+$_sessionRole  = $_SESSION['role'] ?? '';
+$isAdmin       = $_sessionRole === 'admin';
+$isHr          = $_sessionRole === 'hr';
+$isIt          = $_sessionRole === 'it';
+$isAdminOrHr   = $isAdmin || $isHr || $isIt;
 $navBalance   = (int)($_SESSION['token_balance'] ?? 0);
-$pendingCount = $isAdmin ? getPendingCount() : 0;
+$pendingCount = $isAdminOrHr ? getPendingCount() : 0;
 $flash        = getFlash();
 ?>
 <!DOCTYPE html>
@@ -237,47 +241,60 @@ $flash        = getFlash();
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 
+                <?php
+                // ตรวจว่าอยู่ใน /admin/ zone หรือเปล่า
+                $isAdminPage = (strpos($_SERVER['PHP_SELF'] ?? '', '/admin/') !== false);
+                // HR/IT: logo link ตาม zone ปัจจุบัน — admin: logo home
+                $logoHref = $isAdmin
+                    ? BASE_URL . '/admin/dashboard.php'
+                    : ($isAdminOrHr && $isAdminPage
+                        ? BASE_URL . '/admin/dashboard.php'
+                        : BASE_URL . '/index.php');
+                ?>
                 <!-- Logo -->
-                <a href="<?php echo BASE_URL; ?>/<?php echo $isAdmin ? 'admin/dashboard.php' : 'index.php'; ?>"
+                <a href="<?php echo $logoHref; ?>"
                    class="nav-logo-link flex items-center gap-3 flex-shrink-0">
                     <img src="<?php echo BASE_URL; ?>/assets/images/logo.png"
                          alt="JOURNAL"
                          class="nav-logo h-20 w-auto">
-                    <!-- <span class="hidden sm:block w-px h-5" style="background:#3a3e43;"></span>
-                    <span class="hidden sm:block text-xs font-medium tracking-widest uppercase" style="color:#6b6e77;">
-                        Mission Token
-                    </span> -->
                     <?php if ($isAdmin): ?>
                     <span class="badge text-xs" style="background:#62307a; color:#eeebe1;">Admin</span>
+                    <?php elseif ($isHr): ?>
+                    <span class="badge text-xs" style="background:#4f8b98; color:#eeebe1;">HR</span>
+                    <?php elseif ($isIt): ?>
+                    <span class="badge text-xs" style="background:#2f4e9d; color:#eeebe1;">IT</span>
                     <?php endif; ?>
                 </a>
 
                 <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center">
                     <?php
-                    // Pending redemptions count for admin badge
+                    // Pending counts (admin/hr/it zone only)
                     $pendingRedemptionCount = 0;
-                    if ($isAdmin) {
+                    if ($isAdminOrHr && $isAdminPage) {
                         try {
                             $r = getDB()->query("SELECT COUNT(*) AS c FROM dbo.reward_redemptions WHERE status='pending'")->fetch();
                             $pendingRedemptionCount = (int)($r['c'] ?? 0);
                         } catch (Throwable $e) { /* table may not exist yet */ }
                     }
 
-                    if ($isAdmin) {
+                    // Nav context: follow current page zone, not role
+                    if ($isAdminOrHr && $isAdminPage) {
+                        // อยู่ใน /admin/ → แสดง admin nav
                         $navLinks = [
-                            'admin_dashboard'    => ['label' => 'ภาพรวมระบบ',    'href' => BASE_URL . '/admin/dashboard.php'],
-                            'admin_challenges'   => ['label' => 'จัดการภารกิจ',  'href' => BASE_URL . '/admin/challenges/index.php'],
-                            'admin_submissions'  => ['label' => 'อนุมัติงาน',     'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
-                            'admin_rewards'      => ['label' => 'จัดการรางวัล',   'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
-                            'admin_employees'    => ['label' => 'จัดการพนักงาน',  'href' => BASE_URL . '/admin/employees.php'],
+                            'admin_dashboard'   => ['label' => 'ภาพรวมระบบ',   'href' => BASE_URL . '/admin/dashboard.php'],
+                            'admin_challenges'  => ['label' => 'จัดการภารกิจ', 'href' => BASE_URL . '/admin/challenges/index.php'],
+                            'admin_submissions' => ['label' => 'อนุมัติงาน',    'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
+                            'admin_rewards'     => ['label' => 'จัดการรางวัล',  'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
+                            'admin_employees'   => ['label' => 'จัดการพนักงาน', 'href' => BASE_URL . '/admin/employees.php'],
                         ];
                     } else {
+                        // อยู่ใน /pages/ หรือ employee zone → แสดง employee nav
                         $navLinks = [
-                            'dashboard'   => ['label' => 'หน้าแรก',  'href' => BASE_URL . '/pages/dashboard.php'],
-                            'challenges'  => ['label' => 'ภารกิจ',   'href' => BASE_URL . '/pages/challenges.php'],
-                            'rewards'     => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
-                            'history'     => ['label' => 'ประวัติ',   'href' => BASE_URL . '/pages/history.php'],
+                            'dashboard'  => ['label' => 'หน้าแรก',   'href' => BASE_URL . '/pages/dashboard.php'],
+                            'challenges' => ['label' => 'ภารกิจ',    'href' => BASE_URL . '/pages/challenges.php'],
+                            'rewards'    => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
+                            'history'    => ['label' => 'ประวัติ',    'href' => BASE_URL . '/pages/history.php'],
                         ];
                     }
 
@@ -297,13 +314,14 @@ $flash        = getFlash();
                         <?php endif; ?>
                     </a>
                     <?php endforeach; ?>
+
                 </div>
 
                 <!-- Right: Token Balance + User Menu -->
                 <div id="nav-right" class="flex items-center gap-3">
 
-                    <!-- Token Balance (employee only) -->
-                    <?php if (!$isAdmin): ?>
+                    <!-- Token Balance — แสดงเมื่ออยู่ใน employee zone -->
+                    <?php if (!$isAdminPage || !$isAdminOrHr): ?>
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
                          style="background:#1a1f20; border: 1px solid #3a3e43;">
                         <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
@@ -346,6 +364,34 @@ $flash        = getFlash();
                                 <?php endif; ?>
                             </div>
                             <!-- Links -->
+                            <?php if ($isAdminOrHr && !$isAdmin): ?>
+                            <!-- Zone switcher — HR/IT เท่านั้น -->
+                            <?php if ($isAdminPage): ?>
+                            <a href="<?php echo BASE_URL; ?>/pages/dashboard.php"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
+                               style="color:#9ca3af; border-color:#3a3e43;"
+                               onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
+                               onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                                ภารกิจของฉัน
+                            </a>
+                            <?php else: ?>
+                            <a href="<?php echo BASE_URL; ?>/admin/submissions.php"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
+                               style="color:#9ca3af; border-color:#3a3e43;"
+                               onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
+                               onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                จัดการระบบ
+                            </a>
+                            <?php endif; ?>
+                            <?php endif; ?>
                             <?php if (!$isAdmin): ?>
                             <a href="<?php echo BASE_URL; ?>/pages/profile.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
