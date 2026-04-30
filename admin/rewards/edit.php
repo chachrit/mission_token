@@ -22,14 +22,15 @@ if ($rewardId <= 0) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateCsrf();
 
-    $title    = trim($_POST['title']       ?? '');
-    $desc     = trim($_POST['description'] ?? '');
-    $emoji    = mb_substr(trim($_POST['image_emoji'] ?? '🎁'), 0, 4, 'UTF-8');
-    $category = $_POST['category']         ?? 'general';
-    $cost     = max(1, (int)($_POST['token_cost'] ?? 50));
-    $stockRaw = trim($_POST['stock']       ?? '');
-    $stock    = ($stockRaw === '') ? null : max(0, (int)$stockRaw);
-    $isActive = isset($_POST['is_active']) ? 1 : 0;
+    $title      = trim($_POST['title']       ?? '');
+    $desc       = trim($_POST['description'] ?? '');
+    $emoji      = mb_substr(trim($_POST['image_emoji'] ?? '🎁'), 0, 4, 'UTF-8');
+    $category   = $_POST['category']         ?? 'general';
+    $cost       = max(1, (int)($_POST['token_cost'] ?? 50));
+    $stockRaw   = trim($_POST['stock']       ?? '');
+    $stock      = ($stockRaw === '') ? null : max(0, (int)$stockRaw);
+    $isActive   = isset($_POST['is_active']) ? 1 : 0;
+    $couponCode = trim($_POST['coupon_code'] ?? '');
 
     $allowed = ['voucher', 'leave', 'merch', 'perk', 'general'];
     if (!in_array($category, $allowed, true)) $category = 'general';
@@ -43,9 +44,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare("
             UPDATE dbo.rewards
             SET title = ?, description = ?, image_emoji = ?,
-                category = ?, token_cost = ?, stock = ?, is_active = ?
+                category = ?, token_cost = ?, stock = ?, is_active = ?,
+                coupon_code = ?
             WHERE reward_id = ?
-        ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $isActive, $rewardId]);
+        ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $isActive,
+                     $couponCode ?: null, $rewardId]);
         setFlash('success', 'แก้ไขรางวัล "' . $title . '" เรียบร้อยแล้ว');
     } catch (Throwable $e) {
         error_log('[MissionToken] edit reward error: ' . $e->getMessage());
@@ -235,6 +238,30 @@ require_once __DIR__ . '/../../includes/header.php';
                                class="journal-input">
                         <span style="font-size:0.68rem; color:#3a3e43; margin-top:0.25rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
                     </div>
+                </div>
+
+                <!-- Coupon code -->
+                <div style="margin-bottom:1.25rem; padding:1rem 1.25rem;
+                            background:rgba(218,185,55,0.04); border-radius:12px;
+                            border:1px solid rgba(218,185,55,0.12);">
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
+                        <span style="font-size:1rem;">🔑</span>
+                        <div>
+                            <p style="font-size:0.82rem; font-weight:700; color:#eeebe1; margin:0;">รหัสคูปอง / โค้ดส่วนลด</p>
+                            <p style="font-size:0.72rem; color:#6b6e77; margin:0;">
+                                พนักงานจะเห็นโค้ดนี้เมื่อ HR ยืนยันมอบรางวัลแล้วเท่านั้น
+                            </p>
+                        </div>
+                    </div>
+                    <label class="are-label">โค้ด <span style="font-weight:400; color:#3a3e43; text-transform:none;">(ไม่บังคับ)</span></label>
+                    <input type="text" name="coupon_code" maxlength="200"
+                           value="<?= e($reward['coupon_code'] ?? '') ?>"
+                           placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
+                           class="journal-input"
+                           style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;">
+                    <p style="font-size:0.68rem; color:#3a3e43; margin-top:0.3rem;">
+                        เว้นว่างถ้ารางวัลนี้ไม่ใช้ระบบโค้ด
+                    </p>
                 </div>
 
                 <!-- Active toggle -->

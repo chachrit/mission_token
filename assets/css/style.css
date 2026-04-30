@@ -1246,11 +1246,14 @@ body:has(.ds-dashboard-wrap) {
    ================================================================ */
 
 /* ── Page Background ── */
-body:has(.ch-challenges-wrap) { background-color: #091113; }
-body:has(.rw-rewards-wrap)    { background-color: #091113; }
-body:has(.ar-rewards-wrap)    { background-color: #091113; }
-body:has(.ar-redemptions-wrap){ background-color: #091113; }
+body:has(.ch-challenges-wrap)  { background-color: #091113; }
+body:has(.rw-rewards-wrap)     { background-color: #091113; }
+body:has(.ar-rewards-wrap)     { background-color: #091113; }
+body:has(.ar-redemptions-wrap) { background-color: #091113; }
 body:has(.asb-submissions-wrap){ background-color: #091113; }
+body:has(.hy-history-wrap)     { background-color: #091113; }
+body:has(.ac-challenges-wrap)  { background-color: #091113; }
+body:has(.ace-edit-wrap)       { background-color: #091113; }
 
 /* ── Aurora Blobs ── */
 @keyframes ch-aurora-drift {

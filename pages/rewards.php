@@ -140,7 +140,8 @@ try {
                rd.redeemed_at,   rd.processed_at, rd.admin_note,
                rw.title      AS reward_title,
                rw.image_emoji,
-               rw.category
+               rw.category,
+               rw.coupon_code
         FROM   dbo.reward_redemptions rd
         JOIN   dbo.rewards            rw ON rw.reward_id = rd.reward_id
         WHERE  rd.employee_id = ?
@@ -165,7 +166,7 @@ $catMeta = [
 
 $statusMeta = [
     'pending'   => ['label' => 'รอดำเนินการ', 'color' => '#b45309', 'bg' => '#fffbeb', 'border' => '#fcd34d'],
-    'fulfilled' => ['label' => 'จัดส่งแล้ว',  'color' => '#166534', 'bg' => '#f0fdf4', 'border' => '#86efac'],
+    'fulfilled' => ['label' => 'มอบแล้ว',     'color' => '#166534', 'bg' => '#f0fdf4', 'border' => '#86efac'],
     'cancelled' => ['label' => 'ยกเลิก',       'color' => '#9f1239', 'bg' => '#fff1f2', 'border' => '#fca5a5'],
 ];
 
@@ -572,7 +573,7 @@ require_once __DIR__ . '/../includes/header.php';
                              background:rgba(255,255,255,0.03);
                              border-bottom:1px solid rgba(255,255,255,0.07);
                              font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                             text-transform:uppercase; color:#3a3e43;">
+                             text-transform:uppercase; color:#6b6e77;">
                     <span>รางวัล</span>
                     <span>Token</span>
                     <span>วันที่</span>
@@ -590,8 +591,11 @@ require_once __DIR__ . '/../includes/header.php';
                     $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
                 ?>
                 <div class="rw-hist-row"
-                     style="display:grid; grid-template-columns:1fr auto auto auto;
-                             gap:1rem; padding:0.85rem 1.25rem; align-items:center;">
+                     style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
+                            gap:0.65rem;">
+                    <!-- Main row -->
+                    <div style="display:grid; grid-template-columns:1fr auto auto auto;
+                                 gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
                         <span style="font-size:1.3rem; flex-shrink:0; user-select:none; line-height:1;">
                             <?= e($rd['image_emoji'] ?: '🎁') ?>
@@ -624,7 +628,43 @@ require_once __DIR__ . '/../includes/header.php';
                                  border:1px solid <?= $ds['border'] ?>;">
                         <?= $sm['label'] ?>
                     </span>
-                </div>
+                    </div><!-- /main row -->
+
+                    <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
+                    <!-- Coupon code reveal -->
+                    <div style="display:inline-flex; align-items:center; gap:0.55rem;
+                                background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.22);
+                                border-radius:10px; padding:0.42rem 0.85rem; align-self:flex-start;">
+                        <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.10em;
+                                     color:rgba(218,185,55,0.55); text-transform:uppercase; user-select:none;">
+                            🔑 รหัสคูปอง
+                        </span>
+                        <span id="coupon-<?= (int)$rd['redemption_id'] ?>"
+                              style="font-size:0.9rem; font-weight:800; color:#f8e769;
+                                     letter-spacing:0.06em; font-family:monospace, 'Prompt';">
+                            <?= e($rd['coupon_code']) ?>
+                        </span>
+                        <button onclick="
+                            navigator.clipboard.writeText('<?= e(addslashes($rd['coupon_code'])) ?>');
+                            this.textContent='✓';
+                            setTimeout(()=>{ this.textContent='📋'; },1500);"
+                                style="background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
+                                       border-radius:6px; color:#dab937; cursor:pointer; font-size:0.72rem;
+                                       padding:0.18rem 0.42rem; line-height:1.4; transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(218,185,55,0.22)'"
+                                onmouseout="this.style.background='rgba(218,185,55,0.12)'"
+                                title="คัดลอกโค้ด">📋</button>
+                    </div>
+                    <?php elseif ($rd['status'] === 'pending'): ?>
+                    <!-- Lock hint — pending -->
+                    <div style="display:inline-flex; align-items:center; gap:0.4rem; align-self:flex-start;">
+                        <span style="font-size:0.68rem; color:#3a3e43;">🔒</span>
+                        <span style="font-size:0.68rem; color:#3a3e43; letter-spacing:0.02em;">
+                            รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล
+                        </span>
+                    </div>
+                    <?php endif; ?>
+                </div><!-- /rw-hist-row -->
                 <?php endforeach; ?>
             </div>
         </section>

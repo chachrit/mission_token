@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cost     = max(1, (int)($_POST['token_cost'] ?? 50));
         $stockRaw = trim($_POST['stock'] ?? '');
         $stock    = ($stockRaw === '' || $stockRaw === '0') ? null : max(1, (int)$stockRaw);
+        $couponCode = trim($_POST['coupon_code'] ?? '') ?: null;
 
         $allowed = ['voucher','leave','merch','perk','general'];
         if (!in_array($category, $allowed, true)) $category = 'general';
@@ -33,9 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             $pdo->prepare("
-                INSERT INTO dbo.rewards (title, description, image_emoji, category, token_cost, stock, created_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $adminId]);
+                INSERT INTO dbo.rewards (title, description, image_emoji, category, token_cost, stock, coupon_code, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $couponCode, $adminId]);
             setFlash('success', 'เพิ่มรางวัล "' . $title . '" เรียบร้อยแล้ว');
         } catch (Throwable $e) {
             error_log('[MissionToken] create reward error: ' . $e->getMessage());
@@ -306,6 +307,21 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
             </div>
 
+            <div style="margin-bottom:1.25rem; padding:1rem 1.25rem;
+                        background:rgba(218,185,55,0.04); border-radius:12px;
+                        border:1px solid rgba(218,185,55,0.12);">
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem;">
+                    <span style="font-size:0.95rem;">🔑</span>
+                    <label class="ar-label" style="margin:0;">รหัสคูปอง / โค้ดส่วนลด</label>
+                    <span style="font-size:0.70rem; color:#3a3e43;">(ไม่บังคับ)</span>
+                </div>
+                <input type="text" name="coupon_code" maxlength="200"
+                       placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
+                       class="journal-input"
+                       style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;">
+                <p style="font-size:0.68rem; color:#3a3e43; margin-top:0.3rem;">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
+            </div>
+
             <div style="display:flex; gap:0.65rem; justify-content:flex-end;">
                 <button type="button"
                         style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600;
@@ -334,7 +350,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
                         font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                        text-transform:uppercase; color:#3a3e43;">
+                        text-transform:uppercase; color: white;">
                 <span>รางวัล</span>
                 <span>หมวด</span>
                 <span>ราคา</span>
