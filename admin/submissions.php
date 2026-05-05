@@ -7,11 +7,17 @@
 require_once __DIR__ . '/../includes/hr_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-$adminId = (int)$_SESSION['employee_id'];
+$adminId    = (int)$_SESSION['employee_id'];
+$canManage  = in_array($_SESSION['role'] ?? '', ['admin', 'hr'], true);
 
 // ── POST: approve / reject ───────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateCsrf();
+
+    if (!$canManage) {
+        setFlash('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
+        redirect(BASE_URL . '/admin/submissions.php');
+    }
 
     $action       = (string)($_POST['action'] ?? '');
     $submissionId = (int)($_POST['submission_id'] ?? 0);
@@ -25,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             SELECT cs.submission_id, cs.employee_id, cs.challenge_id,
                    cs.status, cs.submission_type,
                    c.token_reward, c.title AS challenge_title
-            FROM   challenge_submissions cs
-            JOIN   challenges c ON c.challenge_id = cs.challenge_id
+            FROM   dbo.challenge_submissions cs
+            JOIN   dbo.challenges c ON c.challenge_id = cs.challenge_id
             WHERE  cs.submission_id = ?
         ");
         $stmt->execute([$submissionId]);
@@ -39,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($action === 'approve') {
                     $reward = (int)$sub['token_reward'];
                     $pdo->prepare("
-                        UPDATE challenge_submissions
+                        UPDATE dbo.challenge_submissions
                         SET    status        = 'approved',
                                token_awarded = ?,
                                reviewed_at   = GETDATE(),
@@ -60,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 } else {
                     $pdo->prepare("
-                        UPDATE challenge_submissions
+                        UPDATE dbo.challenge_submissions
                         SET    status       = 'rejected',
                                token_awarded= 0,
                                reviewed_at  = GETDATE(),
@@ -99,11 +105,11 @@ $submissions = $pdo->query("
            cs.submission_type, cs.photo_path,
            cs.status, cs.token_awarded, cs.submitted_at,
            cs.reviewed_at, cs.review_note,
-           e.full_name, e.employee_code, e.department,
+           e.full_name, e.employee_code, e.position,
            c.title AS challenge_title, c.token_reward
-    FROM   challenge_submissions cs
-    JOIN   employees  e ON e.employee_id  = cs.employee_id
-    JOIN   challenges c ON c.challenge_id = cs.challenge_id
+    FROM   dbo.challenge_submissions cs
+    JOIN   dbo.employees  e ON e.employee_id  = cs.employee_id
+    JOIN   dbo.challenges c ON c.challenge_id = cs.challenge_id
     $filterWhere
     ORDER BY cs.submitted_at DESC
 ")->fetchAll();
@@ -115,7 +121,7 @@ $statStmt = $pdo->query("
         SUM(CASE WHEN status = 'approved'       THEN 1 ELSE 0 END) AS approved_count,
         SUM(CASE WHEN status = 'rejected'       THEN 1 ELSE 0 END) AS rejected_count,
         SUM(CASE WHEN status = 'auto_approved'  THEN 1 ELSE 0 END) AS auto_count
-    FROM challenge_submissions
+    FROM dbo.challenge_submissions
     WHERE submission_type = 'photo'
 ");
 $stats = $statStmt->fetch() ?: [];
@@ -126,44 +132,6 @@ $activePage = 'admin_submissions';
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
-<style>
-/* ── Admin Submissions  prefix: asb- ───────────────────── */
-.asb-filter-tab {
-    padding: 0.4rem 1.1rem; border-radius: 999px;
-    font-size: 0.77rem; font-weight: 600; font-family: 'Prompt', sans-serif;
-    border: 1.5px solid rgba(255,255,255,0.10); background: transparent; color: #6b6e77;
-    cursor: pointer; transition: all 0.18s; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 0.4rem;
-}
-.asb-filter-tab:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
-.asb-filter-tab.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
-
-.asb-card {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px; overflow: hidden;
-    display: flex; flex-direction: column;
-    backdrop-filter: blur(8px);
-    transition: border-color 0.2s;
-}
-.asb-card.pending   { border-color: rgba(245,158,11,0.25); }
-.asb-card.approved  { border-color: rgba(81,142,92,0.28);  }
-.asb-card.rejected  { border-color: rgba(210,89,42,0.28);  }
-.asb-card:hover     { border-color: rgba(218,185,55,0.28); }
-
-.asb-card.approved:hover { border-color: rgba(81,142,92,0.45); }
-.asb-card.rejected:hover { border-color: rgba(210,89,42,0.45); }
-
-.asb-wrap .asb-note-input {
-    width: 100%; background: rgba(255,255,255,0.06);
-    border: 1.5px solid rgba(255,255,255,0.12); border-radius: 10px;
-    padding: 0.5rem 0.75rem; font-size: 0.78rem;
-    font-family: 'Prompt', sans-serif; color: #eeebe1; resize: none;
-    transition: border-color 0.15s;
-}
-.asb-wrap .asb-note-input:focus { border-color: rgba(218,185,55,0.45); outline: none; background: rgba(255,255,255,0.09); }
-.asb-wrap .asb-note-input::placeholder { color: #3a3e43; }
-</style>
 
 <div class="asb-submissions-wrap asb-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
@@ -274,8 +242,9 @@ require_once __DIR__ . '/../includes/header.php';
                 $barBorder= 'rgba(245,158,11,0.25)';
             }
 
-            $photoUrl = !empty($sub['photo_path'])
-                ? BASE_URL . '/uploads/submissions/' . rawurlencode($sub['photo_path'])
+            $photoName = !empty($sub['photo_path']) ? basename($sub['photo_path']) : null;
+            $photoUrl  = $photoName
+                ? BASE_URL . '/uploads/submissions/' . rawurlencode($photoName)
                 : null;
 
             $submittedDate = date('d/m/Y H:i', strtotime((string)$sub['submitted_at']));
@@ -340,7 +309,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </p>
                         <p style="font-size:0.70rem; color:#4a4e57; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                            <?= e($sub['department'] ?? '-') ?> · <?= e($sub['employee_code']) ?>
+                            <?= e($sub['position'] ?? '-') ?> · <?= e($sub['employee_code']) ?>
                         </p>
                     </div>
                 </div>
@@ -362,6 +331,7 @@ require_once __DIR__ . '/../includes/header.php';
             <!-- Action area (pending only) -->
             <?php if ($isPending): ?>
             <div style="padding:0 1rem 1rem;">
+            <?php if ($canManage): ?>
                 <div id="note-area-<?= $sub['submission_id'] ?>" class="hidden" style="margin-bottom:0.6rem;">
                     <textarea id="note-input-<?= $sub['submission_id'] ?>"
                               rows="2"
@@ -414,6 +384,11 @@ require_once __DIR__ . '/../includes/header.php';
                         onmouseout="this.style.color='#4a4e57'">
                     + เพิ่มหมายเหตุ
                 </button>
+            <?php else: ?>
+                <p style="margin:0.5rem 0 0; font-size:0.72rem; color:#4a4e57; text-align:center; padding:0.4rem;">
+                    รอ HR ดำเนินการ
+                </p>
+            <?php endif; ?>
             </div>
             <?php endif; ?>
 
@@ -425,27 +400,5 @@ require_once __DIR__ . '/../includes/header.php';
     </div><!-- /inner -->
 </div><!-- /asb-submissions-wrap -->
 
-<script>
-function toggleNote(id) {
-    var area = document.getElementById('note-area-' + id);
-    if (!area) return;
-    var hidden = area.classList.contains('hidden');
-    area.classList.toggle('hidden', !hidden);
-    if (hidden) document.getElementById('note-input-' + id).focus();
-}
-
-function syncNote(id, targetId) {
-    var inp = document.getElementById('note-input-' + id);
-    var tgt = document.getElementById(targetId);
-    if (inp && tgt) tgt.value = inp.value;
-}
-
-function confirmReject(id) {
-    var inp  = document.getElementById('note-input-' + id);
-    var note = document.getElementById('reject-note-' + id);
-    if (inp && note) note.value = inp.value;
-    return confirm('ยืนยันปฏิเสธการส่งงานนี้?\nพนักงานจะไม่ได้รับ Token และสามารถเห็นหมายเหตุที่คุณใส่ไว้');
-}
-</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

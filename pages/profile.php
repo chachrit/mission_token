@@ -58,7 +58,7 @@ try {
     $pdo = getDB();
     $mStmt = $pdo->prepare("
         SELECT ISNULL(SUM(token_awarded), 0) AS monthly
-        FROM   challenge_submissions
+        FROM   dbo.challenge_submissions
         WHERE  employee_id = ?
           AND  status IN ('approved', 'auto_approved')
           AND  MONTH(submitted_at) = MONTH(GETDATE())
@@ -73,7 +73,7 @@ $completedCount = 0;
 try {
     $cStmt = $pdo->prepare("
         SELECT COUNT(DISTINCT challenge_id) AS cnt
-        FROM   challenge_submissions
+        FROM   dbo.challenge_submissions
         WHERE  employee_id = ?
           AND  status IN ('approved', 'auto_approved')
     ");
@@ -87,236 +87,225 @@ $activePage = 'profile';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<div class="pf-profile-wrap">
 
-    <!-- Profile hero card -->
-    <div class="rounded-2xl mb-6" style="background:#091113;">
-        <!-- Top banner -->
-        <!-- <div class="h-20 rounded-t-2xl relative overflow-hidden" style="background:linear-gradient(135deg,#1a1f20 0%,#2a2310 60%,#3a3010 100%);">
-            <div class="absolute inset-0 opacity-20"
-                 style="background-image:radial-gradient(circle at 30% 50%, #dab937 1px, transparent 1px);
-                        background-size:28px 28px;"></div>
-        </div> -->
-        <!-- Avatar + info -->
-        <div class="px-6 pb-6 -mt-10 flex items-end gap-5 flex-wrap">
-            <div class="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl font-bold flex-shrink-0 ring-4 ring-[#091113]"
-                 style="background:#dab937; color:#091113;">
+    <!-- Aurora blobs (shared with other dark pages) -->
+    <div class="ch-aurora-blob ch-aurora-blob--1" aria-hidden="true"></div>
+    <div class="ch-aurora-blob ch-aurora-blob--2" aria-hidden="true"></div>
+
+    <div class="pf-inner">
+
+        <!-- Flash message -->
+        <?php if ($flash): ?>
+        <div class="pf-flash pf-flash--<?= e($flash['type']) ?>">
+            <?= e($flash['message']) ?>
+        </div>
+        <?php endif; ?>
+
+        <!-- ═══════════════════════════════════════
+             HERO — Avatar + name + role badge
+        ═══════════════════════════════════════ -->
+        <div class="pf-hero">
+            <div class="pf-avatar">
                 <?= mb_substr($profile['full_name'] ?? 'U', 0, 1, 'UTF-8') ?>
             </div>
-            <div class="pb-1 flex-1 min-w-0">
-                <h1 class="text-xl font-bold" style="color:#fdfcdf;"><?= e($profile['full_name'] ?? '') ?></h1>
-                <p class="text-sm mt-0.5" style="color:#6b6e77;">
+            <div class="pf-hero-info">
+                <h1 class="pf-name"><?= e($profile['full_name'] ?? '') ?></h1>
+                <p class="pf-sub">
                     <?= e($profile['position'] ?? '') ?>
                     <?php if ($profile['department'] ?? ''): ?>
-                    <span class="mx-1.5" style="color:#3a3e43;">·</span>
-                    <?= e($profile['department']) ?>
+                    <span class="pf-dot">·</span><?= e($profile['department']) ?>
                     <?php endif; ?>
                 </p>
-                <p class="text-xs mt-1 font-mono" style="color:#dab937;"><?= e($profile['employee_code'] ?? '') ?></p>
+                <p class="pf-code"><?= e($profile['employee_code'] ?? '') ?></p>
             </div>
             <!-- Token balance pill -->
-            <div class="flex items-center gap-2 px-4 py-2 rounded-full mb-1"
-                 style="background:#1a1f20; border:1px solid #3a3e43;">
-                <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:18px;height:18px;object-fit:contain;">
-                <span class="text-sm font-bold" style="color:#dab937;"><?= formatTokens((int)$wallet['balance']) ?></span>
-                <span class="text-xs" style="color:#6b6e77;">Token</span>
+            <div class="pf-balance-pill">
+                <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="pf-token-icon token-spin">
+                <span class="pf-balance-num"><?= formatTokens((int)$wallet['balance']) ?></span>
+                <span class="pf-balance-label">Token คงเหลือ</span>
             </div>
         </div>
-    </div>
 
-    <!-- Stats row -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-        <div class="journal-card p-4 text-center">
-            <p class="text-2xl font-bold text-j-gold"><?= formatTokens((int)$wallet['total_earned']) ?></p>
-            <p class="text-xs text-j-slate mt-0.5">Token สะสมทั้งหมด</p>
+        <!-- ═══════════════════════════════════════
+             STATS ROW
+        ═══════════════════════════════════════ -->
+        <div class="pf-stats-grid">
+            <?php
+            $stats = [
+                ['value' => formatTokens((int)$wallet['total_earned']), 'label' => 'Token สะสมทั้งหมด', 'color' => '#dab937'],
+                ['value' => formatTokens((int)$wallet['total_spent']),  'label' => 'Token ที่ใช้ไป',    'color' => '#d2592a'],
+                ['value' => (string)$completedCount,                    'label' => 'ภารกิจสำเร็จ',       'color' => '#4f8b98'],
+                ['value' => formatTokens($monthlyEarned),               'label' => 'Token เดือนนี้',     'color' => '#518e5c'],
+            ];
+            foreach ($stats as $s):
+            ?>
+            <div class="pf-stat-card">
+                <p class="pf-stat-value" style="color:<?= $s['color'] ?>;"><?= $s['value'] ?></p>
+                <p class="pf-stat-label"><?= $s['label'] ?></p>
+            </div>
+            <?php endforeach; ?>
         </div>
-        <div class="journal-card p-4 text-center">
-            <p class="text-2xl font-bold text-j-dark"><?= $completedCount ?></p>
-            <p class="text-xs text-j-slate mt-0.5">ภารกิจสำเร็จ</p>
-        </div>
-        <div class="journal-card p-4 text-center">
-            <p class="text-2xl font-bold" style="color:#518e5c;"><?= formatTokens($monthlyEarned) ?></p>
-            <p class="text-xs text-j-slate mt-0.5">Token เดือนนี้</p>
-        </div>
-    </div>
 
-    <!-- Tenure card -->
-    <?php if ($tenure): ?>
-    <div class="rounded-2xl p-6 mb-6 relative overflow-hidden"
-         style="background:linear-gradient(135deg,#fdfcdf 0%,#faf0cf 100%); border:1px solid #dab937;">
-        <div class="absolute right-4 top-4 opacity-10" style="font-size:80px; line-height:1;">🏅</div>
-        <p class="text-xs font-semibold uppercase tracking-widest text-j-slate mb-3">อายุงาน</p>
-        <div class="flex items-end gap-3 flex-wrap">
-            <?php if ($tenure['years'] > 0): ?>
-            <div class="flex items-end gap-1">
-                <span class="text-5xl font-bold text-j-dark leading-none"><?= $tenure['years'] ?></span>
-                <span class="text-lg font-medium text-j-slate pb-1">ปี</span>
-            </div>
-            <?php endif; ?>
-            <?php if ($tenure['months'] > 0): ?>
-            <div class="flex items-end gap-1">
-                <span class="text-4xl font-bold text-j-charcoal leading-none"><?= $tenure['months'] ?></span>
-                <span class="text-base font-medium text-j-slate pb-1">เดือน</span>
-            </div>
-            <?php endif; ?>
-            <?php if ($tenure['years'] === 0 && $tenure['months'] === 0 && $tenure['days'] > 0): ?>
-            <div class="flex items-end gap-1">
-                <span class="text-4xl font-bold text-j-charcoal leading-none"><?= $tenure['days'] ?></span>
-                <span class="text-base font-medium text-j-slate pb-1">วัน</span>
-            </div>
-            <?php endif; ?>
-        </div>
-        <div class="mt-3 flex items-center gap-2">
-            <span class="text-sm text-j-slate">
-                เริ่มงานวันที่
-                <?= date('d', strtotime($tenure['start_date'])) ?>
-                <?php
-                $thaiMonths = ['', 'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-                               'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-                echo $thaiMonths[(int)date('n', strtotime($tenure['start_date']))];
-                ?>
-                <?= (int)date('Y', strtotime($tenure['start_date'])) + 543 ?>
-            </span>
-            <span class="text-j-silver">·</span>
-            <span class="text-sm font-medium text-j-gold-dk"><?= number_format($tenure['total_days']) ?> วันที่ทำงาน</span>
-        </div>
-    </div>
-    <?php else: ?>
-    <div class="rounded-2xl p-5 mb-6 text-sm text-j-slate border border-dashed border-j-silver text-center">
-        ยังไม่มีข้อมูลวันเริ่มงานในระบบ
-    </div>
-    <?php endif; ?>
+        <div class="pf-grid-2col">
 
-    <!-- Profile info (read-only, synced from HR API) -->
-    <div class="journal-card p-6 mb-6">
-        <div class="flex items-center justify-between mb-5">
-            <h2 class="text-base font-semibold text-j-dark">ข้อมูลส่วนตัว</h2>
-        </div>
-        <div class="grid sm:grid-cols-2 gap-4">
-            <div>
-                <p class="text-xs font-medium text-j-slate mb-1">ชื่อ-นามสกุล</p>
-                <p class="text-sm font-medium text-j-dark"><?= e($profile['full_name'] ?? '-') ?></p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-j-slate mb-1">รหัสพนักงาน</p>
-                <p class="text-sm font-mono text-j-dark"><?= e($profile['employee_code'] ?? '-') ?></p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-j-slate mb-1">แผนก</p>
-                <p class="text-sm text-j-dark"><?= e($profile['department'] ?? '-') ?></p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-j-slate mb-1">ตำแหน่ง</p>
-                <p class="text-sm text-j-dark"><?= e($profile['position'] ?? '-') ?></p>
-            </div>
-            <div class="sm:col-span-2">
-                <p class="text-xs font-medium text-j-slate mb-1">อีเมล</p>
-                <p class="text-sm text-j-dark"><?= e($profile['email'] ?? '-') ?></p>
-            </div>
-        </div>
-    </div>
+            <!-- ═══════════════════════════════════════
+                 LEFT COLUMN
+            ═══════════════════════════════════════ -->
+            <div class="pf-col">
 
-    <!-- Change Password -->
-    <div class="journal-card p-6">
-        <h2 class="text-base font-semibold text-j-dark mb-5">เปลี่ยนรหัสผ่าน</h2>
-        <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" id="pw-form">
-            <?= csrfField() ?>
-            <div class="grid gap-4">
-                <div>
-                    <label for="current_password" class="block text-xs font-medium text-j-slate mb-1.5">
-                        รหัสผ่านปัจจุบัน
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="current_password" name="current_password"
-                               autocomplete="current-password"
-                               class="journal-input pr-10" required>
-                        <button type="button" onclick="togglePw('current_password')"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-j-slate hover:text-j-dark transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
+                <!-- Tenure card -->
+                <?php if ($tenure): ?>
+                <div class="pf-card pf-tenure-card">
+                    <p class="pf-card-label">อายุงาน</p>
+                    <div class="pf-tenure-nums">
+                        <?php if ($tenure['years'] > 0): ?>
+                        <div class="pf-tenure-unit">
+                            <span class="pf-tenure-big"><?= $tenure['years'] ?></span>
+                            <span class="pf-tenure-unit-label">ปี</span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($tenure['months'] > 0): ?>
+                        <div class="pf-tenure-unit">
+                            <span class="pf-tenure-mid"><?= $tenure['months'] ?></span>
+                            <span class="pf-tenure-unit-label">เดือน</span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($tenure['years'] === 0 && $tenure['months'] === 0 && $tenure['days'] > 0): ?>
+                        <div class="pf-tenure-unit">
+                            <span class="pf-tenure-mid"><?= $tenure['days'] ?></span>
+                            <span class="pf-tenure-unit-label">วัน</span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <p class="pf-tenure-since">
+                        <?php
+                        $thaiMonths = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.',
+                                       'ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+                        $sd = strtotime($tenure['start_date']);
+                        echo 'เริ่มงาน ' . date('d', $sd) . ' ' . $thaiMonths[(int)date('n', $sd)]
+                           . ' ' . ((int)date('Y', $sd) + 543);
+                        ?>
+                        <span class="pf-tenure-days"><?= number_format($tenure['total_days']) ?> วันที่ทำงาน</span>
+                    </p>
+                </div>
+                <?php else: ?>
+                <div class="pf-card pf-tenure-card pf-tenure-empty">
+                    ยังไม่มีข้อมูลวันเริ่มงานในระบบ
+                </div>
+                <?php endif; ?>
+
+                <!-- Profile info (read-only) -->
+                <div class="pf-card">
+                    <p class="pf-card-label">ข้อมูลส่วนตัว</p>
+                    <div class="pf-info-grid">
+                        <div class="pf-info-item">
+                            <span class="pf-info-key">ชื่อ-นามสกุล</span>
+                            <span class="pf-info-val"><?= e($profile['full_name'] ?? '-') ?></span>
+                        </div>
+                        <div class="pf-info-item">
+                            <span class="pf-info-key">รหัสพนักงาน</span>
+                            <span class="pf-info-val pf-mono"><?= e($profile['employee_code'] ?? '-') ?></span>
+                        </div>
+                        <div class="pf-info-item">
+                            <span class="pf-info-key">แผนก</span>
+                            <span class="pf-info-val"><?= e($profile['department'] ?? '-') ?></span>
+                        </div>
+                        <div class="pf-info-item">
+                            <span class="pf-info-key">ตำแหน่ง</span>
+                            <span class="pf-info-val"><?= e($profile['position'] ?? '-') ?></span>
+                        </div>
+                        <div class="pf-info-item pf-info-item--full">
+                            <span class="pf-info-key">อีเมล</span>
+                            <span class="pf-info-val"><?= e($profile['email'] ?? '-') ?></span>
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <label for="new_password" class="block text-xs font-medium text-j-slate mb-1.5">
-                        รหัสผ่านใหม่ <span class="text-j-slate font-normal">(อย่างน้อย 8 ตัวอักษร)</span>
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="new_password" name="new_password"
-                               autocomplete="new-password" minlength="8"
-                               class="journal-input pr-10" required>
-                        <button type="button" onclick="togglePw('new_password')"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-j-slate hover:text-j-dark transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
+
+            </div><!-- /pf-col left -->
+
+            <!-- ═══════════════════════════════════════
+                 RIGHT COLUMN — Change Password
+            ═══════════════════════════════════════ -->
+            <div class="pf-col">
+                <div class="pf-card">
+                    <p class="pf-card-label">เปลี่ยนรหัสผ่าน</p>
+                    <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" id="pw-form">
+                        <?= csrfField() ?>
+                        <div class="pf-form-fields">
+
+                            <div class="pf-field">
+                                <label for="current_password" class="pf-field-label">รหัสผ่านปัจจุบัน</label>
+                                <div class="pf-input-wrap">
+                                    <input type="password" id="current_password" name="current_password"
+                                           autocomplete="current-password" class="pf-input" required>
+                                    <button type="button" class="pf-eye-btn"
+                                            onclick="profileTogglePw('current_password')"
+                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
+                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="pf-field">
+                                <label for="new_password" class="pf-field-label">
+                                    รหัสผ่านใหม่
+                                    <span class="pf-field-hint">(อย่างน้อย 8 ตัวอักษร)</span>
+                                </label>
+                                <div class="pf-input-wrap">
+                                    <input type="password" id="new_password" name="new_password"
+                                           autocomplete="new-password" minlength="8"
+                                           class="pf-input" required>
+                                    <button type="button" class="pf-eye-btn"
+                                            onclick="profileTogglePw('new_password')"
+                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
+                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="pf-field">
+                                <label for="confirm_password" class="pf-field-label">ยืนยันรหัสผ่านใหม่</label>
+                                <div class="pf-input-wrap">
+                                    <input type="password" id="confirm_password" name="confirm_password"
+                                           autocomplete="new-password" class="pf-input" required>
+                                    <button type="button" class="pf-eye-btn"
+                                            onclick="profileTogglePw('confirm_password')"
+                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
+                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p id="pw-match-hint" class="pf-match-hint" aria-live="polite"></p>
+                            </div>
+
+                        </div><!-- /pf-form-fields -->
+
+                        <div class="pf-form-actions">
+                            <button type="submit" class="btn-gold">บันทึกรหัสผ่าน</button>
+                            <button type="reset" class="btn-outline" style="border-color:rgba(255,255,255,0.15); color:#9ca3af;">ล้างฟอร์ม</button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label for="confirm_password" class="block text-xs font-medium text-j-slate mb-1.5">
-                        ยืนยันรหัสผ่านใหม่
-                    </label>
-                    <div class="relative">
-                        <input type="password" id="confirm_password" name="confirm_password"
-                               autocomplete="new-password"
-                               class="journal-input pr-10" required>
-                        <button type="button" onclick="togglePw('confirm_password')"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-j-slate hover:text-j-dark transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <p id="pw-match-hint" class="mt-1.5 text-xs hidden"></p>
-                </div>
-            </div>
-            <div class="mt-5 flex items-center gap-3">
-                <button type="submit" class="btn-gold">บันทึกรหัสผ่าน</button>
-                <button type="reset" class="btn-outline">ล้างฟอร์ม</button>
-            </div>
-        </form>
-    </div>
+            </div><!-- /pf-col right -->
 
-</div>
-
-<script>
-function togglePw(fieldId) {
-    var el = document.getElementById(fieldId);
-    el.type = el.type === 'password' ? 'text' : 'password';
-}
-
-// Live confirm-password match hint
-(function () {
-    var newPw    = document.getElementById('new_password');
-    var confPw   = document.getElementById('confirm_password');
-    var hint     = document.getElementById('pw-match-hint');
-
-    function checkMatch() {
-        if (!confPw.value) { hint.classList.add('hidden'); return; }
-        if (newPw.value === confPw.value) {
-            hint.textContent = '✓ รหัสผ่านตรงกัน';
-            hint.style.color = '#518e5c';
-        } else {
-            hint.textContent = '✗ รหัสผ่านไม่ตรงกัน';
-            hint.style.color = '#d2592a';
-        }
-        hint.classList.remove('hidden');
-    }
-
-    newPw.addEventListener('input', checkMatch);
-    confPw.addEventListener('input', checkMatch);
-})();
-</script>
+        </div><!-- /pf-grid-2col -->
+    </div><!-- /pf-inner -->
+</div><!-- /pf-profile-wrap -->
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

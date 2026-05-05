@@ -15,6 +15,14 @@ $pdo     = getDB();
 // ══════════════════════════════════════════════════════════════
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateCsrf();
+
+    // Only HR and admin can process redemptions
+    $postRole = $_SESSION['role'] ?? '';
+    if ($postRole !== 'admin' && $postRole !== 'hr') {
+        setFlash('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
+        redirect(BASE_URL . '/admin/rewards/redemptions.php');
+    }
+
     $action       = $_POST['action']        ?? '';
     $redemptionId = (int)($_POST['redemption_id'] ?? 0);
     $adminNote    = mb_substr(trim($_POST['admin_note'] ?? ''), 0, 500, 'UTF-8');
@@ -158,55 +166,9 @@ $catMeta = [
 
 $pageTitle  = 'คำขอแลกรางวัล';
 $activePage = 'admin_rewards';
+$canManage  = in_array($_SESSION['role'] ?? '', ['admin', 'hr'], true);
 require_once __DIR__ . '/../../includes/header.php';
 ?>
-
-<style>
-/* ── Admin Redemptions  prefix: ard- ────────────────────── */
-.ard-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.12s; }
-.ard-row:last-child { border-bottom: none; }
-.ard-row:hover { background: rgba(218,185,55,0.03); }
-
-#action-modal {
-    display: none; position: fixed; inset: 0; z-index: 9000;
-    background: rgba(9,17,19,0.75); backdrop-filter: blur(6px);
-    align-items: center; justify-content: center; padding: 1.5rem;
-}
-#action-modal.open { display: flex; }
-
-.ard-modal-box {
-    background: rgba(15,20,23,0.97); border: 1px solid rgba(218,185,55,0.18);
-    border-radius: 20px; width: 100%; max-width: 440px; overflow: hidden;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
-    backdrop-filter: blur(20px);
-    animation: ard-modal-in 0.25s cubic-bezier(.22,.97,.5,1.18);
-}
-@keyframes ard-modal-in {
-    from { opacity:0; transform: scale(0.9) translateY(20px); }
-    to   { opacity:1; transform: scale(1) translateY(0); }
-}
-
-.ard-filter-tab {
-    padding: 0.4rem 1rem; border-radius: 999px;
-    font-size: 0.77rem; font-weight: 600; font-family: 'Prompt', sans-serif;
-    border: 1.5px solid rgba(255,255,255,0.10); background: transparent; color: #6b6e77;
-    cursor: pointer; transition: all 0.18s; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 0.4rem;
-}
-.ard-filter-tab:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
-.ard-filter-tab.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
-
-.ard-wrap .journal-input {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: #eeebe1;
-}
-.ard-wrap .journal-input:focus {
-    border-color: rgba(218,185,55,0.45);
-    background: rgba(255,255,255,0.09);
-}
-.ard-wrap .journal-input::placeholder { color: #3a3e43; }
-</style>
 
 <div class="ar-redemptions-wrap ard-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
@@ -393,10 +355,11 @@ require_once __DIR__ . '/../../includes/header.php';
                     </span>
 
                     <?php if ($rd['status'] === 'pending'): ?>
+                    <?php if ($canManage): ?>
                     <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
-                        <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
-                                                     <?= json_encode($rd['full_name']) ?>,
-                                                     <?= json_encode($rd['reward_title']) ?>)'
+                        <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
+                                                       <?= json_encode($rd['full_name']) ?>,
+                                                       <?= json_encode($rd['reward_title']) ?>)'
                                 style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
                                        background:rgba(81,142,92,0.15); color:#7ec98a;
                                        border:1px solid rgba(81,142,92,0.30);
@@ -406,9 +369,9 @@ require_once __DIR__ . '/../../includes/header.php';
                                 onmouseout="this.style.background='rgba(81,142,92,0.15)'">
                             ✓ มอบรางวัลแล้ว
                         </button>
-                        <button onclick='openAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
-                                                     <?= json_encode($rd['full_name']) ?>,
-                                                     <?= json_encode($rd['reward_title']) ?>)'
+                        <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
+                                                       <?= json_encode($rd['full_name']) ?>,
+                                                       <?= json_encode($rd['reward_title']) ?>)'
                                 style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
                                        background:rgba(210,89,42,0.12); color:#d2592a;
                                        border:1px solid rgba(210,89,42,0.28);
@@ -419,6 +382,9 @@ require_once __DIR__ . '/../../includes/header.php';
                             ✕ ยกเลิก
                         </button>
                     </div>
+                    <?php else: ?>
+                    <span style="font-size:0.68rem; color:#3a3e43; font-style:italic;">รอ HR ดำเนินการ</span>
+                    <?php endif; ?>
                     <?php elseif ($rd['processed_at']): ?>
                     <span style="font-size:0.68rem; color:#3a3e43;">
                         <?= date('d/m/y H:i', strtotime($rd['processed_at'])) ?>
@@ -433,14 +399,15 @@ require_once __DIR__ . '/../../includes/header.php';
     </div><!-- /inner -->
 </div><!-- /ar-redemptions-wrap -->
 
-<!-- ACTION MODAL -->
-<div id="action-modal" onclick="if(event.target===this) closeAction();">
+<?php if ($canManage): ?>
+<!-- ACTION MODAL (HR + admin only) -->
+<div id="ard-action-modal">
     <div class="ard-modal-box">
         <div style="background:linear-gradient(135deg,rgba(218,185,55,0.10),rgba(218,185,55,0.02));
                     border-bottom:1px solid rgba(218,185,55,0.14);
                     padding:1.15rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
-            <h2 id="modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></h2>
-            <button onclick="closeAction()"
+            <h2 id="ard-modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></h2>
+            <button onclick="ardCloseAction()"
                     style="margin-left:auto; background:none; border:none; cursor:pointer;
                            color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
                            transition:color 0.15s;"
@@ -451,13 +418,13 @@ require_once __DIR__ . '/../../includes/header.php';
                 </svg>
             </button>
         </div>
-        <form id="action-form" method="POST" action="">
+        <form id="ard-action-form" method="POST" action="">
             <?php echo csrfField(); ?>
-            <input type="hidden" id="form-action"        name="action"        value="">
-            <input type="hidden" id="form-redemption-id" name="redemption_id" value="">
+            <input type="hidden" id="ard-form-action"        name="action"        value="">
+            <input type="hidden" id="ard-form-redemption-id" name="redemption_id" value="">
 
             <div style="padding:1.4rem 1.65rem;">
-                <p id="modal-desc"
+                <p id="ard-modal-desc"
                    style="font-size:0.88rem; color:#c8c4b8; margin:0 0 1.25rem; line-height:1.65;"></p>
 
                 <div style="margin-bottom:1.25rem;">
@@ -465,13 +432,13 @@ require_once __DIR__ . '/../../includes/header.php';
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
                         หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#3a3e43; text-transform:none;">(ไม่บังคับ)</span>
                     </label>
-                    <textarea name="admin_note" id="form-note" rows="3" maxlength="500"
+                    <textarea name="admin_note" id="ard-form-note" rows="3" maxlength="500"
                               placeholder="เช่น จะส่งให้ในวันศุกร์นี้ / วันลาใช้ได้ภายใน 3 เดือน"
                               class="journal-input" style="resize:vertical;"></textarea>
                 </div>
 
                 <div style="display:flex; gap:0.65rem;">
-                    <button type="button" onclick="closeAction()"
+                    <button type="button" onclick="ardCloseAction()"
                             style="flex:1; padding:0.58rem 1rem; font-size:0.85rem; font-weight:600;
                                    border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
                                    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
@@ -480,7 +447,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             onmouseout="this.style.background='rgba(255,255,255,0.06)'">
                         ยกเลิก
                     </button>
-                    <button type="submit" id="modal-submit-btn"
+                    <button type="submit" id="ard-modal-submit-btn"
                             style="flex:1.5; padding:0.58rem 1rem; font-size:0.85rem; font-weight:700;
                                    border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
                                    border:none; color:#fff; transition:opacity 0.15s; text-align:center;">
@@ -491,43 +458,6 @@ require_once __DIR__ . '/../../includes/header.php';
         </form>
     </div>
 </div>
-
-<script>
-function openAction(id, action, empName, rewardTitle) {
-    document.getElementById('form-action').value          = action;
-    document.getElementById('form-redemption-id').value   = id;
-    document.getElementById('form-note').value            = '';
-
-    var isFulfill = (action === 'fulfill');
-    document.getElementById('modal-title').textContent =
-        isFulfill ? '✓ ยืนยันการมอบรางวัล' : '✕ ยืนยันการยกเลิก';
-
-    document.getElementById('modal-desc').textContent =
-        isFulfill
-            ? empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันว่าได้มอบรางวัลให้พนักงานเรียบร้อยแล้ว'
-            : empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันการยกเลิก Token จะถูกคืนให้พนักงานทันที';
-
-    var btn = document.getElementById('modal-submit-btn');
-    if (isFulfill) {
-        btn.textContent      = '✓ ยืนยันมอบรางวัล';
-        btn.style.background = '#518e5c';
-    } else {
-        btn.textContent      = '✕ ยืนยันยกเลิก';
-        btn.style.background = '#d2592a';
-    }
-
-    document.getElementById('action-modal').classList.add('open');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeAction() {
-    document.getElementById('action-modal').classList.remove('open');
-    document.body.style.overflow = '';
-}
-
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeAction();
-});
-</script>
+<?php endif; ?>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

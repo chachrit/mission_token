@@ -353,3 +353,98 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+// ============================================================
+// Admin Redemptions — action modal (fulfill / cancel)
+// ============================================================
+function ardOpenAction(id, action, empName, rewardTitle) {
+    document.getElementById('ard-form-action').value        = action;
+    document.getElementById('ard-form-redemption-id').value = id;
+    document.getElementById('ard-form-note').value          = '';
+
+    var isFulfill = (action === 'fulfill');
+    document.getElementById('ard-modal-title').textContent =
+        isFulfill ? '✓ ยืนยันการมอบรางวัล' : '✕ ยืนยันการยกเลิก';
+    document.getElementById('ard-modal-desc').textContent =
+        isFulfill
+            ? empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันว่าได้มอบรางวัลให้พนักงานเรียบร้อยแล้ว'
+            : empName + ' แลกรางวัล "' + rewardTitle + '" — ยืนยันการยกเลิก Token จะถูกคืนให้พนักงานทันที';
+
+    var btn = document.getElementById('ard-modal-submit-btn');
+    if (isFulfill) {
+        btn.textContent      = '✓ ยืนยันมอบรางวัล';
+        btn.style.background = '#518e5c';
+    } else {
+        btn.textContent      = '✕ ยืนยันยกเลิก';
+        btn.style.background = '#d2592a';
+    }
+
+    document.getElementById('ard-action-modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function ardCloseAction() {
+    document.getElementById('ard-action-modal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var modal = document.getElementById('ard-action-modal');
+    if (!modal) return;
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) ardCloseAction();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('open')) ardCloseAction();
+    });
+});
+
+// ============================================================
+// Profile Page — password toggle + confirm match hint
+// ============================================================
+function profileTogglePw(fieldId) {
+    var el = document.getElementById(fieldId);
+    if (el) el.type = el.type === 'password' ? 'text' : 'password';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    var newPw  = document.getElementById('new_password');
+    var confPw = document.getElementById('confirm_password');
+    var hint   = document.getElementById('pw-match-hint');
+    if (!newPw || !confPw || !hint) return;
+
+    function checkMatch() {
+        if (!confPw.value) { hint.textContent = ''; return; }
+        if (newPw.value === confPw.value) {
+            hint.textContent   = '✓ รหัสผ่านตรงกัน';
+            hint.style.color   = '#82b295';
+        } else {
+            hint.textContent   = '✗ รหัสผ่านไม่ตรงกัน';
+            hint.style.color   = '#d2592a';
+        }
+    }
+    newPw.addEventListener('input',  checkMatch);
+    confPw.addEventListener('input', checkMatch);
+});
+
+/* ── Admin Submissions (asb-) ───────────────────────────────── */
+function toggleNote(id) {
+    var area = document.getElementById('note-area-' + id);
+    if (!area) return;
+    var hidden = area.classList.contains('hidden');
+    area.classList.toggle('hidden', !hidden);
+    if (hidden) document.getElementById('note-input-' + id).focus();
+}
+
+function syncNote(id, targetId) {
+    var inp = document.getElementById('note-input-' + id);
+    var tgt = document.getElementById(targetId);
+    if (inp && tgt) tgt.value = inp.value;
+}
+
+function confirmReject(id) {
+    var inp  = document.getElementById('note-input-' + id);
+    var note = document.getElementById('reject-note-' + id);
+    if (inp && note) note.value = inp.value;
+    return confirm('ยืนยันปฏิเสธการส่งงานนี้?\nพนักงานจะไม่ได้รับ Token และสามารถเห็นหมายเหตุที่คุณใส่ไว้');
+}
+
