@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * includes/header.php
  * Shared HTML head + sticky navigation bar.
@@ -242,13 +242,13 @@ $flash        = getFlash();
             <div class="flex items-center justify-between h-16">
 
                 <?php
-                // ตรวจว่าอยู่ใน /admin/ zone หรือเปล่า
-                $isAdminPage = (strpos($_SERVER['PHP_SELF'] ?? '', '/admin/') !== false);
+                // ตรวจว่าอยู่ใน /hr/ zone หรือเปล่า
+                $isAdminPage = (strpos($_SERVER['PHP_SELF'] ?? '', '/hr/') !== false);
                 // HR/IT: logo link ตาม zone ปัจจุบัน — admin: logo home
                 $logoHref = $isAdmin
-                    ? BASE_URL . '/admin/dashboard.php'
+                    ? BASE_URL . '/hr/dashboard.php'
                     : ($isAdminOrHr && $isAdminPage
-                        ? BASE_URL . '/admin/dashboard.php'
+                        ? BASE_URL . '/hr/dashboard.php'
                         : BASE_URL . '/index.php');
                 ?>
                 <!-- Logo -->
@@ -280,13 +280,13 @@ $flash        = getFlash();
 
                     // Nav context: follow current page zone, not role
                     if ($isAdminOrHr && $isAdminPage) {
-                        // อยู่ใน /admin/ → แสดง admin nav
+                        // อยู่ใน /hr/ → แสดง admin nav
                         $navLinks = [
-                            'admin_dashboard'   => ['label' => 'ภาพรวมระบบ',   'href' => BASE_URL . '/admin/dashboard.php'],
-                            'admin_challenges'  => ['label' => 'จัดการภารกิจ', 'href' => BASE_URL . '/admin/challenges/index.php'],
-                            'admin_submissions' => ['label' => 'อนุมัติงาน',    'href' => BASE_URL . '/admin/submissions.php', 'badge' => $pendingCount],
-                            'admin_rewards'     => ['label' => 'จัดการรางวัล',  'href' => BASE_URL . '/admin/rewards/index.php', 'badge' => $pendingRedemptionCount],
-                            'admin_employees'   => ['label' => 'จัดการพนักงาน', 'href' => BASE_URL . '/admin/employees.php'],
+                            'admin_dashboard'   => ['label' => 'ภาพรวมระบบ',   'href' => BASE_URL . '/hr/dashboard.php'],
+                            'admin_challenges'  => ['label' => 'จัดการภารกิจ', 'href' => BASE_URL . '/hr/challenges/index.php'],
+                            'admin_submissions' => ['label' => 'อนุมัติงาน',    'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
+                            'admin_rewards'     => ['label' => 'จัดการรางวัล',  'href' => BASE_URL . '/hr/rewards/index.php', 'badge' => $pendingRedemptionCount],
+                            'admin_employees'   => ['label' => 'จัดการพนักงาน', 'href' => BASE_URL . '/hr/employees.php'],
                         ];
                     } else {
                         // อยู่ใน /pages/ หรือ employee zone → แสดง employee nav
@@ -336,10 +336,16 @@ $flash        = getFlash();
                                 style="color:#9ca3af;"
                                 onmouseover="this.style.background='#1a1f20'"
                                 onmouseout="this.style.background='transparent'">
-                            <!-- Avatar initial -->
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+                            <!-- Avatar -->
+                            <?php $_navAvatar = $_SESSION['avatar_url'] ?? ''; ?>
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden"
                                  style="background:#dab937; color:#091113;">
+                                <?php if ($_navAvatar): ?>
+                                <img src="<?php echo BASE_URL; ?>/uploads/avatars/<?php echo rawurlencode(basename($_navAvatar)); ?>"
+                                     alt="" style="width:100%;height:100%;object-fit:cover;">
+                                <?php else: ?>
                                 <?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1, 'UTF-8'); ?>
+                                <?php endif; ?>
                             </div>
                             <span class="hidden sm:block text-sm font-medium max-w-[120px] truncate" style="color:#eeebe1;">
                                 <?php echo e($_SESSION['full_name'] ?? ''); ?>
@@ -379,7 +385,7 @@ $flash        = getFlash();
                                 ภารกิจของฉัน
                             </a>
                             <?php else: ?>
-                            <a href="<?php echo BASE_URL; ?>/admin/submissions.php"
+                            <a href="<?php echo BASE_URL; ?>/hr/submissions.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
                                style="color:#9ca3af; border-color:#3a3e43;"
                                onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"

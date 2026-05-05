@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * admin/rewards/redemptions.php
  * Admin: view and process reward redemption requests
@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $postRole = $_SESSION['role'] ?? '';
     if ($postRole !== 'admin' && $postRole !== 'hr') {
         setFlash('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
-        redirect(BASE_URL . '/admin/rewards/redemptions.php');
+        redirect(BASE_URL . '/hr/rewards/redemptions.php');
     }
 
     $action       = $_POST['action']        ?? '';
@@ -47,13 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!$rd) {
                 $pdo->rollBack();
                 setFlash('error', 'ไม่พบรายการนี้');
-                redirect(BASE_URL . '/admin/rewards/redemptions.php');
+                redirect(BASE_URL . '/hr/rewards/redemptions.php');
             }
 
             if ($rd['status'] !== 'pending') {
                 $pdo->rollBack();
                 setFlash('error', 'รายการนี้ดำเนินการไปแล้ว');
-                redirect(BASE_URL . '/admin/rewards/redemptions.php');
+                redirect(BASE_URL . '/hr/rewards/redemptions.php');
             }
 
             // If cancelled, refund tokens
@@ -97,7 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[MissionToken] redemption action error: ' . $e->getMessage());
             setFlash('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่');
         }
-        redirect(BASE_URL . '/admin/rewards/redemptions.php');
+        redirect(BASE_URL . '/hr/rewards/redemptions.php');
     }
 }
 
@@ -192,7 +192,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
             <div>
                 <div style="margin-bottom:0.5rem;">
-                    <a href="<?php echo BASE_URL; ?>/admin/rewards/index.php"
+                    <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
                        style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
                               letter-spacing:0.06em; text-transform:uppercase; transition:color 0.15s;"
                        onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#4a4e57'">

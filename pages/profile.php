@@ -9,40 +9,111 @@ require_once __DIR__ . '/../includes/functions.php';
 
 $employeeId = (int)$_SESSION['employee_id'];
 
-// ── POST: change password ────────────────────────────────────
+// ── POST ─────────────────────────────────────────────────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     validateCsrf();
+    $action = (string)($_POST['_action'] ?? '');
 
-    $currentPw  = (string)($_POST['current_password']  ?? '');
-    $newPw      = (string)($_POST['new_password']       ?? '');
-    $confirmPw  = (string)($_POST['confirm_password']   ?? '');
+    // ── upload avatar ────────────────────────────────────────
+    if ($action === 'upload_avatar') {
+        $file   = $_FILES['avatar'] ?? null;
+        $errors = [];
 
-    $errors = [];
-
-    if ($currentPw === '') $errors[] = 'กรุณากรอกรหัสผ่านปัจจุบัน';
-    if (strlen($newPw) < 8) $errors[] = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร';
-    if ($newPw !== $confirmPw) $errors[] = 'รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน';
-
-    if (empty($errors)) {
-        $pdo  = getDB();
-        $stmt = $pdo->prepare("SELECT password_hash FROM dbo.employees WHERE employee_id = ?");
-        $stmt->execute([$employeeId]);
-        $row  = $stmt->fetch();
-
-        if (!$row || !password_verify($currentPw, $row['password_hash'])) {
-            $errors[] = 'รหัสผ่านปัจจุบันไม่ถูกต้อง';
+        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = 'ไม่พบไฟล์หรือเกิดข้อผิดพลาดในการอัปโหลด';
         } else {
-            $newHash = password_hash($newPw, PASSWORD_BCRYPT);
-            $pdo->prepare("UPDATE dbo.employees SET password_hash = ? WHERE employee_id = ?")
-                ->execute([$newHash, $employeeId]);
-            setFlash('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
+            $allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mime  = $finfo->file($file['tmp_name']);
+            $extMap = ['image/jpeg' => 'jpg', 'image/png' => 'png',
+                       'image/gif'  => 'gif', 'image/webp' => 'webp'];
+
+            if (!in_array($mime, $allowedMimes, true)) {
+                $errors[] = 'ไฟล์ต้องเป็นภาพ (JPG, PNG, GIF, WEBP) เท่านั้น';
+            } elseif ($file['size'] > 2 * 1024 * 1024) {
+                $errors[] = 'ขนาดไฟล์ต้องไม่เกิน 2 MB';
+            } else {
+                $ext      = $extMap[$mime];
+                $destDir  = __DIR__ . '/../uploads/avatars/';
+                if (!is_dir($destDir)) mkdir($destDir, 0755, true);
+                $filename = 'avatar_' . $employeeId . '_' . bin2hex(random_bytes(8)) . '.' . $ext;
+                $destPath = $destDir . $filename;
+
+                if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+                    $errors[] = 'ไม่สามารถบันทึกไฟล์ได้';
+                } else {
+                    // Delete old avatar
+                    $pdo  = getDB();
+                    $oldStmt = $pdo->prepare("SELECT avatar_url FROM dbo.employees WHERE employee_id = ?");
+                    $oldStmt->execute([$employeeId]);
+                    $oldUrl = $oldStmt->fetchColumn();
+                    if ($oldUrl) {
+                        $oldFile = $destDir . basename($oldUrl);
+                        if (is_file($oldFile)) @unlink($oldFile);
+                    }
+                    $pdo->prepare("UPDATE dbo.employees SET avatar_url = ? WHERE employee_id = ?")
+                        ->execute([$filename, $employeeId]);
+                    $_SESSION['avatar_url'] = $filename;
+                    setFlash('success', 'เปลี่ยนรูปโปรไฟล์สำเร็จ');
+                    redirect(BASE_URL . '/pages/profile.php');
+                }
+            }
+        }
+        if (!empty($errors)) {
+            setFlash('error', implode(' / ', $errors));
             redirect(BASE_URL . '/pages/profile.php');
         }
-    }
 
-    if (!empty($errors)) {
-        setFlash('error', implode(' / ', $errors));
+    // ── delete avatar ────────────────────────────────────────
+    } elseif ($action === 'delete_avatar') {
+        $pdo     = getDB();
+        $oldStmt = $pdo->prepare("SELECT avatar_url FROM dbo.employees WHERE employee_id = ?");
+        $oldStmt->execute([$employeeId]);
+        $oldUrl  = $oldStmt->fetchColumn();
+        if ($oldUrl) {
+            $destDir = __DIR__ . '/../uploads/avatars/';
+            $oldFile = $destDir . basename($oldUrl);
+            if (is_file($oldFile)) @unlink($oldFile);
+            $pdo->prepare("UPDATE dbo.employees SET avatar_url = NULL WHERE employee_id = ?")
+                ->execute([$employeeId]);
+            $_SESSION['avatar_url'] = '';
+        }
+        setFlash('success', 'ลบรูปโปรไฟล์แล้ว');
         redirect(BASE_URL . '/pages/profile.php');
+
+    // ── change password ──────────────────────────────────────
+    } else {
+        $currentPw  = (string)($_POST['current_password']  ?? '');
+        $newPw      = (string)($_POST['new_password']       ?? '');
+        $confirmPw  = (string)($_POST['confirm_password']   ?? '');
+
+        $errors = [];
+
+        if ($currentPw === '') $errors[] = 'กรุณากรอกรหัสผ่านปัจจุบัน';
+        if (strlen($newPw) < 8) $errors[] = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร';
+        if ($newPw !== $confirmPw) $errors[] = 'รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน';
+
+        if (empty($errors)) {
+            $pdo  = getDB();
+            $stmt = $pdo->prepare("SELECT password_hash FROM dbo.employees WHERE employee_id = ?");
+            $stmt->execute([$employeeId]);
+            $row  = $stmt->fetch();
+
+            if (!$row || !password_verify($currentPw, $row['password_hash'])) {
+                $errors[] = 'รหัสผ่านปัจจุบันไม่ถูกต้อง';
+            } else {
+                $newHash = password_hash($newPw, PASSWORD_BCRYPT);
+                $pdo->prepare("UPDATE dbo.employees SET password_hash = ? WHERE employee_id = ?")
+                    ->execute([$newHash, $employeeId]);
+                setFlash('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
+                redirect(BASE_URL . '/pages/profile.php');
+            }
+        }
+
+        if (!empty($errors)) {
+            setFlash('error', implode(' / ', $errors));
+            redirect(BASE_URL . '/pages/profile.php');
+        }
     }
 }
 
@@ -106,8 +177,45 @@ require_once __DIR__ . '/../includes/header.php';
              HERO — Avatar + name + role badge
         ═══════════════════════════════════════ -->
         <div class="pf-hero">
-            <div class="pf-avatar">
-                <?= mb_substr($profile['full_name'] ?? 'U', 0, 1, 'UTF-8') ?>
+            <div class="pf-avatar-wrap">
+                <div class="pf-avatar">
+                    <?php if (!empty($profile['avatar_url'])): ?>
+                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename($profile['avatar_url'])) ?>"
+                         alt="<?= e($profile['full_name']) ?>" class="pf-avatar-img">
+                    <?php else: ?>
+                    <?= mb_substr($profile['full_name'] ?? 'U', 0, 1, 'UTF-8') ?>
+                    <?php endif; ?>
+                </div>
+                <form method="POST" action="<?= BASE_URL ?>/pages/profile.php"
+                      enctype="multipart/form-data" id="avatar-upload-form" style="margin:0">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="_action" value="upload_avatar">
+                    <input type="file" name="avatar" id="avatar-file"
+                           accept="image/jpeg,image/png,image/gif,image/webp"
+                           style="display:none"
+                           onchange="document.getElementById('avatar-upload-form').submit()">
+                    <label for="avatar-file" class="pf-avatar-upload-btn" title="เปลี่ยนรูปโปรไฟล์">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </label>
+                </form>
+                <?php if (!empty($profile['avatar_url'])): ?>
+                <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" style="margin:0"
+                      onsubmit="return confirm('ลบรูปโปรไฟล์?')">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="_action" value="delete_avatar">
+                    <button type="submit" class="pf-avatar-delete-btn" title="ลบรูปโปรไฟล์">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                  d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </form>
+                <?php endif; ?>
             </div>
             <div class="pf-hero-info">
                 <h1 class="pf-name"><?= e($profile['full_name'] ?? '') ?></h1>
@@ -188,6 +296,28 @@ require_once __DIR__ . '/../includes/header.php';
                         ?>
                         <span class="pf-tenure-days"><?= number_format($tenure['total_days']) ?> วันที่ทำงาน</span>
                     </p>
+                    <?php
+                    $_ms = [
+                        ['y'=>1,  'label'=>'1 ปี',  'pct'=>10],
+                        ['y'=>3,  'label'=>'3 ปี',  'pct'=>30],
+                        ['y'=>5,  'label'=>'5 ปี',  'pct'=>50],
+                        ['y'=>10, 'label'=>'10 ปี', 'pct'=>100],
+                    ];
+                    $_tyears = $tenure['total_days'] / 365.25;
+                    $_fill = min(100, round($_tyears / 10 * 100, 2));
+                    ?>
+                    <div class="pf-tenure-milestones">
+                        <div class="pf-tenure-track">
+                            <div class="pf-tenure-fill" style="width:<?= $_fill ?>%;"></div>
+                            <?php foreach ($_ms as $_m): ?>
+                            <?php $_r = $_tyears >= $_m['y']; ?>
+                            <div class="pf-tenure-marker" style="left:<?= $_m['pct'] ?>%;">
+                                <div class="pf-tenure-marker-dot <?= $_r ? 'reached' : '' ?>"></div>
+                                <div class="pf-tenure-marker-label <?= $_r ? 'reached' : '' ?>"><?= $_m['label'] ?></div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
                 </div>
                 <?php else: ?>
                 <div class="pf-card pf-tenure-card pf-tenure-empty">

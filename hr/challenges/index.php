@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * admin/challenges/index.php
  * Admin — list all challenges, toggle active, delete
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    redirect(BASE_URL . '/admin/challenges/index.php');
+    redirect(BASE_URL . '/hr/challenges/index.php');
 }
 
 // ── GET: load all challenges ─────────────────────────────────
@@ -106,7 +106,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php endif; ?>
                 </p>
             </div>
-            <a href="<?= BASE_URL ?>/admin/challenges/edit.php"
+            <a href="<?= BASE_URL ?>/hr/challenges/edit.php"
                class="ch-btn-start"
                style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:12px;
                       text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
@@ -231,7 +231,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Actions -->
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.5rem;">
-                    <a href="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= (int)$ch['challenge_id'] ?>"
+                    <a href="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= (int)$ch['challenge_id'] ?>"
                        style="font-size:0.73rem; font-weight:600; padding:0.32rem 0.75rem;
                               border-radius:8px; text-decoration:none; transition:background 0.15s;
                               background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
@@ -274,7 +274,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <p style="font-size:0.92rem; color:#4a4e57; margin:0 0 1.25rem;">
                 ยังไม่มีภารกิจในระบบ
             </p>
-            <a href="<?= BASE_URL ?>/admin/challenges/edit.php"
+            <a href="<?= BASE_URL ?>/hr/challenges/edit.php"
                class="ch-btn-start"
                style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:12px;
                       text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">

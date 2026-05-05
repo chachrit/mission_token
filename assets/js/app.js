@@ -448,3 +448,74 @@ function confirmReject(id) {
     return confirm('ยืนยันปฏิเสธการส่งงานนี้?\nพนักงานจะไม่ได้รับ Token และสามารถเห็นหมายเหตุที่คุณใส่ไว้');
 }
 
+
+/* -- Admin Employees (emp-) ---------------------------------- */
+function empOpenAdjust(empId, name, balance, qs) {
+    document.getElementById('emp-adjust-emp-id').value = empId;
+    document.getElementById('emp-adjust-qs').value     = qs;
+    document.getElementById('emp-adjust-title').textContent = 'ปรับ Token: ' + name;
+    document.getElementById('emp-adjust-balance').textContent = balance.toLocaleString() + ' Token';
+    document.getElementById('emp-adjust-amount').value = '';
+    var modal = document.getElementById('emp-adjust-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() { document.getElementById('emp-adjust-amount').focus(); }, 80);
+}
+function empCloseAdjust() {
+    document.getElementById('emp-adjust-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function empOpenPw(empId, name, qs) {
+    document.getElementById('emp-pw-emp-id').value = empId;
+    document.getElementById('emp-pw-qs').value     = qs;
+    document.getElementById('emp-pw-title').textContent = 'Reset รหัสผ่าน: ' + name;
+    document.getElementById('emp-pw-new').value     = '';
+    document.getElementById('emp-pw-confirm').value = '';
+    document.getElementById('emp-pw-match-hint').textContent = '';
+    var modal = document.getElementById('emp-pw-modal');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    setTimeout(function() { document.getElementById('emp-pw-new').focus(); }, 80);
+}
+function empClosePw() {
+    document.getElementById('emp-pw-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    // ESC + click-outside for adjust modal
+    var adjModal = document.getElementById('emp-adjust-modal');
+    if (adjModal) {
+        adjModal.addEventListener('click', function(e) { if (e.target === adjModal) empCloseAdjust(); });
+    }
+    // ESC + click-outside for pw modal
+    var pwModal = document.getElementById('emp-pw-modal');
+    if (pwModal) {
+        pwModal.addEventListener('click', function(e) { if (e.target === pwModal) empClosePw(); });
+        // live password match hint
+        var pwNew  = document.getElementById('emp-pw-new');
+        var pwConf = document.getElementById('emp-pw-confirm');
+        var pwHint = document.getElementById('emp-pw-match-hint');
+        if (pwNew && pwConf && pwHint) {
+            function checkPwMatch() {
+                if (!pwConf.value) { pwHint.textContent = ''; return; }
+                if (pwNew.value === pwConf.value) {
+                    pwHint.textContent = '\u2713 \u0e23\u0e2b\u0e31\u0e2a\u0e1c\u0e48\u0e32\u0e19\u0e15\u0e23\u0e07\u0e01\u0e31\u0e19';
+                    pwHint.style.color = '#82b295';
+                } else {
+                    pwHint.textContent = '\u2717 \u0e23\u0e2b\u0e31\u0e2a\u0e1c\u0e48\u0e32\u0e19\u0e44\u0e21\u0e48\u0e15\u0e23\u0e07\u0e01\u0e31\u0e19';
+                    pwHint.style.color = '#d2592a';
+                }
+            }
+            pwNew.addEventListener('input',  checkPwMatch);
+            pwConf.addEventListener('input', checkPwMatch);
+        }
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            empCloseAdjust();
+            empClosePw();
+        }
+    });
+});

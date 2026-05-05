@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * admin/submissions.php
  * Admin — review and approve/reject photo submissions
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$canManage) {
         setFlash('error', 'คุณไม่มีสิทธิ์ดำเนินการนี้');
-        redirect(BASE_URL . '/admin/submissions.php');
+        redirect(BASE_URL . '/hr/submissions.php');
     }
 
     $action       = (string)($_POST['action'] ?? '');
@@ -90,8 +90,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Return to same filter tab
     $back = isset($_POST['filter']) && $_POST['filter'] === 'all'
-        ? BASE_URL . '/admin/submissions.php?filter=all'
-        : BASE_URL . '/admin/submissions.php';
+        ? BASE_URL . '/hr/submissions.php?filter=all'
+        : BASE_URL . '/hr/submissions.php';
     redirect($back);
 }
 
@@ -193,7 +193,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Filter tabs -->
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.75rem;">
-            <a href="<?= BASE_URL ?>/admin/submissions.php"
+            <a href="<?= BASE_URL ?>/hr/submissions.php"
                class="asb-filter-tab <?= $filter !== 'all' ? 'active' : '' ?>">
                 รอตรวจสอบ
                 <?php if ((int)($stats['pending_count'] ?? 0) > 0): ?>
@@ -203,7 +203,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </span>
                 <?php endif; ?>
             </a>
-            <a href="<?= BASE_URL ?>/admin/submissions.php?filter=all"
+            <a href="<?= BASE_URL ?>/hr/submissions.php?filter=all"
                class="asb-filter-tab <?= $filter === 'all' ? 'active' : '' ?>">
                 ทั้งหมด
             </a>
@@ -339,7 +339,7 @@ require_once __DIR__ . '/../includes/header.php';
                               class="asb-note-input"></textarea>
                 </div>
                 <div style="display:flex; gap:0.5rem;">
-                    <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
+                    <form method="POST" action="<?= BASE_URL ?>/hr/submissions.php"
                           style="flex:1;"
                           onsubmit="syncNote(<?= $sub['submission_id'] ?>, 'approve-note-<?= $sub['submission_id'] ?>')">
                         <?= csrfField() ?>
@@ -357,7 +357,7 @@ require_once __DIR__ . '/../includes/header.php';
                             ✓ อนุมัติ
                         </button>
                     </form>
-                    <form method="POST" action="<?= BASE_URL ?>/admin/submissions.php"
+                    <form method="POST" action="<?= BASE_URL ?>/hr/submissions.php"
                           style="flex:1;"
                           onsubmit="return confirmReject(<?= $sub['submission_id'] ?>)">
                         <?= csrfField() ?>

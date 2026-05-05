@@ -10,9 +10,13 @@ require_once __DIR__ . '/includes/functions.php';
 
 initSession();
 
-// Already logged in → go to dashboard
+// Already logged in → go to appropriate dashboard
 if (!empty($_SESSION['employee_id'])) {
-    redirect(BASE_URL . '/pages/dashboard.php');
+    $r = $_SESSION['role'] ?? 'employee';
+    redirect(in_array($r, ['admin','hr'])
+        ? BASE_URL . '/hr/submissions.php'
+        : BASE_URL . '/pages/dashboard.php'
+    );
 }
 
 $error   = null;
@@ -215,7 +219,11 @@ if (isPost()) {
                         $_SESSION['token_balance'] = (int)$user['token_balance'];
                         $_SESSION['last_activity'] = time();
 
-                        $dest = BASE_URL . '/pages/dashboard.php';
+                        // HR/admin → หน้า HR zone; employee/IT → dashboard
+                        $hrRoles = ['admin', 'hr'];
+                        $dest = in_array($user['role'], $hrRoles)
+                            ? BASE_URL . '/hr/submissions.php'
+                            : BASE_URL . '/pages/dashboard.php';
                         if ($redirect !== '') {
                             $decoded = urldecode($redirect);
                             if (str_starts_with($decoded, '/mission_token/')) {
@@ -264,7 +272,11 @@ if (isPost()) {
                     $_SESSION['token_balance'] = (int)$user['token_balance'];
                     $_SESSION['last_activity'] = time();
 
-                    $dest = BASE_URL . '/pages/dashboard.php';
+                    // HR/admin → หน้า HR zone; employee/IT → dashboard
+                    $hrRoles = ['admin', 'hr'];
+                    $dest = in_array($user['role'], $hrRoles)
+                        ? BASE_URL . '/hr/submissions.php'
+                        : BASE_URL . '/pages/dashboard.php';
                     if ($redirect !== '') {
                         $decoded = urldecode($redirect);
                         if (str_starts_with($decoded, '/mission_token/')) {

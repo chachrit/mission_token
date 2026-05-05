@@ -1,0 +1,24 @@
+# Allow image files only; block all script execution
+
+# Deny everything by default
+<FilesMatch ".*">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Allow only safe image types
+<FilesMatch "\.(jpg|jpeg|png|gif|webp)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
+
+# Block PHP and other script execution
+Options -ExecCGI -Indexes
+AddHandler cgi-script .php .php3 .php4 .php5 .phtml .pl .py .cgi
+
+<IfModule mod_php8.c>
+    php_flag engine off
+</IfModule>
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>

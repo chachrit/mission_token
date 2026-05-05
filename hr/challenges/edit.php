@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 setFlash('error', 'เกิดข้อผิดพลาดในการลบ: ' . $e->getMessage());
             }
         }
-        redirect(BASE_URL . '/admin/challenges/index.php');
+        redirect(BASE_URL . '/hr/challenges/index.php');
     }
 
     // ── Delete a single quiz question ─────────────────────
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ->execute([$qid, $cid]);
             setFlash('success', 'ลบคำถามแล้ว');
         }
-        redirect(BASE_URL . '/admin/challenges/edit.php?id=' . $cid);
+        redirect(BASE_URL . '/hr/challenges/edit.php?id=' . $cid);
     }
 
     // ── Save challenge (create or update) ─────────────────
@@ -72,12 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($title === '' || $startDate === '' || $endDate === '') {
         setFlash('error', 'กรุณากรอกชื่อภารกิจ วันเริ่ม และวันสิ้นสุด');
-        redirect(BASE_URL . '/admin/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
+        redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
     }
 
     if ($startDate > $endDate) {
         setFlash('error', 'วันเริ่มต้องไม่เกินวันสิ้นสุด');
-        redirect(BASE_URL . '/admin/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
+        redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
     }
 
     try {
@@ -146,12 +146,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         setFlash('success', $msg);
-        redirect(BASE_URL . '/admin/challenges/edit.php?id=' . $savedId);
+        redirect(BASE_URL . '/hr/challenges/edit.php?id=' . $savedId);
 
     } catch (Throwable $e) {
         error_log('[MissionToken] challenge save error: ' . $e->getMessage());
         setFlash('error', 'เกิดข้อผิดพลาด: ' . $e->getMessage());
-        redirect(BASE_URL . '/admin/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
+        redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
     }
 }
 
@@ -163,7 +163,7 @@ if ($isEdit) {
     $challenge = getChallenge($challengeId);
     if (!$challenge) {
         setFlash('error', 'ไม่พบภารกิจนี้');
-        redirect(BASE_URL . '/admin/challenges/index.php');
+        redirect(BASE_URL . '/hr/challenges/index.php');
     }
     if ($challenge['type'] === 'quiz') {
         $quizQuestions = getQuizQuestions($challengeId);
@@ -266,7 +266,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
         <!-- Page header + back button -->
         <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:2rem;">
-            <a href="<?= BASE_URL ?>/admin/challenges/index.php"
+            <a href="<?= BASE_URL ?>/hr/challenges/index.php"
                style="flex-shrink:0; margin-top:4px; width:34px; height:34px; border-radius:10px;
                       background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
                       color:#6b6e77; display:inline-flex; align-items:center; justify-content:center;
@@ -292,7 +292,7 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
 
         <!-- ── CHALLENGE FORM ──────────────────────────────── -->
-        <form method="POST" action="<?= BASE_URL ?>/admin/challenges/edit.php<?= $isEdit ? '?id=' . $challengeId : '' ?>">
+        <form method="POST" action="<?= BASE_URL ?>/hr/challenges/edit.php<?= $isEdit ? '?id=' . $challengeId : '' ?>">
             <?= csrfField() ?>
             <input type="hidden" name="action" value="save_challenge">
 
@@ -385,7 +385,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                 style="padding:0.55rem 1.35rem; font-size:0.85rem; border-radius:10px;">
                             <?= $isEdit ? 'บันทึกการแก้ไข' : 'สร้างภารกิจ' ?>
                         </button>
-                        <a href="<?= BASE_URL ?>/admin/challenges/index.php"
+                        <a href="<?= BASE_URL ?>/hr/challenges/index.php"
                            style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600;
                                   border-radius:10px; text-decoration:none; font-family:'Prompt',sans-serif;
                                   background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
@@ -398,7 +398,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
                     <?php if ($isEdit): ?>
                     <form method="POST"
-                          action="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= $challengeId ?>"
+                          action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>"
                           onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e(addslashes($f['title'])) ?>&quot;?\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="delete_challenge">
@@ -481,7 +481,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             </p>
                         </div>
                         <form method="POST"
-                              action="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= $challengeId ?>"
+                              action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>"
                               style="flex-shrink:0;"
                               onsubmit="return confirm('ลบคำถามนี้?')">
                             <?= csrfField() ?>
@@ -499,7 +499,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <!-- Edit form -->
-                    <form method="POST" action="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= $challengeId ?>">
+                    <form method="POST" action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="save_challenge">
                         <input type="hidden" name="title"        value="<?= e($f['title']) ?>">
@@ -585,7 +585,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <div style="width:4px; height:16px; background:#dab937; border-radius:999px;"></div>
                         <span style="font-size:0.88rem; font-weight:700; color:#eeebe1;">เพิ่มคำถามใหม่</span>
                     </div>
-                    <form method="POST" action="<?= BASE_URL ?>/admin/challenges/edit.php?id=<?= $challengeId ?>">
+                    <form method="POST" action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>">
                         <?= csrfField() ?>
                         <input type="hidden" name="action"       value="save_challenge">
                         <input type="hidden" name="title"        value="<?= e($f['title']) ?>">

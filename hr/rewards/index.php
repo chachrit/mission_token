@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * admin/rewards/index.php
  * Admin: manage rewards catalogue (create, edit stock, toggle active)
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $allowed = ['voucher','leave','merch','perk','general'];
         if (!in_array($category, $allowed, true)) $category = 'general';
-        if (empty($title)) { setFlash('error', 'กรุณากรอกชื่อรางวัล'); redirect(BASE_URL . '/admin/rewards/index.php'); }
+        if (empty($title)) { setFlash('error', 'กรุณากรอกชื่อรางวัล'); redirect(BASE_URL . '/hr/rewards/index.php'); }
 
         try {
             $pdo->prepare("
@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[MissionToken] create reward error: ' . $e->getMessage());
             setFlash('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่');
         }
-        redirect(BASE_URL . '/admin/rewards/index.php');
+        redirect(BASE_URL . '/hr/rewards/index.php');
     }
 
     // ── Toggle active ──────────────────────────────────────
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[MissionToken] toggle reward error: ' . $e->getMessage());
             setFlash('error', 'เกิดข้อผิดพลาด');
         }
-        redirect(BASE_URL . '/admin/rewards/index.php');
+        redirect(BASE_URL . '/hr/rewards/index.php');
     }
 
     // ── Update stock ───────────────────────────────────────
@@ -74,21 +74,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             error_log('[MissionToken] update stock error: ' . $e->getMessage());
             setFlash('error', 'เกิดข้อผิดพลาด');
         }
-        redirect(BASE_URL . '/admin/rewards/index.php');
+        redirect(BASE_URL . '/hr/rewards/index.php');
     }
 
     // ── Delete reward ──────────────────────────────────────
     if ($action === 'delete') {
         $rewardId = (int)($_POST['reward_id'] ?? 0);
         try {
-            // Soft-delete: just deactivate (keeps FK integrity with redemptions)
-            $pdo->prepare("UPDATE dbo.rewards SET is_active = 0 WHERE reward_id = ?")->execute([$rewardId]);
-            setFlash('success', 'ปิดการใช้งานรางวัลแล้ว');
+            // Check if any redemptions reference this reward
+            $chk = $pdo->prepare("SELECT COUNT(*) AS cnt FROM dbo.reward_redemptions WHERE reward_id = ?");
+            $chk->execute([$rewardId]);
+            $redeemCount = (int)($chk->fetch()['cnt'] ?? 0);
+
+            if ($redeemCount > 0) {
+                setFlash('error', 'ไม่สามารถลบได้ เนื่องจากมีประวัติการแลกรางวัลนี้แล้ว ' . $redeemCount . ' รายการ — ใช้ปุ่ม Toggle เพื่อ "ปิด" รางวัลแทน เพื่อซ่อนจากร้านค้าโดยไม่ลบประวัติพนักงาน');
+            } else {
+                $pdo->prepare("DELETE FROM dbo.rewards WHERE reward_id = ?")->execute([$rewardId]);
+                setFlash('success', 'ลบรางวัลเรียบร้อยแล้ว');
+            }
         } catch (Throwable $e) {
             error_log('[MissionToken] delete reward error: ' . $e->getMessage());
             setFlash('error', 'เกิดข้อผิดพลาด');
         }
-        redirect(BASE_URL . '/admin/rewards/index.php');
+        redirect(BASE_URL . '/hr/rewards/index.php');
     }
 }
 
@@ -212,7 +220,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </p>
             </div>
             <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
-                <a href="<?php echo BASE_URL; ?>/admin/rewards/redemptions.php"
+                <a href="<?php echo BASE_URL; ?>/hr/rewards/redemptions.php"
                    style="display:inline-flex; align-items:center; gap:0.45rem; position:relative;
                           padding:0.55rem 1.1rem; border-radius:10px; font-size:0.82rem; font-weight:600;
                           font-family:'Prompt',sans-serif; text-decoration:none; transition:all 0.18s;
@@ -455,7 +463,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             <?= $isOn ? 'เปิด' : 'ปิด' ?>
                         </span>
                     </form>
-                    <a href="<?php echo BASE_URL; ?>/admin/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
+                    <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
                        style="font-size:0.70rem; padding:0.22rem 0.65rem; border-radius:6px;
                               background:rgba(218,185,55,0.10); color:#dab937;
                               border:1px solid rgba(218,185,55,0.25);
@@ -465,6 +473,22 @@ require_once __DIR__ . '/../../includes/header.php';
                        onmouseout="this.style.background='rgba(218,185,55,0.10)'">
                         ✏ แก้ไข
                     </a>
+                    <form method="POST" action="" style="display:inline;" onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?
+รางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
+                        <?php echo csrfField(); ?>
+                        <input type="hidden" name="action"    value="delete">
+                        <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
+                        <button type="submit"
+                                style="font-size:0.70rem; padding:0.22rem 0.65rem; border-radius:6px;
+                                       background:rgba(210,89,42,0.10); color:#d2592a;
+                                       border:1px solid rgba(210,89,42,0.28);
+                                       font-family:'Prompt',sans-serif; font-weight:600;
+                                       cursor:pointer; white-space:nowrap; transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.10)'">
+                            🗑 ลบ
+                        </button>
+                    </form>
                 </div>
 
             </div>

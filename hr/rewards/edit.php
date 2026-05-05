@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * admin/rewards/edit.php
  * Admin: edit an existing reward (title, desc, emoji, category, token_cost, stock, is_active)
@@ -13,7 +13,7 @@ $rewardId = (int)($_GET['id'] ?? 0);
 
 if ($rewardId <= 0) {
     setFlash('error', 'ไม่พบรางวัล');
-    redirect(BASE_URL . '/admin/rewards/index.php');
+    redirect(BASE_URL . '/hr/rewards/index.php');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($title)) {
         setFlash('error', 'กรุณากรอกชื่อรางวัล');
-        redirect(BASE_URL . '/admin/rewards/edit.php?id=' . $rewardId);
+        redirect(BASE_URL . '/hr/rewards/edit.php?id=' . $rewardId);
     }
 
     try {
@@ -53,9 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } catch (Throwable $e) {
         error_log('[MissionToken] edit reward error: ' . $e->getMessage());
         setFlash('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่');
-        redirect(BASE_URL . '/admin/rewards/edit.php?id=' . $rewardId);
+        redirect(BASE_URL . '/hr/rewards/edit.php?id=' . $rewardId);
     }
-    redirect(BASE_URL . '/admin/rewards/index.php');
+    redirect(BASE_URL . '/hr/rewards/index.php');
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -74,7 +74,7 @@ try {
 
 if (!$reward && !$dataError) {
     setFlash('error', 'ไม่พบรางวัล');
-    redirect(BASE_URL . '/admin/rewards/index.php');
+    redirect(BASE_URL . '/hr/rewards/index.php');
 }
 
 $catMeta = [
@@ -141,7 +141,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Breadcrumb + page header -->
         <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
             <div style="margin-bottom:0.6rem;">
-                <a href="<?php echo BASE_URL; ?>/admin/rewards/index.php"
+                <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
                    style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
                           letter-spacing:0.06em; text-transform:uppercase; transition:color 0.15s;"
                    onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#4a4e57'">
@@ -301,7 +301,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Actions -->
                 <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
-                    <a href="<?php echo BASE_URL; ?>/admin/rewards/index.php"
+                    <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
                        style="display:inline-flex; align-items:center; padding:0.6rem 1.25rem;
                               font-size:0.85rem; font-weight:600; border-radius:10px;
                               font-family:'Prompt',sans-serif; text-decoration:none; transition:background 0.15s;

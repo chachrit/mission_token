@@ -29,6 +29,7 @@ try {
     $wallet           = getWalletInfo($employeeId);
     $activeChallenges = getActiveChallenges();
     $streak           = getActivityStreak($employeeId);
+    $tenure           = getEmployeeTenure($employeeId);
     $recentActivity   = getRecentSubmissions($employeeId, 6);
     $leaderboard      = getLeaderboard(5);
 
@@ -137,7 +138,13 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- Left: avatar + identity -->
                 <div class="ds-id-left">
                     <div class="ds-id-avatar">
+                        <?php $_dsAvatar = $_SESSION['avatar_url'] ?? ''; ?>
+                        <?php if ($_dsAvatar): ?>
+                        <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename($_dsAvatar)) ?>"
+                             alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                        <?php else: ?>
                         <span><?= mb_substr($employeeName, 0, 1, 'UTF-8') ?: '?' ?></span>
+                        <?php endif; ?>
                     </div>
                     <div class="ds-id-info">
                         <p class="ds-id-eyebrow"><?= e($greeting) ?><span class="ds-id-dot">·</span>OPERATIVE</p>
@@ -156,6 +163,13 @@ require_once __DIR__ . '/../includes/header.php';
                             <span class="ds-badge-rank">RANK #<?= $myRank ?></span>
                             <?php endif; ?>
                         </div>
+                        <?php if ($tenure): ?>
+                        <div class="ds-id-tenure">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(218,185,55,0.65)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            <span class="ds-id-tenure-num"><?= e($tenure['text']) ?></span>
+                            <span class="ds-id-tenure-label">อายุงาน</span>
+                        </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 

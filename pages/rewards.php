@@ -116,6 +116,94 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'redee
 }
 
 // ══════════════════════════════════════════════════════════════
+// AJAX — POST handler (cancel redemption)
+// ══════════════════════════════════════════════════════════════
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel_redemption') {
+    header('Content-Type: application/json');
+    validateCsrf();
+
+    $redemptionId = (int)($_POST['redemption_id'] ?? 0);
+    if ($redemptionId <= 0) {
+        echo json_encode(['success' => false, 'message' => 'ไม่พบรายการที่ระบุ']);
+        exit;
+    }
+
+    try {
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare("
+            SELECT rd.redemption_id, rd.employee_id, rd.reward_id,
+                   rd.tokens_spent, rd.status,
+                   rw.stock
+            FROM   dbo.reward_redemptions rd WITH (UPDLOCK, ROWLOCK)
+            JOIN   dbo.rewards rw ON rw.reward_id = rd.reward_id
+            WHERE  rd.redemption_id = ?
+              AND  rd.employee_id   = ?
+        ");
+        $stmt->execute([$redemptionId, $employeeId]);
+        $rdRow = $stmt->fetch();
+
+        if (!$rdRow) {
+            $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'ไม่พบรายการ']);
+            exit;
+        }
+
+        if ($rdRow['status'] !== 'pending') {
+            $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'ไม่สามารถยกเลิกรายการที่ดำเนินการแล้ว']);
+            exit;
+        }
+
+        $tokensBack = (int)$rdRow['tokens_spent'];
+
+        // 1. Mark cancelled
+        $pdo->prepare("
+            UPDATE dbo.reward_redemptions
+            SET    status = 'cancelled', processed_at = GETDATE()
+            WHERE  redemption_id = ?
+        ")->execute([$redemptionId]);
+
+        // 2. Refund token transaction
+        $pdo->prepare("
+            INSERT INTO dbo.token_transactions (employee_id, amount, tx_type, note)
+            VALUES (?, ?, 'admin_adjust', ?)
+        ")->execute([$employeeId, $tokensBack, 'คืน Token: ยกเลิกการแลกรางวัล']);
+
+        // 3. Restore wallet
+        $pdo->prepare("
+            UPDATE dbo.token_wallets
+            SET    balance     = balance + ?,
+                   total_spent = total_spent - ?,
+                   updated_at  = GETDATE()
+            WHERE  employee_id = ?
+        ")->execute([$tokensBack, $tokensBack, $employeeId]);
+
+        // 4. Restore stock if limited
+        if ($rdRow['stock'] !== null) {
+            $pdo->prepare("
+                UPDATE dbo.rewards SET stock = stock + 1 WHERE reward_id = ?
+            ")->execute([$rdRow['reward_id']]);
+        }
+
+        $pdo->commit();
+        $_SESSION['token_balance'] = getWalletBalance($employeeId);
+
+        echo json_encode([
+            'success'     => true,
+            'message'     => 'ยกเลิกการแลกรางวัลแล้ว Token ถูกคืนให้คุณแล้ว',
+            'new_balance' => (int)$_SESSION['token_balance'],
+        ]);
+
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) $pdo->rollBack();
+        error_log('[MissionToken] cancel_redemption error: ' . $e->getMessage());
+        echo json_encode(['success' => false, 'message' => 'เกิดข้อผิดพลาด กรุณาลองใหม่']);
+    }
+    exit;
+}
+
+// ══════════════════════════════════════════════════════════════
 // PAGE LOAD — fetch data
 // ══════════════════════════════════════════════════════════════
 $wallet        = getWalletInfo($employeeId);
@@ -138,12 +226,15 @@ try {
         SELECT TOP 30
                rd.redemption_id, rd.tokens_spent, rd.status,
                rd.redeemed_at,   rd.processed_at, rd.admin_note,
+               rd.processed_by,
                rw.title      AS reward_title,
                rw.image_emoji,
                rw.category,
-               rw.coupon_code
+               rw.coupon_code,
+               ap.full_name  AS processed_by_name
         FROM   dbo.reward_redemptions rd
         JOIN   dbo.rewards            rw ON rw.reward_id = rd.reward_id
+        LEFT JOIN dbo.employees       ap ON ap.employee_id = rd.processed_by
         WHERE  rd.employee_id = ?
         ORDER BY rd.redeemed_at DESC
     ");
@@ -558,10 +649,10 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (!empty($myRedemptions)): ?>
         <section style="margin-bottom:3rem;">
             <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1.2rem;">
-                <div style="width:4px; height:24px; background:rgba(255,255,255,0.10); border-radius:999px; flex-shrink:0;"></div>
-                <span style="font-size:0.98rem; font-weight:700; color:#6b6e77;">Mission Logs</span>
-                <span style="font-size:0.65rem; font-weight:700; color:#4a4e57;
-                             background:rgba(255,255,255,0.06); border-radius:999px;
+                <div style="width:4px; height:24px; background:linear-gradient(180deg,rgba(218,185,55,0.55),rgba(218,185,55,0.20)); border-radius:999px; flex-shrink:0;"></div>
+                <span style="font-size:0.98rem; font-weight:700; color:#eeebe1;">ประวัติการแลกรางวัล</span>
+                <span style="font-size:0.65rem; font-weight:700; color:#091113;
+                             background:#dab937; border-radius:999px;
                              padding:0.15rem 0.55rem;"><?= count($myRedemptions) ?></span>
             </div>
 
@@ -631,37 +722,95 @@ require_once __DIR__ . '/../includes/header.php';
                     </div><!-- /main row -->
 
                     <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
-                    <!-- Coupon code reveal -->
-                    <div style="display:inline-flex; align-items:center; gap:0.55rem;
-                                background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.22);
-                                border-radius:10px; padding:0.42rem 0.85rem; align-self:flex-start;">
-                        <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.10em;
-                                     color:rgba(218,185,55,0.55); text-transform:uppercase; user-select:none;">
-                            🔑 รหัสคูปอง
-                        </span>
-                        <span id="coupon-<?= (int)$rd['redemption_id'] ?>"
-                              style="font-size:0.9rem; font-weight:800; color:#f8e769;
-                                     letter-spacing:0.06em; font-family:monospace, 'Prompt';">
-                            <?= e($rd['coupon_code']) ?>
-                        </span>
-                        <button onclick="
-                            navigator.clipboard.writeText('<?= e(addslashes($rd['coupon_code'])) ?>');
-                            this.textContent='✓';
-                            setTimeout(()=>{ this.textContent='📋'; },1500);"
-                                style="background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
-                                       border-radius:6px; color:#dab937; cursor:pointer; font-size:0.72rem;
-                                       padding:0.18rem 0.42rem; line-height:1.4; transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(218,185,55,0.22)'"
-                                onmouseout="this.style.background='rgba(218,185,55,0.12)'"
-                                title="คัดลอกโค้ด">📋</button>
+                    <!-- Coupon code row -->
+                    <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.6rem; margin-top:0.1rem;
+                                display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
+                        <!-- toggle button (left) -->
+                        <button onclick="rwToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
+                                style="display:inline-flex; align-items:center; gap:0.38rem;
+                                       background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
+                                       border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
+                                       font-size:0.7rem; font-weight:700; color:rgba(218,185,55,0.75);
+                                       letter-spacing:0.06em; text-transform:uppercase;
+                                       font-family:'Prompt',sans-serif;
+                                       transition:background 0.15s, border-color 0.15s;"
+                                onmouseover="this.style.background='rgba(218,185,55,0.14)'; this.style.borderColor='rgba(218,185,55,0.40)'"
+                                onmouseout="this.style.background='rgba(218,185,55,0.08)'; this.style.borderColor='rgba(218,185,55,0.25)'"
+                                title="แสดง/ซ่อนรหัสคูปอง">
+                            <svg id="coupon-eye-<?= (int)$rd['redemption_id'] ?>"
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                 width="12" height="12" style="flex-shrink:0;">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                            </svg>
+                            <span id="coupon-btn-label-<?= (int)$rd['redemption_id'] ?>">แสดงรหัสคูปอง</span>
+                        </button>
+
+                        <!-- coupon box (hidden by default, right side) -->
+                        <div id="coupon-box-<?= (int)$rd['redemption_id'] ?>"
+                             style="display:none; align-items:center; gap:0.6rem; flex-wrap:wrap;
+                                    background:rgba(218,185,55,0.05); border:1px solid rgba(218,185,55,0.22);
+                                    border-radius:10px; padding:0.32rem 0.85rem;">
+                            <div style="display:flex; flex-direction:column; gap:0.06rem;">
+                                <span style="font-size:0.55rem; font-weight:600; letter-spacing:0.08em;
+                                             color:rgba(218,185,55,0.38); text-transform:uppercase; line-height:1;">
+                                    อนุมัติโดย: <?= e($rd['processed_by_name'] ?? '—') ?>
+                                </span>
+                                <span id="coupon-code-<?= (int)$rd['redemption_id'] ?>"
+                                      style="font-size:1rem; font-weight:800; color:#f8e769;
+                                             letter-spacing:0.12em; font-family:monospace,'Prompt';
+                                             user-select:all; word-break:break-all; line-height:1.3;">
+                                    <?= e($rd['coupon_code']) ?>
+                                </span>
+                            </div>
+                            <button onclick="rwCopyCoupon('<?= e(addslashes($rd['coupon_code'])) ?>',<?= (int)$rd['redemption_id'] ?>)"
+                                    id="coupon-copy-<?= (int)$rd['redemption_id'] ?>"
+                                    style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
+                                           background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
+                                           border-radius:6px; color:#dab937; cursor:pointer;
+                                           font-size:0.68rem; font-weight:600;
+                                           font-family:'Prompt',sans-serif;
+                                           padding:0.22rem 0.55rem; line-height:1.4;
+                                           transition:background 0.15s; white-space:nowrap;"
+                                    onmouseover="this.style.background='rgba(218,185,55,0.22)'"
+                                    onmouseout="this.style.background='rgba(218,185,55,0.12)'"
+                                    title="คัดลอก">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                                </svg>
+                                คัดลอก
+                            </button>
+                        </div>
                     </div>
                     <?php elseif ($rd['status'] === 'pending'): ?>
-                    <!-- Lock hint — pending -->
-                    <div style="display:inline-flex; align-items:center; gap:0.4rem; align-self:flex-start;">
-                        <span style="font-size:0.68rem; color:#3a3e43;">🔒</span>
-                        <span style="font-size:0.68rem; color:#3a3e43; letter-spacing:0.02em;">
-                            รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล
-                        </span>
+                    <!-- Lock hint + cancel — pending -->
+                    <div style="border-top:1px dashed rgba(255,255,255,0.06); padding-top:0.5rem; margin-top:0.1rem;
+                                display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap;">
+                        <div style="display:flex; align-items:center; gap:0.4rem;">
+                            <svg fill="none" stroke="#3a3e43" viewBox="0 0 24 24" width="12" height="12" style="flex-shrink:0;">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11V7a5 5 0 0110 0v4"/>
+                            </svg>
+                            <span style="font-size:0.68rem; color:#3a3e43;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
+                        </div>
+                        <button onclick="rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
+                                style="display:inline-flex; align-items:center; gap:0.3rem;
+                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
+                                       border-radius:7px; padding:0.25rem 0.65rem; cursor:pointer;
+                                       font-size:0.68rem; font-weight:600; color:rgba(210,89,42,0.75);
+                                       font-family:'Prompt',sans-serif; letter-spacing:0.03em;
+                                       transition:background 0.15s, border-color 0.15s; white-space:nowrap;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
+                                title="ยกเลิกการแลกรางวัลนี้">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            ยกเลิก
+                        </button>
                     </div>
                     <?php endif; ?>
                 </div><!-- /rw-hist-row -->
@@ -967,6 +1116,74 @@ require_once __DIR__ . '/../includes/header.php';
         if (e.key === 'Escape') window.closeRedeem();
     });
 }());
+
+/* ── Coupon toggle ────────────────────────────────────────── */
+window.rwToggleCoupon = function (id, btn) {
+    var box   = document.getElementById('coupon-box-' + id);
+    var label = document.getElementById('coupon-btn-label-' + id);
+    var eye   = document.getElementById('coupon-eye-' + id);
+    if (!box) return;
+    var visible = box.style.display === 'flex';
+    if (visible) {
+        box.style.display   = 'none';
+        label.textContent   = 'แสดงรหัสคูปอง';
+        eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
+    } else {
+        box.style.display   = 'flex';
+        label.textContent   = 'ซ่อนรหัสคูปอง';
+        eye.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>';
+    }
+};
+
+window.rwCancelRedemption = function (rdId, title, cost) {
+    if (!confirm('ยกเลิกการแลก "' + title + '"?\nToken ' + cost + ' จะถูกคืนให้คุณทันที')) return;
+
+    var csrf = document.querySelector('meta[name="csrf-token"]')
+                   ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+    fetch(window.location.href, {
+        method : 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body   : new URLSearchParams({
+            action        : 'cancel_redemption',
+            redemption_id : rdId,
+            csrf_token    : csrf,
+        }),
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+        if (data.success) {
+            var newBal = data.new_balance;
+            var balEl  = document.getElementById('hdr-balance');
+            if (balEl) balEl.textContent = newBal.toLocaleString('th-TH');
+            var navBal = document.getElementById('nav-balance');
+            if (navBal) navBal.textContent = newBal.toLocaleString('th-TH');
+            location.reload();
+        } else {
+            alert(data.message || 'เกิดข้อผิดพลาด');
+        }
+    })
+    .catch(function () { alert('การเชื่อมต่อขัดข้อง กรุณาลองใหม่'); });
+};
+
+window.rwCopyCoupon = function (code, id) {
+    navigator.clipboard.writeText(code).then(function () {
+        var btn = document.getElementById('coupon-copy-' + id);
+        if (!btn) return;
+        var orig = btn.innerHTML;
+        btn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg> คัดลอกแล้ว';
+        btn.style.color = '#7ec98a';
+        btn.style.borderColor = 'rgba(81,142,92,0.40)';
+        setTimeout(function () {
+            btn.innerHTML = orig;
+            btn.style.color = '#dab937';
+            btn.style.borderColor = 'rgba(218,185,55,0.22)';
+        }, 2000);
+    }).catch(function () {
+        var el = document.getElementById('coupon-code-' + id);
+        if (el) { var r = document.createRange(); r.selectNode(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
+    });
+};
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
