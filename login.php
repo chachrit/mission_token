@@ -426,10 +426,14 @@ if (isPost()) {
         </form>
 
         <!-- Back to home -->
-        <div class="mt-6 text-center">
+        <div class="mt-6 text-center" style="display:flex; justify-content:space-between; align-items:center;">
             <a href="<?php echo BASE_URL; ?>/index.php" class="text-xs transition-colors" style="color:#6b6e77;"
                onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#6b6e77'">
                 ← กลับหน้าแรก
+            </a>
+            <a href="<?php echo BASE_URL; ?>/forgot_password.php" class="text-xs transition-colors" style="color:#6b6e77;"
+               onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#6b6e77'">
+                ลืมรหัสผ่าน?
             </a>
         </div>
 
