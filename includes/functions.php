@@ -133,7 +133,8 @@ function getActiveChallenges(): array
 {
     $pdo  = getDB();
     $stmt = $pdo->prepare("
-        SELECT challenge_id, title, description, type, token_reward, start_date, end_date
+        SELECT challenge_id, title, description, type, instructions,
+               token_reward, start_date, end_date, strava_condition
         FROM   challenges
         WHERE  is_active  = 1
           AND  start_date <= CAST(GETDATE() AS DATE)

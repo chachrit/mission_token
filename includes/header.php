@@ -22,7 +22,7 @@ $isIt          = $_sessionRole === 'it';
 $isAdminOrHr   = $isAdmin || $isHr || $isIt;
 $navBalance   = (int)($_SESSION['token_balance'] ?? 0);
 $pendingCount = $isAdminOrHr ? getPendingCount() : 0;
-$flash        = getFlash();
+$flash        = $flash ?? getFlash();
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -408,6 +408,16 @@ $flash        = getFlash();
                                           d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 โปรไฟล์ของฉัน
+                            </a>
+                            <a href="<?php echo BASE_URL; ?>/pages/strava_dashboard.php"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
+                               style="color:#9ca3af; border-color:#3a3e43;"
+                               onmouseover="this.style.color='#FC4C02'; this.style.background='#1a1f20'"
+                               onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                                </svg>
+                                Strava Dashboard
                             </a>
                             <?php endif; ?>
                             <a href="<?php echo BASE_URL; ?>/logout.php"

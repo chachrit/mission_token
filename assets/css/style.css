@@ -1563,6 +1563,98 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
     color: #e08060;
 }
 
+/* ── Notification Bar (inline, legacy) ── */
+.ch-notify-bar {
+    margin-bottom: 1.75rem;
+    border-radius: 14px;
+    padding: 1rem 1.25rem 1rem 1rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.875rem;
+}
+.ch-notify-bar--error { background: rgba(210,89,42,0.13); border: 1px solid rgba(210,89,42,0.35); }
+.ch-notify-bar--info  { background: rgba(79,139,152,0.13); border: 1px solid rgba(79,139,152,0.35); }
+
+/* ── Flash Modal (centered overlay, dismiss on button click) ── */
+.ch-flash-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    animation: ch-overlay-in 0.2s ease;
+}
+@keyframes ch-overlay-in {
+    from { opacity:0; }
+    to   { opacity:1; }
+}
+.ch-flash-modal {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+    padding: 2rem 1.75rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+    animation: ch-modal-in 0.3s cubic-bezier(0.34,1.4,0.64,1);
+}
+@keyframes ch-modal-in {
+    from { opacity:0; transform: scale(0.88) translateY(16px); }
+    to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.ch-flash-modal--error {
+    background: linear-gradient(160deg, #1e0c06, #150905);
+    border: 1px solid rgba(210,89,42,0.45);
+}
+.ch-flash-modal--info {
+    background: linear-gradient(160deg, #071318, #050e12);
+    border: 1px solid rgba(79,139,152,0.45);
+}
+.ch-flash-modal-icon {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+}
+.ch-flash-modal--error .ch-flash-modal-icon { background: rgba(210,89,42,0.15); color: #e07040; }
+.ch-flash-modal--info  .ch-flash-modal-icon { background: rgba(79,139,152,0.15); color: #5fa8ba; }
+.ch-flash-modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+}
+.ch-flash-modal--error .ch-flash-modal-title { color: #f5c5a0; }
+.ch-flash-modal--info  .ch-flash-modal-title { color: #ade8f4; }
+.ch-flash-modal-msg {
+    font-size: 0.875rem;
+    line-height: 1.65;
+    color: #9ca3a8;
+    margin: 0;
+}
+.ch-flash-modal-btn {
+    margin-top: 0.25rem;
+    padding: 0.6rem 2rem;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: opacity 0.15s, transform 0.1s;
+}
+.ch-flash-modal-btn:hover  { opacity: 0.85; }
+.ch-flash-modal-btn:active { transform: scale(0.97); }
+.ch-flash-modal--error .ch-flash-modal-btn { background: rgba(210,89,42,0.85); color: #fff; }
+.ch-flash-modal--info  .ch-flash-modal-btn { background: rgba(79,139,152,0.85); color: #fff; }
+
 /* ── Quiz Breadcrumb ── */
 .ch-breadcrumb         { color: #4a4e57; }
 .ch-breadcrumb-link    { color: #6b6e77; text-decoration: none; }
@@ -2272,6 +2364,10 @@ body:has(.pf-profile-wrap) { background-color: #091113; }
     transform: none;
     box-shadow: 0 4px 24px rgba(9,17,19,0.30);
     border-color: rgba(255,255,255,0.08);
+}
+/* Front face is hidden when scene is hovered — also kill pointer events */
+.ch-quest-flip-scene:hover .ch-flip-front {
+    pointer-events: none;
 }
 /* Back face */
 .ch-flip-back.ch-quest-card       { transform: rotateY(180deg); overflow-y: auto; }

@@ -145,7 +145,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 $isActive = (bool)$ch['is_active'];
                 $sd = date('d/m/y', strtotime((string)$ch['start_date']));
                 $ed = date('d/m/y', strtotime((string)$ch['end_date']));
-                $isQuiz = $ch['type'] === 'quiz';
+                $isQuiz   = $ch['type'] === 'quiz';
+                $isStrava = $ch['type'] === 'strava';
 
                 // Date status
                 $now = time();
@@ -182,13 +183,22 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Type badge -->
                 <div>
+                    <?php if ($isQuiz): ?>
                     <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
                                  border-radius:999px; letter-spacing:0.03em;
-                                 background:<?= $isQuiz ? 'rgba(79,139,152,0.14)' : 'rgba(218,185,55,0.12)' ?>;
-                                 color:<?= $isQuiz ? '#4f8b98' : '#dab937' ?>;
-                                 border:1px solid <?= $isQuiz ? 'rgba(79,139,152,0.28)' : 'rgba(218,185,55,0.25)' ?>;">
-                        <?= $isQuiz ? '📝 Quiz' : '📷 Photo' ?>
-                    </span>
+                                 background:rgba(79,139,152,0.14); color:#4f8b98;
+                                 border:1px solid rgba(79,139,152,0.28);">📝 Quiz</span>
+                    <?php elseif ($isStrava): ?>
+                    <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
+                                 border-radius:999px; letter-spacing:0.03em;
+                                 background:rgba(252,76,2,0.12); color:#FC4C02;
+                                 border:1px solid rgba(252,76,2,0.30);">&#127939; Strava</span>
+                    <?php else: ?>
+                    <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
+                                 border-radius:999px; letter-spacing:0.03em;
+                                 background:rgba(218,185,55,0.12); color:#dab937;
+                                 border:1px solid rgba(218,185,55,0.25);">📷 Photo</span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Token -->

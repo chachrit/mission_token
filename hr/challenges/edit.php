@@ -70,6 +70,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $endDate     = (string)($_POST['end_date']          ?? '');
     $isActive    = isset($_POST['is_active']) ? 1 : 0;
 
+    // Strava condition JSON (only for type=strava)
+    $stravaConditionJson = null;
+    if ($type === 'strava') {
+        $stravaConditionJson = json_encode([
+            'sport_type'      => trim((string)($_POST['strava_sport_type']     ?? 'Run')),
+            'min_distance'    => max(0, (float)($_POST['strava_min_distance']  ?? 0)),
+            'min_moving_time' => max(0, (int)($_POST['strava_min_moving_time'] ?? 0)),
+            'min_elevation'   => max(0, (float)($_POST['strava_min_elevation'] ?? 0)),
+        ], JSON_UNESCAPED_UNICODE);
+    }
+
     if ($title === '' || $startDate === '' || $endDate === '') {
         setFlash('error', 'กรุณากรอกชื่อภารกิจ วันเริ่ม และวันสิ้นสุด');
         redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
@@ -85,19 +96,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->prepare("
                 UPDATE challenges
                 SET title = ?, description = ?, type = ?, instructions = ?,
-                    token_reward = ?, start_date = ?, end_date = ?, is_active = ?
+                    token_reward = ?, start_date = ?, end_date = ?, is_active = ?,
+                    strava_condition = ?
                 WHERE challenge_id = ?
             ")->execute([$title, $description, $type, $instructions,
-                         $tokenReward, $startDate, $endDate, $isActive, $challengeId]);
+                         $tokenReward, $startDate, $endDate, $isActive,
+                         $stravaConditionJson, $challengeId]);
             $savedId = $challengeId;
             $msg = 'บันทึกการแก้ไขแล้ว';
         } else {
             $pdo->prepare("
-                INSERT INTO challenges (title, description, type, instructions, token_reward, start_date, end_date, is_active, created_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO challenges
+                    (title, description, type, instructions, token_reward, start_date, end_date, is_active, created_by, strava_condition)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ")->execute([$title, $description, $type, $instructions,
-                         $tokenReward, $startDate, $endDate, $isActive, $adminId]);
-            $savedId = (int)$pdo->lastInsertId();
+                         $tokenReward, $startDate, $endDate, $isActive, $adminId,
+                         $stravaConditionJson]);
+            // Re-query ID because lastInsertId() can be unreliable with pdo_sqlsrv
+            $newRow  = $pdo->query("SELECT TOP 1 challenge_id FROM challenges ORDER BY challenge_id DESC")->fetch();
+            $savedId = (int)($newRow['challenge_id'] ?? 0);
             $msg = 'สร้างภารกิจแล้ว';
         }
 
@@ -174,15 +191,26 @@ $flash = getFlash();
 
 // Defaults for form
 $f = [
-    'title'        => $challenge['title']        ?? '',
-    'description'  => $challenge['description']  ?? '',
-    'type'         => $challenge['type']          ?? 'quiz',
-    'instructions' => $challenge['instructions'] ?? '',
-    'token_reward' => $challenge['token_reward']  ?? 10,
-    'start_date'   => '',
-    'end_date'     => '',
-    'is_active'    => $challenge ? (bool)$challenge['is_active'] : true,
+    'title'            => $challenge['title']            ?? '',
+    'description'      => $challenge['description']      ?? '',
+    'type'             => $challenge['type']             ?? 'quiz',
+    'instructions'     => $challenge['instructions']     ?? '',
+    'token_reward'     => $challenge['token_reward']     ?? 10,
+    'start_date'       => '',
+    'end_date'         => '',
+    'is_active'        => $challenge ? (bool)$challenge['is_active'] : true,
+    'strava_condition' => $challenge['strava_condition'] ?? '',
 ];
+
+// Decode strava_condition for form pre-fill
+$sc = [];
+if (!empty($f['strava_condition'])) {
+    $sc = json_decode($f['strava_condition'], true) ?? [];
+}
+$scSportType  = $sc['sport_type']      ?? 'Run';
+$scMinDist    = $sc['min_distance']    ?? 0;
+$scMinTime    = $sc['min_moving_time'] ?? 0;
+$scMinElev    = $sc['min_elevation']   ?? 0;
 
 // Format dates for input[type=date]
 foreach (['start_date', 'end_date'] as $dk) {
@@ -328,8 +356,9 @@ require_once __DIR__ . '/../../includes/header.php';
                             <label class="ace-label">ประเภทภารกิจ <span style="color:#d2592a;">*</span></label>
                             <select name="type" id="challenge-type" class="journal-input"
                                     onchange="handleTypeChange(this.value)">
-                                <option value="quiz"  <?= $f['type'] === 'quiz'  ? 'selected' : '' ?>>📝 Quiz (ตอบคำถาม)</option>
-                                <option value="photo" <?= $f['type'] === 'photo' ? 'selected' : '' ?>>📷 Photo (ส่งรูปภาพ)</option>
+                                <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>📝 Quiz (ตอบคำถาม)</option>
+                                <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>📷 Photo (ส่งรูปภาพ)</option>
+                                <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>🏃 Strava (กิจกรรมออกกำลังกาย)</option>
                             </select>
                         </div>
                         <div>
@@ -350,6 +379,45 @@ require_once __DIR__ . '/../../includes/header.php';
                             <label class="ace-label">วันสิ้นสุด <span style="color:#d2592a;">*</span></label>
                             <input type="date" name="end_date" value="<?= e($f['end_date']) ?>"
                                    required class="journal-input">
+                        </div>
+                    </div>
+
+                    <!-- Strava condition (strava only) -->
+                    <div id="strava-condition-wrap" <?= $f['type'] !== 'strava' ? 'style="display:none;"' : '' ?>>
+                        <div style="background:rgba(252,76,2,0.06); border:1px solid rgba(252,76,2,0.2);
+                                    border-radius:12px; padding:1.1rem 1.25rem;">
+                            <p style="font-size:0.72rem; font-weight:700; color:rgba(252,76,2,0.8);
+                                      letter-spacing:0.08em; text-transform:uppercase; margin:0 0 0.9rem;">🏃 Strava Conditions</p>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+                                <div>
+                                    <label class="ace-label">ประเภทกิจกรรม</label>
+                                    <select name="strava_sport_type" class="journal-input">
+                                        <?php foreach ([
+                                            'Run'=>'🏃 วิ่ง', 'Ride'=>'🚴 ปั่นจักรยาน', 'Walk'=>'🚶 เดิน',
+                                            'Hike'=>'🥾 เดินป่า', 'Swim'=>'🏊 ว่ายน้ำ', 'WeightTraining'=>'🏋️ ยกน้ำหนัก',
+                                            'Workout'=>'💪 Workout', 'Yoga'=>'🧘 โยคะ',
+                                            'VirtualRide'=>'🎮 Virtual Ride', 'VirtualRun'=>'🎮 Virtual Run',
+                                        ] as $val => $lbl): ?>
+                                        <option value="<?= e($val) ?>" <?= $scSportType === $val ? 'selected' : '' ?>><?= e($lbl) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="ace-label">ระยะทางขั้นต่ำ (เมตร) 0=ไม่กำหนด</label>
+                                    <input type="number" name="strava_min_distance" min="0" step="100"
+                                           value="<?= (int)$scMinDist ?>" class="journal-input" placeholder="เช่น 5000 = 5 กม">
+                                </div>
+                                <div>
+                                    <label class="ace-label">เวลาขั้นต่ำ (วินาที) 0=ไม่กำหนด</label>
+                                    <input type="number" name="strava_min_moving_time" min="0" step="60"
+                                           value="<?= (int)$scMinTime ?>" class="journal-input" placeholder="เช่น 1800 = 30 นาที">
+                                </div>
+                                <div>
+                                    <label class="ace-label">ความสูงขั้นต่ำ (เมตร) 0=ไม่กำหนด</label>
+                                    <input type="number" name="strava_min_elevation" min="0" step="10"
+                                           value="<?= (int)$scMinElev ?>" class="journal-input" placeholder="0">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -664,8 +732,10 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <script>
 function handleTypeChange(type) {
-    const instrWrap = document.getElementById('instructions-wrap');
-    if (instrWrap) instrWrap.style.display = type !== 'photo' ? 'none' : '';
+    const instrWrap  = document.getElementById('instructions-wrap');
+    const stravaWrap = document.getElementById('strava-condition-wrap');
+    if (instrWrap)  instrWrap.style.display  = type === 'photo'  ? '' : 'none';
+    if (stravaWrap) stravaWrap.style.display = type === 'strava' ? '' : 'none';
 }
 function addQuestion() {
     const form = document.getElementById('new-question-form');

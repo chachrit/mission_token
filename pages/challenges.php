@@ -150,6 +150,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(BASE_URL . '/pages/challenges.php');
     }
 
+    // ── STRAVA submission ─────────────────────────────────────
+    if ($action === 'submit_strava') {
+        require_once __DIR__ . '/../includes/strava.php';
+
+        if ($challenge['type'] !== 'strava') {
+            setFlash('error', 'ภารกิจนี้ไม่ใช่ประเภท Strava');
+            redirect(BASE_URL . '/pages/challenges.php');
+        }
+
+        try {
+            if (!isStravaConnected($employeeId)) {
+                setFlash('error', 'กรุณาเชื่อมต่อ Strava ก่อนส่งภารกิจ');
+                redirect(BASE_URL . '/pages/challenges.php');
+            }
+
+            $condition = [];
+            if (!empty($challenge['strava_condition'])) {
+                $condition = json_decode((string)$challenge['strava_condition'], true) ?? [];
+            }
+
+            $afterTs  = (int)strtotime(date('Y-m-d', strtotime((string)$challenge['start_date'])) . ' 00:00:00');
+            $beforeTs = (int)strtotime(date('Y-m-d', strtotime((string)$challenge['end_date']))   . ' 23:59:59');
+
+            $matched = checkStravaCondition($employeeId, $condition, $afterTs, $beforeTs);
+
+            $status    = $matched ? 'auto_approved' : 'rejected';
+            $awarded   = $matched ? (int)$challenge['token_reward'] : 0;
+            $auditNote = $matched
+                ? json_encode(['id' => $matched['id'] ?? 0, 'name' => mb_substr($matched['name'] ?? '', 0, 80)], JSON_UNESCAPED_UNICODE)
+                : null;
+
+            $pdo->beginTransaction();
+            $pdo->prepare("
+                INSERT INTO challenge_submissions
+                    (employee_id, challenge_id, submission_type, photo_path, status, token_awarded)
+                VALUES (?, ?, 'strava', ?, ?, ?)
+            ")->execute([$employeeId, $challengeId, $auditNote, $status, $awarded]);
+
+            // Re-query ID (pdo_sqlsrv lastInsertId unreliable)
+            $subId = (int)$pdo->query("
+                SELECT TOP 1 submission_id FROM challenge_submissions
+                WHERE employee_id = {$employeeId} AND challenge_id = {$challengeId}
+                ORDER BY submission_id DESC
+            ")->fetchColumn();
+
+            $pdo->commit();
+
+            if ($matched) {
+                awardTokens($employeeId, $awarded, 'quiz_reward', $subId, 'Strava: ' . $challenge['title']);
+                $actName = mb_substr($matched['name'] ?? 'กิจกรรม', 0, 60);
+                setFlash('success', "ยินดีด้วย! พบกิจกรรม \"{$actName}\" ที่ผ่านเงื่อนไข ได้รับ +{$awarded} Token 🎉");
+            } else {
+                setFlash('error', 'ไม่พบกิจกรรม Strava ที่ตรงเงื่อนไขในช่วงวันที่ภารกิจ กรุณาบันทึกกิจกรรมแล้วลองใหม่');
+            }
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) { $pdo->rollBack(); }
+            error_log('[MissionToken] strava submit error: ' . $e->getMessage());
+            setFlash('error', 'เกิดข้อผิดพลาดขณะตรวจสอบ Strava: ' . $e->getMessage());
+        }
+
+        redirect(BASE_URL . '/pages/challenges.php');
+    }
+
     redirect(BASE_URL . '/pages/challenges.php');
 }
 
@@ -181,8 +244,17 @@ try {
             $sq->execute([(int)$ch['challenge_id']]);
             $ch['question_count'] = (int)$sq->fetch()['cnt'];
         }
+
+        // Pre-parse strava condition
+        if ($ch['type'] === 'strava' && !empty($ch['strava_condition'])) {
+            $ch['_sc'] = json_decode((string)$ch['strava_condition'], true) ?? [];
+        }
     }
     unset($ch);
+
+    // Strava connection status for this employee (used in card UI)
+    require_once __DIR__ . '/../includes/strava.php';
+    $stravaConnected = isStravaConnected($employeeId);
 
 } catch (Throwable $e) {
     error_log('[MissionToken] challenges load error: ' . $e->getMessage());
@@ -299,9 +371,37 @@ require_once __DIR__ . '/../includes/header.php';
     })();
     </script>
     <?php elseif ($flash): ?>
-    <div class="ch-error-flash">
-        <?= e($flash['message']) ?>
+    <?php endif; ?>
+    <!-- Flash modal (centered overlay, close on button) -->
+    <?php if ($flash && $flash['type'] !== 'success'): ?>
+    <?php $isErr = $flash['type'] === 'error'; ?>
+    <div id="ch-flash-overlay" class="ch-flash-overlay" onclick="if(event.target===this)closeFlash()">
+        <div class="ch-flash-modal ch-flash-modal--<?= $isErr ? 'error' : 'info' ?>">
+            <div class="ch-flash-modal-icon">
+                <?php if ($isErr): ?>
+                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+                <?php else: ?>
+                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <?php endif; ?>
+            </div>
+            <p class="ch-flash-modal-title"><?= $isErr ? 'ไม่ผ่านเงื่อนไข' : 'แจ้งเตือน' ?></p>
+            <p class="ch-flash-modal-msg"><?= e($flash['message']) ?></p>
+            <button class="ch-flash-modal-btn" onclick="closeFlash()">รับทราบ</button>
+        </div>
     </div>
+    <script>
+    function closeFlash() {
+        var el = document.getElementById('ch-flash-overlay');
+        if (el) { el.style.opacity='0'; setTimeout(function(){el.remove();},200); }
+    }
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeFlash(); });
+    </script>
     <?php endif; ?>
 
     <?php if ($dataError): ?>
@@ -567,9 +667,14 @@ require_once __DIR__ . '/../includes/header.php';
         }
         $_total = count($challenges);
 
-        $questsAvailable = array_values(array_filter($challenges, fn($c) => $c['my_status'] === null));
+        // Strava rejected → ยังทำซ้ำได้ → อยู่ในกลุ่ม available
+        $questsAvailable = array_values(array_filter($challenges, fn($c) =>
+            $c['my_status'] === null ||
+            ($c['type'] === 'strava' && $c['my_status'] === 'rejected')
+        ));
         $questsDone      = array_values(array_filter($challenges, fn($c) =>
-            in_array($c['my_status'], ['approved','auto_approved','pending','rejected'], true)
+            in_array($c['my_status'], ['approved','auto_approved','pending'], true) ||
+            ($c['type'] !== 'strava' && $c['my_status'] === 'rejected')
         ));
     ?>
 
@@ -627,9 +732,13 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="ch-quest-inner">
                         <!-- Top: type badge + urgency (if near deadline) -->
                         <div class="ch-quest-top-row">
-                            <span class="ch-type-badge">
-                                <?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?>
-                            </span>
+                            <?php if ($ch['type'] === 'strava'): ?>
+                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">&#127939; Strava</span>
+                            <?php elseif ($ch['type'] === 'quiz'): ?>
+                            <span class="ch-type-badge">Quiz</span>
+                            <?php else: ?>
+                            <span class="ch-type-badge">Photo</span>
+                            <?php endif; ?>
                             <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
                             <span style="font-size:0.65rem;font-weight:700;color:#d2592a;background:rgba(210,89,42,0.10);border:1px solid rgba(210,89,42,0.25);border-radius:6px;padding:0.18rem 0.55rem;">
                                 <?= $_daysLeft === 0 ? '⚡ วันนี้!' : '⚡ เหลือ ' . $_daysLeft . ' วัน' ?>
@@ -662,11 +771,18 @@ require_once __DIR__ . '/../includes/header.php';
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
                      onclick="window.location='<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>'" style="cursor:pointer;"
                      <?php endif; ?>>
-                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"></div>
+                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"
+                         <?php if ($ch['type'] === 'strava'): ?>style="background:linear-gradient(90deg,#FC4C02,#e04400);"<?php endif; ?>></div>
                     <div class="ch-flip-back-body">
-                        <!-- Header: type badge + click hint for quiz -->
+                        <!-- Header: type badge -->
                         <div class="ch-flip-back-header">
-                            <span class="ch-type-badge"><?= $ch['type'] === 'quiz' ? 'Quiz' : 'Photo' ?></span>
+                            <?php if ($ch['type'] === 'strava'): ?>
+                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">&#127939; Strava</span>
+                            <?php elseif ($ch['type'] === 'quiz'): ?>
+                            <span class="ch-type-badge">Quiz</span>
+                            <?php else: ?>
+                            <span class="ch-type-badge">Photo</span>
+                            <?php endif; ?>
                             <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
                             <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อเริ่ม →</span>
                             <?php endif; ?>
@@ -691,6 +807,20 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="ch-flip-back-instructions">
                             <p class="ch-flip-back-instructions-label">วิธีส่งหลักฐาน</p>
                             <p class="ch-flip-back-instructions-text"><?= e((string)$ch['instructions']) ?></p>
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Strava condition summary -->
+                        <?php if ($ch['type'] === 'strava' && !empty($ch['_sc'])): ?>
+                        <?php $sc = $ch['_sc']; ?>
+                        <div class="ch-flip-back-instructions" style="background:rgba(252,76,2,0.06);border-color:rgba(252,76,2,0.22);">
+                            <p class="ch-flip-back-instructions-label" style="color:rgba(252,76,2,0.8)">เงื่อนไขกิจกรรม</p>
+                            <p class="ch-flip-back-instructions-text">
+                                <?= e($sc['sport_type'] ?? 'Run') ?>
+                                <?php if (!empty($sc['min_distance'])): ?> &bull; &ge;<?= number_format($sc['min_distance']/1000,1) ?>กม<?php endif; ?>
+                                <?php if (!empty($sc['min_moving_time'])): ?> &bull; &ge;<?= floor($sc['min_moving_time']/60) ?>นาที<?php endif; ?>
+                                <?php if (!empty($sc['min_elevation'])): ?> &bull; ความสูง&ge;<?= $sc['min_elevation'] ?>ม<?php endif; ?>
+                            </p>
                         </div>
                         <?php endif; ?>
 
@@ -719,13 +849,46 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <!-- Action area -->
                         <div class="ch-flip-action">
-                            <?php if ($isRejected): ?>
+                            <?php if ($isRejected && $ch['type'] !== 'strava'): ?>
                             <div class="ch-rejected-msg">
                                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                                 </svg>
                                 คุณทำภารกิจไม่ผ่าน &bull;
                             </div>
+                            <?php elseif ($ch['type'] === 'strava'): ?>
+                            <?php if (!$stravaConnected): ?>
+                            <p style="font-size:0.73rem;color:#d2592a;margin:0 0 0.5rem;">⚠️ ยังไม่ได้เชื่อมต่อ Strava</p>
+                            <a href="<?= BASE_URL ?>/pages/strava_connect.php"
+                               class="ch-btn-start" style="background:rgba(252,76,2,0.75);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+                               🏃 เชื่อมต่อ Strava
+                            </a>
+                            <?php elseif ($isRejected): ?>
+                            <p style="font-size:0.73rem;color:#d2592a;margin:0 0 0.5rem;">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
+                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
+                                  id="strava-retry-form-<?= $cid ?>">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="action" value="submit_strava">
+                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
+                                <button type="button" class="ch-btn-start"
+                                        style="background:rgba(252,76,2,0.7);display:inline-flex;align-items:center;gap:6px;"
+                                        onclick="var f=document.getElementById('strava-retry-form-<?= $cid ?>');if(f){this.disabled=true;this.textContent='กำลังตรวจสอบ...';f.submit();}">
+                                    &#127939; ตรวจสอบอีกครั้ง
+                                </button>
+                            </form>
+                            <?php else: ?>
+                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
+                                  id="strava-form-<?= $cid ?>">
+                                <?= csrfField() ?>
+                                <input type="hidden" name="action" value="submit_strava">
+                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
+                                <button type="button" class="ch-btn-start"
+                                        style="background:rgba(252,76,2,0.75);display:inline-flex;align-items:center;gap:6px;"
+                                        onclick="var f=document.getElementById('strava-form-<?= $cid ?>');if(f){this.disabled=true;this.textContent='กำลังตรวจสอบ...';f.submit();}">
+                                    &#127939; ตรวจสอบกิจกรรม Strava
+                                </button>
+                            </form>
+                            <?php endif; ?>
                             <?php elseif ($ch['type'] === 'photo'): ?>
                             <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
                                   enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">

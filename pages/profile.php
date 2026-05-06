@@ -6,6 +6,8 @@
 
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
+require_once __DIR__ . '/../includes/strava.php';
+require_once __DIR__ . '/../config/strava.php';
 
 $employeeId = (int)$_SESSION['employee_id'];
 
@@ -118,10 +120,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // ── GET: load profile ────────────────────────────────────────
-$profile  = getEmployeeProfile($employeeId);
-$tenure   = $profile ? getWorkTenure($profile['start_date'] ?? null) : null;
-$wallet   = getWalletInfo($employeeId);
-$flash    = getFlash();
+$profile     = getEmployeeProfile($employeeId);
+$tenure      = $profile ? getWorkTenure($profile['start_date'] ?? null) : null;
+$wallet      = getWalletInfo($employeeId);
+$flash       = getFlash();
+$stravaRow   = getStravaTokenRow($employeeId);
+$stravaOk    = !empty($stravaRow['strava_athlete_id']);
+
+// Generate OAuth state for connect button
+$stravaState = bin2hex(random_bytes(16));
+$_SESSION['strava_oauth_state'] = $stravaState;
+$stravaAuthUrl = stravaAuthURL($stravaState);
 
 // Token stats this month
 $monthlyEarned = 0;
@@ -431,6 +440,94 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                     </form>
                 </div>
+                <!-- Strava Connect card -->
+                <div class="pf-card" style="border:1px solid <?= $stravaOk ? 'rgba(252,76,2,0.35)' : 'rgba(255,255,255,0.07)' ?>;">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+                        <!-- Strava logo SVG -->
+                        <svg viewBox="0 0 24 24" width="26" height="26" fill="#FC4C02" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                        </svg>
+                        <p class="pf-card-label" style="margin:0;">เชื่อมต่อ Strava</p>
+                        <?php if ($stravaOk): ?>
+                        <span style="margin-left:auto;font-size:0.68rem;font-weight:700;padding:2px 10px;
+                                     background:rgba(81,142,92,0.18);color:#518e5c;
+                                     border:1px solid rgba(81,142,92,0.35);border-radius:999px;">&#10003; เชื่อมต่อแล้ว</span>
+                        <?php else: ?>
+                        <span style="margin-left:auto;font-size:0.68rem;font-weight:700;padding:2px 10px;
+                                     background:rgba(255,255,255,0.06);color:#9ca3af;
+                                     border:1px solid rgba(255,255,255,0.12);border-radius:999px;">ยังไม่เชื่อมต่อ</span>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($stravaOk): ?>
+                    <!-- Connected status -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
+                        <div style="background:rgba(252,76,2,0.07);border:1px solid rgba(252,76,2,0.18);
+                                    border-radius:10px;padding:0.65rem 0.85rem;">
+                            <p style="font-size:0.65rem;color:#9ca3af;margin:0 0 2px;">Athlete ID</p>
+                            <p style="font-size:0.85rem;font-weight:700;color:#FC4C02;margin:0;font-family:monospace;">
+                                <?= e((string)$stravaRow['strava_athlete_id']) ?>
+                            </p>
+                        </div>
+                        <div style="background:rgba(252,76,2,0.07);border:1px solid rgba(252,76,2,0.18);
+                                    border-radius:10px;padding:0.65rem 0.85rem;">
+                            <p style="font-size:0.65rem;color:#9ca3af;margin:0 0 2px;">สิทธิ์ที่อนุญาต</p>
+                            <p style="font-size:0.78rem;font-weight:600;color:#dab937;margin:0;">
+                                <?= e($stravaRow['strava_scope'] ?? '-') ?>
+                            </p>
+                        </div>
+                    </div>
+                    <?php if (!empty($stravaRow['strava_token_expires_at'])): ?>
+                    <p style="font-size:0.7rem;color:#9ca3af;margin:0 0 1rem;">
+                        Token หมดอายุ:
+                        <span style="color:#eeebe1;">
+                        <?php
+                        $exp = (int)$stravaRow['strava_token_expires_at'];
+                        $diff = $exp - time();
+                        if ($diff <= 0) echo 'หมดอายุแล้ว (จะต่ออายุอัตโนมัติ)';
+                        elseif ($diff < 3600) echo 'อีก ' . round($diff/60) . ' นาที';
+                        else echo 'อีก ' . round($diff/3600, 1) . ' ชั่วโมง';
+                        ?>
+                        </span>
+                    </p>
+                    <?php endif; ?>
+                    <!-- Disconnect button -->
+                    <form method="POST" action="<?= BASE_URL ?>/pages/strava_connect.php"
+                          onsubmit="return confirm('ยืนยันการยกเลิกเชื่อมต่อ Strava?');">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="disconnect">
+                        <button type="submit"
+                                style="font-size:0.78rem;font-weight:600;padding:7px 18px;
+                                       background:rgba(210,89,42,0.12);color:#d2592a;
+                                       border:1px solid rgba(210,89,42,0.35);border-radius:8px;
+                                       cursor:pointer;transition:background 0.2s;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                            ยกเลิกเชื่อมต่อ
+                        </button>
+                    </form>
+
+                    <?php else: ?>
+                    <!-- Not connected — show connect button -->
+                    <p style="font-size:0.8rem;color:#9ca3af;margin:0 0 1rem;line-height:1.6;">
+                        เชื่อมต่อบัญชี Strava เพื่อให้ระบบดึงข้อมูลกิจกรรมของคุณ<br>
+                        และใช้ยืนยันภารกิจประเภท Strava ได้อัตโนมัติ
+                    </p>
+                    <a href="<?= e($stravaAuthUrl) ?>"
+                       style="display:inline-flex;align-items:center;gap:8px;font-size:0.85rem;
+                              font-weight:700;padding:9px 20px;border-radius:9px;
+                              background:#FC4C02;color:#fff;text-decoration:none;
+                              transition:background 0.2s;"
+                       onmouseover="this.style.background='#e04400'"
+                       onmouseout="this.style.background='#FC4C02'">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff">
+                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                        </svg>
+                        เชื่อมต่อกับ Strava
+                    </a>
+                    <?php endif; ?>
+                </div>
+
             </div><!-- /pf-col right -->
 
         </div><!-- /pf-grid-2col -->
