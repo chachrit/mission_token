@@ -134,6 +134,18 @@ function arToggleExpiry(val) {
     var wrap = document.getElementById('coupon-expiry-wrap');
     if (wrap) wrap.style.display = val.trim() !== '' ? 'block' : 'none';
 }
+function arToggleCoupon(cat) {
+    var block = document.getElementById('coupon-block');
+    if (!block) return;
+    if (cat === 'voucher') {
+        block.style.display = 'block';
+    } else {
+        block.style.display = 'none';
+        // clear values when hidden
+        var inp = document.getElementById('coupon_code_input');
+        if (inp) { inp.value = ''; arToggleExpiry(''); }
+    }
+}
 </script>
 
 <div class="ar-rewards-wrap are-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
@@ -229,7 +241,7 @@ function arToggleExpiry(val) {
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1.5rem;">
                     <div>
                         <label class="are-label">หมวดหมู่</label>
-                        <select name="category" class="journal-input">
+                        <select name="category" id="category-select" class="journal-input" onchange="arToggleCoupon(this.value)">
                             <?php foreach ($catMeta as $k => $m): ?>
                             <option value="<?= e($k) ?>"
                                     <?= ($reward['category'] === $k) ? 'selected' : '' ?>>
@@ -255,7 +267,8 @@ function arToggleExpiry(val) {
                 </div>
 
                 <!-- Coupon code -->
-                <div style="margin-bottom:1.25rem; padding:1rem 1.25rem;
+                <?php $isCouponCat = ($reward['category'] === 'voucher'); ?>
+                <div id="coupon-block" style="display:<?= $isCouponCat ? 'block' : 'none' ?>; margin-bottom:1.25rem; padding:1rem 1.25rem;
                             background:rgba(218,185,55,0.04); border-radius:12px;
                             border:1px solid rgba(218,185,55,0.12);">
                     <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
