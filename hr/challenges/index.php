@@ -100,7 +100,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php if (!empty($challenges)): ?>
                     <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
                                  background:rgba(255,255,255,0.07); border-radius:999px;
-                                 padding:0.12rem 0.5rem; color:#4a4e57;">
+                                 padding:0.12rem 0.5rem; color:#8a8e97;">
                         <?= count($challenges) ?> รายการ
                     </span>
                     <?php endif; ?>
@@ -152,7 +152,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 $start = strtotime((string)$ch['start_date']);
                 $end   = strtotime((string)$ch['end_date']);
                 if (!$isActive) {
-                    $dateClr = '#4a4e57';
+                    $dateClr = '#8a8e97';
                 } elseif ($now < $start) {
                     $dateClr = '#4f8b98';  // upcoming — teal
                 } elseif ($now > $end) {
@@ -174,7 +174,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <?= e($ch['title']) ?>
                     </p>
                     <?php if ($isQuiz && (int)$ch['question_count'] > 0): ?>
-                    <p style="font-size:0.68rem; color:#4a4e57; margin:0.1rem 0 0;">
+                    <p style="font-size:0.68rem; color:#8a8e97; margin:0.1rem 0 0;">
                         <?= (int)$ch['question_count'] ?> คำถาม
                     </p>
                     <?php endif; ?>
@@ -232,21 +232,24 @@ require_once __DIR__ . '/../../includes/header.php';
                 <!-- Actions -->
                 <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.5rem;">
                     <a href="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= (int)$ch['challenge_id'] ?>"
-                       style="font-size:0.73rem; font-weight:600; padding:0.32rem 0.75rem;
+                       style="display:inline-flex; align-items:center; justify-content:center;
+                              height:30px; box-sizing:border-box;
+                              font-size:0.73rem; font-weight:600; padding:0 0.75rem;
                               border-radius:8px; text-decoration:none; transition:background 0.15s;
                               background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
-                              color:#dab937;"
+                              color:#dab937; white-space:nowrap;"
                        onmouseover="this.style.background='rgba(218,185,55,0.16)'"
                        onmouseout="this.style.background='rgba(218,185,55,0.08)'">
                         แก้ไข
                     </a>
-                    <form method="POST" style="display:inline;"
+                    <form method="POST" style="display:inline-flex; margin:0;"
                           onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e(addslashes($ch['title'])) ?>&quot;?\nจะลบข้อมูลการส่งงานและประวัติทั้งหมดด้วย\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="challenge_id" value="<?= (int)$ch['challenge_id'] ?>">
                         <button type="submit"
-                                style="width:30px; height:30px; border-radius:8px; cursor:pointer;
+                                style="width:30px; height:30px; box-sizing:border-box;
+                                       border-radius:8px; cursor:pointer; margin:0;
                                        background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
                                        color:#d2592a; display:inline-flex; align-items:center;
                                        justify-content:center; transition:background 0.15s;"
@@ -271,7 +274,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                     border-radius:16px; padding:4rem; text-align:center; backdrop-filter:blur(8px);">
             <p style="font-size:2.2rem; margin:0 0 0.6rem; opacity:0.15;">📋</p>
-            <p style="font-size:0.92rem; color:#4a4e57; margin:0 0 1.25rem;">
+            <p style="font-size:0.92rem; color:#8a8e97; margin:0 0 1.25rem;">
                 ยังไม่มีภารกิจในระบบ
             </p>
             <a href="<?= BASE_URL ?>/hr/challenges/edit.php"

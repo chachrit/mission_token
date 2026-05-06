@@ -206,7 +206,7 @@ require_once __DIR__ . '/../../includes/header.php';
 <style>
 /* ── Admin Challenge Edit  prefix: ace- ─────────────────── */
 .ace-label {
-    font-size: 0.72rem; font-weight: 700; color: #4a4e57;
+    font-size: 0.72rem; font-weight: 700; color: #8a8e97;
     letter-spacing: 0.08em; text-transform: uppercase;
     margin-bottom: 0.35rem; display: block;
 }

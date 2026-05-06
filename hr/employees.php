@@ -316,7 +316,7 @@ $roleMeta = [
             </a>
             <?php endif; ?>
             <?php if ($search || $roleFilter || $statusFilter): ?>
-            <span style="font-size:0.75rem; color:#4a4e57; padding:0.3rem 0;">
+            <span style="font-size:0.75rem; color:#8a8e97; padding:0.3rem 0;">
                 พบ <?= count($employees) ?> รายการ
             </span>
             <?php endif; ?>
@@ -369,7 +369,7 @@ $roleMeta = [
                             <span style="font-size:0.60rem; color:#6b6e77; margin-left:4px;">(คุณ)</span>
                             <?php endif; ?>
                         </p>
-                        <p style="font-size:0.68rem; color:#4a4e57; margin:0; font-family:monospace,sans-serif;">
+                        <p style="font-size:0.68rem; color:#8a8e97; margin:0; font-family:monospace,sans-serif;">
                             <?= e($emp['employee_code']) ?>
                         </p>
                     </div>
@@ -381,7 +381,7 @@ $roleMeta = [
                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         <?= e($emp['position'] ?? '—') ?>
                     </p>
-                    <p style="font-size:0.68rem; color:#4a4e57; margin:0;
+                    <p style="font-size:0.68rem; color:#8a8e97; margin:0;
                                white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                         <?= e($emp['department'] ?? '—') ?>
                     </p>
@@ -527,11 +527,11 @@ $roleMeta = [
             <input type="hidden" name="qs"          id="emp-adjust-qs">
             <div style="padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem;">
                 <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.14);
-                            border-radius:12px; padding:0.75rem 1rem; font-size:0.78rem; color:#4a4e57;">
+                            border-radius:12px; padding:0.75rem 1rem; font-size:0.78rem; color:#8a8e97;">
                     Token ปัจจุบัน: <span id="emp-adjust-balance" style="font-weight:700; color:#f8e769;"></span>
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#4a4e57;
+                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
                         จำนวน Token <span style="color:#d2592a;">*</span>
                     </label>
@@ -543,7 +543,7 @@ $roleMeta = [
                     </p>
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#4a4e57;
+                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
                         หมายเหตุ
                     </label>
@@ -605,7 +605,7 @@ $roleMeta = [
                     ⚠ รหัสผ่านใหม่จะมีผลทันที พนักงานจะต้อง login ด้วยรหัสผ่านใหม่นี้
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#4a4e57;
+                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
                         รหัสผ่านใหม่ <span style="color:#d2592a;">*</span>
                     </label>
@@ -614,7 +614,7 @@ $roleMeta = [
                            minlength="6" required class="emp-modal-input">
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#4a4e57;
+                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
                         ยืนยันรหัสผ่าน <span style="color:#d2592a;">*</span>
                     </label>
