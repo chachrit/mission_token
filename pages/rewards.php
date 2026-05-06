@@ -463,7 +463,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
                         <?php echo formatTokens((int)$wallet['total_spent']); ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#3a3e43; margin-top:0.15rem;">
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
                         Token ที่ใช้ไป
                     </div>
                 </div>
@@ -474,7 +474,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
                         <?php echo count($myRedemptions); ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#3a3e43; margin-top:0.15rem;">
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
                         รายการแลกแล้ว
                     </div>
                 </div>
@@ -531,7 +531,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div style="text-align:center; padding:5rem 1rem;">
             <div style="font-size:3rem; margin-bottom:1rem; opacity:0.22;">🔒</div>
             <p style="font-size:1rem; font-weight:600; color:#6b6e77; margin:0 0 0.3rem;">Vault ว่างอยู่ในขณะนี้</p>
-            <p style="font-size:0.82rem; color:#3a3e43; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
+            <p style="font-size:0.82rem; color:#6b6e77; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
         </div>
         <?php else: ?>
         <div id="rewards-grid"
@@ -613,7 +613,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?= $stockLeft <= 3 ? '⚠ ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
                         </span>
                         <?php else: ?>
-                        <span style="font-size:0.65rem; color:#3a3e43; display:block;">ไม่จำกัดจำนวน</span>
+                        <span style="font-size:0.65rem; color:#6b6e77; display:block;">ไม่จำกัดจำนวน</span>
                         <?php endif; ?>
                     </div>
 
@@ -634,7 +634,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
-                        <span style="font-size:0.73rem; color:#3a3e43; font-weight:500;">Token ไม่พอ</span>
+                        <span style="font-size:0.73rem; color:#6b6e77; font-weight:500;">Token ไม่พอ</span>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -710,7 +710,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?= (int)$rd['tokens_spent'] ?>
                         </span>
                     </div>
-                    <span style="font-size:0.75rem; color:#3a3e43; white-space:nowrap;">
+                    <span style="font-size:0.75rem; color:#6b6e77; white-space:nowrap;">
                         <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                     </span>
                     <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
@@ -794,7 +794,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11V7a5 5 0 0110 0v4"/>
                             </svg>
-                            <span style="font-size:0.68rem; color:#3a3e43;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
+                            <span style="font-size:0.68rem; color:#6b6e77;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
                         </div>
                         <button onclick="rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
                                 style="display:inline-flex; align-items:center; gap:0.3rem;
@@ -869,7 +869,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <span id="modal-emoji" style="font-size:2.4rem; user-select:none; line-height:1;"></span>
                     <div>
                         <p style="font-size:0.60rem; letter-spacing:0.12em; text-transform:uppercase;
-                                  color:#3a3e43; margin:0 0 0.18rem; font-weight:700;">รางวัลที่เลือก</p>
+                                  color:#6b6e77; margin:0 0 0.18rem; font-weight:700;">รางวัลที่เลือก</p>
                         <p id="modal-reward-name"
                            style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></p>
                     </div>

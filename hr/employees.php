@@ -340,7 +340,7 @@ $roleMeta = [
             <?php if (empty($employees)): ?>
             <div style="padding:4rem 2rem; text-align:center;">
                 <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem;">👤</p>
-                <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ไม่พบพนักงานที่ตรงกับเงื่อนไข</p>
+                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ไม่พบพนักงานที่ตรงกับเงื่อนไข</p>
             </div>
             <?php else: ?>
 
@@ -394,11 +394,11 @@ $roleMeta = [
                     <p style="font-size:0.78rem; font-weight:600; color:#dab937; margin:0; white-space:nowrap;">
                         <?= e($_et['text']) ?>
                     </p>
-                    <p style="font-size:0.60rem; color:#3a3e43; margin:0;">
+                    <p style="font-size:0.60rem; color:#6b6e77; margin:0;">
                         <?= number_format($_et['total_days']) ?> วัน
                     </p>
                     <?php else: ?>
-                    <p style="font-size:0.72rem; color:#3a3e43; margin:0;">—</p>
+                    <p style="font-size:0.72rem; color:#6b6e77; margin:0;">—</p>
                     <?php endif; ?>
                 </div>
 
@@ -440,7 +440,7 @@ $roleMeta = [
                             <?= formatTokens($balance) ?>
                         </span>
                     </div>
-                    <p style="font-size:0.63rem; color:#3a3e43; margin:0; margin-top:1px;">
+                    <p style="font-size:0.63rem; color:#6b6e77; margin:0; margin-top:1px;">
                         ได้ <?= formatTokens((int)$emp['total_earned']) ?> / ใช้ <?= formatTokens((int)$emp['total_spent']) ?>
                     </p>
                 </div>
@@ -538,7 +538,7 @@ $roleMeta = [
                     <input type="number" name="amount" id="emp-adjust-amount"
                            placeholder="ระบุบวก (+) หรือลบ (-) ได้"
                            class="emp-modal-input" required>
-                    <p style="font-size:0.68rem; color:#3a3e43; margin-top:0.3rem;">
+                    <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">
                         ใส่ค่าบวกเพื่อเพิ่ม เช่น 50 &nbsp;|&nbsp; ค่าลบเพื่อหัก เช่น -20
                     </p>
                 </div>

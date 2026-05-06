@@ -282,7 +282,6 @@ $flash        = getFlash();
                     if ($isAdminOrHr && $isAdminPage) {
                         // อยู่ใน /hr/ → แสดง admin nav
                         $navLinks = [
-                            'admin_dashboard'   => ['label' => 'ภาพรวมระบบ',   'href' => BASE_URL . '/hr/dashboard.php'],
                             'admin_challenges'  => ['label' => 'จัดการภารกิจ', 'href' => BASE_URL . '/hr/challenges/index.php'],
                             'admin_submissions' => ['label' => 'อนุมัติงาน',    'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
                             'admin_rewards'     => ['label' => 'จัดการรางวัล',  'href' => BASE_URL . '/hr/rewards/index.php', 'badge' => $pendingRedemptionCount],

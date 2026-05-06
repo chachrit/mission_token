@@ -274,7 +274,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
                         font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                        text-transform:uppercase; color:#3a3e43;">
+                        text-transform:uppercase; color:#6b6e77;">
                 <span>พนักงาน</span>
                 <span>รางวัล</span>
                 <span>Token</span>
@@ -285,7 +285,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php if (empty($redemptions)): ?>
             <div style="padding:3.5rem; text-align:center;">
                 <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20;">🎉</p>
-                <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ไม่มีรายการในสถานะนี้</p>
+                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ไม่มีรายการในสถานะนี้</p>
             </div>
             <?php else: ?>
             <?php foreach ($redemptions as $rd):
@@ -301,7 +301,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;">
                         <?= e($rd['full_name']) ?>
                     </p>
-                    <p style="font-size:0.72rem; color:#3a3e43; margin:0.08rem 0 0;">
+                    <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
                         <?= e($rd['employee_code']) ?>
                         <?php if (!empty($rd['department'])): ?>
                         · <?= e($rd['department']) ?>
@@ -340,7 +340,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                     </span>
                     <br>
-                    <span style="font-size:0.70rem; color:#3a3e43;">
+                    <span style="font-size:0.70rem; color:#6b6e77;">
                         <?= date('H:i', strtotime($rd['redeemed_at'])) ?>
                     </span>
                 </div>
@@ -383,10 +383,10 @@ require_once __DIR__ . '/../../includes/header.php';
                         </button>
                     </div>
                     <?php else: ?>
-                    <span style="font-size:0.68rem; color:#3a3e43; font-style:italic;">รอ HR ดำเนินการ</span>
+                    <span style="font-size:0.68rem; color:#6b6e77; font-style:italic;">รอ HR ดำเนินการ</span>
                     <?php endif; ?>
                     <?php elseif ($rd['processed_at']): ?>
-                    <span style="font-size:0.68rem; color:#3a3e43;">
+                    <span style="font-size:0.68rem; color:#6b6e77;">
                         <?= date('d/m/y H:i', strtotime($rd['processed_at'])) ?>
                     </span>
                     <?php endif; ?>
@@ -430,7 +430,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <div style="margin-bottom:1.25rem;">
                     <label style="font-size:0.68rem; font-weight:700; color:#4a4e57;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#3a3e43; text-transform:none;">(ไม่บังคับ)</span>
+                        หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span>
                     </label>
                     <textarea name="admin_note" id="ard-form-note" rows="3" maxlength="500"
                               placeholder="เช่น จะส่งให้ในวันศุกร์นี้ / วันลาใช้ได้ภายใน 3 เดือน"

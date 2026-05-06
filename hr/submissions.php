@@ -213,7 +213,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div style="border-radius:16px; padding:5rem 2rem; text-align:center;
                     background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08);">
             <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem;">✓</p>
-            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">
+            <p style="font-size:0.88rem; color:#6b6e77; margin:0;">
                 <?= $filter === 'all' ? 'ยังไม่มีการส่งงานในระบบ' : 'ไม่มีงานรอตรวจสอบในขณะนี้' ?>
             </p>
         </div>
@@ -273,12 +273,12 @@ require_once __DIR__ . '/../includes/header.php';
                      style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
                      onmouseover="this.style.transform='scale(1.04)'"
                      onmouseout="this.style.transform='scale(1)'"
-                     onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#3a3e43;\'>ไม่สามารถโหลดรูปภาพได้</div>'">
+                     onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#6b6e77;\'>ไม่สามารถโหลดรูปภาพได้</div>'">
             </a>
             <?php else: ?>
             <div style="height:72px; background:rgba(255,255,255,0.03);
                         display:flex; align-items:center; justify-content:center;
-                        font-size:0.75rem; color:#3a3e43;">
+                        font-size:0.75rem; color:#6b6e77;">
                 ไม่มีไฟล์แนบ
             </div>
             <?php endif; ?>

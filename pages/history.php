@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * pages/history.php
  * Employee: full token transaction history + redemption history with coupon reveal
@@ -90,7 +90,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div style="margin-bottom:2rem;">
             <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.3rem;">
                 <a href="<?= BASE_URL ?>/pages/dashboard.php"
-                   style="color:#3a3e43; font-size:0.78rem; text-decoration:none;
+                   style="color:#6b6e77; font-size:0.78rem; text-decoration:none;
                           display:inline-flex; align-items:center; gap:0.3rem;
                           transition:color 0.15s;"
                    onmouseover="this.style.color='#dab937'"
@@ -122,7 +122,7 @@ require_once __DIR__ . '/../includes/header.php';
                         border-radius:14px; padding:1rem 1.15rem; backdrop-filter:blur(8px);
                         text-align:center;">
                 <p style="font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                           text-transform:uppercase; color:#3a3e43; margin:0 0 0.35rem;">
+                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.35rem;">
                     <?= $ws['label'] ?>
                 </p>
                 <p style="font-size:1.3rem; font-weight:800; color:<?= $ws['color'] ?>;
@@ -170,7 +170,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (empty($txAll)): ?>
         <div class="hy-empty-state">
             <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">📊</p>
-            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติ Token</p>
+            <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติ Token</p>
         </div>
         <?php else: ?>
         <div class="hy-table-wrap">
@@ -214,7 +214,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (empty($quizHistory)): ?>
         <div class="hy-empty-state">
             <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎯</p>
-            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติการทำภารกิจ</p>
+            <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติการทำภารกิจ</p>
         </div>
         <?php else: ?>
         <div class="hy-table-wrap">
@@ -275,7 +275,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (empty($redemptions)): ?>
         <div class="hy-empty-state">
             <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎁</p>
-            <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีประวัติการแลกรางวัล</p>
+            <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติการแลกรางวัล</p>
         </div>
         <?php else: ?>
         <div class="hy-table-wrap">
@@ -389,8 +389,8 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <?php elseif ($rd['status'] === 'pending'): ?>
                 <div style="display:inline-flex; align-items:center; gap:0.4rem; align-self:flex-start;">
-                    <span style="font-size:0.68rem; color:#3a3e43;">🔒</span>
-                    <span style="font-size:0.68rem; color:#3a3e43;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
+                    <span style="font-size:0.68rem; color:#6b6e77;">🔒</span>
+                    <span style="font-size:0.68rem; color:#6b6e77;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
                 </div>
                 <?php endif; ?>
             </div>

@@ -393,7 +393,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?php if ($isMe): ?>
                                 <span class="ds-lb-avatar-letter"><?= mb_substr($lb['full_name'] ?? '?', 0, 1, 'UTF-8') ?></span>
                                 <?php else: ?>
-                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3a3e43" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6b6e77" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                                 <?php endif; ?>
                             </div>
                             <p class="ds-lb-name <?= $isMe ? 'ds-lb-name--me' : '' ?>">

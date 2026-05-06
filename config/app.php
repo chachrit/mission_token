@@ -9,7 +9,29 @@
 // ============================================================
 define('APP_NAME',    'Mission Token');
 define('APP_VERSION', '1.0.0');
-define('BASE_URL',    'http://localhost/mission_token'); // ← No trailing slash
+// Auto-detect BASE_URL from current request — works on any server without manual config
+(function () {
+    $protocol  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+    $host      = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    // App root on filesystem (the folder containing config/, pages/, etc.)
+    $appDir    = str_replace('\\', '/', rtrim(dirname(__DIR__), '/\\'));
+    // Full filesystem path of the currently-executing script
+    $scriptFs  = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'] ?? '');
+    // URL path of the currently-executing script (e.g. /mission_token/pages/dashboard.php)
+    $scriptUrl = $_SERVER['SCRIPT_NAME'] ?? '/';
+    $subPath   = '';
+    if ($scriptFs !== '' && strpos($scriptFs, $appDir) === 0) {
+        // Relative script path inside app dir (e.g. pages/dashboard.php)
+        $rel     = ltrim(substr($scriptFs, strlen($appDir)), '/');
+        // Strip that from the end of the URL path → leaves /mission_token
+        $subPath = rtrim(substr($scriptUrl, 0, strlen($scriptUrl) - strlen($rel)), '/');
+    }
+    define('BASE_URL', $protocol . '://' . $host . $subPath);
+})();
+
+// External Employee API
+define('EMP_API_URL', 'http://localhost/emp_api/api/employee.php');
+define('EMP_API_KEY', 'my-secret-key-12345');
 
 // File Upload settings
 define('UPLOAD_PATH',    __DIR__ . '/../uploads/submissions/');

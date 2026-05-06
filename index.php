@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * index.php — Public Home Page
  * Mission Token | JOURNAL Employee Gamification
@@ -177,18 +177,156 @@ require_once __DIR__ . '/includes/header.php';
                     <p class="about-pillar-desc">ยอด Token สะสมรวมจะถูกจัดอันดับ เปรียบเทียบกับเพื่อนร่วมทีมแบบ Real-time</p>
                 </div>
             </div>
+
+            <!-- ── Scroll hint (absolute at bottom of about-section) ── -->
+            <div class="about-scroll-hint" aria-hidden="true">
+                <span>GUIDE</span>
+                <div class="about-scroll-hint-arrow"></div>
+            </div>
+
         </div><!-- end .about-section -->
-    </section>
 
-    <!-- Back button (outside morph so it can be positioned fixed relative to viewport) -->
-    <button class="about-back-btn" id="about-back-btn" aria-label="กลับ">
-        <div class="about-back-arrow"></div>
-        <span>BACK</span>
-    </button>
+    <!-- ── HOW IT WORKS (scrolled inside about-morph) ──────── -->
+    <div class="guide-section">
+        <div class="guide-inner">
+            <p class="quest-label" style="margin-bottom:2rem;letter-spacing:0.2em">วิธีใช้งาน</p>
 
+            <!-- Tab switcher -->
+            <div class="guide-tabs" style="margin-bottom:2.5rem;">
+                <button class="guide-tab-btn active" id="tab-employee" onclick="switchGuideTab('employee')">พนักงาน</button>
+                <button class="guide-tab-btn" id="tab-hr" onclick="switchGuideTab('hr')">HR</button>
+            </div>
 
+            <!-- Employee flow -->
+            <div id="guide-employee" class="guide-flow">
 
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">1</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">เข้าสู่ระบบ</p>
+                        <p class="guide-flow-desc">ใช้รหัสพนักงานและรหัสผ่านของคุณ — ถ้าเข้าครั้งแรก ให้ใช้รหัสพนักงานเป็นรหัสผ่าน</p>
+                    </div>
+                </div>
 
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">2</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">เลือกภารกิจ</p>
+                        <p class="guide-flow-desc">ดูรายการภารกิจที่เปิดรับอยู่ มีทั้งแบบตอบคำถาม และแบบถ่ายรูปส่งหลักฐาน</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">3</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">ทำและส่งงาน</p>
+                        <p class="guide-flow-desc">ตอบคำถามให้ถูกทุกข้อ หรือถ่ายรูปหลักฐานแล้วส่ง — ผลจะแจ้งในหน้าประวัติ</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">4</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">ได้รับ Token</p>
+                        <p class="guide-flow-desc">งานที่ผ่านการตรวจแล้วจะได้รับ Token เข้ากระเป๋าทันที ดูยอดได้ที่หน้าหลัก</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">5</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">แลกรางวัล</p>
+                        <p class="guide-flow-desc">นำ Token ที่สะสมไปแลกของรางวัลที่ต้องการในร้านรางวัลได้เลย</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- HR flow -->
+            <div id="guide-hr" class="guide-flow" style="display:none;">
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">1</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">เข้าสู่ระบบ</p>
+                        <p class="guide-flow-desc">ใช้บัญชี HR เข้าสู่ระบบ — ระบบจะพาไปหน้าจัดการโดยอัตโนมัติ ไม่ต้องตั้งค่าอื่นเพิ่ม</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">2</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">สร้างภารกิจ</p>
+                        <p class="guide-flow-desc">เพิ่มภารกิจใหม่ กำหนดประเภท จำนวน Token รางวัล และวันที่เปิด-ปิดรับงาน</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">3</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">ตรวจสอบงาน</p>
+                        <p class="guide-flow-desc">ดูรูปหลักฐานที่พนักงานส่งมา แล้วกด อนุมัติ หรือ ปฏิเสธ พร้อมใส่เหตุผล</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">4</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">จัดการรางวัล</p>
+                        <p class="guide-flow-desc">เพิ่มของรางวัลในร้านค้า กำหนดราคา Token และจำนวนที่มี</p>
+                    </div>
+                </div>
+
+                <div class="guide-flow-step">
+                    <div class="guide-flow-left">
+                        <div class="guide-flow-num">5</div>
+                        <div class="guide-flow-line"></div>
+                    </div>
+                    <div class="guide-flow-content">
+                        <p class="guide-flow-title">ส่งมอบรางวัล</p>
+                        <p class="guide-flow-desc">เมื่อพนักงานแลกรางวัล กดยืนยันหลังจากมอบของจริงให้เรียบร้อยแล้ว</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div><!-- end .guide-section -->
+
+</section><!-- end .about-morph -->
+
+<!-- Back button (outside morph, fixed relative to viewport) -->
+<button class="about-back-btn" id="about-back-btn" aria-label="กลับ">
+    <div class="about-back-arrow"></div>
+    <span>BACK</span>
+</button>
 
 </div><!-- end .home-page-wrap -->
 

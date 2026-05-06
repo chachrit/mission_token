@@ -265,6 +265,8 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutSlide.classList.remove('slide-open');
         document.body.classList.remove('about-open');
         if (backBtn) backBtn.classList.remove('btn-visible');
+        // Reset scroll so next open always starts clip-path from the button origin
+        aboutSlide.scrollTop = 0;
     }
 
     // Click on scroll indicator
@@ -315,7 +317,56 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape' && isOpen) closeAbout();
     });
+
+    // ── Guide section: clip-path circle expand (mirrors about-morph open) ──
+    var guideSection = document.querySelector('.guide-section');
+    if (guideSection && aboutSlide) {
+        var sectionObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    guideSection.classList.add('in-view');
+                    sectionObserver.unobserve(guideSection);
+                }
+            });
+        }, { root: aboutSlide, threshold: 0.04 });
+        sectionObserver.observe(guideSection);
+    }
+
+    // ── Guide steps: scroll-in animation via IntersectionObserver ────
+    var guideSteps = document.querySelectorAll('.guide-flow-step');
+    if (guideSteps.length && aboutSlide) {
+        var stepObserver = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    var delay = parseInt(entry.target.dataset.delay) || 0;
+                    setTimeout(function () {
+                        entry.target.classList.add('in-view');
+                    }, delay);
+                    stepObserver.unobserve(entry.target);
+                }
+            });
+        }, { root: aboutSlide, threshold: 0.12 });
+
+        guideSteps.forEach(function (step, i) {
+            step.dataset.delay = i * 80;
+            stepObserver.observe(step);
+        });
+    }
 });
+
+// ============================================================
+// Guide tab switcher (global — called via onclick in index.php)
+// ============================================================
+function switchGuideTab(tab) {
+    var empGrid = document.getElementById('guide-employee');
+    var hrGrid  = document.getElementById('guide-hr');
+    var tabEmp  = document.getElementById('tab-employee');
+    var tabHr   = document.getElementById('tab-hr');
+    if (empGrid) empGrid.style.display = tab === 'employee' ? 'grid' : 'none';
+    if (hrGrid)  hrGrid.style.display  = tab === 'hr'       ? 'grid' : 'none';
+    if (tabEmp)  tabEmp.classList.toggle('active',  tab === 'employee');
+    if (tabHr)   tabHr.classList.toggle('active',   tab === 'hr');
+}
 
 // ============================================================
 // Login Page — Password Toggle & Form Submit

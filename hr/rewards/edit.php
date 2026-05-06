@@ -30,7 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stockRaw   = trim($_POST['stock']       ?? '');
     $stock      = ($stockRaw === '') ? null : max(0, (int)$stockRaw);
     $isActive   = isset($_POST['is_active']) ? 1 : 0;
-    $couponCode = trim($_POST['coupon_code'] ?? '');
+    $couponCode    = trim($_POST['coupon_code']      ?? '');
+    $couponExpiry   = trim($_POST['coupon_expires_at'] ?? '');
+
+    // Parse expiry: only save if coupon code is set AND expiry provided
+    $couponExpiresAt = null;
+    if ($couponCode !== '' && $couponExpiry !== '') {
+        $dt = DateTime::createFromFormat('Y-m-d\TH:i', $couponExpiry);
+        $couponExpiresAt = $dt ? $dt->format('Y-m-d H:i:s') : null;
+    }
 
     $allowed = ['voucher', 'leave', 'merch', 'perk', 'general'];
     if (!in_array($category, $allowed, true)) $category = 'general';
@@ -45,10 +53,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             UPDATE dbo.rewards
             SET title = ?, description = ?, image_emoji = ?,
                 category = ?, token_cost = ?, stock = ?, is_active = ?,
-                coupon_code = ?
+                coupon_code = ?, coupon_expires_at = ?
             WHERE reward_id = ?
         ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $isActive,
-                     $couponCode ?: null, $rewardId]);
+                     $couponCode ?: null, $couponExpiresAt, $rewardId]);
         setFlash('success', 'แก้ไขรางวัล "' . $title . '" เรียบร้อยแล้ว');
     } catch (Throwable $e) {
         error_log('[MissionToken] edit reward error: ' . $e->getMessage());
@@ -121,6 +129,12 @@ require_once __DIR__ . '/../../includes/header.php';
 }
 .are-active-toggle.on::after { transform: translateX(20px); background: #7ec98a; }
 </style>
+<script>
+function arToggleExpiry(val) {
+    var wrap = document.getElementById('coupon-expiry-wrap');
+    if (wrap) wrap.style.display = val.trim() !== '' ? 'block' : 'none';
+}
+</script>
 
 <div class="ar-rewards-wrap are-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
@@ -236,7 +250,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                value="<?= $reward['stock'] === null ? '' : (int)$reward['stock'] ?>"
                                placeholder="เว้นว่าง = ไม่จำกัด"
                                class="journal-input">
-                        <span style="font-size:0.68rem; color:#3a3e43; margin-top:0.25rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
+                        <span style="font-size:0.68rem; color:#6b6e77; margin-top:0.25rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
                     </div>
                 </div>
 
@@ -253,15 +267,45 @@ require_once __DIR__ . '/../../includes/header.php';
                             </p>
                         </div>
                     </div>
-                    <label class="are-label">โค้ด <span style="font-weight:400; color:#3a3e43; text-transform:none;">(ไม่บังคับ)</span></label>
-                    <input type="text" name="coupon_code" maxlength="200"
+                    <label class="are-label">โค้ด <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span></label>
+                    <input type="text" name="coupon_code" id="coupon_code_input" maxlength="200"
                            value="<?= e($reward['coupon_code'] ?? '') ?>"
                            placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
                            class="journal-input"
-                           style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;">
-                    <p style="font-size:0.68rem; color:#3a3e43; margin-top:0.3rem;">
+                           style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;"
+                           oninput="arToggleExpiry(this.value)">
+                    <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">
                         เว้นว่างถ้ารางวัลนี้ไม่ใช้ระบบโค้ด
                     </p>
+
+                    <!-- Expiry date/time — shown only when coupon code is filled -->
+                    <?php
+                        $expiresAt = $reward['coupon_expires_at'] ?? null;
+                        $expiresFormatted = '';
+                        if ($expiresAt) {
+                            $dt = (new DateTime($expiresAt instanceof DateTimeInterface ? $expiresAt->format('Y-m-d H:i:s') : (string)$expiresAt));
+                            $expiresFormatted = $dt->format('Y-m-d\TH:i');
+                        }
+                        $hasCoupon = !empty($reward['coupon_code']);
+                    ?>
+                    <div id="coupon-expiry-wrap"
+                         style="margin-top:0.85rem; padding-top:0.85rem;
+                                border-top:1px solid rgba(218,185,55,0.10);
+                                display:<?= $hasCoupon ? 'block' : 'none' ?>">
+                        <label class="are-label">
+                            วันหมดอายุคูปอง
+                            <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ — เว้นว่างถ้าไม่มีวันหมดอายุ)</span>
+                        </label>
+                        <input type="datetime-local" name="coupon_expires_at"
+                               value="<?= e($expiresFormatted) ?>"
+                               class="journal-input"
+                               style="color-scheme:dark;">
+                        <?php if ($expiresAt): ?>
+                        <p style="font-size:0.68rem; color:#dab937; margin-top:0.3rem;">
+                            ⏱ หมดอายุ: <?= (new DateTime((string)$expiresAt))->format('d/m/Y H:i') ?> น.
+                        </p>
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Active toggle -->

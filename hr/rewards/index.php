@@ -26,7 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cost     = max(1, (int)($_POST['token_cost'] ?? 50));
         $stockRaw = trim($_POST['stock'] ?? '');
         $stock    = ($stockRaw === '' || $stockRaw === '0') ? null : max(1, (int)$stockRaw);
-        $couponCode = trim($_POST['coupon_code'] ?? '') ?: null;
+        $couponCode  = trim($_POST['coupon_code']      ?? '') ?: null;
+        $couponExpiry = trim($_POST['coupon_expires_at'] ?? '');
+        $couponExpiresAt = null;
+        if ($couponCode !== null && $couponExpiry !== '') {
+            $dt = DateTime::createFromFormat('Y-m-d\TH:i', $couponExpiry);
+            $couponExpiresAt = $dt ? $dt->format('Y-m-d H:i:s') : null;
+        }
 
         $allowed = ['voucher','leave','merch','perk','general'];
         if (!in_array($category, $allowed, true)) $category = 'general';
@@ -34,9 +40,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         try {
             $pdo->prepare("
-                INSERT INTO dbo.rewards (title, description, image_emoji, category, token_cost, stock, coupon_code, created_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $couponCode, $adminId]);
+                INSERT INTO dbo.rewards (title, description, image_emoji, category, token_cost, stock, coupon_code, coupon_expires_at, created_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $couponCode, $couponExpiresAt, $adminId]);
             setFlash('success', 'เพิ่มรางวัล "' . $title . '" เรียบร้อยแล้ว');
         } catch (Throwable $e) {
             error_log('[MissionToken] create reward error: ' . $e->getMessage());
@@ -311,7 +317,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <label class="ar-label">จำนวนสต็อก</label>
                     <input type="number" name="stock" min="0" placeholder="เว้นว่าง = ไม่จำกัด"
                            class="journal-input">
-                    <span style="font-size:0.68rem; color:#3a3e43; margin-top:0.2rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
+                    <span style="font-size:0.68rem; color:#6b6e77; margin-top:0.2rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
                 </div>
             </div>
 
@@ -321,13 +327,25 @@ require_once __DIR__ . '/../../includes/header.php';
                 <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem;">
                     <span style="font-size:0.95rem;">🔑</span>
                     <label class="ar-label" style="margin:0;">รหัสคูปอง / โค้ดส่วนลด</label>
-                    <span style="font-size:0.70rem; color:#3a3e43;">(ไม่บังคับ)</span>
+                    <span style="font-size:0.70rem; color:#6b6e77;">(ไม่บังคับ)</span>
                 </div>
-                <input type="text" name="coupon_code" maxlength="200"
+                <input type="text" name="coupon_code" id="create_coupon_code" maxlength="200"
                        placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
                        class="journal-input"
-                       style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;">
-                <p style="font-size:0.68rem; color:#3a3e43; margin-top:0.3rem;">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
+                       style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;"
+                       oninput="arCreateToggleExpiry(this.value)">
+                <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
+
+                <!-- Expiry — shown when coupon code is filled -->
+                <div id="create-expiry-wrap" style="margin-top:0.85rem; padding-top:0.85rem;
+                     border-top:1px solid rgba(218,185,55,0.10); display:none;">
+                    <label class="ar-label">
+                        วันหมดอายุคูปอง
+                        <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span>
+                    </label>
+                    <input type="datetime-local" name="coupon_expires_at"
+                           class="journal-input" style="color-scheme:dark;">
+                </div>
             </div>
 
             <div style="display:flex; gap:0.65rem; justify-content:flex-end;">
@@ -353,7 +371,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                     border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
 
-            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.6fr;
                         gap:1rem; padding:0.7rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -370,7 +388,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php if (empty($rewards)): ?>
             <div style="padding:3.5rem; text-align:center;">
                 <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20;">📭</p>
-                <p style="font-size:0.88rem; color:#3a3e43; margin:0;">ยังไม่มีรางวัล กด "เพิ่มรางวัลใหม่" เพื่อเริ่มต้น</p>
+                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีรางวัล กด "เพิ่มรางวัลใหม่" เพื่อเริ่มต้น</p>
             </div>
             <?php else: ?>
             <?php
@@ -388,7 +406,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 $isOn = (bool)$rw['is_active'];
             ?>
             <div class="ar-row"
-                 style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr;
+                 style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.6fr;
                         gap:1rem; padding:0.9rem 1.25rem; align-items:center;
                         <?= $isOn ? '' : 'opacity:0.45;' ?>">
 
@@ -401,7 +419,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             <?= e($rw['title']) ?>
                         </p>
                         <?php if (!empty($rw['description'])): ?>
-                        <p style="font-size:0.70rem; color:#3a3e43; margin:0;
+                        <p style="font-size:0.70rem; color:#6b6e77; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px;">
                             <?= e($rw['description']) ?>
                         </p>
@@ -431,7 +449,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <span style="font-size:0.9rem; font-weight:600; color:#eeebe1;">
                         <?= $rw['stock'] === null ? '∞' : (int)$rw['stock'] ?>
                     </span>
-                    <span style="font-size:0.68rem; color:#3a3e43; display:block;">
+                    <span style="font-size:0.68rem; color:#6b6e77; display:block;">
                         <?= $rw['stock'] === null ? 'ไม่จำกัด' : 'คงเหลือ' ?>
                     </span>
                 </div>
@@ -449,8 +467,10 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Toggle active + edit link -->
-                <div style="display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap;">
-                    <form method="POST" action="" style="display:inline-flex; align-items:center; gap:0.4rem;">
+                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:flex-start;">
+                    <!-- Row 1: Toggle -->
+                    <form method="POST" action=""
+                          style="display:inline-flex; align-items:center; gap:0.28rem;">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="toggle">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
@@ -459,36 +479,46 @@ require_once __DIR__ . '/../../includes/header.php';
                                 title="<?= $isOn ? 'ปิดการใช้งาน' : 'เปิดการใช้งาน' ?>"
                                 aria-label="Toggle reward active status">
                         </button>
-                        <span style="font-size:0.68rem; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
+                        <span style="font-size:0.65rem; line-height:1; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>; white-space:nowrap;">
                             <?= $isOn ? 'เปิด' : 'ปิด' ?>
                         </span>
                     </form>
-                    <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
-                       style="font-size:0.70rem; padding:0.22rem 0.65rem; border-radius:6px;
-                              background:rgba(218,185,55,0.10); color:#dab937;
-                              border:1px solid rgba(218,185,55,0.25);
-                              font-family:'Prompt',sans-serif; font-weight:600;
-                              text-decoration:none; white-space:nowrap; transition:background 0.15s;"
-                       onmouseover="this.style.background='rgba(218,185,55,0.20)'"
-                       onmouseout="this.style.background='rgba(218,185,55,0.10)'">
-                        ✏ แก้ไข
-                    </a>
-                    <form method="POST" action="" style="display:inline;" onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?
-รางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
-                        <?php echo csrfField(); ?>
-                        <input type="hidden" name="action"    value="delete">
-                        <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
-                        <button type="submit"
-                                style="font-size:0.70rem; padding:0.22rem 0.65rem; border-radius:6px;
-                                       background:rgba(210,89,42,0.10); color:#d2592a;
-                                       border:1px solid rgba(210,89,42,0.28);
-                                       font-family:'Prompt',sans-serif; font-weight:600;
-                                       cursor:pointer; white-space:nowrap; transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.10)'">
-                            🗑 ลบ
-                        </button>
-                    </form>
+                    <!-- Row 2: Edit + Delete -->
+                    <div style="display:flex; align-items:stretch; gap:0.4rem;">
+                        <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
+                           style="display:inline-flex; align-items:center; justify-content:center;
+                                  height:24px; min-height:24px; box-sizing:border-box;
+                                  font-size:0.68rem; padding:0 0.6rem; border-radius:6px;
+                                  background:rgba(218,185,55,0.10); color:#dab937;
+                                  border:1px solid rgba(218,185,55,0.25);
+                                  font-family:'Prompt',sans-serif; font-weight:600;
+                                  text-decoration:none; white-space:nowrap; line-height:1;
+                                  transition:background 0.15s;"
+                           onmouseover="this.style.background='rgba(218,185,55,0.20)'"
+                           onmouseout="this.style.background='rgba(218,185,55,0.10)'">
+                            ✏ แก้ไข
+                        </a>
+                        <form method="POST" action=""
+                              style="display:inline-flex; margin:0; padding:0;"
+                              onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
+                            <?php echo csrfField(); ?>
+                            <input type="hidden" name="action"    value="delete">
+                            <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
+                            <button type="submit"
+                                    style="display:inline-flex; align-items:center; justify-content:center;
+                                           height:24px; min-height:24px; box-sizing:border-box;
+                                           font-size:0.68rem; padding:0 0.6rem; border-radius:6px;
+                                           background:rgba(210,89,42,0.10); color:#d2592a;
+                                           border:1px solid rgba(210,89,42,0.28);
+                                           font-family:'Prompt',sans-serif; font-weight:600;
+                                           cursor:pointer; white-space:nowrap; line-height:1;
+                                           transition:background 0.15s; margin:0;"
+                                    onmouseover="this.style.background='rgba(210,89,42,0.22)'"
+                                    onmouseout="this.style.background='rgba(210,89,42,0.10)'">
+                                🗑 ลบ
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
             </div>
@@ -498,5 +528,12 @@ require_once __DIR__ . '/../../includes/header.php';
 
     </div><!-- /inner -->
 </div><!-- /ar-rewards-wrap -->
+
+<script>
+function arCreateToggleExpiry(val) {
+    var wrap = document.getElementById('create-expiry-wrap');
+    if (wrap) wrap.style.display = val.trim() !== '' ? 'block' : 'none';
+}
+</script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

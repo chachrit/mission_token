@@ -30,8 +30,8 @@ $redirect = isset($_GET['redirect']) ? (string)$_GET['redirect'] : '';
  */
 function fetchEmployeeFromAPI(string $employeeCode): ?array
 {
-    $apiUrl = 'http://203.154.130.236/emp_api/api/employee.php';
-    $apiKey = 'my-secret-key-12345';
+    $apiUrl = EMP_API_URL;
+    $apiKey = EMP_API_KEY;
 
     $ch = curl_init($apiUrl);
     curl_setopt_array($ch, [

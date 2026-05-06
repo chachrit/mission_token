@@ -572,7 +572,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <div style="background:rgba(255,255,255,0.025); border:1px dashed rgba(255,255,255,0.12);
                         border-radius:16px; padding:3rem; text-align:center; margin-bottom:1.5rem;">
                 <p style="font-size:1.5rem; margin:0 0 0.4rem; opacity:0.15;">❓</p>
-                <p style="font-size:0.85rem; color:#3a3e43; margin:0;">
+                <p style="font-size:0.85rem; color:#6b6e77; margin:0;">
                     ยังไม่มีคำถาม — กด "เพิ่มคำถาม" เพื่อเริ่มต้น
                 </p>
             </div>
