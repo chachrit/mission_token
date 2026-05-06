@@ -30,7 +30,7 @@ define('APP_VERSION', '1.0.0');
 })();
 
 // External Employee API
-define('EMP_API_URL', 'http://localhost/emp_api/api/employee.php');
+define('EMP_API_URL', 'http://203.154.130.236/emp_api/api/employee.php');
 define('EMP_API_KEY', 'my-secret-key-12345');
 
 // File Upload settings
