@@ -99,7 +99,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div>
                     <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.3rem;
                                letter-spacing:-0.02em;">
-                        &#128196; ประวัติ
+                       ประวัติ
                     </h1>
                     <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
                         บันทึกการรับ Token, ใช้จ่าย และการแลกรางวัลทั้งหมด
@@ -219,7 +219,8 @@ require_once __DIR__ . '/../includes/header.php';
                 $amtClr  = $isEarn ? '#518e5c' : '#d2592a';
             ?>
             <div class="hy-tx-row" data-dir="<?= $isEarn ? 'earn' : 'spend' ?>"
-                 style="display:grid; grid-template-columns:1fr auto auto;
+                 onclick="openHyTxModal(<?= (int)$tx['tx_id'] ?>)"
+                 style="cursor:pointer; display:grid; grid-template-columns:1fr auto auto;
                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;
                         border-left:3px solid <?= $isEarn ? 'rgba(81,142,92,0.40)' : 'rgba(210,89,42,0.35)' ?>;">
                 <div>
@@ -269,8 +270,9 @@ require_once __DIR__ . '/../includes/header.php';
             foreach ($quizHistory as $q):
                 $qs = $qStatusStyle[$q['status']] ?? $qStatusStyle['pending'];
             ?>
-            <div class="hy-tx-row" style="display:grid; grid-template-columns:1fr auto auto auto;
-                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
+            <div class="hy-tx-row" onclick="openHyQuestModal(<?= (int)$q['submission_id'] ?>)"
+                 style="cursor:pointer; display:grid; grid-template-columns:1fr auto auto auto;
+                        gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
                 <div>
                     <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
                         <?= e($q['challenge_title']) ?>
@@ -323,7 +325,8 @@ require_once __DIR__ . '/../includes/header.php';
             foreach ($redemptions as $rd):
                 $rs = $rdStyle[$rd['status']] ?? $rdStyle['pending'];
             ?>
-            <div class="hy-rd-row" style="padding:0.85rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem;">
+            <div class="hy-rd-row" onclick="openHyRdModal(<?= (int)$rd['redemption_id'] ?>)"
+                 style="cursor:pointer; padding:0.85rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem;">
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
                              gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
@@ -364,7 +367,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.65rem; margin-top:0.1rem;
                             display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
                     <!-- toggle button -->
-                    <button onclick="hyToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
+                    <button onclick="event.stopPropagation(); hyToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
                             style="display:inline-flex; align-items:center; gap:0.38rem;
                                    background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
                                    border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
@@ -402,7 +405,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?= e($rd['coupon_code']) ?>
                             </span>
                         </div>
-                        <button onclick="hycopyCoupon('<?= e(addslashes($rd['coupon_code'])) ?>',<?= (int)$rd['redemption_id'] ?>)"
+                        <button onclick="event.stopPropagation(); hycopyCoupon('<?= e(addslashes($rd['coupon_code'])) ?>',<?= (int)$rd['redemption_id'] ?>)"
                                 id="hy-coupon-copy-<?= (int)$rd['redemption_id'] ?>"
                                 style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
                                        background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
@@ -556,6 +559,383 @@ window.hycopyCoupon = function (code, id) {
         setTimeout(function () { btn.innerHTML = orig; }, 1500);
     });
 };
+</script>
+
+<?php
+$hyTxData = [];
+foreach ($txAll as $_tx) {
+    $hyTxData[(int)$_tx['tx_id']] = [
+        'type'   => txTypeLabel((string)$_tx['tx_type']),
+        'amount' => (int)$_tx['amount'],
+        'note'   => (string)($_tx['note'] ?? ''),
+        'at'     => date('d/m/Y H:i', strtotime((string)$_tx['created_at'])),
+    ];
+}
+$hyQuestData = [];
+foreach ($quizHistory as $_q) {
+    $hyQuestData[(int)$_q['submission_id']] = [
+        'title'    => $_q['challenge_title'],
+        'ctype'    => $_q['challenge_type'],
+        'status'   => $_q['status'],
+        'token'    => (int)$_q['token_awarded'],
+        'at'       => date('d/m/Y H:i', strtotime((string)$_q['submitted_at'])),
+        'note'     => (string)($_q['review_note'] ?? ''),
+        'reviewer' => (string)($_q['reviewed_by_name'] ?? ''),
+    ];
+}
+$hyRdData = [];
+foreach ($redemptions as $_rd) {
+    $_rid = (int)$_rd['redemption_id'];
+    $hyRdData[$_rid] = [
+        'title'  => $_rd['reward_title'],
+        'emoji'  => $_rd['image_emoji'] ?: '🎁',
+        'tokens' => (int)$_rd['tokens_spent'],
+        'status' => $_rd['status'],
+        'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
+        'procAt' => $_rd['processed_at'] ? date('d/m/Y H:i', strtotime((string)$_rd['processed_at'])) : null,
+        'note'   => (string)($_rd['admin_note'] ?? ''),
+        'procBy' => (string)($_rd['processed_by_name'] ?? ''),
+        'coupon' => ($_rd['status'] === 'fulfilled') ? (string)($_rd['coupon_code'] ?? '') : '',
+    ];
+}
+?>
+<script>
+var _hyTxData    = <?= json_encode($hyTxData,    JSON_UNESCAPED_UNICODE) ?>;
+var _hyQuestData = <?= json_encode($hyQuestData, JSON_UNESCAPED_UNICODE) ?>;
+var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
+</script>
+
+<style>
+@keyframes _hyCardIn {
+    0%   { opacity:0; transform:perspective(700px) scale(0.80) translateY(36px) rotateX(16deg); }
+    60%  { opacity:1; transform:perspective(700px) scale(1.03)  translateY(-4px) rotateX(-2deg); }
+    100% { opacity:1; transform:perspective(700px) scale(1)     translateY(0)    rotateX(0deg);  }
+}
+@keyframes _hyCardOut { from{opacity:1;transform:scale(1) translateY(0)} to{opacity:0;transform:scale(0.86) translateY(22px)} }
+@keyframes _hyFadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes _hyFadeOut { from{opacity:1} to{opacity:0} }
+.hy-ov-in  { animation:_hyFadeIn  230ms ease                            forwards; }
+.hy-ov-out { animation:_hyFadeOut 155ms ease                            forwards; }
+.hy-ci-in  { animation:_hyCardIn  420ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
+.hy-ci-out { animation:_hyCardOut 155ms ease-in                         forwards; }
+.hy-modal-ov {
+    display:none; position:fixed; inset:0; z-index:9500;
+    background:rgba(0,0,0,0.82); backdrop-filter:blur(7px);
+    align-items:center; justify-content:center; padding:1rem;
+}
+.hy-modal-card {
+    background:#0f1416; border-radius:20px;
+    max-width:430px; width:100%; max-height:90vh; overflow-y:auto;
+    box-shadow:0 24px 60px rgba(0,0,0,0.72);
+}
+.hy-modal-hdr {
+    padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+    display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; background:#0f1416; z-index:1;
+    border-radius:20px 20px 0 0;
+}
+.hy-modal-x {
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+    color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Prompt',sans-serif;
+}
+.hy-ibox {
+    background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+    border-radius:12px; padding:0.7rem 0.9rem;
+}
+</style>
+
+<!-- ── Modal: Token Transaction ── -->
+<div id="hy-tx-modal" class="hy-modal-ov" onclick="if(event.target===this)closeHyModal('tx')">
+    <div id="hy-tx-card" class="hy-modal-card" style="border:1px solid rgba(255,255,255,0.10);">
+        <div class="hy-modal-hdr">
+            <div style="display:flex; align-items:center; gap:0.55rem;">
+                <span style="font-size:0.95rem; opacity:0.65;">&#9672;</span>
+                <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+                             text-transform:uppercase; color:rgba(218,185,55,0.85)">รายการ Token</span>
+            </div>
+            <button class="hy-modal-x" onclick="closeHyModal('tx')">×</button>
+        </div>
+        <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
+            <div style="display:flex; align-items:center; gap:0.75rem;
+                        background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                        border-radius:14px; padding:1rem 1.15rem;">
+                <img src="<?= BASE_URL ?>/assets/images/token.png" width="28" height="28"
+                     style="object-fit:contain; filter:drop-shadow(0 0 8px rgba(218,185,55,0.5)); flex-shrink:0;" alt="">
+                <div>
+                    <p style="font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase;
+                              color:#6b6e77; margin:0 0 0.15rem; font-weight:700;">จำนวน</p>
+                    <p id="hytx-amount" style="font-size:1.65rem; font-weight:800; margin:0; line-height:1; letter-spacing:-0.02em;"></p>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.55rem;">
+                <div class="hy-ibox">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">ประเภท</p>
+                    <p id="hytx-type" style="font-size:0.83rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.35;"></p>
+                </div>
+                <div class="hy-ibox">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่</p>
+                    <p id="hytx-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
+                </div>
+            </div>
+            <div id="hytx-note-wrap" class="hy-ibox" style="display:none;">
+                <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.3rem;">หมายเหตุ</p>
+                <p id="hytx-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal: Quest Submission ── -->
+<div id="hy-quest-modal" class="hy-modal-ov" onclick="if(event.target===this)closeHyModal('quest')">
+    <div id="hy-quest-card" class="hy-modal-card" style="border:1px solid rgba(79,139,152,0.22);">
+        <div class="hy-modal-hdr">
+            <div style="display:flex; align-items:center; gap:0.55rem;">
+                <span style="font-size:0.95rem; opacity:0.65;">&#9678;</span>
+                <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+                             text-transform:uppercase; color:rgba(79,139,152,0.90);">ภารกิจ</span>
+            </div>
+            <button class="hy-modal-x" onclick="closeHyModal('quest')">×</button>
+        </div>
+        <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
+            <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                        border-radius:14px; padding:1rem 1.1rem;">
+                <p id="hyq-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0 0 0.55rem; line-height:1.35;"></p>
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                    <span id="hyq-ctype" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
+                                border-radius:999px; border:1px solid rgba(79,139,152,0.35);
+                                background:rgba(79,139,152,0.10); color:#4f8b98;"></span>
+                    <span id="hyq-status" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
+                                border-radius:999px;"></span>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.55rem;">
+                <div class="hy-ibox" style="border-color:rgba(218,185,55,0.18); background:rgba(218,185,55,0.07);">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">Token ที่ได้</p>
+                    <p id="hyq-token" style="font-size:1.2rem; font-weight:800; margin:0;"></p>
+                </div>
+                <div class="hy-ibox">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ส่ง</p>
+                    <p id="hyq-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
+                </div>
+            </div>
+            <div id="hyq-note-wrap" class="hy-ibox" style="display:none; border-color:rgba(79,139,152,0.22); background:rgba(79,139,152,0.07);">
+                <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจากผู้ตรวจ</p>
+                <p id="hyq-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
+                <p id="hyq-reviewer" style="font-size:0.72rem; color:#6b6e77; margin:0.3rem 0 0; display:none;"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal: Reward Redemption ── -->
+<div id="hy-rd-modal" class="hy-modal-ov" onclick="if(event.target===this)closeHyModal('rd')">
+    <div id="hy-rd-card" class="hy-modal-card" style="border:1px solid rgba(218,185,55,0.22);">
+        <div class="hy-modal-hdr">
+            <div style="display:flex; align-items:center; gap:0.55rem;">
+                <span style="font-size:0.95rem; opacity:0.65;">&#10022;</span>
+                <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+                             text-transform:uppercase; color:rgba(218,185,55,0.85);">การแลกรางวัล</span>
+            </div>
+            <button class="hy-modal-x" onclick="closeHyModal('rd')">×</button>
+        </div>
+        <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
+            <div style="display:flex; align-items:center; gap:0.9rem;
+                        background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                        border-radius:14px; padding:0.9rem 1.1rem;">
+                <span id="hyrd-emoji" style="font-size:2.4rem; flex-shrink:0; line-height:1; user-select:none;"></span>
+                <div style="flex:1; min-width:0;">
+                    <p id="hyrd-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0 0 0.4rem; line-height:1.3;"></p>
+                    <span id="hyrd-status" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:999px;"></span>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.55rem;">
+                <div class="hy-ibox" style="border-color:rgba(218,185,55,0.18); background:rgba(218,185,55,0.07);">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">Token ที่ใช้</p>
+                    <p id="hyrd-tokens" style="font-size:1.2rem; font-weight:800; color:#dab937; margin:0;"></p>
+                </div>
+                <div class="hy-ibox">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ขอแลก</p>
+                    <p id="hyrd-req-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
+                </div>
+                <div id="hyrd-proc-row" style="display:none; grid-column:1/-1;" class="hy-ibox">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ดำเนินการ</p>
+                    <p id="hyrd-proc-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0;"></p>
+                    <p id="hyrd-proc-by" style="font-size:0.70rem; color:#6b6e77; margin:0.2rem 0 0; display:none;"></p>
+                </div>
+            </div>
+            <div id="hyrd-note-wrap" class="hy-ibox" style="display:none; border-color:rgba(79,139,152,0.22); background:rgba(79,139,152,0.07);">
+                <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจาก HR</p>
+                <p id="hyrd-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
+            </div>
+            <div id="hyrd-coupon-sec" style="display:none;">
+                <button onclick="hyRdToggleCoupon()"
+                        style="display:inline-flex; align-items:center; gap:0.4rem; width:100%;
+                               justify-content:center; background:rgba(218,185,55,0.08);
+                               border:1px solid rgba(218,185,55,0.25); border-radius:10px;
+                               padding:0.5rem 1rem; cursor:pointer; font-size:0.78rem; font-weight:700;
+                               color:rgba(218,185,55,0.80); font-family:'Prompt',sans-serif;">
+                    <span id="hyrd-coupon-lbl">👁 แสดงรหัสคูปอง</span>
+                </button>
+                <div id="hyrd-coupon-box" style="display:none; margin-top:0.5rem;
+                            background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.25);
+                            border-radius:10px; padding:0.75rem 1rem; flex-direction:column; gap:0.35rem;">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:rgba(218,185,55,0.45); margin:0;">รหัสคูปอง</p>
+                    <div style="display:flex; align-items:center; gap:0.65rem;">
+                        <p id="hyrd-coupon-code" style="font-size:1.15rem; font-weight:800; color:#f8e769;
+                              letter-spacing:0.12em; font-family:monospace,'Prompt';
+                              user-select:all; word-break:break-all; margin:0; flex:1;"></p>
+                        <button onclick="hyRdCopyCoupon()" id="hyrd-coupon-copy"
+                                style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
+                                       background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.25);
+                                       border-radius:7px; color:#dab937; cursor:pointer;
+                                       font-size:0.72rem; font-weight:600; font-family:'Prompt',sans-serif;
+                                       padding:0.3rem 0.65rem; white-space:nowrap;">📋 คัดลอก</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var _hyModalIds = {
+    tx:    ['hy-tx-modal',    'hy-tx-card'],
+    quest: ['hy-quest-modal', 'hy-quest-card'],
+    rd:    ['hy-rd-modal',    'hy-rd-card'],
+};
+function _hyOpen(type) {
+    var ids = _hyModalIds[type];
+    var ov = document.getElementById(ids[0]), card = document.getElementById(ids[1]);
+    ov.classList.remove('hy-ov-out'); card.classList.remove('hy-ci-out');
+    ov.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    void card.offsetWidth;
+    ov.classList.add('hy-ov-in'); card.classList.add('hy-ci-in');
+}
+function closeHyModal(type) {
+    var ids = _hyModalIds[type];
+    var ov = document.getElementById(ids[0]), card = document.getElementById(ids[1]);
+    if (!ov || ov.style.display === 'none') return;
+    ov.classList.remove('hy-ov-in');  card.classList.remove('hy-ci-in');
+    ov.classList.add('hy-ov-out');    card.classList.add('hy-ci-out');
+    setTimeout(function() {
+        ov.style.display = 'none';
+        ov.classList.remove('hy-ov-out'); card.classList.remove('hy-ci-out');
+        document.body.style.overflow = '';
+    }, 160);
+}
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeHyModal('tx'); closeHyModal('quest'); closeHyModal('rd'); }
+});
+
+// ── Token modal ──
+function openHyTxModal(txId) {
+    var d = _hyTxData[txId]; if (!d) return;
+    var isEarn = d.amount > 0;
+    var amtEl = document.getElementById('hytx-amount');
+    amtEl.textContent = (isEarn ? '+' : '') + d.amount.toLocaleString();
+    amtEl.style.color = isEarn ? '#6fcf80' : '#e8805a';
+    document.getElementById('hytx-type').textContent = d.type;
+    document.getElementById('hytx-at').textContent   = d.at;
+    var nw = document.getElementById('hytx-note-wrap');
+    if (d.note) { document.getElementById('hytx-note').textContent = d.note; nw.style.display = 'block'; }
+    else          { nw.style.display = 'none'; }
+    _hyOpen('tx');
+}
+
+// ── Quest modal ──
+function openHyQuestModal(subId) {
+    var d = _hyQuestData[subId]; if (!d) return;
+    document.getElementById('hyq-title').textContent = d.title;
+    var ctypeEl = document.getElementById('hyq-ctype');
+    ctypeEl.textContent = d.ctype === 'quiz' ? 'Quiz' : (d.ctype === 'strava' ? 'Strava' : 'Photo');
+    var statusMap = {
+        auto_approved: { label:'ผ่าน',     bg:'rgba(81,142,92,0.12)',  color:'#6fcf80', border:'rgba(81,142,92,0.30)'  },
+        approved:      { label:'อนุมัติ',   bg:'rgba(81,142,92,0.12)',  color:'#6fcf80', border:'rgba(81,142,92,0.30)'  },
+        pending:       { label:'รอตรวจ',   bg:'rgba(245,158,11,0.10)', color:'#fbbf24', border:'rgba(245,158,11,0.28)' },
+        rejected:      { label:'ไม่ผ่าน',  bg:'rgba(210,89,42,0.12)',  color:'#e8805a', border:'rgba(210,89,42,0.30)'  },
+    };
+    var sm = statusMap[d.status] || statusMap.pending;
+    var sb = document.getElementById('hyq-status');
+    sb.textContent = sm.label; sb.style.background = sm.bg;
+    sb.style.color = sm.color; sb.style.border = '1px solid ' + sm.border;
+    var tkEl = document.getElementById('hyq-token');
+    if (d.token > 0) { tkEl.textContent = '+' + d.token.toLocaleString() + ' Token'; tkEl.style.color = '#dab937'; }
+    else               { tkEl.textContent = '—'; tkEl.style.color = '#3a3e43'; }
+    document.getElementById('hyq-at').textContent = d.at;
+    var nw = document.getElementById('hyq-note-wrap');
+    if (d.note || d.reviewer) {
+        if (d.note) document.getElementById('hyq-note').textContent = d.note;
+        var rvEl = document.getElementById('hyq-reviewer');
+        if (d.reviewer) { rvEl.textContent = 'โดย ' + d.reviewer; rvEl.style.display = 'block'; } else { rvEl.style.display = 'none'; }
+        nw.style.display = d.note ? 'block' : 'none';
+    } else { nw.style.display = 'none'; }
+    _hyOpen('quest');
+}
+
+// ── Reward modal ──
+function openHyRdModal(rdId) {
+    var d = _hyRdData[rdId]; if (!d) return;
+    document.getElementById('hyrd-emoji').textContent  = d.emoji;
+    document.getElementById('hyrd-title').textContent  = d.title;
+    document.getElementById('hyrd-tokens').textContent = d.tokens.toLocaleString() + ' token';
+    document.getElementById('hyrd-req-at').textContent = d.reqAt;
+    var statusMap = {
+        pending:   { label:'รอดำเนินการ', bg:'rgba(245,158,11,0.12)', color:'#fbbf24', border:'rgba(245,158,11,0.32)' },
+        fulfilled: { label:'มอบแล้ว',     bg:'rgba(81,142,92,0.12)',  color:'#6fcf80', border:'rgba(81,142,92,0.32)'  },
+        cancelled: { label:'ยกเลิก',          bg:'rgba(210,89,42,0.12)',  color:'#e8805a', border:'rgba(210,89,42,0.32)'  },
+    };
+    var sm = statusMap[d.status] || statusMap.pending;
+    var sb = document.getElementById('hyrd-status');
+    sb.textContent = sm.label; sb.style.background = sm.bg;
+    sb.style.color = sm.color; sb.style.border = '1px solid ' + sm.border;
+    var pr = document.getElementById('hyrd-proc-row');
+    if (d.procAt) {
+        document.getElementById('hyrd-proc-at').textContent = d.procAt;
+        var pbEl = document.getElementById('hyrd-proc-by');
+        if (d.procBy) { pbEl.textContent = 'โดย ' + d.procBy; pbEl.style.display = 'block'; } else { pbEl.style.display = 'none'; }
+        pr.style.display = 'block';
+    } else { pr.style.display = 'none'; }
+    var nw = document.getElementById('hyrd-note-wrap');
+    if (d.note) { document.getElementById('hyrd-note').textContent = d.note; nw.style.display = 'block'; }
+    else          { nw.style.display = 'none'; }
+    var cs = document.getElementById('hyrd-coupon-sec');
+    if (d.coupon) {
+        document.getElementById('hyrd-coupon-code').textContent  = d.coupon;
+        document.getElementById('hyrd-coupon-box').style.display = 'none';
+        document.getElementById('hyrd-coupon-lbl').textContent   = '👁 แสดงรหัสคูปอง';
+        cs.style.display = 'block';
+    } else { cs.style.display = 'none'; }
+    _hyOpen('rd');
+}
+function hyRdToggleCoupon() {
+    var box = document.getElementById('hyrd-coupon-box');
+    var lbl = document.getElementById('hyrd-coupon-lbl');
+    if (!box.style.display || box.style.display === 'none') { box.style.display = 'flex'; lbl.textContent = '🙈 ซ่อนรหัสคูปอง'; }
+    else                                                     { box.style.display = 'none'; lbl.textContent = '👁 แสดงรหัสคูปอง'; }
+}
+function hyRdCopyCoupon() {
+    var code = document.getElementById('hyrd-coupon-code').textContent.trim();
+    var btn  = document.getElementById('hyrd-coupon-copy');
+    navigator.clipboard.writeText(code).then(function() {
+        var orig = btn.textContent; btn.textContent = '✓ คัดลอกแล้ว'; btn.style.color = '#7ec98a';
+        setTimeout(function() { btn.textContent = orig; btn.style.color = '#dab937'; }, 1800);
+    });
+}
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
