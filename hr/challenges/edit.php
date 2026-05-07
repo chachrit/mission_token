@@ -73,9 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Strava condition JSON (only for type=strava)
     $stravaConditionJson = null;
     if ($type === 'strava') {
+        // Convert distance to meters based on selected unit
+        $distUnit  = ($_POST['strava_dist_unit'] ?? 'm') === 'km' ? 'km' : 'm';
+        $rawDist   = max(0, (float)($_POST['strava_min_distance'] ?? 0));
+        $minDistM  = $distUnit === 'km' ? $rawDist * 1000 : $rawDist;
         $stravaConditionJson = json_encode([
             'sport_type'      => trim((string)($_POST['strava_sport_type']     ?? 'Run')),
-            'min_distance'    => max(0, (float)($_POST['strava_min_distance']  ?? 0)),
+            'min_distance'    => $minDistM,
             'min_moving_time' => max(0, (int)($_POST['strava_min_moving_time'] ?? 0)),
             'min_elevation'   => max(0, (float)($_POST['strava_min_elevation'] ?? 0)),
         ], JSON_UNESCAPED_UNICODE);
@@ -392,9 +396,21 @@ require_once __DIR__ . '/../../includes/header.php';
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="ace-label">ระยะทางขั้นต่ำ (เมตร) 0=ไม่กำหนด</label>
-                                    <input type="number" name="strava_min_distance" min="0" step="100"
-                                           value="<?= (int)$scMinDist ?>" class="journal-input" placeholder="เช่น 5000 = 5 กม">
+                                    <label class="ace-label">ระยะทางขั้นต่ำ <span id="dist-unit-label"><?= $scMinDist >= 1000 ? '(กิโลเมตร)' : '(เมตร)' ?></span> 0=ไม่กำหนด</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <input type="number" name="strava_min_distance" id="strava-dist-input"
+                                               min="0"
+                                               step="<?= $scMinDist >= 1000 ? '0.1' : '100' ?>"
+                                               value="<?= $scMinDist >= 1000 ? rtrim(rtrim(number_format($scMinDist / 1000, 2, '.', ''), '0'), '.') : (int)$scMinDist ?>"
+                                               class="journal-input" style="flex:1;"
+                                               placeholder="0">
+                                        <select name="strava_dist_unit" id="strava-dist-unit"
+                                                onchange="stravaDistUnitChange(this.value)"
+                                                class="journal-input" style="width:90px; flex-shrink:0;">
+                                            <option value="m"  <?= $scMinDist < 1000 ? 'selected' : '' ?>>เมตร</option>
+                                            <option value="km" <?= $scMinDist >= 1000 ? 'selected' : '' ?>>กิโลเมตร</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="ace-label">เวลาขั้นต่ำ (วินาที) 0=ไม่กำหนด</label>
@@ -730,6 +746,37 @@ require_once __DIR__ . '/../../includes/header.php';
 </div><!-- /ace-edit-wrap -->
 
 <script>
+function stravaDistUnitChange(unit) {
+    const input = document.getElementById('strava-dist-input');
+    const label = document.getElementById('dist-unit-label');
+    if (!input) return;
+    const cur = parseFloat(input.value) || 0;
+    if (unit === 'km') {
+        // was meters → convert to km
+        if (input.dataset.lastUnit !== 'km') {
+            input.value = cur >= 1000 ? +(cur / 1000).toFixed(2) : cur;
+        }
+        input.step = '0.1';
+        input.placeholder = 'เช่น 5 = 5 กม';
+        if (label) label.textContent = '(กิโลเมตร)';
+    } else {
+        // was km → convert to meters
+        if (input.dataset.lastUnit === 'km') {
+            input.value = Math.round(cur * 1000);
+        }
+        input.step = '100';
+        input.placeholder = 'เช่น 5000 = 5 กม';
+        if (label) label.textContent = '(เมตร)';
+    }
+    input.dataset.lastUnit = unit;
+}
+// Init lastUnit on load
+document.addEventListener('DOMContentLoaded', function() {
+    const sel = document.getElementById('strava-dist-unit');
+    const inp = document.getElementById('strava-dist-input');
+    if (sel && inp) inp.dataset.lastUnit = sel.value;
+});
+
 function handleTypeChange(type) {
     const instrWrap  = document.getElementById('instructions-wrap');
     const stravaWrap = document.getElementById('strava-condition-wrap');
