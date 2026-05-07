@@ -271,11 +271,7 @@ $flash        = $flash ?? getFlash();
                 // ตรวจว่าอยู่ใน /hr/ zone หรือเปล่า
                 $isAdminPage = (strpos($_SERVER['PHP_SELF'] ?? '', '/hr/') !== false);
                 // HR/IT: logo link ตาม zone ปัจจุบัน — admin: logo home
-                $logoHref = $isAdmin
-                    ? BASE_URL . '/hr/dashboard.php'
-                    : ($isAdminOrHr && $isAdminPage
-                        ? BASE_URL . '/hr/dashboard.php'
-                        : BASE_URL . '/index.php');
+                $logoHref = BASE_URL . '/index.php';
                 ?>
                 <!-- Logo -->
                 <a href="<?php echo $logoHref; ?>"
