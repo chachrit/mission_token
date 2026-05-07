@@ -19,6 +19,23 @@
     </footer>
 
     <!-- ===================================================
+         GLOBAL TOAST
+         =================================================== -->
+    <?php if (!empty($flash)): ?>
+    <?php
+        $toastIcon = $flash['type'] === 'success'
+            ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'
+            : ($flash['type'] === 'warning'
+                ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
+                : '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
+    ?>
+    <div id="app-toast" class="toast-<?php echo e($flash['type']); ?>">
+        <?php echo $toastIcon; ?>
+        <span><?php echo e($flash['message']); ?></span>
+    </div>
+    <?php endif; ?>
+
+    <!-- ===================================================
          JAVASCRIPT
          =================================================== -->
     <script src="<?php echo BASE_URL; ?>/assets/js/app.js"></script>
@@ -41,18 +58,19 @@
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
 
-        // ── Auto-dismiss Flash (5s) ──────────────────────────────
-        setTimeout(function() {
-            const flash = document.getElementById('flash-msg');
-            if (flash) {
-                flash.style.transition = 'opacity 0.6s';
-                flash.style.opacity    = '0';
-                setTimeout(function() {
-                    const wrap = document.getElementById('flash-wrap');
-                    if (wrap) wrap.remove();
-                }, 600);
-            }
-        }, 5000);
+        // ── Global toast (driven by $flash set in header.php) ──
+        (function(){
+            var t = document.getElementById('app-toast');
+            if (!t) return;
+            requestAnimationFrame(function(){
+                requestAnimationFrame(function(){ t.classList.add('show'); });
+            });
+            setTimeout(function(){
+                t.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                t.style.opacity = '0';
+                t.style.transform = 'translate(-50%,-50%) scale(0.9)';
+            }, 3000);
+        })();
 
         // ── CSRF header for all fetch() requests ─────────────────
         const _csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;

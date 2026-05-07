@@ -52,16 +52,6 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 <div style="max-width:680px; margin:0 auto; padding:2rem 1rem;">
 
-    <!-- Flash -->
-    <?php if ($flash): ?>
-    <div style="margin-bottom:1.5rem; padding:0.9rem 1.1rem; border-radius:10px;
-                background:<?= $flash['type']==='success' ? '#518e5c' : '#d2592a' ?>; color:#fff;
-                display:flex; align-items:center; gap:0.6rem; font-size:0.9rem;">
-        <?= $flash['type']==='success' ? '✓' : '✕' ?>
-        <?= e($flash['message']) ?>
-    </div>
-    <?php endif; ?>
-
     <!-- Card -->
     <div style="background:#0d1618; border:1px solid #2a3038; border-radius:16px; overflow:hidden;">
 

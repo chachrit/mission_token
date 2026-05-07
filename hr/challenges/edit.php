@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->prepare("DELETE FROM quiz_questions WHERE challenge_id = ?")->execute([$cid]);
                 $pdo->prepare("DELETE FROM challenges WHERE challenge_id = ?")->execute([$cid]);
                 $pdo->commit();
-                setFlash('success', 'ลบภารกิจและข้อมูลที่เกี่ยวข้องทั้งหมดแล้ว');
+                setFlash('success', 'ลบภารกิจสำเร็จ');
             } catch (Throwable $e) {
                 $pdo->rollBack();
                 error_log('[MissionToken] delete challenge error: ' . $e->getMessage());
@@ -280,17 +280,6 @@ require_once __DIR__ . '/../../includes/header.php';
 
     <div style="position:relative; z-index:1; max-width:860px; margin:0 auto;
                 padding:2rem 1.25rem 5rem;">
-
-        <!-- Flash -->
-        <?php if ($flash): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.9rem 1.25rem;
-                    font-size:0.85rem; font-weight:500;
-                    background:<?= $flash['type'] === 'success' ? 'rgba(81,142,92,0.12)' : 'rgba(210,89,42,0.12)' ?>;
-                    border:1px solid <?= $flash['type'] === 'success' ? 'rgba(81,142,92,0.30)' : 'rgba(210,89,42,0.30)' ?>;
-                    color:<?= $flash['type'] === 'success' ? '#7ec98a' : '#e07a55' ?>;">
-            <?= e($flash['message']) ?>
-        </div>
-        <?php endif; ?>
 
         <!-- Page header + back button -->
         <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:2rem;">

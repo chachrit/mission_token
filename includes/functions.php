@@ -35,7 +35,16 @@ function awardTokens(int $employeeId, int $amount, string $txType, ?int $referen
         $stmt->execute([$employeeId, $amount, $txType, $referenceId, $note]);
 
         // Update wallet
-        if ($amount >= 0) {
+        if ($txType === 'admin_adjust') {
+            // Admin adjustments only affect current balance — not earned/spent stats
+            $stmt = $pdo->prepare("
+                UPDATE token_wallets
+                SET balance    = balance + ?,
+                    updated_at = GETDATE()
+                WHERE employee_id = ?
+            ");
+            $stmt->execute([$amount, $employeeId]);
+        } elseif ($amount >= 0) {
             $stmt = $pdo->prepare("
                 UPDATE token_wallets
                 SET balance      = balance + ?,

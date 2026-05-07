@@ -20,7 +20,14 @@ $isAdmin       = $_sessionRole === 'admin';
 $isHr          = $_sessionRole === 'hr';
 $isIt          = $_sessionRole === 'it';
 $isAdminOrHr   = $isAdmin || $isHr || $isIt;
-$navBalance   = (int)($_SESSION['token_balance'] ?? 0);
+
+// Refresh token balance from DB every page load so it stays up to date
+if (!empty($_SESSION['employee_id'])) {
+    $navBalance = (int)getWalletBalance((int)$_SESSION['employee_id']);
+    $_SESSION['token_balance'] = $navBalance;
+} else {
+    $navBalance = 0;
+}
 $pendingCount = $isAdminOrHr ? getPendingCount() : 0;
 $flash        = $flash ?? getFlash();
 ?>
@@ -229,6 +236,25 @@ $flash        = $flash ?? getFlash();
             animation: token-spin 5s linear infinite;
             display: inline-block;
         }
+
+        /* ── Global toast ── */
+        #app-toast {
+            position: fixed; top: 50%; left: 50%; z-index: 99999;
+            display: flex; align-items: center; gap: 0.65rem;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            font-size: 0.95rem; font-weight: 500; font-family: 'Prompt', sans-serif;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+            transform: translate(-50%, -50%) scale(0.85); opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+            pointer-events: none; white-space: nowrap;
+        }
+        #app-toast.show  { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        #app-toast.toast-success { background: rgba(20,44,26,0.94); border: 1px solid rgba(81,142,92,0.5);  color: #7ec98a; }
+        #app-toast.toast-error   { background: rgba(52,18,10,0.94); border: 1px solid rgba(210,89,42,0.5);  color: #e07a55; }
+        #app-toast.toast-info    { background: rgba(14,30,70,0.94); border: 1px solid rgba(79,139,152,0.5); color: #5fa8ba; }
+        #app-toast.toast-warning { background: rgba(50,40,10,0.94); border: 1px solid rgba(218,185,55,0.5); color: #dab937; }
     </style>
 </head>
 
@@ -483,33 +509,7 @@ $flash        = $flash ?? getFlash();
         </div>
     </nav>
 
-    <!-- ===================================================
-         FLASH MESSAGE
-         =================================================== -->
-    <?php if ($flash): ?>
-    <?php
-        $flashStyles = [
-            'success' => ['bg' => '#518e5c', 'text' => '#fff',    'icon' => '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>'],
-            'error'   => ['bg' => '#d2592a', 'text' => '#fff',    'icon' => '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>'],
-            'info'    => ['bg' => '#2f4e9d', 'text' => '#fff',    'icon' => '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'],
-            'warning' => ['bg' => '#dab937', 'text' => '#091113', 'icon' => '<svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'],
-        ];
-        $fs = $flashStyles[$flash['type']] ?? $flashStyles['info'];
-    ?>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4" id="flash-wrap">
-        <div class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium shadow-sm"
-             style="background:<?php echo $fs['bg']; ?>; color:<?php echo $fs['text']; ?>;"
-             id="flash-msg">
-            <?php echo $fs['icon']; ?>
-            <span class="flex-1"><?php echo e($flash['message']); ?></span>
-            <button onclick="this.closest('#flash-msg').remove()" class="ml-2 opacity-60 hover:opacity-100 transition-opacity">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-            </button>
-        </div>
-    </div>
-    <?php endif; ?>
+
 
     <!-- ===================================================
          MAIN CONTENT WRAPPER

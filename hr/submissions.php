@@ -182,15 +182,6 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <?php if ($flash): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
-                    <?= $flash['type'] === 'success'
-                        ? 'background:rgba(81,142,92,0.12); border:1px solid rgba(81,142,92,0.28); color:#7ec98a;'
-                        : 'background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;' ?>">
-            <?= e($flash['message']) ?>
-        </div>
-        <?php endif; ?>
-
         <!-- Filter tabs -->
         <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.75rem;">
             <a href="<?= BASE_URL ?>/hr/submissions.php"

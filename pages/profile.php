@@ -175,13 +175,6 @@ require_once __DIR__ . '/../includes/header.php';
 
     <div class="pf-inner">
 
-        <!-- Flash message -->
-        <?php if ($flash): ?>
-        <div class="pf-flash pf-flash--<?= e($flash['type']) ?>">
-            <?= e($flash['message']) ?>
-        </div>
-        <?php endif; ?>
-
         <!-- ═══════════════════════════════════════
              HERO — Avatar + name + role badge
         ═══════════════════════════════════════ -->

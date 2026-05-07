@@ -78,16 +78,6 @@ require_once __DIR__ . '/../../includes/header.php';
     <div class="ac-wrap" style="position:relative; z-index:1; max-width:1100px; margin:0 auto;
                 padding:2rem 1.25rem 4rem;">
 
-        <!-- Flash -->
-        <?php if ($flash): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.9rem 1.25rem;
-                    font-size:0.85rem; font-weight:500;
-                    background:<?= $flash['type'] === 'success' ? 'rgba(81,142,92,0.12)' : 'rgba(210,89,42,0.12)' ?>;
-                    border:1px solid <?= $flash['type'] === 'success' ? 'rgba(81,142,92,0.30)' : 'rgba(210,89,42,0.30)' ?>;
-                    color:<?= $flash['type'] === 'success' ? '#7ec98a' : '#e07a55' ?>;">
-            <?= e($flash['message']) ?>
-        </div>
-        <?php endif; ?>
 
         <!-- Page header -->
         <div style="display:flex; align-items:center; justify-content:space-between;
