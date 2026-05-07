@@ -430,9 +430,6 @@ $roleMeta = [
                             <?= formatTokens($balance) ?>
                         </span>
                     </div>
-                    <p style="font-size:0.63rem; color:#6b6e77; margin:0; margin-top:1px;">
-                        ได้ <?= formatTokens((int)$emp['total_earned']) ?> / ใช้ <?= formatTokens((int)$emp['total_spent']) ?>
-                    </p>
                 </div>
 
                 <!-- Active toggle -->
@@ -515,22 +512,39 @@ $roleMeta = [
             <input type="hidden" name="action"      value="adjust_token">
             <input type="hidden" name="employee_id" id="emp-adjust-emp-id">
             <input type="hidden" name="qs"          id="emp-adjust-qs">
+            <input type="hidden" name="amount"       id="emp-adjust-amount-final">
             <div style="padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem;">
                 <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.14);
                             border-radius:12px; padding:0.75rem 1rem; font-size:0.78rem; color:#8a8e97;">
                     Token ปัจจุบัน: <span id="emp-adjust-balance" style="font-weight:700; color:#f8e769;"></span>
                 </div>
+
+                <!-- Mode toggle -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                    <button type="button" id="adj-btn-add"
+                            onclick="empSetMode('add')"
+                            style="padding:0.55rem; border-radius:10px; font-size:0.82rem; font-weight:700;
+                                   font-family:'Prompt',sans-serif; cursor:pointer; transition:all 0.15s;
+                                   background:rgba(81,142,92,0.25); border:1px solid rgba(81,142,92,0.50); color:#7ec98a;">
+                        + เพิ่ม Token
+                    </button>
+                    <button type="button" id="adj-btn-deduct"
+                            onclick="empSetMode('deduct')"
+                            style="padding:0.55rem; border-radius:10px; font-size:0.82rem; font-weight:700;
+                                   font-family:'Prompt',sans-serif; cursor:pointer; transition:all 0.15s;
+                                   background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10); color:#6b6e77;">
+                        &minus; หัก Token
+                    </button>
+                </div>
+
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
+                    <label id="adj-amount-label" style="font-size:0.70rem; font-weight:700; color:#8a8e97;
                                   letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        จำนวน Token <span style="color:#d2592a;">*</span>
+                        จำนวน Token ที่จะเพิ่ม <span style="color:#d2592a;">*</span>
                     </label>
-                    <input type="number" name="amount" id="emp-adjust-amount"
-                           placeholder="ระบุบวก (+) หรือลบ (-) ได้"
+                    <input type="number" id="emp-adjust-amount" min="1"
+                           placeholder="ระบุจำนวนเป็นบวกเสมอ"
                            class="emp-modal-input" required>
-                    <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">
-                        ใส่ค่าบวกเพื่อเพิ่ม เช่น 50 &nbsp;|&nbsp; ค่าลบเพื่อหัก เช่น -20
-                    </p>
                 </div>
                 <div>
                     <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
@@ -553,14 +567,14 @@ $roleMeta = [
                         onmouseout="this.style.background='rgba(255,255,255,0.06)'">
                     ยกเลิก
                 </button>
-                <button type="submit"
+                <button type="submit" id="emp-adjust-submit-btn"
                         style="padding:0.5rem 1.1rem; font-size:0.82rem; font-weight:700; border-radius:10px;
                                cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(218,185,55,0.18); color:#f8e769;
-                               border:1px solid rgba(218,185,55,0.38); transition:background 0.15s;"
-                        onmouseover="this.style.background='rgba(218,185,55,0.30)'"
-                        onmouseout="this.style.background='rgba(218,185,55,0.18)'">
-                    ยืนยัน
+                               background:rgba(81,142,92,0.25); color:#7ec98a;
+                               border:1px solid rgba(81,142,92,0.50); transition:all 0.15s;"
+                        onmouseover="this.style.opacity='0.85'"
+                        onmouseout="this.style.opacity='1'">
+                    เพิ่ม Token
                 </button>
             </div>
         </form>

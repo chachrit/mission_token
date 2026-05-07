@@ -501,12 +501,48 @@ function confirmReject(id) {
 
 
 /* -- Admin Employees (emp-) ---------------------------------- */
+var _empAdjustMode = 'add'; // 'add' | 'deduct'
+
+function empSetMode(mode) {
+    _empAdjustMode = mode;
+    var btnAdd    = document.getElementById('adj-btn-add');
+    var btnDeduct = document.getElementById('adj-btn-deduct');
+    var submitBtn = document.getElementById('emp-adjust-submit-btn');
+    var label     = document.getElementById('adj-amount-label');
+    if (mode === 'add') {
+        btnAdd.style.background    = 'rgba(81,142,92,0.30)';
+        btnAdd.style.borderColor   = 'rgba(81,142,92,0.60)';
+        btnAdd.style.color         = '#7ec98a';
+        btnDeduct.style.background = 'rgba(255,255,255,0.05)';
+        btnDeduct.style.borderColor= 'rgba(255,255,255,0.10)';
+        btnDeduct.style.color      = '#6b6e77';
+        submitBtn.style.background = 'rgba(81,142,92,0.25)';
+        submitBtn.style.borderColor= 'rgba(81,142,92,0.50)';
+        submitBtn.style.color      = '#7ec98a';
+        submitBtn.textContent      = '+ เพิ่ม Token';
+        label.innerHTML            = 'จำนวน Token ที่จะเพิ่ม <span style="color:#d2592a;">*</span>';
+    } else {
+        btnDeduct.style.background = 'rgba(210,89,42,0.25)';
+        btnDeduct.style.borderColor= 'rgba(210,89,42,0.50)';
+        btnDeduct.style.color      = '#e07a55';
+        btnAdd.style.background    = 'rgba(255,255,255,0.05)';
+        btnAdd.style.borderColor   = 'rgba(255,255,255,0.10)';
+        btnAdd.style.color         = '#6b6e77';
+        submitBtn.style.background = 'rgba(210,89,42,0.20)';
+        submitBtn.style.borderColor= 'rgba(210,89,42,0.50)';
+        submitBtn.style.color      = '#e07a55';
+        submitBtn.textContent      = '− หัก Token';
+        label.innerHTML            = 'จำนวน Token ที่จะหัก <span style="color:#d2592a;">*</span>';
+    }
+}
+
 function empOpenAdjust(empId, name, balance, qs) {
     document.getElementById('emp-adjust-emp-id').value = empId;
     document.getElementById('emp-adjust-qs').value     = qs;
-    document.getElementById('emp-adjust-title').textContent = 'ปรับ Token: ' + name;
+    document.getElementById('emp-adjust-title').textContent = 'จัดการ Token: ' + name;
     document.getElementById('emp-adjust-balance').textContent = balance.toLocaleString() + ' Token';
     document.getElementById('emp-adjust-amount').value = '';
+    empSetMode('add'); // always default to add
     var modal = document.getElementById('emp-adjust-modal');
     modal.style.display = 'flex';
     document.body.style.overflow = 'hidden';
@@ -539,6 +575,17 @@ document.addEventListener('DOMContentLoaded', function () {
     var adjModal = document.getElementById('emp-adjust-modal');
     if (adjModal) {
         adjModal.addEventListener('click', function(e) { if (e.target === adjModal) empCloseAdjust(); });
+    }
+
+    // Adjust form: compute signed amount before submit
+    var adjForm = document.getElementById('emp-adjust-form');
+    if (adjForm) {
+        adjForm.addEventListener('submit', function(e) {
+            var raw = parseInt(document.getElementById('emp-adjust-amount').value, 10);
+            if (!raw || raw <= 0) { e.preventDefault(); return; }
+            var signed = _empAdjustMode === 'deduct' ? -raw : raw;
+            document.getElementById('emp-adjust-amount-final').value = signed;
+        });
     }
     // ESC + click-outside for pw modal
     var pwModal = document.getElementById('emp-pw-modal');
