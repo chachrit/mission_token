@@ -224,52 +224,51 @@ require_once __DIR__ . '/../../includes/header.php';
     <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
 
         <!-- Page header -->
-        <div style="display:flex; align-items:flex-start; justify-content:space-between;
-                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
-                    padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
-            <div>
-                <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
-                          text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
-                    ⬡ &nbsp;ADMIN — REWARD CATALOGUE
-                </p>
-                <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
-                    จัดการรางวัล
-                </h1>
-                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
-                    เพิ่ม แก้ไข และจัดการสต็อกรางวัลในร้านค้า Token
-                    <?php if (!empty($rewards)): ?>
-                    <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
-                                 background:rgba(255,255,255,0.07); border-radius:999px;
-                                 padding:0.12rem 0.5rem; color:#8a8e97;">
-                        <?= count($rewards) ?> รายการ
-                    </span>
-                    <?php endif; ?>
-                </p>
-                <!-- Category filter pills -->
-                <div style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-top:0.75rem;">
-                    <?php
-                    $catFilters = ['' => 'ทั้งหมด'] + array_map(fn($m) => $m['label'], $catMeta);
-                    foreach ($catFilters as $val => $label):
-                        $isActiveCat = ($catFilter === $val);
-                    ?>
-                    <a href="<?= BASE_URL ?>/hr/rewards/index.php<?= $val ? '?cat=' . $val : '' ?>"
-                       style="font-size:0.72rem; font-weight:700; padding:0.28rem 0.75rem;
-                              border-radius:999px; text-decoration:none; transition:all 0.15s;
-                              background:<?= $isActiveCat ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
-                              border:1px solid <?= $isActiveCat ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
-                              color:<?= $isActiveCat ? '#dab937' : '#6b6e77' ?>">
-                        <?= $label ?>
-                    </a>
-                    <?php endforeach; ?>
+        <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+            <!-- Row 1: title + create button -->
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+                <div>
+                    <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
+                              text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                        ⬡ &nbsp;ADMIN — REWARD CATALOGUE
+                    </p>
+                    <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                        จัดการรางวัล
+                    </h1>
+                    <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                        เพิ่ม แก้ไข และจัดการสต็อกรางวัลในร้านค้า Token
+                        <?php if (!empty($rewards)): ?>
+                        <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
+                                     background:rgba(255,255,255,0.07); border-radius:999px;
+                                     padding:0.12rem 0.5rem; color:#8a8e97;">
+                            <?= count($rewards) ?> รายการ
+                        </span>
+                        <?php endif; ?>
+                    </p>
                 </div>
-            </div>
-            <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
                 <button onclick="document.getElementById('create-form').classList.toggle('open');
                                  this.textContent = document.getElementById('create-form').classList.contains('open')
                                                     ? '✕ ปิด' : '+ เพิ่มรางวัลใหม่';"
-                        class="ch-btn-start" style="padding:0.55rem 1.1rem; font-size:0.82rem; border-radius:10px;">
+                        class="ch-btn-start" style="padding:0.55rem 1.1rem; font-size:0.82rem; border-radius:10px; flex-shrink:0;">
                     + เพิ่มรางวัลใหม่
                 </button>
+            </div>
+            <!-- Row 2: category filter pills -->
+            <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <?php
+                $catFilters = ['' => 'ทั้งหมด'] + array_map(fn($m) => $m['label'], $catMeta);
+                foreach ($catFilters as $val => $label):
+                    $isActiveCat = ($catFilter === $val);
+                ?>
+                <a href="<?= BASE_URL ?>/hr/rewards/index.php<?= $val ? '?cat=' . $val : '' ?>"
+                   style="font-size:0.72rem; font-weight:700; padding:0.28rem 0.75rem;
+                          border-radius:999px; text-decoration:none; transition:all 0.15s;
+                          background:<?= $isActiveCat ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
+                          border:1px solid <?= $isActiveCat ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
+                          color:<?= $isActiveCat ? '#dab937' : '#6b6e77' ?>">
+                    <?= $label ?>
+                </a>
+                <?php endforeach; ?>
             </div>
         </div>
 
