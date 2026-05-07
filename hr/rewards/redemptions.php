@@ -165,7 +165,7 @@ $catMeta = [
 ];
 
 $pageTitle  = 'คำขอแลกรางวัล';
-$activePage = 'admin_rewards';
+$activePage = 'admin_redemptions';
 $canManage  = in_array($_SESSION['role'] ?? '', ['admin', 'hr'], true);
 $flash      = getFlash();
 require_once __DIR__ . '/../../includes/header.php';

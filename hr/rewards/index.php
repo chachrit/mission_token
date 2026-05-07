@@ -148,13 +148,6 @@ try {
     $dataError = 'ไม่สามารถโหลดข้อมูลได้';
 }
 
-// Pending redemptions count for badge
-$pendingRedemptions = 0;
-try {
-    $row = $pdo->query("SELECT COUNT(*) AS cnt FROM dbo.reward_redemptions WHERE status = 'pending'")->fetch();
-    $pendingRedemptions = (int)($row['cnt'] ?? 0);
-} catch (Throwable $e) { /* ignore */ }
-
 $catMeta = [
     'voucher' => ['label' => 'คูปอง',        'color' => '#2f4e9d', 'bg' => '#eaedfa'],
     'leave'   => ['label' => 'วันหยุดพิเศษ', 'color' => '#518e5c', 'bg' => '#e6f4e9'],
@@ -271,23 +264,6 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
             </div>
             <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
-                <a href="<?php echo BASE_URL; ?>/hr/rewards/redemptions.php"
-                   style="display:inline-flex; align-items:center; gap:0.45rem; position:relative;
-                          padding:0.55rem 1.1rem; border-radius:10px; font-size:0.82rem; font-weight:600;
-                          font-family:'Prompt',sans-serif; text-decoration:none; transition:all 0.18s;
-                          background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                          color:#eeebe1;"
-                   onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                   onmouseout="this.style.background='rgba(255,255,255,0.06)'">
-                    📋 คำขอแลกรางวัล
-                    <?php if ($pendingRedemptions > 0): ?>
-                    <span style="width:18px; height:18px; border-radius:50%; background:#d2592a;
-                                  color:#fff; font-size:0.60rem; font-weight:700;
-                                  display:inline-flex; align-items:center; justify-content:center;">
-                        <?= $pendingRedemptions ?>
-                    </span>
-                    <?php endif; ?>
-                </a>
                 <button onclick="document.getElementById('create-form').classList.toggle('open');
                                  this.textContent = document.getElementById('create-form').classList.contains('open')
                                                     ? '✕ ปิด' : '+ เพิ่มรางวัลใหม่';"

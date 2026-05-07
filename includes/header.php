@@ -308,10 +308,11 @@ $flash        = $flash ?? getFlash();
                     if ($isAdminOrHr && $isAdminPage) {
                         // อยู่ใน /hr/ → แสดง admin nav
                         $navLinks = [
-                            'admin_challenges'  => ['label' => 'จัดการภารกิจ', 'href' => BASE_URL . '/hr/challenges/index.php'],
-                            'admin_submissions' => ['label' => 'อนุมัติงาน',    'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
-                            'admin_rewards'     => ['label' => 'จัดการรางวัล',  'href' => BASE_URL . '/hr/rewards/index.php', 'badge' => $pendingRedemptionCount],
-                            'admin_employees'   => ['label' => 'จัดการพนักงาน', 'href' => BASE_URL . '/hr/employees.php'],
+                            'admin_challenges'   => ['label' => 'จัดการภารกิจ',    'href' => BASE_URL . '/hr/challenges/index.php'],
+                            'admin_submissions'  => ['label' => 'อนุมัติงาน',     'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
+                            'admin_rewards'      => ['label' => 'จัดการรางวัล',   'href' => BASE_URL . '/hr/rewards/index.php'],
+                            'admin_redemptions'  => ['label' => 'คำขอแลกรางวัล', 'href' => BASE_URL . '/hr/rewards/redemptions.php', 'badge' => $pendingRedemptionCount],
+                            'admin_employees'    => ['label' => 'จัดการพนักงาน',  'href' => BASE_URL . '/hr/employees.php'],
                         ];
                     } else {
                         // อยู่ใน /pages/ หรือ employee zone → แสดง employee nav
