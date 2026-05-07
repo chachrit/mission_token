@@ -96,57 +96,59 @@ require_once __DIR__ . '/../../includes/header.php';
     <div class="ch-aurora-blob ch-aurora-blob--1" aria-hidden="true"></div>
     <div class="ch-aurora-blob ch-aurora-blob--2" aria-hidden="true"></div>
 
-    <div class="ac-wrap" style="position:relative; z-index:1; max-width:1100px; margin:0 auto;
-                padding:2rem 1.25rem 4rem;">
+    <div class="ac-wrap" style="position:relative; z-index:1; max-width:1200px; margin:0 auto;
+                padding:2rem 1.5rem 4rem;">
 
 
         <!-- Page header -->
-        <div style="display:flex; align-items:center; justify-content:space-between;
-                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;">
-            <div>
-                <h1 style="font-size:1.55rem; font-weight:800; color:#eeebe1;
-                           margin:0 0 0.2rem; letter-spacing:-0.01em;">จัดการภารกิจ</h1>
-                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
-                    สร้าง แก้ไข และจัดการ Challenge ทั้งหมดในระบบ
-                    <?php if (!empty($challenges)): ?>
-                    <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
-                                 background:rgba(255,255,255,0.07); border-radius:999px;
-                                 padding:0.12rem 0.5rem; color:#8a8e97;">
-                        <?= count($challenges) ?> รายการ
-                    </span>
-                    <?php endif; ?>
-                </p>
-            </div>
-            <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
-                <!-- Type filter -->
-                <div style="display:flex; gap:0.35rem;">
-                    <?php
-                    $filters = ['' => 'ทั้งหมด', 'quiz' => '📝 Quiz', 'photo' => '📷 Photo', 'strava' => '🏃 Strava'];
-                    foreach ($filters as $val => $label):
-                        $isActive = ($typeFilter === $val);
-                    ?>
-                    <a href="<?= BASE_URL ?>/hr/challenges/index.php<?= $val ? '?type=' . $val : '' ?>"
-                       style="font-size:0.72rem; font-weight:700; padding:0.3rem 0.75rem;
-                              border-radius:999px; text-decoration:none; transition:all 0.15s;
-                              background:<?= $isActive ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
-                              border:1px solid <?= $isActive ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
-                              color:<?= $isActive ? '#dab937' : '#6b6e77' ?>;">
-                        <?= $label ?>
-                    </a>
-                    <?php endforeach; ?>
+        <div style="margin-bottom:1.5rem;">
+            <!-- Row 1: title + create button -->
+            <div style="display:flex; align-items:center; justify-content:space-between;
+                        gap:1rem; margin-bottom:0.75rem;">
+                <div>
+                    <h1 style="font-size:1.55rem; font-weight:800; color:#eeebe1;
+                               margin:0 0 0.2rem; letter-spacing:-0.01em;">จัดการภารกิจ</h1>
+                    <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                        สร้าง แก้ไข และจัดการ Challenge ทั้งหมดในระบบ
+                        <?php if (!empty($challenges)): ?>
+                        <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
+                                     background:rgba(255,255,255,0.07); border-radius:999px;
+                                     padding:0.12rem 0.5rem; color:#8a8e97;">
+                            <?= count($challenges) ?> รายการ
+                        </span>
+                        <?php endif; ?>
+                    </p>
                 </div>
                 <a href="<?= BASE_URL ?>/hr/challenges/edit.php"
                    class="ch-btn-start"
-               style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:12px;
-                      text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
-                <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor" stroke-width="2.5"
-                     stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                สร้างภารกิจใหม่
-            </a>
+                   style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:12px;
+                          text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem; flex-shrink:0;">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
+                         stroke="currentColor" stroke-width="2.5"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    สร้างภารกิจใหม่
+                </a>
+            </div>
+            <!-- Row 2: type filter pills -->
+            <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                <?php
+                $filters = ['' => 'ทั้งหมด', 'quiz' => '📝 Quiz', 'photo' => '📷 Photo', 'strava' => '🏃 Strava'];
+                foreach ($filters as $val => $label):
+                    $isActive = ($typeFilter === $val);
+                ?>
+                <a href="<?= BASE_URL ?>/hr/challenges/index.php<?= $val ? '?type=' . $val : '' ?>"
+                   style="font-size:0.72rem; font-weight:700; padding:0.28rem 0.75rem;
+                          border-radius:999px; text-decoration:none; transition:all 0.15s;
+                          background:<?= $isActive ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
+                          border:1px solid <?= $isActive ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
+                          color:<?= $isActive ? '#dab937' : '#6b6e77' ?>;">
+                    <?= $label ?>
+                </a>
+                <?php endforeach; ?>
+            </div>
         </div>
 
         <?php if (!empty($challenges)): ?>
@@ -155,7 +157,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
 
             <!-- Table header -->
-            <div style="display:grid; grid-template-columns:1fr 120px 80px 160px 70px 80px 100px;
+            <div style="display:grid; grid-template-columns:1fr 105px 75px 190px 65px 85px 105px;
                         gap:0; padding:0.65rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -192,7 +194,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 }
             ?>
             <div class="ac-row"
-                 style="display:grid; grid-template-columns:1fr 120px 80px 160px 70px 80px 100px;
+                 style="display:grid; grid-template-columns:1fr 105px 75px 190px 65px 85px 105px;
                         gap:0; padding:0.9rem 1.25rem; align-items:center;
                         border-bottom:1px solid rgba(255,255,255,0.05);
                         <?= $isActive ? '' : 'opacity:0.5;' ?>">
