@@ -112,17 +112,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $rewards   = [];
 $dataError = null;
 
+$catFilter   = (string)($_GET['cat'] ?? '');
+$allowedCats = ['voucher','leave','merch','perk','general'];
+if (!in_array($catFilter, $allowedCats, true)) $catFilter = '';
+
 try {
-    $rewards = $pdo->query("
-        SELECT r.reward_id, r.title, r.description, r.image_emoji,
-               r.category, r.token_cost, r.stock, r.is_active, r.created_at,
-               (SELECT COUNT(*) FROM dbo.reward_redemptions rd
-                WHERE rd.reward_id = r.reward_id) AS total_redeemed,
-               (SELECT COUNT(*) FROM dbo.reward_redemptions rd
-                WHERE rd.reward_id = r.reward_id AND rd.status = 'pending') AS pending_count
-        FROM   dbo.rewards r
-        ORDER BY r.is_active DESC, r.created_at DESC
-    ")->fetchAll();
+    if ($catFilter) {
+        $stmt = $pdo->prepare("
+            SELECT r.reward_id, r.title, r.description, r.image_emoji,
+                   r.category, r.token_cost, r.stock, r.is_active, r.created_at,
+                   (SELECT COUNT(*) FROM dbo.reward_redemptions rd
+                    WHERE rd.reward_id = r.reward_id) AS total_redeemed,
+                   (SELECT COUNT(*) FROM dbo.reward_redemptions rd
+                    WHERE rd.reward_id = r.reward_id AND rd.status = 'pending') AS pending_count
+            FROM   dbo.rewards r
+            WHERE  r.category = ?
+            ORDER BY r.is_active DESC, r.created_at DESC
+        ");
+        $stmt->execute([$catFilter]);
+        $rewards = $stmt->fetchAll();
+    } else {
+        $rewards = $pdo->query("
+            SELECT r.reward_id, r.title, r.description, r.image_emoji,
+                   r.category, r.token_cost, r.stock, r.is_active, r.created_at,
+                   (SELECT COUNT(*) FROM dbo.reward_redemptions rd
+                    WHERE rd.reward_id = r.reward_id) AS total_redeemed,
+                   (SELECT COUNT(*) FROM dbo.reward_redemptions rd
+                    WHERE rd.reward_id = r.reward_id AND rd.status = 'pending') AS pending_count
+            FROM   dbo.rewards r
+            ORDER BY r.is_active DESC, r.created_at DESC
+        ")->fetchAll();
+    }
 } catch (Throwable $e) {
     error_log('[MissionToken] admin rewards load error: ' . $e->getMessage());
     $dataError = 'ไม่สามารถโหลดข้อมูลได้';
@@ -224,7 +244,31 @@ require_once __DIR__ . '/../../includes/header.php';
                 </h1>
                 <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
                     เพิ่ม แก้ไข และจัดการสต็อกรางวัลในร้านค้า Token
+                    <?php if (!empty($rewards)): ?>
+                    <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
+                                 background:rgba(255,255,255,0.07); border-radius:999px;
+                                 padding:0.12rem 0.5rem; color:#8a8e97;">
+                        <?= count($rewards) ?> รายการ
+                    </span>
+                    <?php endif; ?>
                 </p>
+                <!-- Category filter pills -->
+                <div style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-top:0.75rem;">
+                    <?php
+                    $catFilters = ['' => 'ทั้งหมด'] + array_map(fn($m) => $m['label'], $catMeta);
+                    foreach ($catFilters as $val => $label):
+                        $isActiveCat = ($catFilter === $val);
+                    ?>
+                    <a href="<?= BASE_URL ?>/hr/rewards/index.php<?= $val ? '?cat=' . $val : '' ?>"
+                       style="font-size:0.72rem; font-weight:700; padding:0.28rem 0.75rem;
+                              border-radius:999px; text-decoration:none; transition:all 0.15s;
+                              background:<?= $isActiveCat ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
+                              border:1px solid <?= $isActiveCat ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
+                              color:<?= $isActiveCat ? '#dab937' : '#6b6e77' ?>">
+                        <?= $label ?>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
             </div>
             <div style="display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;">
                 <a href="<?php echo BASE_URL; ?>/hr/rewards/redemptions.php"
