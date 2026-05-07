@@ -51,15 +51,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── GET: load all challenges ─────────────────────────────────
 $pdo = getDB();
-$stmt = $pdo->query("
-    SELECT c.challenge_id, c.title, c.type, c.token_reward,
+$typeFilter = (string)($_GET['type'] ?? '');
+$allowedTypes = ['quiz', 'photo', 'strava'];
+if (!in_array($typeFilter, $allowedTypes, true)) $typeFilter = '';
+
+if ($typeFilter) {
+    $stmt = $pdo->prepare("SELECT c.challenge_id, c.title, c.type, c.token_reward,
            c.start_date, c.end_date, c.is_active, c.created_at,
            (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id) AS submission_count,
            (SELECT COUNT(*) FROM quiz_questions qq WHERE qq.challenge_id = c.challenge_id) AS question_count
-    FROM challenges c
-    ORDER BY c.created_at DESC
-");
+    FROM challenges c WHERE c.type = ? ORDER BY c.created_at DESC");
+    $stmt->execute([$typeFilter]);
+} else {
+    $stmt = $pdo->query("SELECT c.challenge_id, c.title, c.type, c.token_reward,
+           c.start_date, c.end_date, c.is_active, c.created_at,
+           (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id) AS submission_count,
+           (SELECT COUNT(*) FROM quiz_questions qq WHERE qq.challenge_id = c.challenge_id) AS question_count
+    FROM challenges c ORDER BY c.created_at DESC");
+}
 $challenges = $stmt->fetchAll();
+
+// Thai month names (Buddhist Era = +543)
+$thMonths = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thDate(string $dateStr, array $months): string {
+    $ts = strtotime($dateStr);
+    if (!$ts) return '';
+    $d = (int)date('j', $ts);
+    $m = (int)date('n', $ts);
+    $y = (int)date('Y', $ts) + 543;
+    return $d . ' ' . $months[$m] . ' ' . $y;
+}
 
 $flash = getFlash();
 
@@ -96,8 +117,26 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php endif; ?>
                 </p>
             </div>
-            <a href="<?= BASE_URL ?>/hr/challenges/edit.php"
-               class="ch-btn-start"
+            <div style="display:flex; align-items:center; gap:0.65rem; flex-wrap:wrap;">
+                <!-- Type filter -->
+                <div style="display:flex; gap:0.35rem;">
+                    <?php
+                    $filters = ['' => 'ทั้งหมด', 'quiz' => '📝 Quiz', 'photo' => '📷 Photo', 'strava' => '🏃 Strava'];
+                    foreach ($filters as $val => $label):
+                        $isActive = ($typeFilter === $val);
+                    ?>
+                    <a href="<?= BASE_URL ?>/hr/challenges/index.php<?= $val ? '?type=' . $val : '' ?>"
+                       style="font-size:0.72rem; font-weight:700; padding:0.3rem 0.75rem;
+                              border-radius:999px; text-decoration:none; transition:all 0.15s;
+                              background:<?= $isActive ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
+                              border:1px solid <?= $isActive ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
+                              color:<?= $isActive ? '#dab937' : '#6b6e77' ?>;">
+                        <?= $label ?>
+                    </a>
+                    <?php endforeach; ?>
+                </div>
+                <a href="<?= BASE_URL ?>/hr/challenges/edit.php"
+                   class="ch-btn-start"
                style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:12px;
                       text-decoration:none; display:inline-flex; align-items:center; gap:0.4rem;">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24"
@@ -133,8 +172,8 @@ require_once __DIR__ . '/../../includes/header.php';
 
             <?php foreach ($challenges as $ch):
                 $isActive = (bool)$ch['is_active'];
-                $sd = date('d/m/y', strtotime((string)$ch['start_date']));
-                $ed = date('d/m/y', strtotime((string)$ch['end_date']));
+                $sd = thDate((string)$ch['start_date'], $thMonths);
+                $ed = thDate((string)$ch['end_date'],   $thMonths);
                 $isQuiz   = $ch['type'] === 'quiz';
                 $isStrava = $ch['type'] === 'strava';
 
