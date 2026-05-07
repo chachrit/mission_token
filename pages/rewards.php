@@ -481,15 +481,23 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <?php if ($myPending > 0): ?>
                 <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
-                <div style="display:flex; align-items:center; gap:0.5rem;
-                             background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
-                             border-radius:999px; padding:0.35rem 0.9rem;">
+                <button onclick="openPendingList()"
+                        style="display:flex; align-items:center; gap:0.5rem;
+                               background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
+                               border-radius:999px; padding:0.35rem 0.9rem; cursor:pointer;
+                               font-family:'Prompt',sans-serif;
+                               transition:background 0.18s, border-color 0.18s;"
+                        onmouseover="this.style.background='rgba(245,158,11,0.18)'; this.style.borderColor='rgba(245,158,11,0.42)'"
+                        onmouseout="this.style.background='rgba(245,158,11,0.10)'; this.style.borderColor='rgba(245,158,11,0.22)'">
                     <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;
                                   flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
                     <span style="font-size:0.78rem; font-weight:600; color:#fbbf24;">
                         <?php echo $myPending; ?> รายการรอดำเนินการ
                     </span>
-                </div>
+                    <svg fill="none" stroke="#fbbf24" viewBox="0 0 24 24" width="12" height="12" style="opacity:0.65;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
                 <?php endif; ?>
 
             </div>
@@ -681,9 +689,9 @@ require_once __DIR__ . '/../includes/header.php';
                     $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
                     $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
                 ?>
-                <div class="rw-hist-row"
+                <div class="rw-hist-row" onclick="openRdDetail(<?= (int)$rd['redemption_id'] ?>)"
                      style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
-                            gap:0.65rem;">
+                            gap:0.65rem; cursor:pointer;">
                     <!-- Main row -->
                     <div style="display:grid; grid-template-columns:1fr auto auto auto;
                                  gap:1rem; align-items:center;">
@@ -726,7 +734,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.6rem; margin-top:0.1rem;
                                 display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
                         <!-- toggle button (left) -->
-                        <button onclick="rwToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
+                        <button onclick="event.stopPropagation(); rwToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
                                 style="display:inline-flex; align-items:center; gap:0.38rem;
                                        background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
                                        border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
@@ -796,7 +804,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </svg>
                             <span style="font-size:0.68rem; color:#6b6e77;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
                         </div>
-                        <button onclick="rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
+                        <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
                                 style="display:inline-flex; align-items:center; gap:0.3rem;
                                        background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
                                        border-radius:7px; padding:0.25rem 0.65rem; cursor:pointer;
@@ -1184,6 +1192,415 @@ window.rwCopyCoupon = function (code, id) {
         if (el) { var r = document.createRange(); r.selectNode(el); window.getSelection().removeAllRanges(); window.getSelection().addRange(r); }
     });
 };
+</script>
+
+<?php
+// ── Collect redemption detail data for JS modal ──
+$rdDetailData = [];
+foreach ($myRedemptions as $_rd) {
+    $_rid = (int)$_rd['redemption_id'];
+    $rdDetailData[$_rid] = [
+        'title'  => $_rd['reward_title'],
+        'emoji'  => $_rd['image_emoji'] ?: '🎁',
+        'tokens' => (int)$_rd['tokens_spent'],
+        'status' => $_rd['status'],
+        'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
+        'procAt' => $_rd['processed_at']
+                    ? date('d/m/Y H:i', strtotime((string)$_rd['processed_at']))
+                    : null,
+        'note'   => (string)($_rd['admin_note']        ?? ''),
+        'procBy' => (string)($_rd['processed_by_name'] ?? ''),
+        'coupon' => ($_rd['status'] === 'fulfilled') ? (string)($_rd['coupon_code'] ?? '') : '',
+    ];
+}
+?>
+<script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE) ?>;</script>
+
+<style>
+@keyframes _rdCardIn {
+    0%   { opacity:0; transform:perspective(700px) scale(0.80) translateY(36px) rotateX(16deg); }
+    60%  { opacity:1; transform:perspective(700px) scale(1.03)  translateY(-4px) rotateX(-2deg); }
+    100% { opacity:1; transform:perspective(700px) scale(1)     translateY(0)    rotateX(0deg);  }
+}
+@keyframes _rdCardOut { from{opacity:1;transform:scale(1) translateY(0)} to{opacity:0;transform:scale(0.86) translateY(22px)} }
+@keyframes _rdFadeIn  { from{opacity:0} to{opacity:1} }
+@keyframes _rdFadeOut { from{opacity:1} to{opacity:0} }
+.rd-ov-in    { animation:_rdFadeIn  230ms ease                             forwards; }
+.rd-ov-out   { animation:_rdFadeOut 155ms ease                             forwards; }
+.rd-card-in  { animation:_rdCardIn  420ms cubic-bezier(0.34,1.56,0.64,1)  forwards; }
+.rd-card-out { animation:_rdCardOut 155ms ease-in                          forwards; }
+</style>
+
+<!-- ── Redemption Detail Modal ── -->
+<div id="rd-detail-modal"
+     style="display:none; position:fixed; inset:0; z-index:9500;
+            background:rgba(0,0,0,0.80); backdrop-filter:blur(7px);
+            align-items:center; justify-content:center; padding:1rem;"
+     onclick="if(event.target===this)closeRdDetail()">
+
+    <div id="rd-detail-card"
+         style="background:#0f1416; border:1px solid rgba(255,255,255,0.10); border-radius:20px;
+                max-width:430px; width:100%; max-height:90vh; overflow-y:auto;
+                box-shadow:0 24px 60px rgba(0,0,0,0.72);">
+
+        <!-- Header -->
+        <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+                    display:flex; align-items:center; justify-content:space-between;">
+            <div style="display:flex; align-items:center; gap:0.55rem;">
+                <span style="font-size:0.95rem;">🧾</span>
+                <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
+                             text-transform:uppercase; color:rgba(218,185,55,0.85);">รายละเอียดคำขอแลกรางวัล</span>
+            </div>
+            <button onclick="closeRdDetail()"
+                    style="width:28px; height:28px; border-radius:50%;
+                           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+                           color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
+                           display:flex; align-items:center; justify-content:center;
+                           font-family:'Prompt',sans-serif;">✕</button>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.9rem;">
+
+            <!-- Reward card -->
+            <div style="display:flex; align-items:center; gap:1rem;
+                        background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
+                        border-radius:14px; padding:0.95rem 1.1rem;">
+                <span id="rdd-emoji" style="font-size:2.5rem; flex-shrink:0; line-height:1; user-select:none;"></span>
+                <div style="flex:1; min-width:0;">
+                    <p id="rdd-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1;
+                                              margin:0 0 0.4rem; line-height:1.3;"></p>
+                    <span id="rdd-status-badge"
+                          style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
+                                 border-radius:999px; letter-spacing:0.04em; white-space:nowrap;"></span>
+                </div>
+            </div>
+
+            <!-- Info grid -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+                <div style="background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.18);
+                            border-radius:12px; padding:0.7rem 0.9rem;">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">Token ที่ใช้</p>
+                    <p id="rdd-tokens" style="font-size:1.15rem; font-weight:800; color:#dab937; margin:0;"></p>
+                </div>
+                <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+                            border-radius:12px; padding:0.7rem 0.9rem;">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ขอแลก</p>
+                    <p id="rdd-req-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
+                </div>
+                <div id="rdd-proc-row" style="display:none; grid-column:1/-1;
+                            background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
+                            border-radius:12px; padding:0.7rem 0.9rem;">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ดำเนินการ</p>
+                    <p id="rdd-proc-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0;"></p>
+                    <p id="rdd-proc-by" style="font-size:0.70rem; color:#6b6e77; margin:0.2rem 0 0; display:none;"></p>
+                </div>
+            </div>
+
+            <!-- Admin note -->
+            <div id="rdd-note-wrap" style="display:none;
+                        background:rgba(79,139,152,0.07); border:1px solid rgba(79,139,152,0.22);
+                        border-radius:12px; padding:0.75rem 0.95rem;">
+                <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจาก HR</p>
+                <p id="rdd-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
+            </div>
+
+            <!-- Coupon reveal (fulfilled + has coupon) -->
+            <div id="rdd-coupon-section" style="display:none;">
+                <button onclick="rdToggleCoupon()"
+                        style="display:inline-flex; align-items:center; gap:0.4rem; width:100%;
+                               justify-content:center; background:rgba(218,185,55,0.08);
+                               border:1px solid rgba(218,185,55,0.25); border-radius:10px;
+                               padding:0.5rem 1rem; cursor:pointer; font-size:0.78rem; font-weight:700;
+                               color:rgba(218,185,55,0.80); font-family:'Prompt',sans-serif; transition:background 0.15s;">
+                    <span id="rdd-coupon-label">👁 แสดงรหัสคูปอง</span>
+                </button>
+                <div id="rdd-coupon-box" style="display:none; margin-top:0.5rem;
+                            background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.25);
+                            border-radius:10px; padding:0.75rem 1rem;
+                            flex-direction:column; gap:0.35rem;">
+                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:rgba(218,185,55,0.45); margin:0;">รหัสคูปอง</p>
+                    <div style="display:flex; align-items:center; gap:0.65rem;">
+                        <p id="rdd-coupon-code"
+                           style="font-size:1.15rem; font-weight:800; color:#f8e769;
+                                  letter-spacing:0.12em; font-family:monospace,'Prompt';
+                                  user-select:all; word-break:break-all; margin:0; flex:1;"></p>
+                        <button onclick="rdCopyCoupon()"
+                                id="rdd-coupon-copy"
+                                style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
+                                       background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.25);
+                                       border-radius:7px; color:#dab937; cursor:pointer;
+                                       font-size:0.72rem; font-weight:600; font-family:'Prompt',sans-serif;
+                                       padding:0.3rem 0.65rem; transition:background 0.15s; white-space:nowrap;">📋 คัดลอก</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cancel section (pending only) -->
+            <div id="rdd-cancel-section" style="display:none;">
+                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:0.85rem;">
+                    <p style="font-size:0.68rem; color:#6b6e77; text-align:center; margin:0 0 0.6rem;">
+                        🔒 Token จะถูกคืนให้ทันที หลังยืนยันยกเลิก
+                    </p>
+                    <button id="rdd-cancel-btn" onclick="rdDoCancel()"
+                            style="display:flex; align-items:center; justify-content:center; gap:0.5rem;
+                                   width:100%; padding:0.6rem 1rem; border-radius:11px; cursor:pointer;
+                                   background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.30);
+                                   color:rgba(210,89,42,0.85); font-size:0.83rem; font-weight:600;
+                                   font-family:'Prompt',sans-serif; transition:background 0.15s, color 0.15s; line-height:1.4;"></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+var _rdCurrentId = 0, _rdCurrentTokens = 0;
+
+function openRdDetail(rdId) {
+    var d = _rdData[rdId];
+    if (!d) return;
+    _rdCurrentId     = rdId;
+    _rdCurrentTokens = d.tokens;
+
+    document.getElementById('rdd-emoji').textContent  = d.emoji;
+    document.getElementById('rdd-title').textContent  = d.title;
+    document.getElementById('rdd-tokens').textContent = d.tokens.toLocaleString() + ' token';
+    document.getElementById('rdd-req-at').textContent = d.reqAt;
+
+    var statusMap = {
+        pending:   { label:'รอดำเนินการ', bg:'rgba(245,158,11,0.12)', color:'#fbbf24', border:'rgba(245,158,11,0.32)' },
+        fulfilled: { label:'มอบแล้ว',    bg:'rgba(81,142,92,0.12)',  color:'#6fcf80', border:'rgba(81,142,92,0.32)'  },
+        cancelled: { label:'ยกเลิก',          bg:'rgba(210,89,42,0.12)',  color:'#e8805a', border:'rgba(210,89,42,0.32)'  },
+    };
+    var sm = statusMap[d.status] || statusMap.pending;
+    var badge = document.getElementById('rdd-status-badge');
+    badge.textContent       = sm.label;
+    badge.style.background  = sm.bg;
+    badge.style.color       = sm.color;
+    badge.style.border      = '1px solid ' + sm.border;
+
+    var procRow = document.getElementById('rdd-proc-row');
+    if (d.procAt) {
+        document.getElementById('rdd-proc-at').textContent = d.procAt;
+        var procByEl = document.getElementById('rdd-proc-by');
+        if (d.procBy) { procByEl.textContent = 'โดย ' + d.procBy; procByEl.style.display = 'block'; }
+        else           { procByEl.style.display = 'none'; }
+        procRow.style.display = 'block';
+    } else {
+        procRow.style.display = 'none';
+    }
+
+    var noteWrap = document.getElementById('rdd-note-wrap');
+    if (d.note) { document.getElementById('rdd-note').textContent = d.note; noteWrap.style.display = 'block'; }
+    else        { noteWrap.style.display = 'none'; }
+
+    var couponSec = document.getElementById('rdd-coupon-section');
+    if (d.coupon) {
+        document.getElementById('rdd-coupon-code').textContent   = d.coupon;
+        document.getElementById('rdd-coupon-box').style.display  = 'none';
+        document.getElementById('rdd-coupon-label').textContent  = '👁 แสดงรหัสคูปอง';
+        couponSec.style.display = 'block';
+    } else {
+        couponSec.style.display = 'none';
+    }
+
+    var cancelSec = document.getElementById('rdd-cancel-section');
+    if (d.status === 'pending') {
+        var cb = document.getElementById('rdd-cancel-btn');
+        cb.disabled  = false;
+        cb.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg> ยกเลิกการแลก (คืน ' + d.tokens.toLocaleString() + ' Token)';
+        cancelSec.style.display = 'block';
+    } else {
+        cancelSec.style.display = 'none';
+    }
+
+    var overlay = document.getElementById('rd-detail-modal');
+    var card    = document.getElementById('rd-detail-card');
+    overlay.classList.remove('rd-ov-out');  card.classList.remove('rd-card-out');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    void card.offsetWidth;
+    overlay.classList.add('rd-ov-in');
+    card.classList.add('rd-card-in');
+}
+
+function closeRdDetail() {
+    var overlay = document.getElementById('rd-detail-modal');
+    if (overlay.style.display === 'none') return;
+    var card = document.getElementById('rd-detail-card');
+    overlay.classList.remove('rd-ov-in');  card.classList.remove('rd-card-in');
+    overlay.classList.add('rd-ov-out');    card.classList.add('rd-card-out');
+    setTimeout(function() {
+        overlay.style.display = 'none';
+        overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
+        document.body.style.overflow = '';
+    }, 160);
+}
+
+function rdToggleCoupon() {
+    var box = document.getElementById('rdd-coupon-box');
+    var lbl = document.getElementById('rdd-coupon-label');
+    if (box.style.display === 'none' || box.style.display === '') {
+        box.style.display = 'flex'; lbl.textContent = '🙈 ซ่อนรหัสคูปอง';
+    } else {
+        box.style.display = 'none'; lbl.textContent = '👁 แสดงรหัสคูปอง';
+    }
+}
+
+function rdCopyCoupon() {
+    var code = document.getElementById('rdd-coupon-code').textContent.trim();
+    var btn  = document.getElementById('rdd-coupon-copy');
+    navigator.clipboard.writeText(code).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = '✓ คัดลอกแล้ว';
+        btn.style.color = '#7ec98a';
+        setTimeout(function() { btn.textContent = orig; btn.style.color = '#dab937'; }, 1800);
+    });
+}
+
+function rdDoCancel() {
+    var cb = document.getElementById('rdd-cancel-btn');
+    cb.disabled     = true;
+    cb.textContent  = 'กำลังดำเนินการ…';
+    var csrf = document.querySelector('meta[name="csrf-token"]')
+               ? document.querySelector('meta[name="csrf-token"]').content : '';
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ action:'cancel_redemption', redemption_id:_rdCurrentId, csrf_token:csrf }),
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.success) {
+            var balEl  = document.getElementById('hdr-balance');
+            if (balEl)  balEl.textContent = data.new_balance.toLocaleString('th-TH');
+            var navBal = document.getElementById('nav-balance');
+            if (navBal) navBal.textContent = data.new_balance.toLocaleString('th-TH');
+            closeRdDetail();
+            setTimeout(function() { location.reload(); }, 165);
+        } else {
+            cb.disabled  = false;
+            cb.innerHTML = '❌ ' + (data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+        }
+    })
+    .catch(function() {
+        cb.disabled  = false;
+        cb.innerHTML = '❌ การเชื่อมต่อขัดข้อง กรุณาลองใหม่';
+    });
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeRdDetail(); closePendingList(); }
+});
+</script>
+
+<!-- ── Pending List Modal ── -->
+<div id="rd-pending-modal"
+     style="display:none; position:fixed; inset:0; z-index:9600;
+            background:rgba(0,0,0,0.82); backdrop-filter:blur(7px);
+            align-items:center; justify-content:center; padding:1rem;"
+     onclick="if(event.target===this)closePendingList()">
+    <div id="rd-pending-card"
+         style="background:#0f1416; border:1px solid rgba(245,158,11,0.22); border-radius:20px;
+                max-width:420px; width:100%; max-height:82vh; overflow-y:auto;
+                box-shadow:0 24px 60px rgba(0,0,0,0.72);">
+        <!-- Header -->
+        <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+                    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0;
+                    background:#0f1416; z-index:1; border-radius:20px 20px 0 0;">
+            <div style="display:flex; align-items:center; gap:0.55rem;">
+                <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;
+                              flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
+                <span style="font-size:0.70rem; font-weight:700; letter-spacing:0.08em;
+                             text-transform:uppercase; color:#fbbf24;">รอดำเนินการ</span>
+                <span id="pending-count-badge"
+                      style="font-size:0.62rem; font-weight:700; color:#091113;
+                             background:#f59e0b; border-radius:999px; padding:0.10rem 0.48rem;"></span>
+            </div>
+            <button onclick="closePendingList()"
+                    style="width:28px; height:28px; border-radius:50%;
+                           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+                           color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
+                           display:flex; align-items:center; justify-content:center;
+                           font-family:'Prompt',sans-serif;">✕</button>
+        </div>
+        <!-- List -->
+        <div id="pending-list-body" style="padding:0.75rem 0;"></div>
+    </div>
+</div>
+
+<script>
+function openPendingList() {
+    var pending = Object.entries(_rdData).filter(function(e) { return e[1].status === 'pending'; });
+    var body = document.getElementById('pending-list-body');
+    document.getElementById('pending-count-badge').textContent = pending.length;
+    body.innerHTML = '';
+    if (pending.length === 0) {
+        body.innerHTML = '<p style="text-align:center; font-size:0.83rem; color:#6b6e77; padding:1.5rem;">ไม่มีรายการรอดำเนินการ</p>';
+    } else {
+        pending.forEach(function(entry, idx) {
+            var rdId = entry[0], d = entry[1];
+            var row = document.createElement('div');
+            row.style.cssText = [
+                'display:flex; align-items:center; gap:0.85rem;',
+                'padding:0.75rem 1.25rem; cursor:pointer;',
+                'border-bottom:1px solid rgba(255,255,255,' + (idx < pending.length-1 ? '0.05' : '0') + ');',
+                'transition:background 0.14s;',
+            ].join('');
+            row.onmouseover = function() { this.style.background='rgba(245,158,11,0.06)'; };
+            row.onmouseout  = function() { this.style.background=''; };
+            row.onclick = function() {
+                closePendingList();
+                setTimeout(function() { openRdDetail(parseInt(rdId)); }, 140);
+            };
+            row.innerHTML = [
+                '<span style="font-size:1.5rem; flex-shrink:0; line-height:1; user-select:none;">' + d.emoji + '</span>',
+                '<div style="flex:1; min-width:0;">',
+                '  <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0 0 0.2rem;',
+                '            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + d.title + '</p>',
+                '  <p style="font-size:0.72rem; color:#6b6e77; margin:0;">ขอวันที่ ' + d.reqAt + '</p>',
+                '</div>',
+                '<div style="display:flex; align-items:center; gap:0.25rem; flex-shrink:0;">',
+                '  <span style="font-size:0.88rem; font-weight:800; color:#dab937;">' + d.tokens.toLocaleString() + '</span>',
+                '  <span style="font-size:0.62rem; color:#6b6e77;">token</span>',
+                '</div>',
+                '<svg fill="none" stroke="#6b6e77" viewBox="0 0 24 24" width="14" height="14" style="flex-shrink:0;">',
+                '  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>',
+                '</svg>',
+            ].join('');
+            body.appendChild(row);
+        });
+    }
+
+    var overlay = document.getElementById('rd-pending-modal');
+    var card    = document.getElementById('rd-pending-card');
+    overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
+    overlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    void card.offsetWidth;
+    overlay.classList.add('rd-ov-in');
+    card.classList.add('rd-card-in');
+}
+
+function closePendingList() {
+    var overlay = document.getElementById('rd-pending-modal');
+    if (!overlay || overlay.style.display === 'none') return;
+    var card = document.getElementById('rd-pending-card');
+    overlay.classList.remove('rd-ov-in');  card.classList.remove('rd-card-in');
+    overlay.classList.add('rd-ov-out');    card.classList.add('rd-card-out');
+    setTimeout(function() {
+        overlay.style.display = 'none';
+        overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
+        document.body.style.overflow = '';
+    }, 160);
+}
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
