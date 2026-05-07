@@ -769,7 +769,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- ── BACK FACE ── -->
                 <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>"
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
-                     onclick="window.location='<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>'" style="cursor:pointer;"
+                     onclick="openQuizModal(<?= $cid ?>)" style="cursor:pointer;"
                      <?php elseif ($ch['type'] === 'strava'): ?>
                      onclick="openStravaModal(<?= $cid ?>)" style="cursor:pointer;"
                      <?php endif; ?>>
@@ -786,7 +786,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <span class="ch-type-badge">Photo</span>
                             <?php endif; ?>
                             <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
-                            <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อเริ่ม →</span>
+                            <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อดูรายละเอียด →</span>
                             <?php elseif ($ch['type'] === 'strava'): ?>
                             <span style="font-size:0.63rem;color:rgba(252,76,2,0.55);font-weight:600;">กดการ์ดเพื่อดูรายละเอียด →</span>
                             <?php endif; ?>
@@ -913,7 +913,48 @@ require_once __DIR__ . '/../includes/header.php';
     <script>
     var _stravaModalData = <?= json_encode($stravaModalData, JSON_UNESCAPED_UNICODE) ?>;
     var _stravaConnected = <?= $stravaConnected ? 'true' : 'false' ?>;
+    <?php
+    // Collect Quiz challenge data for modal JS
+    $quizModalData = [];
+    foreach ($questsAvailable as $_qch) {
+        if ($_qch['type'] !== 'quiz') continue;
+        if ($_qch['my_status'] !== null) continue; // already attempted — won't open modal
+        $_cid2 = (int)$_qch['challenge_id'];
+        $_ets2 = $_qch['end_date'] ? strtotime((string)$_qch['end_date']) : null;
+        $_ed3  = $_ets2 ? date('d/m/Y', $_ets2) : null;
+        $_dl3  = $_ets2 ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', $_ets2)))->days
+                          * ((new DateTime('today') <= new DateTime(date('Y-m-d', $_ets2))) ? 1 : -1) : null;
+        $quizModalData[$_cid2] = [
+            'title'    => $_qch['title'],
+            'desc'     => (string)($_qch['description'] ?? ''),
+            'token'    => (int)$_qch['token_reward'],
+            'qcount'   => (int)($_qch['question_count'] ?? 0),
+            'ed'       => $_ed3,
+            'daysLeft' => $_dl3,
+            'url'      => BASE_URL . '/pages/challenges.php?id=' . $_cid2,
+        ];
+    }
+    ?>
+    var _quizModalData = <?= json_encode($quizModalData, JSON_UNESCAPED_UNICODE) ?>;
     </script>
+
+    <style>
+    @keyframes _mFadeIn  { from{opacity:0} to{opacity:1} }
+    @keyframes _mFadeOut { from{opacity:1} to{opacity:0} }
+    @keyframes _mCardIn {
+        0%   { opacity:0; transform:perspective(700px) scale(0.76) translateY(44px) rotateX(20deg); }
+        60%  { opacity:1; transform:perspective(700px) scale(1.03) translateY(-5px)  rotateX(-2deg); }
+        100% { opacity:1; transform:perspective(700px) scale(1)    translateY(0)     rotateX(0deg);  }
+    }
+    @keyframes _mCardOut {
+        from { opacity:1; transform:scale(1)    translateY(0);  }
+        to   { opacity:0; transform:scale(0.84) translateY(24px); }
+    }
+    .modal-overlay-in  { animation:_mFadeIn  260ms ease            forwards; }
+    .modal-overlay-out { animation:_mFadeOut 180ms ease            forwards; }
+    .modal-card-in     { animation:_mCardIn  440ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
+    .modal-card-out    { animation:_mCardOut 170ms ease-in         forwards; }
+    </style>
 
     <!-- ── Strava Detail Modal ── -->
     <div id="strava-modal"
@@ -921,7 +962,7 @@ require_once __DIR__ . '/../includes/header.php';
                 background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
                 align-items:center; justify-content:center; padding:1rem;"
          onclick="if(event.target===this)closeStravaModal()">
-        <div style="background:#0f1416; border:1px solid rgba(252,76,2,0.28); border-radius:20px;
+        <div id="strava-modal-card" style="background:#0f1416; border:1px solid rgba(252,76,2,0.28); border-radius:20px;
                     max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
                     box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(252,76,2,0.12);">
             <!-- Modal header -->
@@ -1072,16 +1113,152 @@ require_once __DIR__ . '/../includes/header.php';
         }
 
         var modal = document.getElementById('strava-modal');
+        var card  = document.getElementById('strava-modal-card');
+        modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        void card.offsetWidth; // force reflow
+        modal.classList.add('modal-overlay-in');
+        card.classList.add('modal-card-in');
     }
     function closeStravaModal() {
-        document.getElementById('strava-modal').style.display = 'none';
-        document.body.style.overflow = '';
+        var modal = document.getElementById('strava-modal');
+        if (modal.style.display === 'none') return;
+        var card  = document.getElementById('strava-modal-card');
+        modal.classList.remove('modal-overlay-in'); card.classList.remove('modal-card-in');
+        modal.classList.add('modal-overlay-out');   card.classList.add('modal-card-out');
+        setTimeout(function() {
+            modal.style.display = 'none';
+            modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+            document.body.style.overflow = '';
+        }, 180);
     }
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeStravaModal();
+        if (e.key === 'Escape') { closeStravaModal(); closeQuizModal(); }
     });
+    </script>
+
+    <!-- ── Quiz Detail Modal ── -->
+    <div id="quiz-modal"
+         style="display:none; position:fixed; inset:0; z-index:1000;
+                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
+                align-items:center; justify-content:center; padding:1rem;"
+         onclick="if(event.target===this)closeQuizModal()">
+        <div id="quiz-modal-card" style="background:#0f1416; border:1px solid rgba(218,185,55,0.25); border-radius:20px;
+                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
+                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(218,185,55,0.10);">
+            <!-- Modal header -->
+            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+                        display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <span style="font-size:0.95rem;">📝</span>
+                    <span style="font-size:0.68rem; font-weight:700; color:rgba(218,185,55,0.9);
+                                 letter-spacing:0.08em; text-transform:uppercase;">Quiz Mission</span>
+                </div>
+                <button onclick="closeQuizModal()"
+                        style="width:28px; height:28px; border-radius:50%;
+                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+                               color:#6b6e77; cursor:pointer; font-size:0.85rem;
+                               display:flex; align-items:center; justify-content:center;
+                               font-family:'Prompt',sans-serif;">✕</button>
+            </div>
+            <!-- Modal body -->
+            <div style="padding:1.4rem;">
+                <!-- Token reward -->
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                         style="width:34px; height:34px; object-fit:contain;
+                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                    <div>
+                        <p id="qm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
+                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
+                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                    </div>
+                </div>
+                <!-- Title -->
+                <h2 id="qm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
+                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <!-- Description -->
+                <p id="qm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <!-- Quiz info box -->
+                <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.18);
+                            border-radius:10px; padding:0.7rem 1rem; margin-bottom:1rem;
+                            display:flex; align-items:center; gap:0.6rem;">
+                    <svg width="15" height="15" fill="none" stroke="#dab937" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span id="qm-qcount" style="font-size:0.82rem; color:#cecdcd;"></span>
+                </div>
+                <!-- End date -->
+                <p id="qm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <!-- Warning note -->
+                <div style="display:flex; align-items:flex-start; gap:0.5rem; margin-bottom:1.25rem;
+                            padding:0.65rem 0.85rem; border-radius:8px;
+                            background:rgba(218,185,55,0.05); border:1px solid rgba(218,185,55,0.12);">
+                    <svg width="13" height="13" fill="none" stroke="#dab937" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                    </svg>
+                    <span style="font-size:0.75rem; color:rgba(218,185,55,0.65); line-height:1.5;">ตอบได้ 1 ครั้งเท่านั้น — ต้องตอบถูกทุกข้อจึงจะได้รับ Token</span>
+                </div>
+                <!-- Start button -->
+                <a id="qm-start-btn" href="#"
+                   style="display:inline-flex; align-items:center; gap:0.5rem;
+                          padding:0.65rem 1.4rem; border-radius:10px; width:100%; justify-content:center;
+                          background:linear-gradient(135deg,#dab937,#c9a830); color:#091113;
+                          font-size:0.92rem; font-weight:700;
+                          font-family:'Prompt',sans-serif; text-decoration:none;">
+                    → เริ่มทำ Quiz
+                </a>
+            </div>
+        </div>
+    </div>
+    <script>
+    function openQuizModal(cid) {
+        var d = _quizModalData[cid];
+        if (!d) { window.location = d ? d.url : '<?= BASE_URL ?>/pages/challenges.php?id=' + cid; return; }
+        document.getElementById('qm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
+        document.getElementById('qm-title').textContent = d.title;
+        var descEl = document.getElementById('qm-desc');
+        descEl.textContent = d.desc;
+        descEl.style.display = d.desc ? 'block' : 'none';
+        var qcEl = document.getElementById('qm-qcount');
+        qcEl.textContent = d.qcount > 0
+            ? d.qcount + ' คำถาม • ต้องตอบถูกทุกข้อเพื่อรับ Token'
+            : 'ไม่มีคำถาม';
+        var edEl = document.getElementById('qm-enddate');
+        if (d.ed) {
+            var txt = '📅 สิ้นสุด ' + d.ed;
+            if (d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7)
+                txt += ' · ' + (d.daysLeft === 0 ? '⚡ วันนี้!' : '⚡ เหลืออีก ' + d.daysLeft + ' วัน');
+            edEl.textContent = txt;
+            edEl.style.display = 'block';
+        } else {
+            edEl.style.display = 'none';
+        }
+        document.getElementById('qm-start-btn').href = d.url;
+        var modal = document.getElementById('quiz-modal');
+        var card  = document.getElementById('quiz-modal-card');
+        modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        void card.offsetWidth; // force reflow
+        modal.classList.add('modal-overlay-in');
+        card.classList.add('modal-card-in');
+    }
+    function closeQuizModal() {
+        var modal = document.getElementById('quiz-modal');
+        if (modal.style.display === 'none') return;
+        var card  = document.getElementById('quiz-modal-card');
+        modal.classList.remove('modal-overlay-in'); card.classList.remove('modal-card-in');
+        modal.classList.add('modal-overlay-out');   card.classList.add('modal-card-out');
+        setTimeout(function() {
+            modal.style.display = 'none';
+            modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+            document.body.style.overflow = '';
+        }, 180);
+    }
     </script>
     <div class="ch-empty-board mb-10">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
     <?php endif; ?>
