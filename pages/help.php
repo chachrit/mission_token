@@ -457,7 +457,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/>
                     </svg>
-                    HR / Admin
+                    HR
                 </button>
             </div>
         </div>
@@ -830,10 +830,7 @@ body:has(.hp-wrap) { background-color: #091113; }
             <!-- Sidebar HR -->
             <div class="hp-sidebar hidden md:block">
                 <p class="hp-sidebar-title">หัวข้อ</p>
-                <button class="hp-sidebar-link active" onclick="scrollToSection('hr-roles', this)">
-                    <span class="hp-sl-icon">👥</span> บทบาทในระบบ
-                </button>
-                <button class="hp-sidebar-link" onclick="scrollToSection('hr-challenges', this)">
+                <button class="hp-sidebar-link active" onclick="scrollToSection('hr-challenges', this)">
                     <span class="hp-sl-icon">🎯</span> จัดการภารกิจ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-submissions', this)">
@@ -856,51 +853,8 @@ body:has(.hp-wrap) { background-color: #091113; }
             <!-- Content HR -->
             <div>
 
-                <!-- บทบาท -->
-                <div class="hp-section open" id="hr-roles" data-keywords="role บทบาท admin hr it employee สิทธิ์">
-                    <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">👥</div>
-                        <span class="hp-section-title-text">บทบาทในระบบ</span>
-                        <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                        </svg>
-                    </div>
-                    <div class="hp-section-body">
-                        <table class="hp-role-table">
-                            <thead>
-                                <tr>
-                                    <th>บทบาท</th>
-                                    <th>สิทธิ์</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="hp-role-pill" style="background:rgba(218,185,55,0.12);color:#dab937;border:1px solid rgba(218,185,55,0.3);">Employee</span></td>
-                                    <td>ทำภารกิจ, แลกรางวัล, ดูประวัติ — เข้าถึงเฉพาะหน้าพนักงาน</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="hp-role-pill" style="background:rgba(79,139,152,0.12);color:#5fa8ba;border:1px solid rgba(79,139,152,0.3);">HR</span></td>
-                                    <td>สิทธิ์ Employee + อนุมัติงาน, จัดการรางวัล, จัดการพนักงาน</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="hp-role-pill" style="background:rgba(47,78,157,0.15);color:#7b9fd4;border:1px solid rgba(47,78,157,0.3);">IT</span></td>
-                                    <td>สิทธิ์เหมือน HR (สำหรับทีม IT ดูแลระบบ)</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="hp-role-pill" style="background:rgba(98,48,122,0.15);color:#b87fd4;border:1px solid rgba(98,48,122,0.3);">Admin</span></td>
-                                    <td>สิทธิ์สูงสุด — ทำได้ทุกอย่าง รวมถึงเปลี่ยนบทบาทผู้อื่น และลบบัญชี</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="hp-tip hp-tip--info">
-                            <span>💡</span>
-                            <span>HR/IT สามารถสลับระหว่าง "หน้าพนักงาน" และ "หน้าจัดการ" ได้จาก dropdown เมนูชื่อ</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- จัดการภารกิจ -->
-                <div class="hp-section" id="hr-challenges" data-keywords="challenge ภารกิจ สร้าง quiz strava photo toggle ลบ">
+                <div class="hp-section open" id="hr-challenges" data-keywords="challenge ภารกิจ สร้าง quiz strava photo toggle ลบ">
                     <div class="hp-section-header" onclick="toggleSection(this)">
                         <div class="hp-section-icon">🎯</div>
                         <span class="hp-section-title-text">จัดการภารกิจ</span>
