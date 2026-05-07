@@ -1344,6 +1344,147 @@ body:has(.ds-dashboard-wrap) {
 .ds-stat-sub     { font-size: 0.72rem; color: #6b6e77; margin: 0; }
 .ds-stat-sub--green { color: #518e5c; font-weight: 500; }
 
+/* ── Strava Running Card ── */
+.ds-strava-card {
+    background: linear-gradient(135deg, rgba(252,76,2,0.07) 0%, rgba(10,18,20,0.55) 100%);
+    border: 1px solid rgba(252,76,2,0.22);
+    border-radius: 20px;
+    padding: 1.25rem 1.5rem 1rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+.ds-strava-card::before {
+    content: '';
+    position: absolute; top: -50px; right: -50px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(252,76,2,0.08) 0%, transparent 70%);
+    pointer-events: none;
+}
+.ds-strava-topbar {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap; margin-bottom: 0.5rem;
+}
+.ds-strava-brand       { display: flex; align-items: center; gap: 0.75rem; }
+.ds-strava-brand-icon  {
+    width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+    background: rgba(252,76,2,0.12); border: 1px solid rgba(252,76,2,0.28);
+    display: flex; align-items: center; justify-content: center; color: #FC4C02;
+}
+.ds-strava-brand-eyebrow { font-size: 0.56rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em; color: #FC4C02; margin: 0 0 0.1rem; }
+.ds-strava-brand-title   { font-size: 0.92rem; font-weight: 700; color: #eeebe1; margin: 0; }
+.ds-strava-topbar-right  { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+.ds-strava-connected-badge {
+    font-size: 0.61rem; font-weight: 700; padding: 0.25rem 0.65rem;
+    border-radius: 999px; background: rgba(81,142,92,0.1);
+    border: 1px solid rgba(81,142,92,0.28); color: #518e5c;
+    display: flex; align-items: center; gap: 0.3rem;
+}
+.ds-strava-mission-badge {
+    font-size: 0.61rem; font-weight: 700; padding: 0.25rem 0.65rem;
+    border-radius: 999px; background: rgba(218,185,55,0.1);
+    border: 1px solid rgba(218,185,55,0.28); color: #dab937;
+}
+.ds-strava-manage-link {
+    font-size: 0.65rem; font-weight: 600; color: #6b6e77;
+    text-decoration: none; text-transform: uppercase; letter-spacing: 0.08em; transition: color 0.15s;
+}
+.ds-strava-manage-link:hover { color: #FC4C02; }
+.ds-strava-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #28c840; }
+/* Road visualization */
+.ds-strava-track-wrap { padding: 0.5rem 0 0.25rem; }
+.ds-strava-track-header {
+    display: flex; align-items: baseline;
+    justify-content: space-between; margin-bottom: 0.65rem;
+}
+.ds-strava-track-km   { font-size: 1.4rem; font-weight: 800; color: #FC4C02; letter-spacing: -0.02em; line-height: 1; }
+.ds-strava-track-goal { font-size: 0.62rem; font-weight: 600; color: #6b6e77; text-transform: uppercase; letter-spacing: 0.1em; }
+.ds-strava-track-bar-wrap {
+    position: relative; height: 36px;
+    display: flex; align-items: center;
+}
+.ds-strava-track-bg {
+    position: absolute; left: 0; right: 0; height: 8px;
+    background: rgba(255,255,255,0.07); border-radius: 999px;
+}
+.ds-strava-track-fill {
+    position: absolute; left: 0; height: 8px; width: 0;
+    background: linear-gradient(90deg, #FC4C02, #ff9a00);
+    border-radius: 999px;
+    box-shadow: 0 0 12px rgba(252,76,2,0.45);
+    transition: width 1.6s cubic-bezier(0.22,1,0.36,1);
+}
+.ds-strava-runner {
+    position: absolute; left: 0; top: 50%;
+    transform: translateY(-70%);
+    font-size: 1.4rem; line-height: 1;
+    opacity: 0;
+    transition: left 1.6s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
+    pointer-events: none; user-select: none;
+    filter: drop-shadow(0 2px 6px rgba(252,76,2,0.5));
+}
+.ds-strava-finish {
+    position: absolute; right: 0; top: 0; bottom: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+}
+.ds-strava-finish-flag { font-size: 1.2rem; line-height: 1; }
+.ds-strava-finish-line {
+    width: 3px; height: 20px;
+    background: repeating-linear-gradient(
+        180deg,
+        #eeebe1 0px, #eeebe1 4px,
+        rgba(255,255,255,0) 4px, rgba(255,255,255,0) 8px
+    );
+    border-radius: 2px; opacity: 0.5;
+}
+.ds-strava-track-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.6rem; color: rgba(107,110,119,0.6);
+    font-weight: 600; letter-spacing: 0.05em;
+    margin-top: 0.3rem; padding: 0 2px;
+}
+.ds-strava-goal-badge, .ds-strava-pct-badge {
+    display: inline-block; margin-left: 0.35rem;
+    font-size: 0.65rem; font-weight: 700;
+    padding: 0.15rem 0.5rem; border-radius: 999px;
+}
+.ds-strava-goal-badge { background: rgba(218,185,55,0.15); color: #dab937; border: 1px solid rgba(218,185,55,0.3); }
+.ds-strava-pct-badge  { background: rgba(252,76,2,0.12);   color: #FC4C02; border: 1px solid rgba(252,76,2,0.25); }
+/* Stats row */
+.ds-strava-stats-row {
+    display: flex; align-items: center;
+    padding-top: 0.7rem; border-top: 1px solid rgba(252,76,2,0.1);
+    flex-wrap: wrap;
+}
+.ds-strava-stat2     { flex: 1; min-width: 72px; text-align: center; padding: 0.3rem 0.4rem; }
+.ds-strava-stat2-val { font-size: 1rem; font-weight: 800; color: #eeebe1; display: block; }
+.ds-strava-stat2-lbl { font-size: 0.58rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #6b6e77; margin-top: 0.1rem; display: block; line-height: 1.35; }
+.ds-strava-stat2-div { width: 1px; height: 34px; background: rgba(252,76,2,0.12); flex-shrink: 0; }
+/* Disconnected */
+.ds-strava-disconnected {
+    background: rgba(255,255,255,0.02); border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 18px; padding: 1rem 1.4rem;
+    display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 2rem;
+}
+.ds-strava-dis-icon  {
+    width: 46px; height: 46px; border-radius: 13px; flex-shrink: 0;
+    background: rgba(252,76,2,0.07); border: 1px solid rgba(252,76,2,0.15);
+    display: flex; align-items: center; justify-content: center; opacity: 0.6;
+}
+.ds-strava-dis-body  { flex: 1; min-width: 0; }
+.ds-strava-dis-label { font-size: 0.58rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.18em; color: #6b6e77; margin: 0 0 0.15rem; }
+.ds-strava-dis-title { font-size: 0.9rem; font-weight: 600; color: #eeebe1; margin: 0; }
+.ds-strava-action {
+    display: inline-flex; align-items: center; gap: 0.4rem; flex-shrink: 0;
+    padding: 0.5rem 1.1rem; border-radius: 10px; font-size: 0.76rem; font-weight: 700;
+    text-decoration: none; transition: all 0.18s; white-space: nowrap;
+}
+.ds-strava-action--connect { background: #FC4C02; color: #fff; box-shadow: 0 4px 16px rgba(252,76,2,0.3); }
+.ds-strava-action--connect:hover { background: #d43d00; transform: translateY(-1px); color: #fff; }
+
 /* ── Section headers ── */
 .ds-section-header {
     display: flex; align-items: center;

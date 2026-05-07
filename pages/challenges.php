@@ -693,7 +693,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="flex flex-col items-end gap-3 flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-7 h-7">
-                    <p class="text-xl font-bold text-j-gold">
+                    <p class="text-xl font-bold" style="color:#dab937;">
                         <?= $_done ?><span class="font-normal text-base" style="color:#9ca3a8;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
                     </p>
                 </div>

@@ -454,33 +454,43 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <?php if ($isEdit): ?>
-                    <form method="POST"
-                          action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>"
-                          onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e(addslashes($f['title'])) ?>&quot;?\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
-                        <?= csrfField() ?>
-                        <input type="hidden" name="action" value="delete_challenge">
-                        <input type="hidden" name="challenge_id" value="<?= $challengeId ?>">
-                        <button type="submit"
-                                style="display:inline-flex; align-items:center; gap:0.4rem;
-                                       padding:0.50rem 1rem; font-size:0.78rem; font-weight:600;
-                                       border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.22);
-                                       color:#d2592a; transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.18)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.08)'">
-                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
-                                 stroke="currentColor" stroke-width="2"
-                                 stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                            </svg>
-                            ลบภารกิจนี้
-                        </button>
-                    </form>
+                    <button type="button" onclick="confirmDeleteChallenge()"
+                            style="display:inline-flex; align-items:center; gap:0.4rem;
+                                   padding:0.50rem 1rem; font-size:0.78rem; font-weight:600;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.22);
+                                   color:#d2592a; transition:background 0.15s;"
+                            onmouseover="this.style.background='rgba(210,89,42,0.18)'"
+                            onmouseout="this.style.background='rgba(210,89,42,0.08)'">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                        ลบภารกิจนี้
+                    </button>
                     <?php endif; ?>
                 </div>
 
             </div><!-- /ace-card -->
         </form>
+
+        <?php if ($isEdit): ?>
+        <!-- Delete challenge form — placed OUTSIDE the save form to avoid nested-form bug -->
+        <form id="delete-challenge-form" method="POST"
+              action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>">
+            <?= csrfField() ?>
+            <input type="hidden" name="action" value="delete_challenge">
+            <input type="hidden" name="challenge_id" value="<?= $challengeId ?>">
+        </form>
+        <script>
+        function confirmDeleteChallenge() {
+            if (confirm('ยืนยันลบภารกิจ "<?= e(addslashes($f['title'])) ?>"?\nการกระทำนี้ไม่สามารถย้อนกลับได้')) {
+                document.getElementById('delete-challenge-form').submit();
+            }
+        }
+        </script>
+        <?php endif; ?>
 
         <!-- ── QUIZ QUESTIONS ──────────────────────────────── -->
         <?php if ($isEdit && $f['type'] === 'quiz'): ?>

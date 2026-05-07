@@ -74,6 +74,61 @@ foreach ($activities as $a) {
 }
 arsort($countByType);
 
+// ── Yearly running stats — 500 km goal (session-cached 30 min) ──
+$yearlyKm        = 0.0;
+$yearlyRunCount  = 0;
+$yearlyLongest   = 0.0;
+$yearlyAvgKm     = 0.0;
+$yearGoalKm      = 500;
+$yearProgressPct = 0;
+$yearStatsLoaded = false;
+$yearlyMissionsDone = 0;
+
+if ($connected) {
+    $cacheKey = 'strava_ystats_' . $employeeId;
+    $cached   = $_SESSION[$cacheKey] ?? null;
+    if ($cached && isset($cached['ts']) && (time() - (int)$cached['ts']) < 1800) {
+        $yearlyKm       = (float)$cached['ykm'];
+        $yearlyRunCount = (int)$cached['rcnt'];
+        $yearlyLongest  = (float)$cached['lkm'];
+        $yearStatsLoaded = true;
+    } else {
+        try {
+            $yearStart = mktime(0, 0, 0, 1, 1, (int)date('Y'));
+            $yearActs  = fetchStravaActivities($employeeId, $yearStart, time());
+            foreach ($yearActs as $act) {
+                $t = strtolower($act['sport_type'] ?? $act['type'] ?? '');
+                if (!in_array($t, ['run', 'virtualrun', 'trailrun'], true)) continue;
+                $kmt = ($act['distance'] ?? 0) / 1000;
+                $yearlyKm += $kmt;
+                $yearlyRunCount++;
+                if ($kmt > $yearlyLongest) $yearlyLongest = $kmt;
+            }
+            $yearlyKm      = round($yearlyKm, 1);
+            $yearlyLongest = round($yearlyLongest, 1);
+            $_SESSION[$cacheKey] = ['ts' => time(), 'ykm' => $yearlyKm, 'rcnt' => $yearlyRunCount, 'lkm' => $yearlyLongest];
+            $yearStatsLoaded = true;
+        } catch (Throwable $ignored) {}
+    }
+    $yearlyAvgKm     = $yearlyRunCount > 0 ? round($yearlyKm / $yearlyRunCount, 1) : 0;
+    $yearProgressPct = $yearGoalKm > 0 ? min(100, round($yearlyKm / $yearGoalKm * 100, 1)) : 0;
+
+    // Strava missions done
+    try {
+        $pdo2 = getDB();
+        $scStmt = $pdo2->prepare("
+            SELECT COUNT(*) AS done_count
+            FROM   challenge_submissions cs
+            JOIN   challenges c ON c.challenge_id = cs.challenge_id
+            WHERE  cs.employee_id = ?
+              AND  c.type = 'strava'
+              AND  cs.status IN ('approved', 'auto_approved')
+        ");
+        $scStmt->execute([$employeeId]);
+        $yearlyMissionsDone = (int)($scStmt->fetch()['done_count'] ?? 0);
+    } catch (Throwable $ignored) {}
+}
+
 // ── Strava challenge submissions (this employee) ──────────────
 $stravaSubmissions = [];
 try {
@@ -272,6 +327,111 @@ body:has(.sv-wrap) { background: #091113; }
             ⚠ ไม่สามารถดึงข้อมูลจาก Strava ได้: <?= e($fetchError) ?>
         </div>
         <?php endif; ?>
+
+        <!-- ── YEARLY RUNNING TRACK ── -->
+        <?php
+            $thaiYear = (int)date('Y') + 543;
+            // Count active strava missions (not yet done)
+            $stravaActiveCount = 0;
+            try {
+                $acStmt = getDB()->prepare("
+                    SELECT COUNT(*) AS cnt
+                    FROM   challenges c
+                    WHERE  c.type = 'strava' AND c.is_active = 1
+                      AND  (c.end_date IS NULL OR c.end_date >= GETDATE())
+                      AND  c.challenge_id NOT IN (
+                          SELECT challenge_id FROM challenge_submissions
+                          WHERE  employee_id = ? AND status IN ('approved','auto_approved')
+                      )
+                ");
+                $acStmt->execute([$employeeId]);
+                $stravaActiveCount = (int)($acStmt->fetch()['cnt'] ?? 0);
+            } catch (Throwable $ignored) {}
+        ?>
+        <div class="ds-strava-card" style="margin-bottom:1.5rem;">
+            <div class="ds-strava-topbar">
+                <div class="ds-strava-brand">
+                    <div class="ds-strava-brand-icon">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="ds-strava-brand-eyebrow">STRAVA · RUNNING LOG</p>
+                        <p class="ds-strava-brand-title">เส้นทางแห่งปี <?= $thaiYear ?></p>
+                    </div>
+                </div>
+                <div class="ds-strava-topbar-right">
+                    <?php if ($stravaActiveCount > 0): ?>
+                    <span class="ds-strava-mission-badge"><?= $stravaActiveCount ?> ภารกิจรออยู่</span>
+                    <?php endif; ?>
+                    <span class="ds-strava-connected-badge"><span class="ds-strava-dot"></span>&nbsp;เชื่อมต่อแล้ว</span>
+                </div>
+            </div>
+
+            <div class="ds-strava-track-wrap">
+                <div class="ds-strava-track-header">
+                    <span class="ds-strava-track-km">
+                        <?php if ($yearStatsLoaded): ?>
+                            <?= number_format($yearlyKm, 1) ?> <span style="font-size:0.8rem;font-weight:600;color:#6b6e77;">/ <?= $yearGoalKm ?> km</span>
+                            <?php if ($yearProgressPct >= 100): ?>
+                                <span class="ds-strava-goal-badge">🎯 สำเร็จแล้ว!</span>
+                            <?php else: ?>
+                                <span class="ds-strava-pct-badge"><?= $yearProgressPct ?>%</span>
+                            <?php endif; ?>
+                        <?php else: ?>
+                            <span style="font-size:0.8rem;color:#6b6e77;">กำลังโหลด...</span>
+                        <?php endif; ?>
+                    </span>
+                    <span class="ds-strava-track-goal">เป้าหมาย <?= $yearGoalKm ?> กม./ปี</span>
+                </div>
+                <div class="ds-strava-track-bar-wrap">
+                    <div class="ds-strava-track-bg"></div>
+                    <div class="ds-strava-track-fill" id="ds-track-fill"
+                         data-progress="<?= $yearProgressPct ?>"></div>
+                    <div class="ds-strava-runner" id="ds-runner"
+                         data-progress="<?= $yearProgressPct ?>">🏃</div>
+                    <div class="ds-strava-finish">
+                        <div class="ds-strava-finish-flag">🏁</div>
+                        <div class="ds-strava-finish-line"></div>
+                    </div>
+                </div>
+                <div class="ds-strava-track-labels">
+                    <span>0 km</span>
+                    <span>125 km</span>
+                    <span>250 km</span>
+                    <span>375 km</span>
+                    <span><?= $yearGoalKm ?> km</span>
+                </div>
+            </div>
+
+            <div class="ds-strava-stats-row">
+                <div class="ds-strava-stat2">
+                    <span class="ds-strava-stat2-val" style="color:#FC4C02;"><?= $yearStatsLoaded ? number_format($yearlyKm, 1) : '—' ?></span>
+                    <span class="ds-strava-stat2-lbl">กม. รวมปีนี้</span>
+                </div>
+                <div class="ds-strava-stat2-div"></div>
+                <div class="ds-strava-stat2">
+                    <span class="ds-strava-stat2-val"><?= $yearStatsLoaded ? $yearlyRunCount : '—' ?></span>
+                    <span class="ds-strava-stat2-lbl">ครั้งที่วิ่ง</span>
+                </div>
+                <div class="ds-strava-stat2-div"></div>
+                <div class="ds-strava-stat2">
+                    <span class="ds-strava-stat2-val"><?= $yearStatsLoaded && $yearlyLongest > 0 ? number_format($yearlyLongest, 1) : '—' ?></span>
+                    <span class="ds-strava-stat2-lbl">ยาวที่สุด (กม.)</span>
+                </div>
+                <div class="ds-strava-stat2-div"></div>
+                <div class="ds-strava-stat2">
+                    <span class="ds-strava-stat2-val"><?= $yearStatsLoaded && $yearlyAvgKm > 0 ? number_format($yearlyAvgKm, 1) : '—' ?></span>
+                    <span class="ds-strava-stat2-lbl">เฉลี่ย/ครั้ง (กม.)</span>
+                </div>
+                <div class="ds-strava-stat2-div"></div>
+                <div class="ds-strava-stat2">
+                    <span class="ds-strava-stat2-val"><?= $yearlyMissionsDone ?></span>
+                    <span class="ds-strava-stat2-lbl">ภารกิจ Strava<br>สำเร็จ</span>
+                </div>
+            </div>
+        </div><!-- /ds-strava-card -->
 
         <!-- Period tabs -->
         <div class="sv-tabs">
@@ -513,5 +673,23 @@ body:has(.sv-wrap) { background: #091113; }
 
     </div>
 </div>
+
+<script>
+(function () {
+    var trackFill = document.getElementById('ds-track-fill');
+    var runner    = document.getElementById('ds-runner');
+    if (!trackFill || !runner) return;
+    var pct = parseFloat(trackFill.dataset.progress || '0');
+    pct = Math.min(pct, 100);
+    requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+            trackFill.style.width = pct + '%';
+            var runnerPct = Math.max(0, Math.min(pct, 96));
+            runner.style.left    = 'calc(' + runnerPct + '% - 12px)';
+            runner.style.opacity = '1';
+        });
+    });
+})();
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
