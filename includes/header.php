@@ -270,12 +270,9 @@ $flash        = $flash ?? getFlash();
                 <?php
                 // ตรวจว่าอยู่ใน /hr/ zone หรือเปล่า
                 $isAdminPage = (strpos($_SERVER['PHP_SELF'] ?? '', '/hr/') !== false);
-                // HR/IT: logo link ตาม zone ปัจจุบัน — admin: logo home
-                $logoHref = BASE_URL . '/index.php';
                 ?>
                 <!-- Logo -->
-                <a href="<?php echo $logoHref; ?>"
-                   class="nav-logo-link flex items-center gap-3 flex-shrink-0">
+                <div class="nav-logo-link flex items-center gap-3 flex-shrink-0">
                     <img src="<?php echo BASE_URL; ?>/assets/images/logo.png"
                          alt="JOURNAL"
                          class="nav-logo h-20 w-auto">
@@ -286,7 +283,7 @@ $flash        = $flash ?? getFlash();
                     <?php elseif ($isIt): ?>
                     <span class="badge text-xs" style="background:#2f4e9d; color:#eeebe1;">IT</span>
                     <?php endif; ?>
-                </a>
+                </div>
 
                 <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center">
