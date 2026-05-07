@@ -83,28 +83,45 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="ch-aurora-blob ch-aurora-blob--1" aria-hidden="true"></div>
     <div class="ch-aurora-blob ch-aurora-blob--2" aria-hidden="true"></div>
 
-    <div style="position:relative; z-index:1; max-width:860px; margin:0 auto;
+<div style="position:relative; z-index:1; max-width:1100px; margin:0 auto;
                 padding:2rem 1.25rem 4rem;">
 
         <!-- Page header -->
-        <div style="margin-bottom:2rem;">
-            <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:0.3rem;">
-                <a href="<?= BASE_URL ?>/pages/dashboard.php"
-                   style="color:#6b6e77; font-size:0.78rem; text-decoration:none;
-                          display:inline-flex; align-items:center; gap:0.3rem;
-                          transition:color 0.15s;"
-                   onmouseover="this.style.color='#dab937'"
-                   onmouseout="this.style.color='#3a3e43'">
-                    ← กลับหน้าแรก
-                </a>
+        <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <a href="<?= BASE_URL ?>/pages/dashboard.php"
+               style="color:#6b6e77; font-size:0.78rem; text-decoration:none;
+                      display:inline-flex; align-items:center; gap:0.3rem;
+                      transition:color 0.15s;"
+               onmouseover="this.style.color='#dab937'"
+               onmouseout="this.style.color='#6b6e77'">&#8592; หน้าแรก</a>
+            <div style="margin-top:0.85rem; display:flex; align-items:flex-end;
+                        justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                <div>
+                    <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.3rem;
+                               letter-spacing:-0.02em;">
+                        &#128196; ประวัติ
+                    </h1>
+                    <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                        บันทึกการรับ Token, ใช้จ่าย และการแลกรางวัลทั้งหมด
+                    </p>
+                </div>
+                <!-- total summary pill -->
+                <div style="display:flex; align-items:center; gap:0.5rem; flex-shrink:0;
+                            background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.18);
+                            border-radius:12px; padding:0.55rem 1rem;">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" width="18" height="18"
+                         style="object-fit:contain; filter:drop-shadow(0 0 6px rgba(218,185,55,0.5));" alt="">
+                    <div>
+                        <p style="font-size:0.58rem; color:#6b6e77; text-transform:uppercase;
+                                   letter-spacing:0.08em; margin:0 0 0.05rem;">Token คงเหลือ</p>
+                        <p style="font-size:1.1rem; font-weight:800; color:#f8e769; margin:0;
+                                   letter-spacing:-0.01em;"><?= formatTokens($wallet['balance']) ?></p>
+                    </div>
+                </div>
             </div>
-            <h1 style="font-size:1.55rem; font-weight:800; color:#eeebe1; margin:0 0 0.3rem;
-                       letter-spacing:-0.01em;">
-                ประวัติ
-            </h1>
-            <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
-                บันทึกการรับ Token, ใช้จ่าย และการแลกรางวัลทั้งหมด
-            </p>
+            <!-- gold accent line -->
+            <div style="width:48px; height:3px; background:linear-gradient(90deg,#dab937,transparent);
+                        border-radius:99px; margin-top:1rem;"></div>
         </div>
 
         <!-- Wallet summary bar -->
@@ -112,22 +129,26 @@ require_once __DIR__ . '/../includes/header.php';
                     margin-bottom:2.25rem;">
             <?php
             $walletStats = [
-                ['label' => 'Token คงเหลือ', 'value' => formatTokens($wallet['balance']),      'color' => '#f8e769'],
-                ['label' => 'ได้รับทั้งหมด', 'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c'],
-                ['label' => 'ใช้ไปทั้งหมด',  'value' => formatTokens($wallet['total_spent']),  'color' => '#d2592a'],
+                ['label' => 'รับทั้งหมด',    'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c',  'border' => 'rgba(81,142,92,0.55)',  'icon' => '↑', 'sub' => '+'],
+                ['label' => 'ใช้ไปทั้งหมด',  'value' => formatTokens($wallet['total_spent']),  'color' => '#d2592a',  'border' => 'rgba(210,89,42,0.50)',  'icon' => '↓', 'sub' => '−'],
+                ['label' => 'รายการทั้งหมด', 'value' => (string)(count($txAll)),                'color' => '#4f8b98',  'border' => 'rgba(79,139,152,0.50)', 'icon' => '◊', 'sub' => ''],
             ];
             foreach ($walletStats as $ws):
             ?>
-            <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                        border-radius:14px; padding:1rem 1.15rem; backdrop-filter:blur(8px);
-                        text-align:center;">
-                <p style="font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.35rem;">
-                    <?= $ws['label'] ?>
-                </p>
-                <p style="font-size:1.3rem; font-weight:800; color:<?= $ws['color'] ?>;
+            <div style="background:rgba(255,255,255,0.025);
+                        border:1px solid rgba(255,255,255,0.08);
+                        border-left:3px solid <?= $ws['border'] ?>;
+                        border-radius:14px; padding:1.1rem 1.25rem; backdrop-filter:blur(8px);">
+                <div style="display:flex; align-items:center; gap:0.45rem; margin-bottom:0.45rem;">
+                    <span style="font-size:0.95rem; color:<?= $ws['color'] ?>; line-height:1; opacity:0.7;"><?= $ws['icon'] ?></span>
+                    <p style="font-size:0.60rem; font-weight:700; letter-spacing:0.10em;
+                               text-transform:uppercase; color:#6b6e77; margin:0;">
+                        <?= $ws['label'] ?>
+                    </p>
+                </div>
+                <p style="font-size:1.35rem; font-weight:800; color:<?= $ws['color'] ?>;
                            margin:0; letter-spacing:-0.02em;">
-                    <?= $ws['value'] ?>
+                    <?= $ws['sub'] ?><?= $ws['value'] ?>
                 </p>
             </div>
             <?php endforeach; ?>
@@ -173,6 +194,18 @@ require_once __DIR__ . '/../includes/header.php';
             <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติ Token</p>
         </div>
         <?php else: ?>
+        <!-- Token type filter pills -->
+        <div style="display:flex; gap:0.4rem; margin-bottom:0.85rem; flex-wrap:wrap; align-items:center;">
+            <button class="hy-tab hy-tab--active hy-tx-filter-btn" data-filter="all" onclick="filterTokens('all')">
+                ทั้งหมด <span class="hy-tab-badge" id="hy-filter-count"><?= count($txAll) ?></span>
+            </button>
+            <button class="hy-tab hy-tx-filter-btn" data-filter="earn" onclick="filterTokens('earn')">
+                <span style="color:#518e5c; font-weight:800;">+</span> รับ Token
+            </button>
+            <button class="hy-tab hy-tx-filter-btn" data-filter="spend" onclick="filterTokens('spend')">
+                <span style="color:#d2592a; font-weight:800;">&minus;</span> ใช้ Token
+            </button>
+        </div>
         <div class="hy-table-wrap">
             <div class="hy-table-head" style="grid-template-columns:1fr auto auto;">
                 <span>รายการ</span>
@@ -185,8 +218,10 @@ require_once __DIR__ . '/../includes/header.php';
                 $amtDisp = ($isEarn ? '+' : '') . number_format($amt);
                 $amtClr  = $isEarn ? '#518e5c' : '#d2592a';
             ?>
-            <div class="hy-tx-row" style="display:grid; grid-template-columns:1fr auto auto;
-                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
+            <div class="hy-tx-row" data-dir="<?= $isEarn ? 'earn' : 'spend' ?>"
+                 style="display:grid; grid-template-columns:1fr auto auto;
+                        gap:1rem; padding:0.75rem 1.25rem; align-items:center;
+                        border-left:3px solid <?= $isEarn ? 'rgba(81,142,92,0.40)' : 'rgba(210,89,42,0.35)' ?>;">
                 <div>
                     <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
                         <?= e(txTypeLabel($tx['tx_type'])) ?>
@@ -475,6 +510,22 @@ function switchTab(tab) {
     ALL_PANELS.forEach(p => {
         document.getElementById('panel-' + p).style.display = p === tab ? '' : 'none';
         document.getElementById('tab-'   + p).classList.toggle('hy-tab--active', p === tab);
+    });
+}
+
+/* ── Token filter ── */
+function filterTokens(dir) {
+    var rows = document.querySelectorAll('.hy-tx-row[data-dir]');
+    var count = 0;
+    rows.forEach(function(row) {
+        var show = (dir === 'all' || row.dataset.dir === dir);
+        row.style.display = show ? '' : 'none';
+        if (show) count++;
+    });
+    var cEl = document.getElementById('hy-filter-count');
+    if (cEl) cEl.textContent = count;
+    document.querySelectorAll('.hy-tx-filter-btn').forEach(function(b) {
+        b.classList.toggle('hy-tab--active', b.dataset.filter === dir);
     });
 }
 

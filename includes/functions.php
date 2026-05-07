@@ -445,8 +445,10 @@ function txTypeLabel(string $txType): string
         'quiz_reward'  => 'ทำ Quiz สำเร็จ',
         'photo_reward' => 'ส่งรูปภาพ (อนุมัติแล้ว)',
         'admin_adjust' => 'ปรับโดย Admin',
-        'bonus'        => 'โบนัส',
-        default        => $txType,
+        'bonus'         => 'โบนัส',
+        'redemption'    => 'แลกรางวัล',
+        'strava_reward' => 'Strava สำเร็จ',
+        default         => $txType,
     };
 }
 
