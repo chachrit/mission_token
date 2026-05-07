@@ -1575,6 +1575,47 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
 .ch-notify-bar--error { background: rgba(210,89,42,0.13); border: 1px solid rgba(210,89,42,0.35); }
 .ch-notify-bar--info  { background: rgba(79,139,152,0.13); border: 1px solid rgba(79,139,152,0.35); }
 
+/* ── Strava Loading Overlay ── */
+.ch-strava-loading-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(9,17,19,0.88);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+}
+.ch-strava-loading-overlay.is-active {
+    display: flex;
+    animation: ch-overlay-in 0.25s ease;
+}
+.ch-strava-spinner {
+    width: 52px; height: 52px;
+    border: 3px solid rgba(252,76,2,0.18);
+    border-top-color: #FC4C02;
+    border-radius: 50%;
+    animation: ch-spin 0.85s linear infinite;
+}
+@keyframes ch-spin { to { transform: rotate(360deg); } }
+.ch-strava-loading-logo {
+    animation: ch-strava-pulse 1.6s ease-in-out infinite;
+}
+@keyframes ch-strava-pulse {
+    0%,100% { opacity: 0.9; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.9); }
+}
+.ch-strava-loading-title {
+    font-size: 1rem; font-weight: 700; color: #eeebe1; margin: 0 0 0.3rem;
+}
+.ch-strava-loading-sub {
+    font-size: 0.78rem; color: #6b6e77; margin: 0;
+    transition: opacity 0.4s;
+}
+
 /* ── Flash Modal (centered overlay, dismiss on button click) ── */
 .ch-flash-overlay {
     position: fixed;

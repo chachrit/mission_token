@@ -420,6 +420,17 @@ $flash        = $flash ?? getFlash();
                                 Strava Dashboard
                             </a>
                             <?php endif; ?>
+                            <a href="<?php echo BASE_URL; ?>/pages/help.php"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
+                               style="color:#9ca3af; border-color:#3a3e43;"
+                               onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
+                               onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                คู่มือการใช้งาน
+                            </a>
                             <a href="<?php echo BASE_URL; ?>/logout.php"
                                class="flex items-center gap-2 px-4 py-3 text-sm transition-colors"
                                style="color:#9ca3af;"

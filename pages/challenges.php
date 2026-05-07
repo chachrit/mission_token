@@ -404,6 +404,37 @@ require_once __DIR__ . '/../includes/header.php';
     </script>
     <?php endif; ?>
 
+    <!-- Strava loading overlay -->
+    <div id="strava-loading-overlay" class="ch-strava-loading-overlay" role="status" aria-live="polite">
+        <svg class="ch-strava-loading-logo" viewBox="0 0 24 24" width="44" height="44" fill="#FC4C02">
+            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+        </svg>
+        <div class="ch-strava-spinner"></div>
+        <div style="text-align:center;">
+            <p class="ch-strava-loading-title">กำลังตรวจสอบกิจกรรม Strava</p>
+            <p class="ch-strava-loading-sub" id="strava-loading-sub">กำลังดึงข้อมูลกิจกรรม อาจใช้เวลา 15–30 วินาที...</p>
+        </div>
+    </div>
+    <script>
+    function submitStravaForm(formId, btn) {
+        var f = document.getElementById(formId);
+        if (!f) return;
+        if (btn) btn.disabled = true;
+        var overlay = document.getElementById('strava-loading-overlay');
+        var sub     = document.getElementById('strava-loading-sub');
+        if (overlay) overlay.classList.add('is-active');
+        var msgs = [
+            [8000,  'กำลังค้นหากิจกรรมที่ตรงเงื่อนไข...'],
+            [20000, 'ใช้เวลานานกว่าปกติ Strava API อาจช้า กรุณารอสักครู่...'],
+            [40000, 'เกือบเสร็จแล้ว กรุณาอย่าปิดหน้านี้...'],
+        ];
+        msgs.forEach(function(m) {
+            setTimeout(function() { if (sub) sub.textContent = m[1]; }, m[0]);
+        });
+        f.submit();
+    }
+    </script>
+
     <?php if ($dataError): ?>
     <div class="ch-error-flash">
         <?= e($dataError) ?>
@@ -872,7 +903,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <input type="hidden" name="challenge_id" value="<?= $cid ?>">
                                 <button type="button" class="ch-btn-start"
                                         style="background:rgba(252,76,2,0.7);display:inline-flex;align-items:center;gap:6px;"
-                                        onclick="var f=document.getElementById('strava-retry-form-<?= $cid ?>');if(f){this.disabled=true;this.textContent='กำลังตรวจสอบ...';f.submit();}">
+                                        onclick="submitStravaForm('strava-retry-form-<?= $cid ?>',this)">
                                     &#127939; ตรวจสอบอีกครั้ง
                                 </button>
                             </form>
@@ -884,7 +915,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <input type="hidden" name="challenge_id" value="<?= $cid ?>">
                                 <button type="button" class="ch-btn-start"
                                         style="background:rgba(252,76,2,0.75);display:inline-flex;align-items:center;gap:6px;"
-                                        onclick="var f=document.getElementById('strava-form-<?= $cid ?>');if(f){this.disabled=true;this.textContent='กำลังตรวจสอบ...';f.submit();}">
+                                        onclick="submitStravaForm('strava-form-<?= $cid ?>',this)">
                                     &#127939; ตรวจสอบกิจกรรม Strava
                                 </button>
                             </form>
