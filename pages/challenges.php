@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * pages/challenges.php
  * List active challenges + handle quiz/photo submission
@@ -371,37 +371,6 @@ require_once __DIR__ . '/../includes/header.php';
     })();
     </script>
     <?php elseif ($flash): ?>
-    <?php endif; ?>
-    <!-- Flash modal (centered overlay, close on button) -->
-    <?php if ($flash && $flash['type'] !== 'success'): ?>
-    <?php $isErr = $flash['type'] === 'error'; ?>
-    <div id="ch-flash-overlay" class="ch-flash-overlay" onclick="if(event.target===this)closeFlash()">
-        <div class="ch-flash-modal ch-flash-modal--<?= $isErr ? 'error' : 'info' ?>">
-            <div class="ch-flash-modal-icon">
-                <?php if ($isErr): ?>
-                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                </svg>
-                <?php else: ?>
-                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                <?php endif; ?>
-            </div>
-            <p class="ch-flash-modal-title"><?= $isErr ? 'ไม่ผ่านเงื่อนไข' : 'แจ้งเตือน' ?></p>
-            <p class="ch-flash-modal-msg"><?= e($flash['message']) ?></p>
-            <button class="ch-flash-modal-btn" onclick="closeFlash()">รับทราบ</button>
-        </div>
-    </div>
-    <script>
-    function closeFlash() {
-        var el = document.getElementById('ch-flash-overlay');
-        if (el) { el.style.opacity='0'; setTimeout(function(){el.remove();},200); }
-    }
-    document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeFlash(); });
-    </script>
     <?php endif; ?>
 
     <!-- Strava loading overlay -->
@@ -801,6 +770,8 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>"
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
                      onclick="window.location='<?= BASE_URL ?>/pages/challenges.php?id=<?= $cid ?>'" style="cursor:pointer;"
+                     <?php elseif ($ch['type'] === 'strava'): ?>
+                     onclick="openStravaModal(<?= $cid ?>)" style="cursor:pointer;"
                      <?php endif; ?>>
                     <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"
                          <?php if ($ch['type'] === 'strava'): ?>style="background:linear-gradient(90deg,#FC4C02,#e04400);"<?php endif; ?>></div>
@@ -816,6 +787,8 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php endif; ?>
                             <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
                             <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อเริ่ม →</span>
+                            <?php elseif ($ch['type'] === 'strava'): ?>
+                            <span style="font-size:0.63rem;color:rgba(252,76,2,0.55);font-weight:600;">กดการ์ดเพื่อดูรายละเอียด →</span>
                             <?php endif; ?>
                         </div>
 
@@ -889,36 +862,11 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <?php elseif ($ch['type'] === 'strava'): ?>
                             <?php if (!$stravaConnected): ?>
-                            <p style="font-size:0.73rem;color:#d2592a;margin:0 0 0.5rem;">⚠️ ยังไม่ได้เชื่อมต่อ Strava</p>
-                            <a href="<?= BASE_URL ?>/pages/strava_connect.php"
-                               class="ch-btn-start" style="background:rgba(252,76,2,0.75);text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
-                               🏃 เชื่อมต่อ Strava
-                            </a>
+                            <p style="font-size:0.73rem;color:#d2592a;margin:0;">⚠️ ยังไม่ได้เชื่อมต่อ Strava</p>
                             <?php elseif ($isRejected): ?>
-                            <p style="font-size:0.73rem;color:#d2592a;margin:0 0 0.5rem;">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
-                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
-                                  id="strava-retry-form-<?= $cid ?>">
-                                <?= csrfField() ?>
-                                <input type="hidden" name="action" value="submit_strava">
-                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
-                                <button type="button" class="ch-btn-start"
-                                        style="background:rgba(252,76,2,0.7);display:inline-flex;align-items:center;gap:6px;"
-                                        onclick="submitStravaForm('strava-retry-form-<?= $cid ?>',this)">
-                                    &#127939; ตรวจสอบอีกครั้ง
-                                </button>
-                            </form>
+                            <p style="font-size:0.73rem;color:rgba(252,76,2,0.7);margin:0;">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
                             <?php else: ?>
-                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
-                                  id="strava-form-<?= $cid ?>">
-                                <?= csrfField() ?>
-                                <input type="hidden" name="action" value="submit_strava">
-                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
-                                <button type="button" class="ch-btn-start"
-                                        style="background:rgba(252,76,2,0.75);display:inline-flex;align-items:center;gap:6px;"
-                                        onclick="submitStravaForm('strava-form-<?= $cid ?>',this)">
-                                    &#127939; ตรวจสอบกิจกรรม Strava
-                                </button>
-                            </form>
+                            <p style="font-size:0.73rem;color:rgba(252,76,2,0.5);margin:0;">กดการ์ดเพื่อเริ่มทำภารกิจ</p>
                             <?php endif; ?>
                             <?php elseif ($ch['type'] === 'photo'): ?>
                             <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
@@ -940,7 +888,201 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endforeach; ?>
         </div>
     </div>
-    <?php else: ?>
+
+    <?php
+    // Collect Strava challenge data for modal JS
+    $stravaModalData = [];
+    foreach ($questsAvailable as $_sch) {
+        if ($_sch['type'] !== 'strava') continue;
+        $_cid  = (int)$_sch['challenge_id'];
+        $_ets  = $_sch['end_date'] ? strtotime((string)$_sch['end_date']) : null;
+        $_ed2  = $_ets ? date('d/m/Y', $_ets) : null;
+        $_dl2  = $_ets ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', $_ets)))->days
+                         * ((new DateTime('today') <= new DateTime(date('Y-m-d', $_ets))) ? 1 : -1) : null;
+        $stravaModalData[$_cid] = [
+            'title'    => $_sch['title'],
+            'desc'     => (string)($_sch['description'] ?? ''),
+            'token'    => (int)$_sch['token_reward'],
+            'rejected' => $_sch['my_status'] === 'rejected',
+            'sc'       => $_sch['_sc'] ?? [],
+            'ed'       => $_ed2,
+            'daysLeft' => $_dl2,
+        ];
+    }
+    ?>
+    <script>
+    var _stravaModalData = <?= json_encode($stravaModalData, JSON_UNESCAPED_UNICODE) ?>;
+    var _stravaConnected = <?= $stravaConnected ? 'true' : 'false' ?>;
+    </script>
+
+    <!-- ── Strava Detail Modal ── -->
+    <div id="strava-modal"
+         style="display:none; position:fixed; inset:0; z-index:1000;
+                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
+                align-items:center; justify-content:center; padding:1rem;"
+         onclick="if(event.target===this)closeStravaModal()">
+        <div style="background:#0f1416; border:1px solid rgba(252,76,2,0.28); border-radius:20px;
+                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
+                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(252,76,2,0.12);">
+            <!-- Modal header -->
+            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+                        display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="#FC4C02">
+                        <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                    </svg>
+                    <span style="font-size:0.68rem; font-weight:700; color:rgba(252,76,2,0.9);
+                                 letter-spacing:0.08em; text-transform:uppercase;">Strava Mission</span>
+                </div>
+                <button onclick="closeStravaModal()"
+                        style="width:28px; height:28px; border-radius:50%;
+                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+                               color:#6b6e77; cursor:pointer; font-size:0.85rem;
+                               display:flex; align-items:center; justify-content:center;
+                               font-family:'Prompt',sans-serif;">✕</button>
+            </div>
+            <!-- Modal body -->
+            <div style="padding:1.4rem;">
+                <!-- Token reward -->
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                         style="width:34px; height:34px; object-fit:contain;
+                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                    <div>
+                        <p id="sm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
+                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
+                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                    </div>
+                </div>
+                <!-- Title -->
+                <h2 id="sm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
+                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <!-- Description -->
+                <p id="sm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <!-- Condition box -->
+                <div id="sm-condition"
+                     style="display:none; background:rgba(252,76,2,0.06);
+                            border:1px solid rgba(252,76,2,0.20); border-radius:10px;
+                            padding:0.7rem 1rem; margin-bottom:1rem;">
+                    <p style="font-size:0.63rem; font-weight:700; color:rgba(252,76,2,0.8);
+                               text-transform:uppercase; letter-spacing:0.08em; margin:0 0 0.35rem;">เงื่อนไขกิจกรรม</p>
+                    <p id="sm-condition-text" style="font-size:0.82rem; color:#cecdcd; margin:0; line-height:1.6;"></p>
+                </div>
+                <!-- End date -->
+                <p id="sm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <!-- Rejected message -->
+                <p id="sm-rejected-msg" style="display:none; font-size:0.8rem;
+                                                color:rgba(252,76,2,0.85); margin:0 0 0.75rem;"></p>
+                <!-- Action: connect Strava -->
+                <div id="sm-connect-area" style="display:none;">
+                    <p style="font-size:0.8rem; color:#d2592a; margin:0 0 0.7rem;">⚠️ กรุณาเชื่อมต่อ Strava ก่อนทำภารกิจ</p>
+                    <a href="<?= BASE_URL ?>/pages/strava_connect.php"
+                       style="display:inline-flex; align-items:center; gap:0.5rem;
+                              padding:0.65rem 1.25rem; border-radius:10px;
+                              background:rgba(252,76,2,0.80); color:#fff;
+                              font-size:0.85rem; font-weight:700;
+                              font-family:'Prompt',sans-serif; text-decoration:none;">
+                        &#127939; เชื่อมต่อ Strava
+                    </a>
+                </div>
+                <!-- Action: submit form -->
+                <form id="sm-strava-form" method="POST"
+                      action="<?= BASE_URL ?>/pages/challenges.php"
+                      style="display:none;">
+                    <?= csrfField() ?>
+                    <input type="hidden" name="action" value="submit_strava">
+                    <input type="hidden" name="challenge_id" id="sm-cid-input" value="">
+                    <button type="button" id="sm-submit-btn"
+                            onclick="submitStravaForm('sm-strava-form',this)"
+                            style="display:inline-flex; align-items:center; gap:0.5rem;
+                                   padding:0.65rem 1.25rem; border-radius:10px;
+                                   background:rgba(252,76,2,0.80); color:#fff;
+                                   font-size:0.85rem; font-weight:700;
+                                   font-family:'Prompt',sans-serif;
+                                   cursor:pointer; border:none;">
+                        &#127939; ตรวจสอบกิจกรรม Strava
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+    function openStravaModal(cid) {
+        var d = _stravaModalData[cid];
+        if (!d) return;
+
+        // Populate fields
+        document.getElementById('sm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
+        document.getElementById('sm-title').textContent = d.title;
+        var descEl = document.getElementById('sm-desc');
+        descEl.textContent = d.desc;
+        descEl.style.display = d.desc ? 'block' : 'none';
+
+        // Condition
+        var scDiv  = document.getElementById('sm-condition');
+        var scText = document.getElementById('sm-condition-text');
+        var sc = d.sc || {};
+        if (sc.sport_type || sc.min_distance || sc.min_moving_time || sc.min_elevation) {
+            var parts = [];
+            if (sc.sport_type) parts.push(sc.sport_type);
+            if (sc.min_distance) parts.push('\u2265' + (sc.min_distance / 1000).toFixed(1) + ' \u0e01\u0e21.');
+            if (sc.min_moving_time) parts.push('\u2265' + Math.floor(sc.min_moving_time / 60) + ' \u0e19\u0e32\u0e17\u0e35');
+            if (sc.min_elevation) parts.push('\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e39\u0e07 \u2265' + sc.min_elevation + ' \u0e21.');
+            scText.textContent = parts.join(' \u00b7 ');
+            scDiv.style.display = 'block';
+        } else {
+            scDiv.style.display = 'none';
+        }
+
+        // End date
+        var edEl = document.getElementById('sm-enddate');
+        if (d.ed) {
+            var txt = '\ud83d\udcc5 \u0e2a\u0e34\u0e49\u0e19\u0e2a\u0e38\u0e14 ' + d.ed;
+            if (d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7) {
+                txt += ' \u00b7 ' + (d.daysLeft === 0 ? '\u26a1 \u0e27\u0e31\u0e19\u0e19\u0e35\u0e49!' : '\u26a1 \u0e40\u0e2b\u0e25\u0e37\u0e2d\u0e2d\u0e35\u0e01 ' + d.daysLeft + ' \u0e27\u0e31\u0e19');
+            }
+            edEl.textContent = txt;
+            edEl.style.display = 'block';
+        } else {
+            edEl.style.display = 'none';
+        }
+
+        // Rejected message
+        var rejMsg = document.getElementById('sm-rejected-msg');
+        if (d.rejected) {
+            rejMsg.textContent = '\u0e44\u0e21\u0e48\u0e1e\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21\u0e17\u0e35\u0e48\u0e15\u0e23\u0e07\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02 \u2022 \u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48\u0e44\u0e14\u0e49';
+            rejMsg.style.display = 'block';
+        } else {
+            rejMsg.style.display = 'none';
+        }
+
+        // Action
+        var connectEl  = document.getElementById('sm-connect-area');
+        var formEl     = document.getElementById('sm-strava-form');
+        var submitBtn  = document.getElementById('sm-submit-btn');
+        if (!_stravaConnected) {
+            connectEl.style.display = 'block';
+            formEl.style.display    = 'none';
+        } else {
+            connectEl.style.display = 'none';
+            formEl.style.display    = 'block';
+            document.getElementById('sm-cid-input').value = cid;
+            submitBtn.innerHTML  = '&#127939; ' + (d.rejected ? '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e2d\u0e35\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07' : '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21 Strava');
+            submitBtn.disabled   = false;
+        }
+
+        var modal = document.getElementById('strava-modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    function closeStravaModal() {
+        document.getElementById('strava-modal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeStravaModal();
+    });
+    </script>
     <div class="ch-empty-board mb-10">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
     <?php endif; ?>
 
