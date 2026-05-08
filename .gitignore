@@ -13,6 +13,9 @@ Thumbs.db
 .vscode/
 *.swp
 
+# One-time setup script — never commit
+setup_git.php
+
 # deploy.php is committed but keep this note:
 # The secret in deploy.php is not sensitive enough to exclude
 # as it only triggers git pull (no shell injection possible)
