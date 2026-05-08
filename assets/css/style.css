@@ -2676,6 +2676,14 @@ body:has(.ar-redemptions-wrap) { background-color: #091113; }
 }
 .ard-wrap .journal-input::placeholder { color: #6b6e77; }
 
+/* ── Redemptions table responsive ── */
+.ard-table-wrap { overflow: hidden; border-radius: 16px; }
+
+@media (max-width: 860px) {
+    .ard-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ard-table-header, .ard-row { min-width: 580px; }
+}
+
 /* Action modal */
 #ard-action-modal {
     display: none;
@@ -2864,6 +2872,30 @@ body:has(.emp-employees-wrap) { background-color: #091113; }
 }
 .emp-modal-input:focus { border-color: rgba(218,185,55,0.45); outline: none; background: rgba(255,255,255,0.09); }
 .emp-modal-input::placeholder { color: #6b6e77; }
+
+/* ── Employee table responsive ── */
+.emp-table-outer { overflow: hidden; border-radius: 16px; }
+
+@media (max-width: 960px) {
+    .emp-table-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .emp-table-header, .emp-row { min-width: 720px; }
+}
+
+@media (max-width: 640px) {
+    .emp-search-input--main { min-width: 0; width: 100%; flex: 1 1 100%; }
+    .emp-search-select       { min-width: 0; flex: 1 1 calc(50% - 0.325rem); }
+}
+
+/* ── Submissions cards responsive ── */
+.asb-cards-grid {
+    display: grid;
+    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+@media (max-width: 640px) {
+    .asb-cards-grid { grid-template-columns: 1fr; }
+}
 
 @keyframes emp-modal-in {
     from { opacity: 0; transform: scale(0.92) translateY(16px); }

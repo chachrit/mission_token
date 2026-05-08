@@ -271,16 +271,15 @@ $roleMeta = [
               style="display:flex; flex-wrap:wrap; gap:0.65rem; margin-bottom:1.75rem; align-items:center;">
             <input type="text" name="q" value="<?= e($search) ?>"
                    placeholder="ค้นหาชื่อ, รหัส, แผนก, ตำแหน่ง…"
-                   class="emp-search-input"
-                   style="flex:1; min-width:220px;">
-            <select name="role" class="emp-search-input" style="width:auto; min-width:130px;">
+                   class="emp-search-input emp-search-input--main">
+            <select name="role" class="emp-search-input emp-search-select">
                 <option value="">ทุก Role</option>
                 <option value="employee" <?= $roleFilter === 'employee' ? 'selected' : '' ?>>พนักงาน</option>
                 <option value="hr"       <?= $roleFilter === 'hr'       ? 'selected' : '' ?>>HR</option>
                 <option value="it"       <?= $roleFilter === 'it'       ? 'selected' : '' ?>>IT</option>
                 <option value="admin"    <?= $roleFilter === 'admin'    ? 'selected' : '' ?>>Admin</option>
             </select>
-            <select name="status" class="emp-search-input" style="width:auto; min-width:130px;">
+            <select name="status" class="emp-search-input emp-search-select">
                 <option value="">ทุกสถานะ</option>
                 <option value="active"   <?= $statusFilter === 'active'   ? 'selected' : '' ?>>ใช้งานอยู่</option>
                 <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>ปิดบัญชี</option>
@@ -313,8 +312,8 @@ $roleMeta = [
         </form>
 
         <!-- Employee Table -->
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+        <div class="emp-table-outer" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                    border-radius:16px; backdrop-filter:blur(8px);">
 
             <!-- Table header -->
             <div class="emp-table-header">

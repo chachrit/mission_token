@@ -210,8 +210,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <?php else: ?>
-        <div style="display:grid; gap:1.25rem;
-                    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+        <div class="asb-cards-grid">
         <?php foreach ($submissions as $sub):
             $isPending  = $sub['status'] === 'pending';
             $isApproved = in_array($sub['status'], ['approved', 'auto_approved'], true);

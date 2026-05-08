@@ -258,10 +258,10 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
 
         <!-- Redemptions table -->
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+        <div class="ard-table-wrap" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                    border-radius:16px; backdrop-filter:blur(8px);">
 
-            <div style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
+            <div class="ard-table-header" style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
                         gap:1rem; padding:0.7rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -386,7 +386,7 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
             <?php endforeach; ?>
             <?php endif; ?>
-        </div>
+        </div><!-- /ard-table-wrap -->
 
     </div><!-- /inner -->
 </div><!-- /ar-redemptions-wrap -->
