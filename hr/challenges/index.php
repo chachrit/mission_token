@@ -254,19 +254,18 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Toggle status -->
                 <div style="text-align:center;">
-                    <form method="POST" style="display:inline;">
+                    <form method="POST" style="display:inline;" id="toggle-form-<?= (int)$ch['challenge_id'] ?>">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="toggle_active">
                         <input type="hidden" name="challenge_id" value="<?= (int)$ch['challenge_id'] ?>">
-                        <button type="submit"
-                                style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.65rem;
-                                       border-radius:999px; cursor:pointer; letter-spacing:0.02em;
-                                       font-family:'Prompt',sans-serif; transition:opacity 0.15s;
-                                       background:<?= $isActive ? 'rgba(81,142,92,0.14)' : 'rgba(107,110,119,0.12)' ?>;
-                                       color:<?= $isActive ? '#7ec98a' : '#6b6e77' ?>;
-                                       border:1px solid <?= $isActive ? 'rgba(81,142,92,0.30)' : 'rgba(107,110,119,0.24)' ?>;">
-                            <?= $isActive ? 'เปิดอยู่' : 'ปิดแล้ว' ?>
-                        </button>
+                        <label class="ac-toggle-switch" title="<?= $isActive ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด' ?>">
+                            <input type="checkbox"
+                                   <?= $isActive ? 'checked' : '' ?>
+                                   onchange="this.form.submit()">
+                            <span class="ac-toggle-track">
+                                <span class="ac-toggle-thumb"></span>
+                            </span>
+                        </label>
                     </form>
                 </div>
 
@@ -333,6 +332,50 @@ require_once __DIR__ . '/../../includes/header.php';
 <style>
 .ac-row:last-child { border-bottom: none !important; }
 .ac-row:hover { background: rgba(255,255,255,0.025); }
+
+/* Toggle switch */
+.ac-toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.ac-toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.ac-toggle-track {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    background: rgba(107,110,119,0.25);
+    border: 1px solid rgba(107,110,119,0.35);
+    border-radius: 999px;
+    transition: background 0.2s, border-color 0.2s;
+}
+.ac-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: #6b6e77;
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+}
+.ac-toggle-switch input:checked + .ac-toggle-track {
+    background: rgba(81,142,92,0.30);
+    border-color: rgba(81,142,92,0.55);
+}
+.ac-toggle-switch input:checked + .ac-toggle-track .ac-toggle-thumb {
+    transform: translateX(16px);
+    background: #7ec98a;
+}
+.ac-toggle-switch:hover .ac-toggle-track {
+    border-color: rgba(218,185,55,0.45);
+}
 </style>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
