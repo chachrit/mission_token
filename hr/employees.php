@@ -138,8 +138,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ══════════════════════════════════════════════════════════════
 // GET: load data
 // ══════════════════════════════════════════════════════════════
-$search   = trim((string)($_GET['q'] ?? ''));
-$roleFilter = (string)($_GET['role'] ?? '');
+$search       = trim((string)($_GET['q']      ?? ''));
+$roleFilter   = (string)($_GET['role']   ?? '');
+$deptFilter   = trim((string)($_GET['dept']   ?? ''));
 $statusFilter = (string)($_GET['status'] ?? '');
 
 $whereClauses = [];
@@ -153,6 +154,10 @@ if ($search !== '') {
 if ($roleFilter !== '') {
     $whereClauses[] = "e.role = ?";
     $params[] = $roleFilter;
+}
+if ($deptFilter !== '') {
+    $whereClauses[] = "e.department = ?";
+    $params[] = $deptFilter;
 }
 if ($statusFilter === 'active') {
     $whereClauses[] = "e.is_active = 1";
@@ -196,8 +201,20 @@ try {
     $statsRow = [];
 }
 
+// Load distinct departments for filter dropdown
+$departments = [];
+try {
+    $deptRows = $pdo->query("
+        SELECT DISTINCT department
+        FROM   dbo.employees
+        WHERE  department IS NOT NULL AND department <> ''
+        ORDER  BY department ASC
+    ")->fetchAll(\PDO::FETCH_COLUMN);
+    $departments = $deptRows ?: [];
+} catch (Throwable $e) { /* ignore */ }
+
 // Build query string for back-links
-$qs = http_build_query(array_filter(['q' => $search, 'role' => $roleFilter, 'status' => $statusFilter]));
+$qs = http_build_query(array_filter(['q' => $search, 'role' => $roleFilter, 'dept' => $deptFilter, 'status' => $statusFilter]));
 
 $flash      = getFlash();
 $pageTitle  = 'จัดการพนักงาน';
@@ -272,6 +289,14 @@ $roleMeta = [
             <input type="text" name="q" value="<?= e($search) ?>"
                    placeholder="ค้นหาชื่อ, รหัส, แผนก, ตำแหน่ง…"
                    class="emp-search-input emp-search-input--main">
+            <select name="dept" class="emp-search-input emp-search-select">
+                <option value="">ทุกแผนก</option>
+                <?php foreach ($departments as $dept): ?>
+                <option value="<?= e($dept) ?>" <?= $deptFilter === $dept ? 'selected' : '' ?>>
+                    <?= e($dept) ?>
+                </option>
+                <?php endforeach; ?>
+            </select>
             <select name="role" class="emp-search-input emp-search-select">
                 <option value="">ทุก Role</option>
                 <option value="employee" <?= $roleFilter === 'employee' ? 'selected' : '' ?>>พนักงาน</option>
@@ -293,7 +318,7 @@ $roleMeta = [
                     onmouseout="this.style.background='rgba(218,185,55,0.15)'">
                 ค้นหา
             </button>
-            <?php if ($search || $roleFilter || $statusFilter): ?>
+            <?php if ($search || $roleFilter || $deptFilter || $statusFilter): ?>
             <a href="<?= BASE_URL ?>/hr/employees.php"
                style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
                       font-family:'Prompt',sans-serif; text-decoration:none;
@@ -303,8 +328,6 @@ $roleMeta = [
                onmouseout="this.style.color='#6b6e77'">
                 ล้างการค้นหา
             </a>
-            <?php endif; ?>
-            <?php if ($search || $roleFilter || $statusFilter): ?>
             <span style="font-size:0.75rem; color:#8a8e97; padding:0.3rem 0;">
                 พบ <?= count($employees) ?> รายการ
             </span>
