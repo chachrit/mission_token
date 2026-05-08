@@ -234,6 +234,22 @@ require_once __DIR__ . '/../../includes/header.php';
 }
 .ar-wrap .journal-input::placeholder { color: #3a3e43; }
 .ar-wrap select.journal-input option { background: #1a1e22; color: #eeebe1; }
+
+/* ── Responsive ─────────────────────────────────────────── */
+.ar-table-wrap { overflow: hidden; }
+
+@media (max-width: 900px) {
+    .ar-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ar-table-header, .ar-row { min-width: 640px; }
+}
+
+@media (max-width: 640px) {
+    .ar-page-header-row { flex-direction: column; align-items: flex-start; }
+    .ar-page-header-row > button {
+        width: 100%; box-sizing: border-box;
+    }
+    .ar-create-grid { grid-template-columns: 1fr !important; }
+}
 </style>
 
 <div class="ar-rewards-wrap ar-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
@@ -255,7 +271,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Page header -->
         <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
             <!-- Row 1: title + create button -->
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+            <div class="ar-page-header-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
                 <div>
                     <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
                               text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
@@ -339,7 +355,7 @@ require_once __DIR__ . '/../../includes/header.php';
                           class="journal-input" style="resize:vertical;"></textarea>
             </div>
 
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.25rem;">
+            <div class="ar-create-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.25rem;">
                 <div>
                     <label class="ar-label">หมวดหมู่</label>
                     <select name="category" class="journal-input">
@@ -408,10 +424,10 @@ require_once __DIR__ . '/../../includes/header.php';
         </form>
 
         <!-- REWARDS TABLE -->
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+        <div class="ar-table-wrap" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                    border-radius:16px; backdrop-filter:blur(8px);">
 
-            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
+            <div class="ar-table-header" style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
                         gap:1rem; padding:0.7rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -563,7 +579,7 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
             <?php endforeach; ?>
             <?php endif; ?>
-        </div>
+        </div><!-- /ar-rewards-table end -->
 
     </div><!-- /inner -->
 </div><!-- /ar-rewards-wrap -->

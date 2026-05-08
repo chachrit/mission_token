@@ -103,7 +103,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Page header -->
         <div style="margin-bottom:1.5rem;">
             <!-- Row 1: title + create button -->
-            <div style="display:flex; align-items:center; justify-content:space-between;
+            <div class="ac-page-header-row" style="display:flex; align-items:center; justify-content:space-between;
                         gap:1rem; margin-bottom:0.75rem;">
                 <div>
                     <h1 style="font-size:1.55rem; font-weight:800; color:#eeebe1;
@@ -153,11 +153,11 @@ require_once __DIR__ . '/../../includes/header.php';
 
         <?php if (!empty($challenges)): ?>
         <!-- Challenges table -->
-        <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+        <div class="ac-table-wrap" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
+                    border-radius:16px; backdrop-filter:blur(8px);">
 
             <!-- Table header -->
-            <div style="display:grid; grid-template-columns:1fr 105px 75px 190px 65px 85px 105px;
+            <div class="ac-table-header" style="display:grid; grid-template-columns:1fr 105px 75px 190px 65px 85px 105px;
                         gap:0; padding:0.65rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -307,7 +307,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
             </div><!-- /ac-row -->
             <?php endforeach; ?>
-        </div><!-- /table -->
+        </div><!-- /ac-challenges-wrap inner end -->
 
         <?php else: ?>
         <!-- Empty state -->
@@ -375,6 +375,22 @@ require_once __DIR__ . '/../../includes/header.php';
 }
 .ac-toggle-switch:hover .ac-toggle-track {
     border-color: rgba(218,185,55,0.45);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+.ac-table-wrap { overflow: hidden; }
+
+@media (max-width: 900px) {
+    .ac-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ac-table-header, .ac-row { min-width: 640px; }
+}
+
+@media (max-width: 640px) {
+    .ac-page-header-row { flex-direction: column; align-items: flex-start; }
+    .ac-page-header-row > a {
+        width: 100%; justify-content: center;
+        box-sizing: border-box;
+    }
 }
 </style>
 
