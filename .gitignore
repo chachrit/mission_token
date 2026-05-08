@@ -1,0 +1,18 @@
+# Uploads (user content)
+uploads/submissions/*
+!uploads/submissions/.gitkeep
+
+# PHP error logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.swp
+
+# deploy.php is committed but keep this note:
+# The secret in deploy.php is not sensitive enough to exclude
+# as it only triggers git pull (no shell injection possible)
