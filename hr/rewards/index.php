@@ -164,24 +164,53 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <style>
 /* ── Admin Rewards  prefix: ar- ─────────────────────────── */
-.ar-toggle {
-    width: 42px; height: 24px;
-    background: rgba(255,255,255,0.08); border-radius: 999px;
-    position: relative; cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.14); transition: background 0.2s, border-color 0.2s;
-}
-.ar-toggle.on { background: rgba(81,142,92,0.40); border-color: rgba(81,142,92,0.60); }
-.ar-toggle::after {
-    content: '';
-    position: absolute; top: 3px; left: 3px;
-    width: 16px; height: 16px; border-radius: 50%;
-    background: rgba(255,255,255,0.45); transition: transform 0.2s;
-}
-.ar-toggle.on::after { transform: translateX(18px); background: #7ec98a; }
-
 .ar-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.12s; }
 .ar-row:last-child { border-bottom: none; }
 .ar-row:hover { background: rgba(218,185,55,0.03); }
+
+/* Toggle switch (shared with challenges page) */
+.ac-toggle-switch {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+}
+.ac-toggle-switch input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.ac-toggle-track {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+    background: rgba(107,110,119,0.25);
+    border: 1px solid rgba(107,110,119,0.35);
+    border-radius: 999px;
+    transition: background 0.2s, border-color 0.2s;
+}
+.ac-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: #6b6e77;
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+}
+.ac-toggle-switch input:checked + .ac-toggle-track {
+    background: rgba(81,142,92,0.30);
+    border-color: rgba(81,142,92,0.55);
+}
+.ac-toggle-switch input:checked + .ac-toggle-track .ac-toggle-thumb {
+    transform: translateX(16px);
+    background: #7ec98a;
+}
+.ac-toggle-switch:hover .ac-toggle-track {
+    border-color: rgba(218,185,55,0.45);
+}
 
 #create-form {
     display: none;
@@ -382,7 +411,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                     border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
 
-            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.6fr;
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
                         gap:1rem; padding:0.7rem 1.25rem;
                         background:rgba(255,255,255,0.03);
                         border-bottom:1px solid rgba(255,255,255,0.07);
@@ -393,7 +422,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 <span>ราคา</span>
                 <span>สต็อก</span>
                 <span>แลกแล้ว</span>
-                <span>สถานะ / จัดการ</span>
+                <span style="text-align:center;">สถานะ</span>
+                <span style="text-align:right;">จัดการ</span>
             </div>
 
             <?php if (empty($rewards)): ?>
@@ -417,7 +447,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 $isOn = (bool)$rw['is_active'];
             ?>
             <div class="ar-row"
-                 style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.6fr;
+                 style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
                         gap:1rem; padding:0.9rem 1.25rem; align-items:center;
                         <?= $isOn ? '' : 'opacity:0.45;' ?>">
 
@@ -477,59 +507,57 @@ require_once __DIR__ . '/../../includes/header.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- Toggle active + edit link -->
-                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:flex-start;">
-                    <!-- Row 1: Toggle -->
-                    <form method="POST" action=""
-                          style="display:inline-flex; align-items:center; gap:0.28rem;">
+                <!-- Toggle active -->
+                <div style="text-align:center;">
+                    <form method="POST" action="" style="display:inline;">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="toggle">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
-                        <button type="submit"
-                                class="ar-toggle <?= $isOn ? 'on' : '' ?>"
-                                title="<?= $isOn ? 'ปิดการใช้งาน' : 'เปิดการใช้งาน' ?>"
-                                aria-label="Toggle reward active status">
-                        </button>
-                        <span style="font-size:0.65rem; line-height:1; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>; white-space:nowrap;">
-                            <?= $isOn ? 'เปิด' : 'ปิด' ?>
-                        </span>
+                        <label class="ac-toggle-switch" title="<?= $isOn ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด' ?>">
+                            <input type="checkbox"
+                                   <?= $isOn ? 'checked' : '' ?>
+                                   onchange="this.form.submit()">
+                            <span class="ac-toggle-track">
+                                <span class="ac-toggle-thumb"></span>
+                            </span>
+                        </label>
                     </form>
-                    <!-- Row 2: Edit + Delete -->
-                    <div style="display:flex; align-items:stretch; gap:0.4rem;">
-                        <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
-                           style="display:inline-flex; align-items:center; justify-content:center;
-                                  height:24px; min-height:24px; box-sizing:border-box;
-                                  font-size:0.68rem; padding:0 0.6rem; border-radius:6px;
-                                  background:rgba(218,185,55,0.10); color:#dab937;
-                                  border:1px solid rgba(218,185,55,0.25);
-                                  font-family:'Prompt',sans-serif; font-weight:600;
-                                  text-decoration:none; white-space:nowrap; line-height:1;
-                                  transition:background 0.15s;"
-                           onmouseover="this.style.background='rgba(218,185,55,0.20)'"
-                           onmouseout="this.style.background='rgba(218,185,55,0.10)'">
-                            ✏ แก้ไข
-                        </a>
-                        <form method="POST" action=""
-                              style="display:inline-flex; margin:0; padding:0;"
-                              onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
-                            <?php echo csrfField(); ?>
-                            <input type="hidden" name="action"    value="delete">
-                            <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
-                            <button type="submit"
-                                    style="display:inline-flex; align-items:center; justify-content:center;
-                                           height:24px; min-height:24px; box-sizing:border-box;
-                                           font-size:0.68rem; padding:0 0.6rem; border-radius:6px;
-                                           background:rgba(210,89,42,0.10); color:#d2592a;
-                                           border:1px solid rgba(210,89,42,0.28);
-                                           font-family:'Prompt',sans-serif; font-weight:600;
-                                           cursor:pointer; white-space:nowrap; line-height:1;
-                                           transition:background 0.15s; margin:0;"
-                                    onmouseover="this.style.background='rgba(210,89,42,0.22)'"
-                                    onmouseout="this.style.background='rgba(210,89,42,0.10)'">
-                                🗑 ลบ
-                            </button>
-                        </form>
-                    </div>
+                </div>
+
+                <!-- Edit + Delete -->
+                <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.5rem;">
+                    <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
+                       style="display:inline-flex; align-items:center; justify-content:center;
+                              height:30px; box-sizing:border-box;
+                              font-size:0.73rem; font-weight:600; padding:0 0.75rem;
+                              border-radius:8px; text-decoration:none; transition:background 0.15s;
+                              background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
+                              color:#dab937; white-space:nowrap;"
+                       onmouseover="this.style.background='rgba(218,185,55,0.16)'"
+                       onmouseout="this.style.background='rgba(218,185,55,0.08)'">
+                        แก้ไข
+                    </a>
+                    <form method="POST" action="" style="display:inline-flex; margin:0;"
+                          onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
+                        <?php echo csrfField(); ?>
+                        <input type="hidden" name="action"    value="delete">
+                        <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
+                        <button type="submit"
+                                style="width:30px; height:30px; box-sizing:border-box;
+                                       border-radius:8px; cursor:pointer; margin:0;
+                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
+                                       color:#d2592a; display:inline-flex; align-items:center;
+                                       justify-content:center; transition:background 0.15s;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.18)'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.08)'"
+                                title="ลบรางวัล">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </form>
                 </div>
 
             </div>
