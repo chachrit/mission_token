@@ -190,9 +190,9 @@ function bindFilePreview(inputId, previewId) {
         const file = this.files[0];
         if (!file) return;
 
-        // Client-side size check (5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('ไฟล์ต้องมีขนาดไม่เกิน 5MB');
+        // Client-side size check (20MB)
+        if (file.size > 20 * 1024 * 1024) {
+            alert('ไฟล์ต้องมีขนาดไม่เกิน 20MB');
             this.value = '';
             return;
         }

@@ -109,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Validate size
         if ($file['size'] > UPLOAD_MAX_SIZE) {
-            setFlash('error', 'ไฟล์ใหญ่เกิน 5MB');
+            setFlash('error', 'ไฟล์ใหญ่เกิน 20MB');
             redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
         }
 
@@ -681,16 +681,16 @@ require_once __DIR__ . '/../includes/header.php';
     <?php if ($challenges): ?>
 
     <!-- Quest Board hero header -->
-    <div class="mb-8 px-8 py-16 relative overflow-hidden ch-board-hero">
+    <div class="mb-8 relative overflow-hidden ch-board-hero ch-board-hero-pad">
         <div class="ch-board-dot-grid"></div>
         <div class="ch-board-glow"></div>
-        <div class="relative max-w-7xl mx-auto flex items-center justify-between gap-8">
+        <div class="relative max-w-7xl mx-auto ch-board-hero-inner">
             <div>
                 <p class="text-[14px] font-bold uppercase mb-2.5 ch-board-hero-label">&#9876; Quest Board</p>
-                <h1 class="text-5xl font-bold leading-tight ch-hero-title">ภารกิจทั้งหมด</h1>
+                <h1 class="font-bold leading-tight ch-hero-title ch-hero-title-size">ภารกิจทั้งหมด</h1>
                 <p class="text-base mt-2.5 ch-hero-sub">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
             </div>
-            <div class="flex flex-col items-end gap-3 flex-shrink-0">
+            <div class="ch-board-progress-block">
                 <div class="flex items-center gap-3">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="w-7 h-7">
                     <p class="text-xl font-bold" style="color:#dab937;">
@@ -875,7 +875,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <input type="hidden" name="action" value="submit_photo">
                                 <input type="hidden" name="challenge_id" value="<?= $cid ?>">
                                 <input type="file" name="photo" accept="image/*" required class="ch-file-input">
-                                <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5MB</p>
+                                <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 20MB</p>
                                 <button type="submit" class="ch-btn-start">ส่งหลักฐาน</button>
                             </form>
                             <?php endif; ?>

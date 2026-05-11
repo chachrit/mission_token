@@ -49,7 +49,7 @@ define('EMP_API_KEY', 'my-secret-key-12345');
 
 // File Upload settings
 define('UPLOAD_PATH',    __DIR__ . '/../uploads/submissions/');
-define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024); // 5 MB
+define('UPLOAD_MAX_SIZE', 20 * 1024 * 1024); // 20 MB
 define('ALLOWED_MIME',   ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 define('ALLOWED_EXT',    ['jpg', 'jpeg', 'png', 'gif', 'webp']);
 
@@ -208,7 +208,7 @@ function validateUpload(array $file): array
 
     // Check file size
     if ($file['size'] > UPLOAD_MAX_SIZE) {
-        return ['ok' => false, 'error' => 'ไฟล์ต้องมีขนาดไม่เกิน 5MB'];
+        return ['ok' => false, 'error' => 'ไฟล์ต้องมีขนาดไม่เกิน 20MB'];
     }
 
     // Check extension (allowlist)

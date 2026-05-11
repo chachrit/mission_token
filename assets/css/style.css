@@ -1965,6 +1965,23 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
     border: 1px solid rgba(255,255,255,0.07);
     border-radius: 20px; backdrop-filter: blur(12px);
 }
+.ch-board-hero-pad { padding: 4rem 2rem; }
+.ch-board-hero-inner {
+    display: flex; align-items: center;
+    justify-content: space-between; gap: 2rem;
+}
+.ch-hero-title-size { font-size: 3rem; }
+.ch-board-progress-block {
+    display: flex; flex-direction: column;
+    align-items: flex-end; gap: 0.75rem; flex-shrink: 0;
+}
+@media (max-width: 640px) {
+    .ch-board-hero-pad { padding: 2rem 1.25rem; }
+    .ch-board-hero-inner { flex-direction: column; align-items: flex-start; gap: 1.25rem; }
+    .ch-hero-title-size { font-size: 1.75rem; }
+    .ch-board-progress-block { align-items: flex-start; width: 100%; }
+    .ch-board-progress-track { width: 100% !important; }
+}
 .ch-board-dot-grid {
     position: absolute; inset: 0; pointer-events: none; border-radius: 20px; overflow: hidden;
     background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
@@ -1987,7 +2004,7 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
 .ch-section-heading        { font-size: 1.15rem; font-weight: 700; color: #eeebe1; margin: 0; }
 .ch-section-heading--muted { font-size: 1.05rem; font-weight: 600; color: #6b6e77; }
 .ch-count-badge        { font-size: 0.72rem; font-weight: 700; color: #091113; background: #dab937; border-radius: 999px; padding: 0.2rem 0.65rem; }
-.ch-count-badge--muted { color: #4a4e57; background: rgba(255,255,255,0.06); }
+.ch-count-badge--muted { color: #eeebe1; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15); }
 
 /* ── Available Quest Cards (dark glassmorphism) ── */
 .ch-quest-card {
