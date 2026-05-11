@@ -1324,7 +1324,7 @@ body:has(.ds-dashboard-wrap) {
     padding: 1.1rem 1.25rem;
     text-decoration: none;
     display: flex; align-items: center; gap: 1rem;
-    transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s, background 0.18s;
+    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), box-shadow 0.28s cubic-bezier(0.22,1,0.36,1), border-color 0.2s, background 0.2s;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -1516,7 +1516,7 @@ body:has(.ds-dashboard-wrap) {
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px; padding: 1.25rem;
     flex: 0 0 clamp(200px, 60vw, 260px); display: flex; flex-direction: column; gap: 0.75rem;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
+    transition: transform 0.28s cubic-bezier(0.22,1,0.36,1), box-shadow 0.28s cubic-bezier(0.22,1,0.36,1), border-color 0.2s, background 0.2s;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
 }
@@ -1640,11 +1640,19 @@ body:has(.ds-dashboard-wrap) {
 .ds-lb-token       { font-size: 0.78rem; font-weight: 700; flex-shrink: 0; color: #6b6e77; }
 .ds-lb-token--me   { color: #dab937; }
 .ds-lb-bar-track   { margin-left: 46px; height: 3px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; }
-.ds-lb-bar-fill    { height: 100%; border-radius: 999px; background: rgba(255,255,255,0.08); }
+.ds-lb-bar-fill    { height: 100%; border-radius: 999px; background: rgba(255,255,255,0.08); width: 0; transition: width 1.2s cubic-bezier(0.22,1,0.36,1); }
 .ds-lb-bar-fill--me { background: linear-gradient(90deg, #dab937, #f8e769); }
 .ds-lb-myrank      { margin-top: 1rem; padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.07); text-align: center; font-size: 0.75rem; color: #6b6e77; }
 .ds-lb-myrank strong { color: #dab937; }
 .ds-lb-empty       { padding: 2rem; text-align: center; font-size: 0.85rem; color: #6b6e77; }
+
+/* ── Dashboard entrance animations ── */
+@keyframes ds-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.ds-anim { animation: ds-fade-up 0.55s cubic-bezier(0.22,1,0.36,1) both; }
+@media (prefers-reduced-motion: reduce) { .ds-anim { animation: none !important; } }
 
 /* ================================================================
    Challenges Page (pages/challenges.php) — Dark Operative Theme
@@ -2930,4 +2938,16 @@ body:has(.emp-employees-wrap) { background-color: #091113; }
 @keyframes emp-modal-in {
     from { opacity: 0; transform: scale(0.92) translateY(16px); }
     to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ================================================================
+   Global: prefers-reduced-motion
+   ================================================================ */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }

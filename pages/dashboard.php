@@ -138,7 +138,7 @@ require_once __DIR__ . '/../includes/header.php';
                 ? min(100, (int)round($monthlyEarned / $monthlyTarget * 100))
                 : 0;
         ?>
-        <section class="ds-id-card">
+        <section class="ds-id-card ds-anim" style="animation-delay:0.04s">
             <div class="ds-id-corner ds-id-corner--tl" aria-hidden="true"></div>
             <div class="ds-id-corner ds-id-corner--tr" aria-hidden="true"></div>
             <div class="ds-id-corner ds-id-corner--bl" aria-hidden="true"></div>
@@ -212,7 +212,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="ds-quickstats-grid">
 
-            <a href="<?= BASE_URL ?>/pages/challenges.php" class="ds-stat-card">
+            <a href="<?= BASE_URL ?>/pages/challenges.php" class="ds-stat-card ds-anim" style="animation-delay:0.12s">
                 <div class="ds-stat-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dab937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/>
@@ -225,7 +225,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </a>
 
-            <a href="<?= BASE_URL ?>/pages/rewards.php" class="ds-stat-card">
+            <a href="<?= BASE_URL ?>/pages/rewards.php" class="ds-stat-card ds-anim" style="animation-delay:0.20s">
                 <div class="ds-stat-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dab937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
@@ -238,7 +238,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </a>
 
-            <a href="<?= BASE_URL ?>/pages/history.php" class="ds-stat-card">
+            <a href="<?= BASE_URL ?>/pages/history.php" class="ds-stat-card ds-anim" style="animation-delay:0.28s">
                 <div class="ds-stat-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dab937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
@@ -254,7 +254,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- ── MISSION BRIEFS (quest scroll) ────────────────── -->
-        <section class="ds-quests-section">
+        <section class="ds-quests-section ds-anim" style="animation-delay:0.18s">
             <div class="ds-section-header">
                 <div class="ds-section-hd-left">
                     <div class="ds-section-bar"></div>
@@ -325,7 +325,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div id="dash-bottom-grid">
 
             <!-- Mission Log (Recent Activity) -->
-            <section>
+            <section class="ds-anim" style="animation-delay:0.22s">
                 <div class="ds-section-header">
                     <div class="ds-section-hd-left">
                         <div class="ds-section-bar"></div>
@@ -376,7 +376,7 @@ require_once __DIR__ . '/../includes/header.php';
             </section>
 
             <!-- Rankings (Leaderboard) -->
-            <section>
+            <section class="ds-anim" style="animation-delay:0.32s">
                 <div class="ds-section-header" style="margin-bottom:1rem;">
                     <div class="ds-section-hd-left">
                         <div class="ds-section-bar"></div>
@@ -419,7 +419,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </span>
                         </div>
                         <div class="ds-lb-bar-track">
-                            <div class="ds-lb-bar-fill <?= $isMe ? 'ds-lb-bar-fill--me' : '' ?>" style="width:<?= $barW ?>%;"></div>
+                            <div class="ds-lb-bar-fill <?= $isMe ? 'ds-lb-bar-fill--me' : '' ?>" style="width:0" data-bar="<?= $barW ?>"></div>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -463,6 +463,12 @@ require_once __DIR__ . '/../includes/header.php';
                     el.textContent = '0';
                     countUp(el, target, dur);
                 });
+                /* ── Leaderboard bar fill animation ── */
+                setTimeout(function () {
+                    document.querySelectorAll('.ds-lb-bar-fill[data-bar]').forEach(function (el) {
+                        el.style.width = el.dataset.bar + '%';
+                    });
+                }, 380);
             });
 
             /* ── Quest drag-scroll ── */
