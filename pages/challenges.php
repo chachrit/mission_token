@@ -223,29 +223,52 @@ $focusChallengeId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 try {
     $challenges = getActiveChallenges();
 
-    // Annotate with user's submission status
+    // Annotate with user's submission status (batch — avoids N+1)
     $pdo = getDB();
-    foreach ($challenges as &$ch) {
-        $stmt = $pdo->prepare("
-            SELECT TOP 1 status, token_awarded, submitted_at
-            FROM   challenge_submissions
-            WHERE  employee_id  = ? AND challenge_id = ?
-            ORDER BY submitted_at DESC
+    $mySubMap  = [];
+    $qCountMap = [];
+    if (!empty($challenges)) {
+        $chalIds      = array_map(fn($c) => (int)$c['challenge_id'], $challenges);
+        $placeholders = implode(',', array_fill(0, count($chalIds), '?'));
+
+        // Latest submission per challenge in one query
+        $subBatch = $pdo->prepare("
+            WITH ranked AS (
+                SELECT challenge_id, status, token_awarded, submitted_at,
+                       ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
+                FROM   challenge_submissions
+                WHERE  employee_id = ?
+                  AND  challenge_id IN ($placeholders)
+            )
+            SELECT challenge_id, status, token_awarded, submitted_at FROM ranked WHERE rn = 1
         ");
-        $stmt->execute([$employeeId, (int)$ch['challenge_id']]);
-        $sub = $stmt->fetch();
+        $subBatch->execute([$employeeId, ...$chalIds]);
+        foreach ($subBatch->fetchAll() as $row) {
+            $mySubMap[(int)$row['challenge_id']] = $row;
+        }
+
+        // Question counts for quiz challenges in one query
+        $qCountBatch = $pdo->prepare("
+            SELECT challenge_id, COUNT(*) AS cnt
+            FROM   quiz_questions
+            WHERE  challenge_id IN ($placeholders)
+            GROUP BY challenge_id
+        ");
+        $qCountBatch->execute($chalIds);
+        foreach ($qCountBatch->fetchAll() as $row) {
+            $qCountMap[(int)$row['challenge_id']] = (int)$row['cnt'];
+        }
+    }
+    foreach ($challenges as &$ch) {
+        $sub = $mySubMap[(int)$ch['challenge_id']] ?? null;
         $ch['my_status']       = $sub ? $sub['status']        : null;
         $ch['my_token_awarded']= $sub ? (int)$sub['token_awarded'] : 0;
         $ch['my_submitted_at'] = $sub ? $sub['submitted_at']  : null;
 
-        // Pre-load quiz questions count
         if ($ch['type'] === 'quiz') {
-            $sq = $pdo->prepare("SELECT COUNT(*) AS cnt FROM quiz_questions WHERE challenge_id = ?");
-            $sq->execute([(int)$ch['challenge_id']]);
-            $ch['question_count'] = (int)$sq->fetch()['cnt'];
+            $ch['question_count'] = $qCountMap[(int)$ch['challenge_id']] ?? 0;
         }
 
-        // Pre-parse strava condition
         if ($ch['type'] === 'strava' && !empty($ch['strava_condition'])) {
             $ch['_sc'] = json_decode((string)$ch['strava_condition'], true) ?? [];
         }
@@ -371,6 +394,22 @@ require_once __DIR__ . '/../includes/header.php';
     })();
     </script>
     <?php elseif ($flash): ?>
+    <div id="ch-error-flash-overlay" class="ch-flash-overlay" onclick="if(event.target===this)this.style.display='none'">
+        <div class="ch-flash-modal ch-flash-modal--error">
+            <div class="ch-flash-modal-icon">
+                <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                </svg>
+            </div>
+            <p class="ch-flash-modal-title">เกิดข้อผิดพลาด</p>
+            <p class="ch-flash-modal-msg"><?= e($flash['message']) ?></p>
+            <button class="ch-flash-modal-btn"
+                    onclick="document.getElementById('ch-error-flash-overlay').style.display='none'">
+                ตกลง
+            </button>
+        </div>
+    </div>
     <?php endif; ?>
 
     <!-- Strava loading overlay -->
@@ -769,9 +808,15 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- ── BACK FACE ── -->
                 <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>"
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
-                     onclick="openQuizModal(<?= $cid ?>)" style="cursor:pointer;"
+                     onclick="openQuizModal(<?= $cid ?>)"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openQuizModal(<?= $cid ?>);}"
+                     tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
+                     style="cursor:pointer;"
                      <?php elseif ($ch['type'] === 'strava'): ?>
-                     onclick="openStravaModal(<?= $cid ?>)" style="cursor:pointer;"
+                     onclick="openStravaModal(<?= $cid ?>)"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStravaModal(<?= $cid ?>);}"
+                     tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
+                     style="cursor:pointer;"
                      <?php endif; ?>>
                     <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"
                          <?php if ($ch['type'] === 'strava'): ?>style="background:linear-gradient(90deg,#FC4C02,#e04400);"<?php endif; ?>></div>
@@ -1260,8 +1305,9 @@ require_once __DIR__ . '/../includes/header.php';
         }, 180);
     }
     </script>
+<?php else: ?>
     <div class="ch-empty-board mb-10">ไม่มีภารกิจรอดำเนินการในช่วงนี้</div>
-    <?php endif; ?>
+<?php endif; ?>
 
     <!-- ── SECTION 2: ดำเนินการแล้ว ── -->
     <?php if ($questsDone): ?>
