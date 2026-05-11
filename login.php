@@ -353,7 +353,7 @@ if (isPost()) {
         </div>
 
         <div class="mb-7">
-            <h2 class="text-xl font-semibold tracking-wide" style="color:#eeebe1;">เข้าสู่ระบบ</h2>
+            <h2 class="text-xl font-bold tracking-wide" style="color:#eeebe1;">เข้าสู่ระบบ</h2>
             <p class="mt-1.5 text-sm" style="color:#6b6e77;">ใช้รหัสพนักงานและรหัสผ่านของคุณ</p>
         </div>
 
@@ -427,12 +427,10 @@ if (isPost()) {
 
         <!-- Back to home -->
         <div class="mt-6 text-center" style="display:flex; justify-content:space-between; align-items:center;">
-            <a href="<?php echo BASE_URL; ?>/index.php" class="text-xs transition-colors" style="color:#6b6e77;"
-               onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#6b6e77'">
+            <a href="<?php echo BASE_URL; ?>/index.php" class="login-footer-link">
                 ← กลับหน้าแรก
             </a>
-            <a href="<?php echo BASE_URL; ?>/forgot_password.php" class="text-xs transition-colors" style="color:#6b6e77;"
-               onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#6b6e77'">
+            <a href="<?php echo BASE_URL; ?>/forgot_password.php" class="login-footer-link">
                 ลืมรหัสผ่าน?
             </a>
         </div>
