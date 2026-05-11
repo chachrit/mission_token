@@ -483,13 +483,13 @@ body:has(.hp-wrap) { background-color: #091113; }
             <div class="hp-sidebar hidden md:block">
                 <p class="hp-sidebar-title">หัวข้อ</p>
                 <button class="hp-sidebar-link active" onclick="scrollToSection('emp-login', this)">
-                    <span class="hp-sl-icon">🔑</span> การเข้าสู่ระบบ
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">LGN</span> การเข้าสู่ระบบ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-dashboard', this)">
-                    <span class="hp-sl-icon">📊</span> Dashboard
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">DS</span> Dashboard
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-challenges', this)">
-                    <span class="hp-sl-icon">🎯</span> ภารกิจ
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">Q</span> ภารกิจ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-rewards', this)">
                     <span class="hp-sl-icon">R</span> ร้านรางวัล
@@ -498,13 +498,13 @@ body:has(.hp-wrap) { background-color: #091113; }
                     <span class="hp-sl-icon">H</span> ประวัติ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-profile', this)">
-                    <span class="hp-sl-icon">👤</span> โปรไฟล์
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">P</span> โปรไฟล์
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-strava', this)">
                     <span class="hp-sl-icon" style="font-size:0.65rem; color:#FC4C02; background:rgba(252,76,2,0.1);">STR</span> Strava
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-faq', this)">
-                    <span class="hp-sl-icon">❓</span> FAQ
+                    <span class="hp-sl-icon" style="font-size:0.65rem;">FAQ</span> FAQ
                 </button>
             </div>
 
@@ -514,7 +514,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- เข้าสู่ระบบ -->
                 <div class="hp-section open" id="emp-login" data-keywords="login เข้าสู่ระบบ รหัสผ่าน portal">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🔑</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">LGN</div>
                         <span class="hp-section-title-text">การเข้าสู่ระบบ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -522,17 +522,15 @@ body:has(.hp-wrap) { background-color: #091113; }
                     </div>
                     <div class="hp-section-body">
                         <p class="hp-intro">ใช้ <strong>รหัสพนักงาน</strong> และ <strong>รหัสผ่าน</strong> เดิมที่ใช้กับ <strong>JOURNAL Web Portal</strong> ได้เลย — ไม่ต้องสมัครใหม่</p>
-                        <p class="hp-text" style="margin-bottom:0.4rem;"><strong style="color:#eeebe1;">🔓 ลืมหรือต้องการเปลี่ยนรหัสผ่าน?</strong></p>
+                        <p class="hp-text" style="margin-bottom:0.4rem;"><strong style="color:#eeebe1;">ลืมหรือต้องการเปลี่ยนรหัสผ่าน?</strong></p>
                         <ol class="hp-steps">
                             <li><span class="hp-step-num">1</span><span>กดที่ <strong style="color:#eeebe1;">ชื่อของคุณ</strong> (มุมบนขวา) → เลือก <strong>"โปรไฟล์ของฉัน"</strong></span></li>
                             <li><span class="hp-step-num">2</span><span>เลื่อนลงหาส่วน <strong style="color:#eeebe1;">"เปลี่ยนรหัสผ่าน"</strong> กรอกรหัสเก่า + รหัสใหม่ (อย่างน้อย 8 ตัว) → กด <strong>"บันทึก"</strong></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--info">
-                            <span>💡</span>
                             <span>Login ไม่ได้เลย? ให้ <strong>ติดต่อ HR หรือ IT</strong> เพื่อขอ Reset รหัสผ่าน</span>
                         </div>
                         <div class="hp-tip hp-tip--warn">
-                            <span>⏱</span>
                             <span>ระบบออกจากระบบอัตโนมัติหากไม่มีการใช้งานนาน <strong>2 ชั่วโมง</strong></span>
                         </div>
                     </div>
@@ -541,7 +539,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- Dashboard -->
                 <div class="hp-section" id="emp-dashboard" data-keywords="dashboard หน้าแรก token streak อันดับ leaderboard">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">📊</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">DS</div>
                         <span class="hp-section-title-text">หน้า Dashboard — ภาพรวมของคุณ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -551,27 +549,27 @@ body:has(.hp-wrap) { background-color: #091113; }
                         <p class="hp-text">หน้าแรกหลัง Login แสดงข้อมูลทั้งหมดของคุณในที่เดียว</p>
                         <ol class="hp-steps">
                             <li>
-                                <span class="hp-step-num" style="background:rgba(218,185,55,0.15);">🪙</span>
+                                <span class="hp-step-num" style="background:rgba(218,185,55,0.15);">1</span>
                                 <span><strong style="color:#dab937;">กระเป๋า Token</strong> — Token คงเหลือ (ใช้แลกรางวัลได้), Token ที่ได้รับทั้งหมด, Token ที่ใช้ไปแล้ว</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">🏆</span>
+                                <span class="hp-step-num">2</span>
                                 <span><strong style="color:#eeebe1;">อันดับของคุณ</strong> — ลำดับใน Leaderboard นับจาก Token ที่ได้รับทั้งหมด (ไม่ใช่คงเหลือ)</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">🔥</span>
+                                <span class="hp-step-num">3</span>
                                 <span><strong style="color:#eeebe1;">Streak</strong> — จำนวนวันติดต่อกันที่ทำภารกิจผ่านแล้ว</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">📅</span>
+                                <span class="hp-step-num">4</span>
                                 <span><strong style="color:#eeebe1;">Token เดือนนี้</strong> — Token ที่ได้รับในเดือนปัจจุบัน</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">🎯</span>
+                                <span class="hp-step-num">5</span>
                                 <span><strong style="color:#eeebe1;">ภารกิจที่เปิดอยู่</strong> — แสดงภารกิจที่ทำได้พร้อม Token รางวัล</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">📝</span>
+                                <span class="hp-step-num">6</span>
                                 <span><strong style="color:#eeebe1;">กิจกรรมล่าสุด</strong> — 6 รายการล่าสุดที่คุณส่งงาน พร้อมสถานะ</span>
                             </li>
                         </ol>
@@ -581,7 +579,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- ภารกิจ -->
                 <div class="hp-section" id="emp-challenges" data-keywords="challenge ภารกิจ quiz photo strava การ์ด พลิก token รางวัล">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🎯</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">Q</div>
                         <span class="hp-section-title-text">หน้าภารกิจ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -600,7 +598,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                         <p class="hp-text" style="margin-top:1.25rem; margin-bottom:0.5rem;"><strong style="color:#eeebe1;">ภารกิจมี 3 ประเภท:</strong></p>
                         <div class="hp-type-grid">
                             <div class="hp-type-box hp-type-box--quiz">
-                                <p class="hp-type-label">📝 Quiz — ตอบคำถาม</p>
+                                <p class="hp-type-label">Quiz — ตอบคำถาม</p>
                                 <p class="hp-type-detail">
                                     ต้องตอบถูก <strong style="color:#eeebe1;">ทุกข้อ</strong> จึงได้ Token<br>
                                     ทำได้ <strong style="color:#e07a55;">1 ครั้งเท่านั้น</strong> ไม่มีโอกาสแก้ไข<br><br>
@@ -608,7 +606,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                                 </p>
                             </div>
                             <div class="hp-type-box hp-type-box--photo">
-                                <p class="hp-type-label">📷 Photo — ส่งรูปหลักฐาน</p>
+                                <p class="hp-type-label">Photo — ส่งรูปหลักฐาน</p>
                                 <p class="hp-type-detail">
                                     HR ตรวจสอบรูปและอนุมัติ → ได้ Token<br>
                                     ถ้า HR ไม่ผ่าน <strong style="color:#7ec98a;">ส่งใหม่ได้</strong><br><br>
@@ -616,7 +614,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                                 </p>
                             </div>
                             <div class="hp-type-box hp-type-box--strava">
-                                <p class="hp-type-label" style="color:#FC4C02;">🏃 Strava — ออกกำลังกาย</p>
+                                <p class="hp-type-label" style="color:#FC4C02;">Strava — ออกกำลังกาย</p>
                                 <p class="hp-type-detail">
                                     ระบบตรวจกิจกรรมใน Strava ว่าผ่านเงื่อนไขไหม<br>
                                     ถ้าไม่พบ <strong style="color:#FC4C02;">ลองใหม่ได้</strong> หลังบันทึกกิจกรรมเพิ่ม<br><br>
@@ -625,7 +623,6 @@ body:has(.hp-wrap) { background-color: #091113; }
                             </div>
                         </div>
                         <div class="hp-tip hp-tip--warn">
-                            <span>⚠️</span>
                             <span>Quiz ทำได้ <strong>ครั้งเดียว</strong> อ่านคำถามให้ครบก่อนกดยืนยันเสมอ</span>
                         </div>
                     </div>
@@ -650,12 +647,10 @@ body:has(.hp-wrap) { background-color: #091113; }
                             <li><span class="hp-step-num">5</span><span>รอ HR จัดเตรียมและส่งมอบ สถานะจะเปลี่ยนจาก <em>"รอดำเนินการ"</em> เป็น <em>"สำเร็จ"</em></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--gold">
-                            <span>🏷️</span>
                             <span>รางวัลบางอย่างมี <strong>รหัสคูปอง</strong> — จะปรากฏในหน้าประวัติ หลัง HR ยืนยันการส่งมอบแล้วเท่านั้น</span>
                         </div>
                         <div class="hp-tip hp-tip--info">
-                            <span>📦</span>
-                            <span>รางวัลที่มีตัวเลขสต็อก — เมื่อหมดแล้วปุ่มแลกจะปิดอัตโนมัติ</span>
+                                                        <span>รางวัลที่มีตัวเลขสต็อก — เมื่อหมดแล้วปุ่มแลกจะปิดอัตโนมัติ</span>
                         </div>
                     </div>
                 </div>
@@ -663,7 +658,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- ประวัติ -->
                 <div class="hp-section" id="emp-history" data-keywords="history ประวัติ transaction token รางวัล คูปอง">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">📋</div>
+                        <div class="hp-section-icon">H</div>
                         <span class="hp-section-title-text">หน้าประวัติ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -673,11 +668,11 @@ body:has(.hp-wrap) { background-color: #091113; }
                         <p class="hp-text">ดูประวัติทุกอย่างที่เกิดขึ้นกับบัญชี แบ่งเป็น 2 แท็บ</p>
                         <ol class="hp-steps">
                             <li>
-                                <span class="hp-step-num">🪙</span>
+                                <span class="hp-step-num">1</span>
                                 <span><strong style="color:#dab937;">แท็บ Token</strong> — รายการรับ-จ่าย Token ทั้งหมด: ได้จาก Quiz, Photo, Strava / หักเมื่อแลกรางวัล / ปรับโดย HR</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">🎁</span>
+                                <span class="hp-step-num">2</span>
                                 <span><strong style="color:#eeebe1;">แท็บ รางวัล</strong> — รายการแลกรางวัลพร้อมสถานะ: <em>รอดำเนินการ</em> / <em>สำเร็จ</em> / <em>ยกเลิก</em><br>
                                 <span style="color:#FC4C02;">รหัสคูปองจะปรากฏตรงนี้เมื่อรางวัลสำเร็จแล้ว</span></span>
                             </li>
@@ -688,7 +683,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- โปรไฟล์ -->
                 <div class="hp-section" id="emp-profile" data-keywords="profile โปรไฟล์ รูป รหัสผ่าน password อายุงาน">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">👤</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">P</div>
                         <span class="hp-section-title-text">หน้าโปรไฟล์</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -698,15 +693,15 @@ body:has(.hp-wrap) { background-color: #091113; }
                         <p class="hp-text">เข้าได้จาก เมนูชื่อของคุณ (มุมบนขวา) → "โปรไฟล์ของฉัน"</p>
                         <ol class="hp-steps">
                             <li>
-                                <span class="hp-step-num">🖼</span>
+                                <span class="hp-step-num">1</span>
                                 <span><strong style="color:#eeebe1;">เปลี่ยนรูปโปรไฟล์</strong> — กดที่รูป เลือกไฟล์ภาพ (JPG/PNG/WebP ≤ 2MB) แล้วกด "อัปโหลด"</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">🔒</span>
+                                <span class="hp-step-num">2</span>
                                 <span><strong style="color:#eeebe1;">เปลี่ยนรหัสผ่าน</strong> — กรอกรหัสปัจจุบัน + รหัสใหม่ (อย่างน้อย 8 ตัว) แล้วกด "บันทึก"</span>
                             </li>
                             <li>
-                                <span class="hp-step-num">📅</span>
+                                <span class="hp-step-num">3</span>
                                 <span><strong style="color:#eeebe1;">อายุงาน</strong> — แสดงระยะเวลาที่ทำงานในองค์กร</span>
                             </li>
                         </ol>
@@ -747,7 +742,6 @@ body:has(.hp-wrap) { background-color: #091113; }
                         </ol>
 
                         <div class="hp-tip hp-tip--warn">
-                            <span>⚠️</span>
                             <span>กิจกรรมใน Strava ต้องตั้งเป็น <strong>"Everyone"</strong> หรือ <strong>"Followers"</strong> (ไม่ใช่ Private) ระบบจึงจะมองเห็น</span>
                         </div>
                     </div>
@@ -831,22 +825,22 @@ body:has(.hp-wrap) { background-color: #091113; }
             <div class="hp-sidebar hidden md:block">
                 <p class="hp-sidebar-title">หัวข้อ</p>
                 <button class="hp-sidebar-link active" onclick="scrollToSection('hr-challenges', this)">
-                    <span class="hp-sl-icon">🎯</span> จัดการภารกิจ
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">Q</span> จัดการภารกิจ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-submissions', this)">
-                    <span class="hp-sl-icon">✅</span> อนุมัติงาน
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">OK</span> อนุมัติงาน
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-rewards', this)">
-                    <span class="hp-sl-icon">🎁</span> จัดการรางวัล
+                    <span class="hp-sl-icon">R</span> จัดการรางวัล
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-redemptions', this)">
-                    <span class="hp-sl-icon">🔄</span> คำขอแลกรางวัล
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">RQ</span> คำขอแลกรางวัล
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-employees', this)">
-                    <span class="hp-sl-icon">👤</span> จัดการพนักงาน
+                    <span class="hp-sl-icon" style="font-size:0.6rem;">EMP</span> จัดการพนักงาน
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('hr-faq', this)">
-                    <span class="hp-sl-icon">❓</span> FAQ
+                    <span class="hp-sl-icon" style="font-size:0.65rem;">FAQ</span> FAQ
                 </button>
             </div>
 
@@ -856,7 +850,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- จัดการภารกิจ -->
                 <div class="hp-section open" id="hr-challenges" data-keywords="challenge ภารกิจ สร้าง quiz strava photo toggle ลบ">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🎯</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">Q</div>
                         <span class="hp-section-title-text">จัดการภารกิจ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -880,7 +874,6 @@ body:has(.hp-wrap) { background-color: #091113; }
                             </div>
                         </div>
                         <div class="hp-tip hp-tip--warn" style="margin-top:1rem;">
-                            <span>🗑️</span>
                             <span>การ <strong>ลบภารกิจ</strong> จะลบประวัติการส่งงานและ Token ที่เคยให้ไปด้วย — ถาวร ไม่สามารถกู้คืนได้ ใช้ปุ่ม Toggle ซ่อนแทนถ้าไม่แน่ใจ</span>
                         </div>
                     </div>
@@ -889,7 +882,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- อนุมัติงาน -->
                 <div class="hp-section" id="hr-submissions" data-keywords="submission อนุมัติ ปฏิเสธ รูป photo pending badge">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">✅</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">OK</div>
                         <span class="hp-section-title-text">อนุมัติงาน (Photo Submission)</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -923,7 +916,6 @@ body:has(.hp-wrap) { background-color: #091113; }
                             <li><span class="hp-step-num">4</span><span>กด <strong>"บันทึก"</strong></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--gold">
-                            <span>💡</span>
                             <span>แนะนำให้ใช้ปุ่ม <strong>Toggle ปิด</strong> รางวัลแทนการลบ เพื่อไม่ให้ประวัติพนักงานหาย<br>ลบได้เฉพาะรางวัลที่ยังไม่มีใครแลกเท่านั้น</span>
                         </div>
                     </div>
@@ -932,7 +924,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- คำขอแลกรางวัล -->
                 <div class="hp-section" id="hr-redemptions" data-keywords="redemption แลก ส่งมอบ ยกเลิก คืน token fulfill cancel">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🔄</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">RQ</div>
                         <span class="hp-section-title-text">คำขอแลกรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -947,7 +939,6 @@ body:has(.hp-wrap) { background-color: #091113; }
                             <li><span class="hp-step-num">4</span><span>สถานะเปลี่ยนเป็น <strong style="color:#7ec98a;">"สำเร็จ"</strong> พนักงานเห็นรหัสคูปอง (ถ้ามี)</span></li>
                         </ol>
                         <div class="hp-tip hp-tip--info">
-                            <span>↩️</span>
                             <span>กด <strong>"ยกเลิก"</strong> → Token จะถูก <strong>คืนให้พนักงานอัตโนมัติ</strong></span>
                         </div>
                     </div>
@@ -956,7 +947,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- จัดการพนักงาน -->
                 <div class="hp-section" id="hr-employees" data-keywords="employee พนักงาน token ปรับ reset password role บัญชี ปิด">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">👤</div>
+                        <div class="hp-section-icon" style="font-size:0.6rem;">EMP</div>
                         <span class="hp-section-title-text">จัดการพนักงาน</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -964,13 +955,12 @@ body:has(.hp-wrap) { background-color: #091113; }
                     </div>
                     <div class="hp-section-body">
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">🔍</span><span><strong style="color:#eeebe1;">ค้นหา</strong> พนักงานด้วยชื่อหรือรหัส</span></li>
-                            <li><span class="hp-step-num">🔛</span><span><strong style="color:#eeebe1;">เปิด/ปิดบัญชี</strong> — บัญชีที่ปิดจะ Login ไม่ได้</span></li>
-                            <li><span class="hp-step-num">🪙</span><span><strong style="color:#dab937;">ปรับ Token</strong> — เพิ่มหรือหักโดยตรง พร้อมระบุเหตุผล (บันทึกในประวัติ)</span></li>
-                            <li><span class="hp-step-num">🔑</span><span><strong style="color:#eeebe1;">รีเซ็ตรหัสผ่าน</strong> ให้พนักงาน</span></li>
+                            <li><span class="hp-step-num">1</span><span><strong style="color:#eeebe1;">ค้นหา</strong> พนักงานด้วยชื่อหรือรหัส</span></li>
+                            <li><span class="hp-step-num">2</span><span><strong style="color:#eeebe1;">เปิด/ปิดบัญชี</strong> — บัญชีที่ปิดจะ Login ไม่ได้</span></li>
+                            <li><span class="hp-step-num">3</span><span><strong style="color:#dab937;">ปรับ Token</strong> — เพิ่มหรือหักโดยตรง พร้อมระบุเหตุผล (บันทึกในประวัติ)</span></li>
+                            <li><span class="hp-step-num">4</span><span><strong style="color:#eeebe1;">รีเซ็ตรหัสผ่าน</strong> ให้พนักงาน</span></li>
                         </ol>
                         <div class="hp-tip hp-tip--warn">
-                            <span>🛡️</span>
                             <span>เฉพาะ <strong>Admin</strong> เท่านั้นที่เปลี่ยน Role หรือลบบัญชีได้ — ไม่สามารถกระทำกับบัญชีตัวเองได้</span>
                         </div>
                     </div>
@@ -979,7 +969,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- FAQ HR -->
                 <div class="hp-section" id="hr-faq" data-keywords="faq คำถาม hr admin token คืน toggle ลบ">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">❓</div>
+                        <div class="hp-section-icon" style="font-size:0.65rem;">FAQ</div>
                         <span class="hp-section-title-text">คำถามที่พบบ่อย</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -1029,7 +1019,6 @@ body:has(.hp-wrap) { background-color: #091113; }
         </div><!-- /panel-hr -->
 
         <div class="hp-no-result" id="hp-no-result">
-            <div class="hp-no-result-icon">🔍</div>
             ไม่พบข้อมูลที่ค้นหา ลองใช้คำอื่น
         </div>
 
