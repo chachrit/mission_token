@@ -67,17 +67,28 @@ try {
         $monthlyEarned = (int)($mStmt->fetch()['monthly_earned'] ?? 0);
     } catch (Throwable $ignored) {}
 
-    // Annotate each challenge with this user's submission status
-    foreach ($activeChallenges as &$ch) {
-        $stmt = $pdo->prepare("
-            SELECT TOP 1 status, token_awarded
-            FROM   challenge_submissions
-            WHERE  employee_id  = ?
-              AND  challenge_id = ?
-            ORDER BY submitted_at DESC
+    // Annotate each challenge with this user's submission status (batch — 1 query total)
+    $mySubMap = [];
+    if ($activeChallenges) {
+        $chalIds      = array_map(fn($c) => (int)$c['challenge_id'], $activeChallenges);
+        $placeholders = implode(',', array_fill(0, count($chalIds), '?'));
+        $subBatch = $pdo->prepare("
+            WITH ranked AS (
+                SELECT challenge_id, status, token_awarded,
+                       ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
+                FROM   challenge_submissions
+                WHERE  employee_id = ?
+                  AND  challenge_id IN ($placeholders)
+            )
+            SELECT challenge_id, status, token_awarded FROM ranked WHERE rn = 1
         ");
-        $stmt->execute([$employeeId, (int)$ch['challenge_id']]);
-        $sub = $stmt->fetch();
+        $subBatch->execute([$employeeId, ...$chalIds]);
+        foreach ($subBatch->fetchAll() as $row) {
+            $mySubMap[(int)$row['challenge_id']] = $row;
+        }
+    }
+    foreach ($activeChallenges as &$ch) {
+        $sub = $mySubMap[(int)$ch['challenge_id']] ?? null;
         $ch['my_status']        = $sub ? $sub['status']        : null;
         $ch['my_token_awarded'] = $sub ? (int)$sub['token_awarded'] : 0;
     }

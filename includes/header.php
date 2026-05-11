@@ -100,18 +100,15 @@ $flash        = $flash ?? getFlash();
             border-bottom: 2px solid #dab937;
         }
 
-        /* Token shimmer on nav balance */
-        @keyframes gold-shimmer {
-            0%   { background-position: -200% center; }
-            100% { background-position: 200% center; }
+        /* Global keyboard focus ring (WCAG 2.1 AA on dark backgrounds) */
+        :focus-visible {
+            outline: 2px solid #dab937;
+            outline-offset: 3px;
+            border-radius: 4px;
         }
-        .text-gold-shimmer {
-            background: linear-gradient(90deg, #dab937 0%, #f8e769 45%, #c9a830 55%, #dab937 100%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gold-shimmer 3s linear infinite;
+        a:focus:not(:focus-visible),
+        button:focus:not(:focus-visible) {
+            outline: none;
         }
 
         /* Card base */
@@ -344,7 +341,7 @@ $flash        = $flash ?? getFlash();
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
                          style="background:#1a1f20; border: 1px solid #3a3e43;">
                         <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
-                        <span class="text-sm font-semibold text-gold-shimmer" id="nav-balance"><?php echo formatTokens($navBalance); ?></span>
+                        <span class="text-sm font-semibold" id="nav-balance" style="color:#dab937;"><?php echo formatTokens($navBalance); ?></span>
                     </div>
                     <?php endif; ?>
 

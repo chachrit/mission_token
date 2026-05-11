@@ -1515,7 +1515,7 @@ body:has(.ds-dashboard-wrap) {
     background: rgba(255,255,255,0.03);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 16px; padding: 1.25rem;
-    flex: 0 0 220px; display: flex; flex-direction: column; gap: 0.75rem;
+    flex: 0 0 clamp(200px, 60vw, 260px); display: flex; flex-direction: column; gap: 0.75rem;
     transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, background 0.2s;
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
