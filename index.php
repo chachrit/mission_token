@@ -91,7 +91,7 @@ require_once __DIR__ . '/includes/header.php';
         <!-- Hero content (always centered) -->
         <div class="relative z-10 max-w-2xl mx-auto text-center px-6 py-16">
             <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="JOURNAL" class="hero-logo mx-auto mb-6">
-            <h1 class="text-5xl font-semibold tracking-[0.04em] text-j-ivory sm:text-7xl lg:text-8xl leading-tight">
+            <h1 class="text-5xl font-bold tracking-[0.04em] text-j-ivory sm:text-7xl lg:text-8xl leading-tight">
                 MISSION<br>
                 <span class="text-j-gold">TOKEN</span>
             </h1>
@@ -131,7 +131,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <!-- Scroll indicator -->
-        <div class="hero-scroll-indicator" id="hero-scroll-btn" aria-hidden="true">
+        <div class="hero-scroll-indicator" id="hero-scroll-btn" role="button" tabindex="0" aria-label="เลื่อนลงเพื่ออ่านต่อ" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('hero-scroll-btn').click();}">        
             <span>SCROLL</span>
             <div class="hero-scroll-arrow"></div>
         </div>
@@ -193,8 +193,8 @@ require_once __DIR__ . '/includes/header.php';
 
             <!-- Tab switcher -->
             <div class="guide-tabs" style="margin-bottom:2.5rem;">
-                <button class="guide-tab-btn active" id="tab-employee" onclick="switchGuideTab('employee')">พนักงาน</button>
-                <button class="guide-tab-btn" id="tab-hr" onclick="switchGuideTab('hr')">HR</button>
+                <button type="button" class="guide-tab-btn active" id="tab-employee" onclick="switchGuideTab('employee')">พนักงาน</button>
+                <button type="button" class="guide-tab-btn" id="tab-hr" onclick="switchGuideTab('hr')">HR</button>
             </div>
 
             <!-- Employee flow -->

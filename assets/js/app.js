@@ -100,7 +100,7 @@ function showTokenReward(amount, message = '') {
         'border-radius:20px', 'padding:2rem 3rem',
         'text-align:center', 'z-index:10000',
         'box-shadow:0 20px 60px rgba(0,0,0,0.4)',
-        'transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s',
+        'transition:transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s',
         'opacity:0'
     ].join(';');
 
