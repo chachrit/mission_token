@@ -293,7 +293,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
                 <button onclick="document.getElementById('create-form').classList.toggle('open');
                                  this.textContent = document.getElementById('create-form').classList.contains('open')
-                                                    ? '✕ ปิด' : '+ เพิ่มรางวัลใหม่';"
+                                                    ? 'ปิด' : '+ เพิ่มรางวัลใหม่';"
                         class="ch-btn-start" style="padding:0.55rem 1.1rem; font-size:0.82rem; border-radius:10px; flex-shrink:0;">
                     + เพิ่มรางวัลใหม่
                 </button>

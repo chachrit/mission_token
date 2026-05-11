@@ -1465,7 +1465,7 @@ function rdCopyCoupon() {
     var btn  = document.getElementById('rdd-coupon-copy');
     navigator.clipboard.writeText(code).then(function() {
         var orig = btn.textContent;
-        btn.textContent = '✓ คัดลอกแล้ว';
+        btn.textContent = 'คัดลอกแล้ว';
         btn.style.color = '#7ec98a';
         setTimeout(function() { btn.textContent = orig; btn.style.color = '#dab937'; }, 1800);
     });

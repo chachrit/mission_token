@@ -202,7 +202,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
                 <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
                           text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
-                    ⬡ &nbsp;ADMIN — REDEMPTION REQUESTS
+                    ADMIN — REDEMPTION REQUESTS
                 </p>
                 <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
                     คำขอแลกรางวัล
@@ -358,7 +358,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                        transition:background 0.15s;"
                                 onmouseover="this.style.background='rgba(81,142,92,0.25)'"
                                 onmouseout="this.style.background='rgba(81,142,92,0.15)'">
-                            ✓ มอบรางวัลแล้ว
+                            มอบรางวัลแล้ว
                         </button>
                         <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
                                                        <?= json_encode($rd['full_name']) ?>,
@@ -370,7 +370,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                        transition:background 0.15s;"
                                 onmouseover="this.style.background='rgba(210,89,42,0.22)'"
                                 onmouseout="this.style.background='rgba(210,89,42,0.12)'">
-                            ✕ ยกเลิก
+                            ยกเลิก
                         </button>
                     </div>
                     <?php else: ?>

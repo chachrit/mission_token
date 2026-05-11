@@ -318,7 +318,7 @@ require_once __DIR__ . '/../../includes/header.php';
             </a>
             <div>
                 <p class="ace-section-title" style="margin-bottom:0.3rem;">
-                    ⬡ &nbsp;ADMIN — <?= $isEdit ? 'EDIT CHALLENGE' : 'NEW CHALLENGE' ?>
+                    ADMIN — <?= $isEdit ? 'EDIT CHALLENGE' : 'NEW CHALLENGE' ?>
                 </p>
                 <h1 style="font-size:1.5rem; font-weight:800; color:#eeebe1;
                            margin:0; letter-spacing:-0.01em;">
@@ -667,10 +667,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div style="background:rgba(255,255,255,0.025); border:1px dashed rgba(255,255,255,0.12);
-                        border-radius:16px; padding:3rem; text-align:center; margin-bottom:1.5rem;">
-                <p style="font-size:1.5rem; margin:0 0 0.4rem; opacity:0.15;">❓</p>
-                <p style="font-size:0.85rem; color:#6b6e77; margin:0;">
+            <div style="padding:3.5rem; text-align:center; margin-bottom:1.5rem;">
+                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">
                     ยังไม่มีคำถาม — กด "เพิ่มคำถาม" เพื่อเริ่มต้น
                 </p>
             </div>

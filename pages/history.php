@@ -574,7 +574,7 @@ window.hycopyCoupon = function (code, id) {
         var btn = document.getElementById('hy-coupon-copy-' + id);
         if (!btn) return;
         var orig = btn.innerHTML;
-        btn.textContent = '✓ คัดลอกแล้ว';
+        btn.textContent = 'คัดลอกแล้ว';
         setTimeout(function () { btn.innerHTML = orig; }, 1500);
     });
 };
@@ -951,7 +951,7 @@ function hyRdCopyCoupon() {
     var code = document.getElementById('hyrd-coupon-code').textContent.trim();
     var btn  = document.getElementById('hyrd-coupon-copy');
     navigator.clipboard.writeText(code).then(function() {
-        var orig = btn.textContent; btn.textContent = '✓ คัดลอกแล้ว'; btn.style.color = '#7ec98a';
+        var orig = btn.textContent; btn.textContent = 'คัดลอกแล้ว'; btn.style.color = '#7ec98a';
         setTimeout(function() { btn.textContent = orig; btn.style.color = '#dab937'; }, 1800);
     });
 }

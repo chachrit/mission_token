@@ -350,7 +350,7 @@ function fpCopy() {
     var pw = document.getElementById('fp-pw-text').textContent.trim();
     navigator.clipboard.writeText(pw).then(function() {
         var lbl = document.getElementById('fp-copy-lbl');
-        lbl.textContent = 'คัดลอกแล้ว ✓';
+        lbl.textContent = 'คัดลอกแล้ว';
         setTimeout(function() { lbl.textContent = 'คัดลอกรหัสผ่าน'; }, 2000);
     });
 }

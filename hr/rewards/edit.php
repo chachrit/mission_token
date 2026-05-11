@@ -184,7 +184,7 @@ function arToggleCoupon(cat) {
             </div>
             <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
                       text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
-                ⬡ &nbsp;ADMIN — EDIT REWARD
+                ADMIN — EDIT REWARD
             </p>
             <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0; letter-spacing:-0.02em;">
                 แก้ไขรางวัล

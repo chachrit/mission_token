@@ -47,7 +47,7 @@ try {
         'ADMIN001', 'System Admin', 'IT Department', 'System Administrator',
         'admin@journal.co.th', $adminHash, 'admin'
     ]);
-    seedLog($log, '✓ Admin user: ADMIN001 / Admin@2026');
+    seedLog($log, 'Admin user: ADMIN001 / Admin@2026');
 
     // Get admin ID
     $stmt = $pdo->prepare("SELECT employee_id FROM employees WHERE employee_code = ?");
@@ -92,7 +92,7 @@ try {
         ");
         $stmt->execute([$empId, $empId]);
 
-        seedLog($log, "✓ Employee: {$emp[0]} — {$emp[1]}");
+        seedLog($log, "Employee: {$emp[0]} — {$emp[1]}");
     }
 
     // ============================================================
@@ -112,7 +112,7 @@ try {
         'ตอบคำถาม 1 ข้อ เลือกคำตอบที่ถูกต้องที่สุด รับ Token ทันทีเมื่อตอบถูก',
         $today, $nextMonth, $adminId
     ]);
-    seedLog($log, '✓ Challenge (Quiz): ทดสอบความรู้แบรนด์ JOURNAL');
+    seedLog($log, 'Challenge (Quiz): ทดสอบความรู้แบรนด์ JOURNAL');
 
     $stmt = $pdo->prepare("SELECT challenge_id FROM challenges WHERE title = N'ทดสอบความรู้แบรนด์ JOURNAL'");
     $stmt->execute();
@@ -158,7 +158,7 @@ try {
             $stmt->execute($q);
         }
     }
-    seedLog($log, '✓ Quiz questions: 3 ข้อ');
+    seedLog($log, 'Quiz questions: 3 ข้อ');
 
     // ============================================================
     // 4. Sample Challenge 2 — Photo Upload (Admin Approve)
@@ -174,7 +174,7 @@ try {
         "1. ถ่ายรูปขณะทำกิจกรรมกับทีม (อย่างน้อย 2 คนขึ้นไป)\n2. รูปต้องเห็นหน้าชัดเจน\n3. รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 5MB\n4. ทีม Admin จะตรวจสอบและอนุมัติภายใน 1 วันทำการ",
         $today, $nextMonth, $adminId
     ]);
-    seedLog($log, '✓ Challenge (Photo): บันทึกกิจกรรมทีม');
+    seedLog($log, 'Challenge (Photo): บันทึกกิจกรรมทีม');
 
     $pdo->commit();
 

@@ -580,7 +580,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <button type="submit"
                                     id="quiz-submit-btn"
                                     class="btn-gold ml-auto text-sm px-6 py-2.5"
-                                    disabled>✓ ส่งคำตอบ</button>
+                                    disabled>ส่งคำตอบ</button>
                             <?php endif; ?>
                         </div>
                     </div>

@@ -156,7 +156,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div>
                 <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
                           text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
-                    ⬡ &nbsp;ADMIN — SUBMISSIONS
+                    ADMIN — SUBMISSIONS
                 </p>
                 <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
                     อนุมัติงานที่ส่ง
@@ -203,7 +203,6 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (empty($submissions)): ?>
         <div style="border-radius:16px; padding:5rem 2rem; text-align:center;
                     background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08);">
-            <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem;">✓</p>
             <p style="font-size:0.88rem; color:#6b6e77; margin:0;">
                 <?= $filter === 'all' ? 'ยังไม่มีการส่งงานในระบบ' : 'ไม่มีงานรอตรวจสอบในขณะนี้' ?>
             </p>
@@ -247,8 +246,8 @@ require_once __DIR__ . '/../includes/header.php';
                         font-size:0.72rem; font-weight:700; color:<?= $barColor ?>;">
                 <span>
                     <?php if ($isPending): ?>รอตรวจสอบ
-                    <?php elseif ($isApproved): ?>✓ อนุมัติแล้ว
-                    <?php else: ?>✕ ปฏิเสธ<?php endif; ?>
+                    <?php elseif ($isApproved): ?>อนุมัติแล้ว
+                    <?php else: ?>ปฏิเสธ<?php endif; ?>
                 </span>
                 <span style="font-weight:400; opacity:0.70; font-size:0.68rem;"><?= $submittedDate ?></span>
             </div>
@@ -313,7 +312,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <?php if ($isApproved && $sub['token_awarded'] > 0): ?>
                 <p style="margin:0.6rem 0 0; font-size:0.75rem; font-weight:700; color:#7ec98a;">
-                    ✓ มอบ +<?= formatTokens((int)$sub['token_awarded']) ?> Token แล้ว
+                    อนุมัติแล้ว +<?= formatTokens((int)$sub['token_awarded']) ?> Token
                 </p>
                 <?php endif; ?>
             </div>
@@ -344,7 +343,7 @@ require_once __DIR__ . '/../includes/header.php';
                                        border:1px solid rgba(81,142,92,0.30); transition:background 0.15s;"
                                 onmouseover="this.style.background='rgba(81,142,92,0.28)'"
                                 onmouseout="this.style.background='rgba(81,142,92,0.15)'">
-                            ✓ อนุมัติ
+                            อนุมัติ
                         </button>
                     </form>
                     <form method="POST" action="<?= BASE_URL ?>/hr/submissions.php"
@@ -362,7 +361,7 @@ require_once __DIR__ . '/../includes/header.php';
                                        border:1px solid rgba(210,89,42,0.28); transition:background 0.15s;"
                                 onmouseover="this.style.background='rgba(210,89,42,0.25)'"
                                 onmouseout="this.style.background='rgba(210,89,42,0.12)'">
-                            ✕ ปฏิเสธ
+                            ปฏิเสธ
                         </button>
                     </form>
                 </div>

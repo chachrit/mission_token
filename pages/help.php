@@ -634,7 +634,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- ร้านรางวัล -->
                 <div class="hp-section" id="emp-rewards" data-keywords="reward รางวัล แลก token shop คูปอง stock">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🎁</div>
+                        <div class="hp-section-icon">รางวัล</div>
                         <span class="hp-section-title-text">ร้านรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -756,7 +756,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- FAQ พนักงาน -->
                 <div class="hp-section" id="emp-faq" data-keywords="faq คำถาม quiz ซ้ำ token หมดอายุ strava ไม่พบ">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">❓</div>
+                        <div class="hp-section-icon">ช่วยเหลือ</div>
                         <span class="hp-section-title-text">คำถามที่พบบ่อย</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -909,7 +909,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                 <!-- จัดการรางวัล -->
                 <div class="hp-section" id="hr-rewards" data-keywords="reward รางวัล สร้าง คูปอง stock toggle ลบ">
                     <div class="hp-section-header" onclick="toggleSection(this)">
-                        <div class="hp-section-icon">🎁</div>
+                        <div class="hp-section-icon">จัดการรางวัล</div>
                         <span class="hp-section-title-text">จัดการรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
@@ -918,7 +918,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                     <div class="hp-section-body">
                         <ol class="hp-steps">
                             <li><span class="hp-step-num">1</span><span>กด <strong style="color:#dab937;">"+ เพิ่มรางวัล"</strong></span></li>
-                            <li><span class="hp-step-num">2</span><span>กรอก ชื่อ, รายละเอียด, อีโมจิ 🎁, หมวดหมู่, ราคา Token, สต็อก (ว่าง = ไม่จำกัด)</span></li>
+                            <li><span class="hp-step-num">2</span><span>กรอก ชื่อ, รายละเอียด, ไอคอน, หมวดหมู่, ราคา Token, สต็อก (ว่าง = ไม่จำกัด)</span></li>
                             <li><span class="hp-step-num">3</span><span>(ไม่บังคับ) กรอก <strong style="color:#dab937;">รหัสคูปอง</strong> + วันหมดอายุ — พนักงานเห็นได้หลัง HR ส่งมอบแล้วเท่านั้น</span></li>
                             <li><span class="hp-step-num">4</span><span>กด <strong>"บันทึก"</strong></span></li>
                         </ol>
