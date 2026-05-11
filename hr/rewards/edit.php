@@ -129,6 +129,13 @@ require_once __DIR__ . '/../../includes/header.php';
     background: rgba(255,255,255,0.45); transition: transform 0.2s;
 }
 .are-active-toggle.on::after { transform: translateX(20px); background: #7ec98a; }
+/* Responsive grids */
+.are-grid-emoji { display: grid; grid-template-columns: 90px 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+.are-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
+@media (max-width: 560px) {
+    .are-grid-emoji { grid-template-columns: 64px 1fr; gap: 0.85rem; }
+    .are-grid-3 { grid-template-columns: 1fr; }
+}
 </style>
 <script>
 function arToggleExpiry(val) {
@@ -204,7 +211,7 @@ function arToggleCoupon(cat) {
                         border-radius:20px; padding:2rem; backdrop-filter:blur(12px);">
 
                 <!-- Emoji + title -->
-                <div style="display:grid; grid-template-columns:90px 1fr; gap:1.25rem; margin-bottom:1.25rem;">
+                <div class="are-grid-emoji">
                     <div>
                         <label class="are-label">Emoji</label>
                         <input type="text" name="image_emoji"
@@ -230,7 +237,7 @@ function arToggleCoupon(cat) {
                 </div>
 
                 <!-- Category + cost + stock -->
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1.5rem;">
+                <div class="are-grid-3">
                     <div>
                         <label class="are-label">หมวดหมู่</label>
                         <select name="category" id="category-select" class="journal-input" onchange="arToggleCoupon(this.value)">

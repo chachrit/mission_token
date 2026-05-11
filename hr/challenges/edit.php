@@ -274,6 +274,21 @@ require_once __DIR__ . '/../../includes/header.php';
     font-size: 0.60rem; font-weight: 700; letter-spacing: 0.30em;
     text-transform: uppercase; color: rgba(218,185,55,0.55);
 }
+/* Responsive 2-col grids */
+.ace-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+.ace-grid-strava {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem;
+}
+@media (max-width: 560px) {
+    .ace-grid-2 { grid-template-columns: 1fr; }
+    .ace-grid-strava { grid-template-columns: 1fr; }
+}
 </style>
 
 <div class="ace-edit-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
@@ -344,7 +359,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <!-- Type + Token reward -->
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="ace-grid-2">
                         <div>
                             <label class="ace-label">ประเภทภารกิจ <span style="color:#d2592a;">*</span></label>
                             <select name="type" id="challenge-type" class="journal-input"
@@ -362,7 +377,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <!-- Date range -->
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                    <div class="ace-grid-2">
                         <div>
                             <label class="ace-label">วันเริ่ม <span style="color:#d2592a;">*</span></label>
                             <input type="date" name="start_date" value="<?= e($f['start_date']) ?>"
@@ -381,7 +396,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                     border-radius:12px; padding:1.1rem 1.25rem;">
                             <p style="font-size:0.72rem; font-weight:700; color:rgba(252,76,2,0.8);
                                       letter-spacing:0.08em; text-transform:uppercase; margin:0 0 0.9rem;">🏃 Strava Conditions</p>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.85rem;">
+                            <div class="ace-grid-strava">
                                 <div>
                                     <label class="ace-label">ประเภทกิจกรรม</label>
                                     <select name="strava_sport_type" class="journal-input">
