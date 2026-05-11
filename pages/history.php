@@ -822,7 +822,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                                        background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.25);
                                        border-radius:7px; color:#dab937; cursor:pointer;
                                        font-size:0.72rem; font-weight:600; font-family:'Prompt',sans-serif;
-                                       padding:0.3rem 0.65rem; white-space:nowrap;">📋 คัดลอก</button>
+                                       padding:0.3rem 0.65rem; white-space:nowrap;">คัดลอก</button>
                     </div>
                 </div>
             </div>

@@ -492,10 +492,10 @@ body:has(.hp-wrap) { background-color: #091113; }
                     <span class="hp-sl-icon">🎯</span> ภารกิจ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-rewards', this)">
-                    <span class="hp-sl-icon">🎁</span> ร้านรางวัล
+                    <span class="hp-sl-icon">R</span> ร้านรางวัล
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-history', this)">
-                    <span class="hp-sl-icon">📋</span> ประวัติ
+                    <span class="hp-sl-icon">H</span> ประวัติ
                 </button>
                 <button class="hp-sidebar-link" onclick="scrollToSection('emp-profile', this)">
                     <span class="hp-sl-icon">👤</span> โปรไฟล์
@@ -679,7 +679,7 @@ body:has(.hp-wrap) { background-color: #091113; }
                             <li>
                                 <span class="hp-step-num">🎁</span>
                                 <span><strong style="color:#eeebe1;">แท็บ รางวัล</strong> — รายการแลกรางวัลพร้อมสถานะ: <em>รอดำเนินการ</em> / <em>สำเร็จ</em> / <em>ยกเลิก</em><br>
-                                <span style="color:#FC4C02;">🔓 รหัสคูปองจะปรากฏตรงนี้เมื่อรางวัลสำเร็จแล้ว</span></span>
+                                <span style="color:#FC4C02;">รหัสคูปองจะปรากฏตรงนี้เมื่อรางวัลสำเร็จแล้ว</span></span>
                             </li>
                         </ol>
                     </div>
