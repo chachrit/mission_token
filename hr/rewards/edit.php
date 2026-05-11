@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title      = trim($_POST['title']       ?? '');
     $desc       = trim($_POST['description'] ?? '');
-    $emoji      = mb_substr(trim($_POST['image_emoji'] ?? '🎁'), 0, 4, 'UTF-8');
+    $emoji      = mb_substr(trim($_POST['image_emoji'] ?? 'R'), 0, 4, 'UTF-8');
     $category   = $_POST['category']         ?? 'general';
     $cost       = max(1, (int)($_POST['token_cost'] ?? 50));
     $stockRaw   = trim($_POST['stock']       ?? '');
@@ -191,7 +191,7 @@ function arToggleCoupon(cat) {
             </h1>
             <?php if ($reward): ?>
             <p style="font-size:0.82rem; color:#6b6e77; margin:0.3rem 0 0;">
-                <?= e($reward['image_emoji'] ?: '🎁') ?> <?= e($reward['title']) ?>
+                R <?= e($reward['title']) ?>
             </p>
             <?php endif; ?>
         </div>
@@ -210,12 +210,12 @@ function arToggleCoupon(cat) {
             <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                         border-radius:20px; padding:2rem; backdrop-filter:blur(12px);">
 
-                <!-- Emoji + title -->
+                <!-- Icon + title -->
                 <div class="are-grid-emoji">
                     <div>
-                        <label class="are-label">Emoji</label>
+                        <label class="are-label">ไอคอน</label>
                         <input type="text" name="image_emoji"
-                               value="<?= e($reward['image_emoji'] ?: '🎁') ?>"
+                               value="<?= e($reward['image_emoji'] ?: 'R') ?>"
                                maxlength="4" class="journal-input"
                                style="font-size:1.8rem; text-align:center; padding:0.4rem;">
                     </div>
@@ -271,7 +271,12 @@ function arToggleCoupon(cat) {
                             background:rgba(218,185,55,0.04); border-radius:12px;
                             border:1px solid rgba(218,185,55,0.12);">
                     <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-                        <span style="font-size:1rem;">🔑</span>
+                        <span style="font-size:1rem; display:inline-flex; align-items:center;">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                                <circle cx="8" cy="12" r="3" stroke-width="2"/>
+                                <path d="M11 12h10M18 12v3M15 12v2" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </span>
                         <div>
                             <p style="font-size:0.82rem; font-weight:700; color:#eeebe1; margin:0;">รหัสคูปอง / โค้ดส่วนลด</p>
                             <p style="font-size:0.72rem; color:#6b6e77; margin:0;">
@@ -314,7 +319,7 @@ function arToggleCoupon(cat) {
                                style="color-scheme:dark;">
                         <?php if ($expiresAt): ?>
                         <p style="font-size:0.68rem; color:#dab937; margin-top:0.3rem;">
-                            ⏱ หมดอายุ: <?= (new DateTime((string)$expiresAt))->format('d/m/Y H:i') ?> น.
+                            หมดอายุ: <?= (new DateTime((string)$expiresAt))->format('d/m/Y H:i') ?> น.
                         </p>
                         <?php endif; ?>
                     </div>
@@ -369,7 +374,7 @@ function arToggleCoupon(cat) {
                     </a>
                     <button type="submit" class="ch-btn-start"
                             style="padding:0.6rem 1.5rem; font-size:0.85rem; border-radius:10px;">
-                        💾 บันทึกการแก้ไข
+                        บันทึกการแก้ไข
                     </button>
                 </div>
             </div>

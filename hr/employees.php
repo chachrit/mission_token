@@ -351,7 +351,12 @@ $roleMeta = [
 
             <?php if (empty($employees)): ?>
             <div style="padding:4rem 2rem; text-align:center;">
-                <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem;">👤</p>
+                <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem; display:inline-flex; align-items:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <circle cx="12" cy="8" r="3.5" stroke-width="2"/>
+                        <path d="M5 20a7 7 0 0 1 14 0" stroke-width="2"/>
+                    </svg>
+                </p>
                 <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ไม่พบพนักงานที่ตรงกับเงื่อนไข</p>
             </div>
             <?php else: ?>
@@ -488,7 +493,7 @@ $roleMeta = [
                                    cursor:pointer; white-space:nowrap; transition:background 0.15s;"
                             onmouseover="this.style.background='rgba(218,185,55,0.22)'"
                             onmouseout="this.style.background='rgba(218,185,55,0.10)'">
-                        ⚖ Token
+                        Token
                     </button>
                     <?php endif; ?>
                     <?php if ($isAdminOnly && !$isMe): ?>
@@ -500,7 +505,7 @@ $roleMeta = [
                                    cursor:pointer; white-space:nowrap; transition:all 0.15s;"
                             onmouseover="this.style.color='#eeebe1'; this.style.borderColor='rgba(255,255,255,0.25)'"
                             onmouseout="this.style.color='#6b6e77'; this.style.borderColor='rgba(255,255,255,0.12)'">
-                        🔑 Reset PW
+                        Reset PW
                     </button>
                     <?php endif; ?>
                 </div>
@@ -527,7 +532,11 @@ $roleMeta = [
             <button onclick="empCloseAdjust()"
                     style="background:none; border:none; color:#6b6e77; cursor:pointer; font-size:1.1rem; line-height:1;"
                     onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'">✕</button>
+                    onmouseout="this.style.color='#6b6e77'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <form id="emp-adjust-form" method="POST" action="">
             <?= csrfField() ?>
@@ -618,7 +627,11 @@ $roleMeta = [
             <button onclick="empClosePw()"
                     style="background:none; border:none; color:#6b6e77; cursor:pointer; font-size:1.1rem; line-height:1;"
                     onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'">✕</button>
+                    onmouseout="this.style.color='#6b6e77'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <form id="emp-pw-form" method="POST" action="">
             <?= csrfField() ?>
@@ -628,7 +641,7 @@ $roleMeta = [
             <div style="padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem;">
                 <div style="background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
                             border-radius:10px; padding:0.65rem 1rem; font-size:0.75rem; color:#d2592a;">
-                    ⚠ รหัสผ่านใหม่จะมีผลทันที พนักงานจะต้อง login ด้วยรหัสผ่านใหม่นี้
+                    รหัสผ่านใหม่จะมีผลทันที พนักงานจะต้อง login ด้วยรหัสผ่านใหม่นี้
                 </div>
                 <div>
                     <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;

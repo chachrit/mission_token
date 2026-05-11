@@ -169,7 +169,7 @@ require_once __DIR__ . '/../includes/header.php';
             $tabs = [
                 'token' => ['label' => 'Token',   'icon' => '◈', 'count' => count($txAll)],
                 'quest' => ['label' => 'ภารกิจ',  'icon' => '◎', 'count' => count($quizHistory)],
-                'reward'=> ['label' => 'รางวัล',  'icon' => '✦', 'count' => count($redemptions)],
+                'reward'=> ['label' => 'รางวัล',  'icon' => '◇', 'count' => count($redemptions)],
             ];
             foreach ($tabs as $key => $t):
             ?>
@@ -189,7 +189,14 @@ require_once __DIR__ . '/../includes/header.php';
         <div id="panel-token">
         <?php if (empty($txAll)): ?>
         <div class="hy-empty-state">
-            <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">📊</p>
+            <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15; display:inline-flex; align-items:center;">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <line x1="4" y1="20" x2="20" y2="20" stroke-width="2"/>
+                    <rect x="6" y="11" width="3" height="7" stroke-width="2"/>
+                    <rect x="11" y="7" width="3" height="11" stroke-width="2"/>
+                    <rect x="16" y="4" width="3" height="14" stroke-width="2"/>
+                </svg>
+            </p>
             <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติ Token</p>
         </div>
         <?php else: ?>
@@ -333,7 +340,7 @@ require_once __DIR__ . '/../includes/header.php';
                              gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
                         <span style="font-size:1.2rem; flex-shrink:0; line-height:1; user-select:none;">
-                            <?= e($rd['image_emoji'] ?: '🎁') ?>
+                            R
                         </span>
                         <div style="min-width:0;">
                             <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
@@ -429,7 +436,12 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <?php elseif ($rd['status'] === 'pending'): ?>
                 <div style="display:inline-flex; align-items:center; gap:0.4rem; align-self:flex-start;">
-                    <span style="font-size:0.68rem; color:#6b6e77;">🔒</span>
+                    <span style="font-size:0.68rem; color:#6b6e77; display:inline-flex; align-items:center;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <rect x="4" y="11" width="16" height="9" rx="2" ry="2" stroke-width="2"/>
+                            <path d="M8 11V8a4 4 0 0 1 8 0v3" stroke-width="2"/>
+                        </svg>
+                    </span>
                     <span style="font-size:0.68rem; color:#6b6e77;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
                 </div>
                 <?php endif; ?>
@@ -607,7 +619,7 @@ foreach ($redemptions as $_rd) {
     $_rid = (int)$_rd['redemption_id'];
     $hyRdData[$_rid] = [
         'title'  => $_rd['reward_title'],
-        'emoji'  => $_rd['image_emoji'] ?: '🎁',
+        'emoji'  => 'R',
         'tokens' => (int)$_rd['tokens_spent'],
         'status' => $_rd['status'],
         'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
@@ -806,7 +818,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                                border:1px solid rgba(218,185,55,0.25); border-radius:10px;
                                padding:0.5rem 1rem; cursor:pointer; font-size:0.78rem; font-weight:700;
                                color:rgba(218,185,55,0.80); font-family:'Prompt',sans-serif;">
-                    <span id="hyrd-coupon-lbl">👁 แสดงรหัสคูปอง</span>
+                    <span id="hyrd-coupon-lbl">แสดงรหัสคูปอง</span>
                 </button>
                 <div id="hyrd-coupon-box" style="display:none; margin-top:0.5rem;
                             background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.25);
@@ -936,7 +948,7 @@ function openHyRdModal(rdId) {
     if (d.coupon) {
         document.getElementById('hyrd-coupon-code').textContent  = d.coupon;
         document.getElementById('hyrd-coupon-box').style.display = 'none';
-        document.getElementById('hyrd-coupon-lbl').textContent   = '👁 แสดงรหัสคูปอง';
+        document.getElementById('hyrd-coupon-lbl').textContent   = 'แสดงรหัสคูปอง';
         cs.style.display = 'block';
     } else { cs.style.display = 'none'; }
     _hyOpen('rd');
@@ -944,8 +956,8 @@ function openHyRdModal(rdId) {
 function hyRdToggleCoupon() {
     var box = document.getElementById('hyrd-coupon-box');
     var lbl = document.getElementById('hyrd-coupon-lbl');
-    if (!box.style.display || box.style.display === 'none') { box.style.display = 'flex'; lbl.textContent = '🙈 ซ่อนรหัสคูปอง'; }
-    else                                                     { box.style.display = 'none'; lbl.textContent = '👁 แสดงรหัสคูปอง'; }
+    if (!box.style.display || box.style.display === 'none') { box.style.display = 'flex'; lbl.textContent = 'ซ่อนรหัสคูปอง'; }
+    else                                                     { box.style.display = 'none'; lbl.textContent = 'แสดงรหัสคูปอง'; }
 }
 function hyRdCopyCoupon() {
     var code = document.getElementById('hyrd-coupon-code').textContent.trim();

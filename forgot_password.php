@@ -282,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="fp-pw-box">
             <?php if ($isNew): ?>
-            <span class="fp-new-badge">✦ พนักงานใหม่</span>
+            <span class="fp-new-badge">พนักงานใหม่</span>
             <?php endif; ?>
             <span class="fp-pw-label">
                 <?= $isNew ? 'รหัสผ่านเริ่มต้น' : 'รหัสผ่านที่รีเซ็ตแล้ว' ?>

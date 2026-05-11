@@ -302,7 +302,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Reward -->
                 <div style="display:flex; align-items:center; gap:0.5rem; min-width:0;">
-                    <span style="font-size:1.2rem; flex-shrink:0; line-height:1;"><?= e($rd['image_emoji'] ?: '🎁') ?></span>
+                    <span style="font-size:1rem; flex-shrink:0; line-height:1; font-weight:700; color:#dab937;">R</span>
                     <div style="min-width:0;">
                         <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">

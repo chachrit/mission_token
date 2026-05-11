@@ -313,7 +313,14 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Empty state -->
         <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                     border-radius:16px; padding:4rem; text-align:center; backdrop-filter:blur(8px);">
-            <p style="font-size:2.2rem; margin:0 0 0.6rem; opacity:0.15;">📋</p>
+            <p style="font-size:2.2rem; margin:0 0 0.6rem; opacity:0.15; display:inline-flex; align-items:center;">
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <rect x="6" y="4" width="12" height="16" rx="2" stroke-width="2"/>
+                    <path d="M9 8h6" stroke-width="2"/>
+                    <path d="M9 12h6" stroke-width="2"/>
+                    <path d="M9 16h4" stroke-width="2"/>
+                </svg>
+            </p>
             <p style="font-size:0.92rem; color:#8a8e97; margin:0 0 1.25rem;">
                 ยังไม่มีภารกิจในระบบ
             </p>

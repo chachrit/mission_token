@@ -203,6 +203,16 @@ body:has(.hp-wrap) { background-color: #091113; }
     background: rgba(255,255,255,0.05);
     transition: background 0.15s, transform 0.15s;
 }
+.hp-icon-glyph {
+    width: 14px;
+    height: 14px;
+    display: block;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
 .hp-sidebar-link:hover .hp-sl-icon { transform: scale(1.1); }
 .hp-sidebar-link.active .hp-sl-icon { background: rgba(218,185,55,0.15); }
 
@@ -248,6 +258,10 @@ body:has(.hp-wrap) { background-color: #091113; }
     font-size: 1.15rem;
     background: rgba(255,255,255,0.05);
     transition: background 0.2s, transform 0.2s;
+}
+.hp-section-icon .hp-icon-glyph {
+    width: 16px;
+    height: 16px;
 }
 .hp-section.open .hp-section-icon {
     background: rgba(218,185,55,0.14);
@@ -1050,8 +1064,49 @@ function switchTab(tab, btn) {
     showAllSections();
 }
 
+// ── Render token icons as SVG ──────────────────────────────
+function hpIconSvg(key) {
+    var map = {
+        LGN: '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>',
+        DS:  '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="11" width="3" height="7"/><rect x="11" y="7" width="3" height="11"/><rect x="16" y="4" width="3" height="14"/></svg>',
+        Q:   '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>',
+        R:   '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M12 8v13"/><path d="M3 13h18"/><path d="M8 8c-1.2 0-2-0.8-2-2s1-2 2.2-1.4C9.6 5.3 10.6 7 12 8"/><path d="M16 8c1.2 0 2-0.8 2-2s-1-2-2.2-1.4C14.4 5.3 13.4 7 12 8"/></svg>',
+        H:   '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 8h6"/><path d="M9 12h6"/><path d="M9 16h4"/></svg>',
+        P:   '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>',
+        STR: '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 17.8l-1.9-3.8H9.1L13.8 24l4.7-10h-2.8" fill="currentColor" stroke="none"/><path d="M9.3 8.2l2.6 5.1h3.9L9.3 0 2.9 13.3h3.8" fill="currentColor" stroke="none"/></svg>',
+        FAQ: '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.7-2.5 2.1-2.5 4"/><circle cx="12" cy="17.3" r="0.9" fill="currentColor" stroke="none"/></svg>',
+        OK:  '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.8"/></svg>',
+        RQ:  '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h13"/><path d="M13 3l4 4-4 4"/><path d="M21 17H8"/><path d="M11 13l-4 4 4 4"/></svg>',
+        EMP: '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3.5 20a6 6 0 0 1 11 0"/><path d="M13.8 20a4.8 4.8 0 0 1 6.2-3.3"/></svg>'
+    };
+    return map[key] || '';
+}
+
+function hpNormalizeIconKey(raw) {
+    var text = (raw || '').trim();
+    if (text === 'ช่วยเหลือ') return 'FAQ';
+    if (text === 'รางวัล' || text === 'จัดการรางวัล') return 'R';
+    return text.toUpperCase();
+}
+
+function hpRenderTokenIcons() {
+    document.querySelectorAll('.hp-sl-icon, .hp-section-icon').forEach(function (el) {
+        if (el.querySelector('svg')) return;
+        var key = hpNormalizeIconKey(el.textContent);
+        var svg = hpIconSvg(key);
+        if (!svg) return;
+        el.innerHTML = svg;
+
+        if (key === 'STR') {
+            el.style.color = '#FC4C02';
+            el.style.background = 'rgba(252,76,2,0.1)';
+        }
+    });
+}
+
 // Init pill on load
 window.addEventListener('load', function() {
+    hpRenderTokenIcons();
     var activeTab = document.querySelector('.hp-tab.active');
     if (activeTab) positionPill(activeTab);
 });

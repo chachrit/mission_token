@@ -2,7 +2,7 @@
 /**
  * seed.php — Initial Data Seeder
  * Run once: http://localhost/missoin_token/sql/seed.php
- * ⚠️  DELETE or MOVE this file after running in production!
+ * DELETE or MOVE this file after running in production!
  *
  * Creates:
  *  - 1 Admin user     (code: ADMIN001 / pass: Admin@2026)
@@ -202,27 +202,27 @@ try {
     </style>
 </head>
 <body>
-    <h1>🌱 Mission Token — Database Seeder</h1>
+    <h1>Mission Token — Database Seeder</h1>
 
     <?php if (!empty($errors)): ?>
-        <h2 style="color:#d2592a;">❌ Errors</h2>
+        <h2 style="color:#d2592a;">Errors</h2>
         <?php foreach ($errors as $err): ?>
             <div class="error-item"><?= htmlspecialchars($err) ?></div>
         <?php endforeach; ?>
     <?php else: ?>
-        <h2 style="color:#518e5c;">✅ Completed Successfully</h2>
+        <h2 style="color:#518e5c;">Completed Successfully</h2>
         <?php foreach ($log as $item): ?>
             <div class="log-item"><?= htmlspecialchars($item) ?></div>
         <?php endforeach; ?>
 
         <div class="credentials">
-            <h2>🔑 Login Credentials</h2>
+            <h2>Login Credentials</h2>
             <p><strong>Admin:</strong> code = <code>ADMIN001</code> &nbsp;|&nbsp; password = <code>Admin@2026</code></p>
             <p><strong>Employee:</strong> code = <code>EMP001</code> / <code>EMP002</code> / <code>EMP003</code> &nbsp;|&nbsp; password = <code>Emp@2026</code></p>
         </div>
 
         <div class="warning">
-            ⚠️ ลบหรือย้ายไฟล์นี้ออกก่อน deploy ขึ้น Production เพราะจะเปิดเผย credentials!
+            ลบหรือย้ายไฟล์นี้ออกก่อน deploy ขึ้น Production เพราะจะเปิดเผย credentials!
         </div>
 
         <a href="../index.php" class="btn">→ ไปหน้า Login</a>

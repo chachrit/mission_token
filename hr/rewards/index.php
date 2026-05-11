@@ -10,6 +10,32 @@ require_once __DIR__ . '/../../includes/functions.php';
 $adminId = (int)$_SESSION['employee_id'];
 $pdo     = getDB();
 
+function rewardCategoryIconCode(string $category): string
+{
+    $map = [
+        'voucher' => 'V',
+        'leave'   => 'L',
+        'merch'   => 'M',
+        'perk'    => 'P',
+        'general' => 'R',
+    ];
+
+    return $map[$category] ?? 'R';
+}
+
+function rewardCategoryIconSvg(string $category): string
+{
+    $icons = [
+        'voucher' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        'leave'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'merch'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        'perk'    => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        'general' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>',
+    ];
+
+    return $icons[$category] ?? $icons['general'];
+}
+
 // ══════════════════════════════════════════════════════════════
 // POST actions
 // ══════════════════════════════════════════════════════════════
@@ -21,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'create') {
         $title    = trim($_POST['title']     ?? '');
         $desc     = trim($_POST['description'] ?? '');
-        $emoji    = mb_substr(trim($_POST['image_emoji'] ?? '🎁'), 0, 4, 'UTF-8');
         $category = $_POST['category'] ?? 'general';
         $cost     = max(1, (int)($_POST['token_cost'] ?? 50));
         $stockRaw = trim($_POST['stock'] ?? '');
@@ -36,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $allowed = ['voucher','leave','merch','perk','general'];
         if (!in_array($category, $allowed, true)) $category = 'general';
+    $emoji = rewardCategoryIconCode($category);
         if (empty($title)) { setFlash('error', 'กรุณากรอกชื่อรางวัล'); redirect(BASE_URL . '/hr/rewards/index.php'); }
 
         try {
@@ -334,18 +360,11 @@ require_once __DIR__ . '/../../includes/header.php';
                 <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">เพิ่มรางวัลใหม่</span>
             </div>
 
-            <div style="display:grid; grid-template-columns:80px 1fr; gap:1rem; margin-bottom:1rem;">
-                <div>
-                    <label class="ar-label">Emoji</label>
-                    <input type="text" name="image_emoji" value="🎁" maxlength="4"
-                           class="journal-input" style="font-size:1.5rem; text-align:center;">
-                </div>
-                <div>
-                    <label class="ar-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
-                    <input type="text" name="title" required maxlength="200"
-                           placeholder="เช่น คูปองกาแฟ, วันลาพิเศษ..."
-                           class="journal-input">
-                </div>
+            <div style="margin-bottom:1rem;">
+                <label class="ar-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
+                <input type="text" name="title" required maxlength="200"
+                       placeholder="เช่น คูปองกาแฟ, วันลาพิเศษ..."
+                       class="journal-input">
             </div>
 
             <div style="margin-bottom:1rem;">
@@ -358,11 +377,15 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="ar-create-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.25rem;">
                 <div>
                     <label class="ar-label">หมวดหมู่</label>
-                    <select name="category" class="journal-input">
+                    <select name="category" id="ar-create-category" class="journal-input" onchange="arUpdateAutoIcon(this.value)">
                         <?php foreach ($catMeta as $k => $m): ?>
                         <option value="<?= e($k) ?>"><?= e($m['label']) ?></option>
                         <?php endforeach; ?>
                     </select>
+                    <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.28rem; color:#8a8e97;">
+                        <span id="ar-auto-icon-preview" style="display:inline-flex; align-items:center;"><?= rewardCategoryIconSvg('voucher') ?></span>
+                        <span id="ar-auto-icon-hint" style="font-size:0.68rem;">ไอคอนตามหมวดหมู่: คูปอง</span>
+                    </div>
                 </div>
                 <div>
                     <label class="ar-label">ราคา (Token)</label>
@@ -381,7 +404,12 @@ require_once __DIR__ . '/../../includes/header.php';
                         background:rgba(218,185,55,0.04); border-radius:12px;
                         border:1px solid rgba(218,185,55,0.12);">
                 <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem;">
-                    <span style="font-size:0.95rem;">🔑</span>
+                    <span style="font-size:0.95rem; display:inline-flex; align-items:center;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <circle cx="8" cy="12" r="3" stroke-width="2"/>
+                            <path d="M11 12h10M18 12v3M15 12v2" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </span>
                     <label class="ar-label" style="margin:0;">รหัสคูปอง / โค้ดส่วนลด</label>
                     <span style="font-size:0.70rem; color:#6b6e77;">(ไม่บังคับ)</span>
                 </div>
@@ -444,7 +472,13 @@ require_once __DIR__ . '/../../includes/header.php';
 
             <?php if (empty($rewards)): ?>
             <div style="padding:3.5rem; text-align:center;">
-                <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20;">📭</p>
+                <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20; display:inline-flex; align-items:center;">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path d="M3 8h18" stroke-width="2"/>
+                        <path d="M4 8l8 6 8-6" stroke-width="2"/>
+                        <rect x="3" y="8" width="18" height="12" rx="2" stroke-width="2"/>
+                    </svg>
+                </p>
                 <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีรางวัล กด "เพิ่มรางวัลใหม่" เพื่อเริ่มต้น</p>
             </div>
             <?php else: ?>
@@ -469,7 +503,9 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Reward name + emoji -->
                 <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
-                    <span style="font-size:1.55rem; flex-shrink:0; line-height:1;"><?= e($rw['image_emoji'] ?: '🎁') ?></span>
+                    <span style="display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:#dab937; line-height:1;">
+                        <?= rewardCategoryIconSvg((string)$cat) ?>
+                    </span>
                     <div style="min-width:0;">
                         <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -585,10 +621,53 @@ require_once __DIR__ . '/../../includes/header.php';
 </div><!-- /ar-rewards-wrap -->
 
 <script>
+function arCategoryIconCode(category) {
+    var map = {
+        voucher: 'V',
+        leave: 'L',
+        merch: 'M',
+        perk: 'P',
+        general: 'R'
+    };
+    return map[category] || 'R';
+}
+
+function arCategoryIconSvg(category) {
+    var map = {
+        voucher: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        leave: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        merch: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        perk: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        general: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>'
+    };
+    return map[category] || map.general;
+}
+
+function arUpdateAutoIcon(category) {
+    var labels = {
+        voucher: 'คูปอง',
+        leave: 'วันหยุดพิเศษ',
+        merch: 'ของที่ระลึก',
+        perk: 'สิทธิพิเศษ',
+        general: 'ทั่วไป'
+    };
+    var preview = document.getElementById('ar-auto-icon-preview');
+    var hint = document.getElementById('ar-auto-icon-hint');
+    if (preview) preview.innerHTML = arCategoryIconSvg(category);
+    if (hint) hint.textContent = 'ไอคอนตามหมวดหมู่: ' + (labels[category] || labels.general);
+}
+
 function arCreateToggleExpiry(val) {
     var wrap = document.getElementById('create-expiry-wrap');
     if (wrap) wrap.style.display = val.trim() !== '' ? 'block' : 'none';
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    var categorySelect = document.getElementById('ar-create-category');
+    if (categorySelect) {
+        arUpdateAutoIcon(categorySelect.value);
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

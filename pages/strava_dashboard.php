@@ -292,7 +292,19 @@ body:has(.sv-wrap) { background: #091113; }
                style="font-size:0.78rem; color:#FC4C02; text-decoration:none; padding:0.4rem 0.9rem;
                       border:1px solid rgba(252,76,2,0.3); border-radius:9px;
                       background:rgba(252,76,2,0.07); display:inline-flex; align-items:center; gap:6px;">
-                <?= $connected ? '⚙ จัดการการเชื่อมต่อ' : '🔗 เชื่อมต่อ Strava' ?>
+                <?php if ($connected): ?>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.5 1z"/>
+                    </svg>
+                    จัดการการเชื่อมต่อ
+                <?php else: ?>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/>
+                        <path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 1 0 7 7l1-1"/>
+                    </svg>
+                    เชื่อมต่อ Strava
+                <?php endif; ?>
             </a>
         </div>
 
@@ -324,7 +336,14 @@ body:has(.sv-wrap) { background: #091113; }
         <?php if ($fetchError): ?>
         <div style="margin-bottom:1rem; padding:0.85rem 1.1rem; border-radius:10px; font-size:0.82rem;
                     background:rgba(210,89,42,0.1); border:1px solid rgba(210,89,42,0.3); color:#e07a55;">
-            ⚠ ไม่สามารถดึงข้อมูลจาก Strava ได้: <?= e($fetchError) ?>
+            <span style="display:inline-flex; align-items:center; gap:0.4rem;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                    <path d="M12 9v4" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/>
+                    <path d="M10.3 3.9L2.5 18a2 2 0 0 0 1.8 3h15.4a2 2 0 0 0 1.8-3L13.7 3.9a2 2 0 0 0-3.4 0z" stroke-width="2"/>
+                </svg>
+                ไม่สามารถดึงข้อมูลจาก Strava ได้: <?= e($fetchError) ?>
+            </span>
         </div>
         <?php endif; ?>
 
@@ -375,7 +394,7 @@ body:has(.sv-wrap) { background: #091113; }
                         <?php if ($yearStatsLoaded): ?>
                             <?= number_format($yearlyKm, 1) ?> <span style="font-size:0.8rem;font-weight:600;color:#6b6e77;">/ <?= $yearGoalKm ?> km</span>
                             <?php if ($yearProgressPct >= 100): ?>
-                                <span class="ds-strava-goal-badge">🎯 สำเร็จแล้ว!</span>
+                                <span class="ds-strava-goal-badge">สำเร็จแล้ว!</span>
                             <?php else: ?>
                                 <span class="ds-strava-pct-badge"><?= $yearProgressPct ?>%</span>
                             <?php endif; ?>
@@ -390,9 +409,21 @@ body:has(.sv-wrap) { background: #091113; }
                     <div class="ds-strava-track-fill" id="ds-track-fill"
                          data-progress="<?= $yearProgressPct ?>"></div>
                     <div class="ds-strava-runner" id="ds-runner"
-                         data-progress="<?= $yearProgressPct ?>">🏃</div>
+                         data-progress="<?= $yearProgressPct ?>">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" aria-hidden="true">
+                            <circle cx="14" cy="5" r="2" stroke-width="2"/>
+                            <path d="M7 10l4-2 3 1 2 3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 13l-2 4" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M13 13l4 5" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <div class="ds-strava-finish">
-                        <div class="ds-strava-finish-flag">🏁</div>
+                        <div class="ds-strava-finish-flag">
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" aria-hidden="true">
+                                <path d="M5 3v18" stroke-width="2"/>
+                                <path d="M5 4h10l-2 3 2 3H5" stroke-width="2" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
                         <div class="ds-strava-finish-line"></div>
                     </div>
                 </div>
@@ -629,8 +660,8 @@ body:has(.sv-wrap) { background: #091113; }
                         default         => ['bg'=>'rgba(218,185,55,0.10)','color'=>'#dab937','border'=>'rgba(218,185,55,0.25)'],
                     };
                     $statusLabel = match($s['status']) {
-                        'auto_approved' => '✅ ผ่าน',
-                        'rejected'      => '❌ ไม่ผ่าน',
+                        'auto_approved' => 'ผ่าน',
+                        'rejected'      => 'ไม่ผ่าน',
                         default         => $s['status'],
                     };
                     // Audit activity from photo_path
@@ -645,7 +676,7 @@ body:has(.sv-wrap) { background: #091113; }
                         <?php if (!empty($sc['min_moving_time'])): ?>· ≥<?= round($sc['min_moving_time']/60) ?> นาที<?php endif; ?>
                         <?php else: ?> - <?php endif; ?>
                         <?php if ($s['status'] === 'auto_approved' && !empty($audit['name'])): ?>
-                        <br><span style="color:#FC4C02; font-size:0.7rem;">📍 <?= e(mb_substr($audit['name'], 0, 40)) ?></span>
+                        <br><span style="color:#FC4C02; font-size:0.7rem;"><?= e(mb_substr($audit['name'], 0, 40)) ?></span>
                         <?php endif; ?>
                     </td>
                     <td>

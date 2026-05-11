@@ -10,6 +10,19 @@ require_once __DIR__ . '/../includes/functions.php';
 $employeeId = (int)$_SESSION['employee_id'];
 $pdo        = getDB();
 
+function rewardCategoryIconSvg(string $category): string
+{
+    $icons = [
+        'voucher' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        'leave'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'merch'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        'perk'    => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        'general' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>',
+    ];
+
+    return $icons[$category] ?? $icons['general'];
+}
+
 // ══════════════════════════════════════════════════════════════
 // AJAX — POST handler (redeem action)
 // ══════════════════════════════════════════════════════════════
@@ -255,6 +268,14 @@ $catMeta = [
     'general' => ['label' => 'ทั่วไป',        'color' => '#8a8e97', 'bg' => '#eeecea'],
 ];
 
+$catTone = [
+    'voucher' => ['icon_bg' => 'rgba(47,78,157,0.30)',  'icon_border' => 'rgba(123,159,245,0.52)', 'icon_color' => '#9db4f7'],
+    'leave'   => ['icon_bg' => 'rgba(81,142,92,0.30)',  'icon_border' => 'rgba(126,201,138,0.52)', 'icon_color' => '#8fdaa0'],
+    'merch'   => ['icon_bg' => 'rgba(98,48,122,0.32)',  'icon_border' => 'rgba(196,157,224,0.54)', 'icon_color' => '#d3ace8'],
+    'perk'    => ['icon_bg' => 'rgba(201,168,48,0.30)', 'icon_border' => 'rgba(248,231,105,0.52)', 'icon_color' => '#f8e769'],
+    'general' => ['icon_bg' => 'rgba(107,110,119,0.32)','icon_border' => 'rgba(165,169,181,0.52)', 'icon_color' => '#c9ccd4'],
+];
+
 $statusMeta = [
     'pending'   => ['label' => 'รอดำเนินการ', 'color' => '#b45309', 'bg' => '#fffbeb', 'border' => '#fcd34d'],
     'fulfilled' => ['label' => 'มอบแล้ว',     'color' => '#166534', 'bg' => '#f0fdf4', 'border' => '#86efac'],
@@ -330,7 +351,8 @@ require_once __DIR__ . '/../includes/header.php';
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.85rem;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05),
+                0 8px 20px rgba(0,0,0,0.22);
     flex-shrink: 0;
 }
 
@@ -540,7 +562,7 @@ require_once __DIR__ . '/../includes/header.php';
         ══════════════════════════════════════════════════ -->
         <?php if (empty($rewards)): ?>
         <div style="text-align:center; padding:5rem 1rem;">
-            <div style="font-size:3rem; margin-bottom:1rem; opacity:0.22;">🔒</div>
+            <div style="font-size:2.2rem; margin-bottom:1rem; opacity:0.22;">LOCK</div>
             <p style="font-size:1rem; font-weight:600; color:#6b6e77; margin:0 0 0.3rem;">Vault ว่างอยู่ในขณะนี้</p>
             <p style="font-size:0.82rem; color:#6b6e77; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
         </div>
@@ -564,22 +586,22 @@ require_once __DIR__ . '/../includes/header.php';
                     'general' => ['bg' => 'rgba(107,110,119,0.14)','border' => 'rgba(107,110,119,0.28)'],
                 ];
                 $glow     = $glowMap[$cat] ?? $glowMap['general'];
-                $emojiStr = e($rw['image_emoji'] ?: '🎁');
+                $tone     = $catTone[$cat] ?? $catTone['general'];
             ?>
             <div class="rw-reward-card <?= $canAfford ? '' : 'rw-no-balance' ?>"
                  data-category="<?= e($cat) ?>"
-                 data-emoji="<?= $emojiStr ?>">
+                 data-reward-id="<?= (int)$rw['reward_id'] ?>">
 
                 <div class="rw-card-top-bar"></div>
 
                 <div style="padding:1.35rem 1.35rem 0.75rem; display:flex;
                              flex-direction:column; gap:0.85rem; flex:1;">
 
-                    <!-- Top: emoji + category badge -->
+                    <!-- Top: category icon + category badge -->
                     <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.75rem;">
                         <div class="rw-emoji-wrap"
-                             style="background:<?= $glow['bg'] ?>; border:1px solid <?= $glow['border'] ?>;">
-                            <?= $emojiStr ?>
+                             style="background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>; color:<?= $tone['icon_color'] ?>;">
+                            <?= rewardCategoryIconSvg((string)$cat) ?>
                         </div>
                         <span style="font-size:0.63rem; font-weight:700; padding:0.22rem 0.65rem;
                                      border-radius:999px; letter-spacing:0.04em; white-space:nowrap; margin-top:4px;
@@ -621,7 +643,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <span class="<?= $stockLeft <= 3 ? 'rw-stock-low' : '' ?>"
                               style="font-size:0.65rem; display:block;
                                      color:<?= $stockLeft <= 3 ? '#d2592a' : '#4a4e57' ?>;">
-                            <?= $stockLeft <= 3 ? '⚠ ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
+                            <?= $stockLeft <= 3 ? 'ใกล้หมด: ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
                         </span>
                         <?php else: ?>
                         <span style="font-size:0.65rem; color:#6b6e77; display:block;">ไม่จำกัดจำนวน</span>
@@ -691,6 +713,8 @@ require_once __DIR__ . '/../includes/header.php';
                 foreach ($myRedemptions as $rd):
                     $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
                     $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+                    $rdCat = (string)($rd['category'] ?? 'general');
+                    $tone  = $catTone[$rdCat] ?? $catTone['general'];
                 ?>
                 <div class="rw-hist-row" onclick="openRdDetail(<?= (int)$rd['redemption_id'] ?>)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRdDetail(<?= (int)$rd['redemption_id'] ?>);}"
@@ -701,8 +725,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="display:grid; grid-template-columns:1fr auto auto auto;
                                  gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                        <span style="font-size:1.3rem; flex-shrink:0; user-select:none; line-height:1;">
-                            <?= e($rd['image_emoji'] ?: '🎁') ?>
+                        <span style="display:inline-flex; align-items:center; justify-content:center;
+                                     width:28px; height:28px; flex-shrink:0; user-select:none;
+                                     line-height:1; color:<?= $tone['icon_color'] ?>;
+                                     background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>;
+                                     border-radius:999px;">
+                            <?= rewardCategoryIconSvg($rdCat) ?>
                         </span>
                         <div style="min-width:0;">
                             <p style="font-size:0.85rem; font-weight:500; color:#eeebe1; margin:0;
@@ -879,7 +907,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem;
                              background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
                              border-radius:14px; padding:0.9rem 1.15rem;">
-                    <span id="modal-emoji" style="font-size:2.4rem; user-select:none; line-height:1;"></span>
+                    <span id="modal-emoji" style="display:inline-flex; align-items:center; justify-content:center;
+                                                     width:42px; height:42px; user-select:none; line-height:1;
+                                                     color:#dab937; border-radius:999px;
+                                                     border:1px solid rgba(218,185,55,0.40);
+                                                     background:rgba(218,185,55,0.16);"></span>
                     <div>
                         <p style="font-size:0.60rem; letter-spacing:0.12em; text-transform:uppercase;
                                   color:#6b6e77; margin:0 0 0.18rem; font-weight:700;">รางวัลที่เลือก</p>
@@ -926,7 +958,14 @@ require_once __DIR__ . '/../includes/header.php';
                 <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.20);
                              border-radius:10px; padding:0.7rem 0.95rem; margin-bottom:1.35rem;
                              display:flex; gap:0.55rem; align-items:flex-start;">
-                    <span style="flex-shrink:0; font-size:0.85rem; opacity:0.75; margin-top:1px;">ℹ️</span>
+                    <span style="flex-shrink:0; font-size:0.85rem; opacity:0.75; margin-top:1px; color:#d4a52a;
+                                 display:inline-flex; align-items:center;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                            <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                            <path d="M12 11v5" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/>
+                        </svg>
+                    </span>
                     <p style="font-size:0.77rem; color:#d4a52a; margin:0; line-height:1.55;">
                         หลังยืนยัน HR จะติดต่อกลับเพื่อดำเนินการมอบรางวัลให้คุณ
                     </p>
@@ -989,6 +1028,29 @@ require_once __DIR__ . '/../includes/header.php';
 (function () {
     'use strict';
 
+    function rwCategoryIconSvg(category) {
+        var map = {
+            voucher: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+            leave: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+            merch: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+            perk: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+            general: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>'
+        };
+
+        return map[category] || map.general;
+    }
+
+    function rwCategoryTone(category) {
+        var map = {
+            voucher: { bg: 'rgba(47,78,157,0.30)', border: 'rgba(123,159,245,0.52)', color: '#9db4f7' },
+            leave:   { bg: 'rgba(81,142,92,0.30)', border: 'rgba(126,201,138,0.52)', color: '#8fdaa0' },
+            merch:   { bg: 'rgba(98,48,122,0.32)', border: 'rgba(196,157,224,0.54)', color: '#d3ace8' },
+            perk:    { bg: 'rgba(201,168,48,0.30)', border: 'rgba(248,231,105,0.52)', color: '#f8e769' },
+            general: { bg: 'rgba(107,110,119,0.32)', border: 'rgba(165,169,181,0.52)', color: '#c9ccd4' }
+        };
+        return map[category] || map.general;
+    }
+
     var _currentRewardId = 0;
     var _currentCost     = 0;
     var _redeemBusy      = false;
@@ -1015,14 +1077,14 @@ require_once __DIR__ . '/../includes/header.php';
             document.getElementById('hdr-balance').textContent.replace(/,/g, ''), 10
         ) || <?php echo (int)$wallet['balance']; ?>;
 
-        /* Read emoji from data attribute */
-        var emoji = '🎁';
-        document.querySelectorAll('.rw-reward-card').forEach(function (card) {
-            var btn = card.querySelector('button[onclick*="openRedeem(' + id + ',"]');
-            if (btn && card.dataset.emoji) emoji = card.dataset.emoji;
-        });
+        var card = document.querySelector('.rw-reward-card[data-reward-id="' + id + '"]');
+        var category = card ? (card.dataset.category || 'general') : 'general';
+        var tone = rwCategoryTone(category);
 
-        document.getElementById('modal-emoji').textContent          = emoji;
+        document.getElementById('modal-emoji').innerHTML            = rwCategoryIconSvg(category);
+        document.getElementById('modal-emoji').style.background     = tone.bg;
+        document.getElementById('modal-emoji').style.borderColor    = tone.border;
+        document.getElementById('modal-emoji').style.color          = tone.color;
         document.getElementById('modal-reward-name').textContent    = title;
         document.getElementById('modal-cost').textContent           = cost;
         document.getElementById('modal-balance-before').textContent = balance;
@@ -1208,7 +1270,7 @@ foreach ($myRedemptions as $_rd) {
     $_rid = (int)$_rd['redemption_id'];
     $rdDetailData[$_rid] = [
         'title'  => $_rd['reward_title'],
-        'emoji'  => $_rd['image_emoji'] ?: '🎁',
+        'category' => (string)($_rd['category'] ?? 'general'),
         'tokens' => (int)$_rd['tokens_spent'],
         'status' => $_rd['status'],
         'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
@@ -1253,7 +1315,7 @@ foreach ($myRedemptions as $_rd) {
         <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
                     display:flex; align-items:center; justify-content:space-between;">
             <div style="display:flex; align-items:center; gap:0.55rem;">
-                <span style="font-size:0.95rem;">🧾</span>
+            <span style="font-size:0.7rem; font-weight:700; color:#dab937;">DOC</span>
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85);">รายละเอียดคำขอแลกรางวัล</span>
             </div>
@@ -1262,7 +1324,7 @@ foreach ($myRedemptions as $_rd) {
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                            color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
                            display:flex; align-items:center; justify-content:center;
-                           font-family:'Prompt',sans-serif;">✕</button>
+                   font-family:'Prompt',sans-serif;">ปิด</button>
         </div>
 
         <!-- Body -->
@@ -1323,7 +1385,7 @@ foreach ($myRedemptions as $_rd) {
                                border:1px solid rgba(218,185,55,0.25); border-radius:10px;
                                padding:0.5rem 1rem; cursor:pointer; font-size:0.78rem; font-weight:700;
                                color:rgba(218,185,55,0.80); font-family:'Prompt',sans-serif; transition:background 0.15s;">
-                    <span id="rdd-coupon-label">👁 แสดงรหัสคูปอง</span>
+                    <span id="rdd-coupon-label">แสดงรหัสคูปอง</span>
                 </button>
                 <div id="rdd-coupon-box" style="display:none; margin-top:0.5rem;
                             background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.25);
@@ -1351,7 +1413,7 @@ foreach ($myRedemptions as $_rd) {
             <div id="rdd-cancel-section" style="display:none;">
                 <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:0.85rem;">
                     <p style="font-size:0.68rem; color:#6b6e77; text-align:center; margin:0 0 0.6rem;">
-                        🔒 Token จะถูกคืนให้ทันที หลังยืนยันยกเลิก
+                        Token จะถูกคืนให้ทันที หลังยืนยันยกเลิก
                     </p>
                     <button id="rdd-cancel-btn" onclick="rdDoCancel()"
                             style="display:flex; align-items:center; justify-content:center; gap:0.5rem;
@@ -1369,13 +1431,47 @@ foreach ($myRedemptions as $_rd) {
 <script>
 var _rdCurrentId = 0, _rdCurrentTokens = 0;
 
+function rdCategoryIconSvg(category, size) {
+    var iconSize = size || 22;
+    var map = {
+        voucher: '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        leave: '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        merch: '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        perk: '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        general: '<svg width="' + iconSize + '" height="' + iconSize + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>'
+    };
+    return map[category] || map.general;
+}
+
+function rdCategoryTone(category) {
+    var map = {
+        voucher: { bg: 'rgba(47,78,157,0.30)', border: 'rgba(123,159,245,0.52)', color: '#9db4f7' },
+        leave:   { bg: 'rgba(81,142,92,0.30)', border: 'rgba(126,201,138,0.52)', color: '#8fdaa0' },
+        merch:   { bg: 'rgba(98,48,122,0.32)', border: 'rgba(196,157,224,0.54)', color: '#d3ace8' },
+        perk:    { bg: 'rgba(201,168,48,0.30)', border: 'rgba(248,231,105,0.52)', color: '#f8e769' },
+        general: { bg: 'rgba(107,110,119,0.32)', border: 'rgba(165,169,181,0.52)', color: '#c9ccd4' }
+    };
+    return map[category] || map.general;
+}
+
 function openRdDetail(rdId) {
     var d = _rdData[rdId];
     if (!d) return;
     _rdCurrentId     = rdId;
     _rdCurrentTokens = d.tokens;
 
-    document.getElementById('rdd-emoji').textContent  = d.emoji;
+    var tone = rdCategoryTone(d.category || 'general');
+    var rddIcon = document.getElementById('rdd-emoji');
+    rddIcon.innerHTML = rdCategoryIconSvg(d.category || 'general', 26);
+    rddIcon.style.color = tone.color;
+    rddIcon.style.background = tone.bg;
+    rddIcon.style.border = '1px solid ' + tone.border;
+    rddIcon.style.borderRadius = '999px';
+    rddIcon.style.width = '44px';
+    rddIcon.style.height = '44px';
+    rddIcon.style.display = 'inline-flex';
+    rddIcon.style.alignItems = 'center';
+    rddIcon.style.justifyContent = 'center';
     document.getElementById('rdd-title').textContent  = d.title;
     document.getElementById('rdd-tokens').textContent = d.tokens.toLocaleString() + ' token';
     document.getElementById('rdd-req-at').textContent = d.reqAt;
@@ -1411,7 +1507,7 @@ function openRdDetail(rdId) {
     if (d.coupon) {
         document.getElementById('rdd-coupon-code').textContent   = d.coupon;
         document.getElementById('rdd-coupon-box').style.display  = 'none';
-        document.getElementById('rdd-coupon-label').textContent  = '👁 แสดงรหัสคูปอง';
+        document.getElementById('rdd-coupon-label').textContent  = 'แสดงรหัสคูปอง';
         couponSec.style.display = 'block';
     } else {
         couponSec.style.display = 'none';
@@ -1454,9 +1550,9 @@ function rdToggleCoupon() {
     var box = document.getElementById('rdd-coupon-box');
     var lbl = document.getElementById('rdd-coupon-label');
     if (box.style.display === 'none' || box.style.display === '') {
-        box.style.display = 'flex'; lbl.textContent = '🙈 ซ่อนรหัสคูปอง';
+        box.style.display = 'flex'; lbl.textContent = 'ซ่อนรหัสคูปอง';
     } else {
-        box.style.display = 'none'; lbl.textContent = '👁 แสดงรหัสคูปอง';
+        box.style.display = 'none'; lbl.textContent = 'แสดงรหัสคูปอง';
     }
 }
 
@@ -1535,7 +1631,7 @@ document.addEventListener('keydown', function(e) {
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                            color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
                            display:flex; align-items:center; justify-content:center;
-                           font-family:'Prompt',sans-serif;">✕</button>
+                       font-family:'Prompt',sans-serif;">ปิด</button>
         </div>
         <!-- List -->
         <div id="pending-list-body" style="padding:0.75rem 0;"></div>
@@ -1553,6 +1649,7 @@ function openPendingList() {
     } else {
         pending.forEach(function(entry, idx) {
             var rdId = entry[0], d = entry[1];
+            var tone = rdCategoryTone(d.category || 'general');
             var row = document.createElement('div');
             row.style.cssText = [
                 'display:flex; align-items:center; gap:0.85rem;',
@@ -1567,7 +1664,9 @@ function openPendingList() {
                 setTimeout(function() { openRdDetail(parseInt(rdId)); }, 140);
             };
             row.innerHTML = [
-                '<span style="font-size:1.5rem; flex-shrink:0; line-height:1; user-select:none;">' + d.emoji + '</span>',
+                '<span style="display:inline-flex; align-items:center; justify-content:center; color:' + tone.color + '; flex-shrink:0; line-height:1; user-select:none; width:34px; height:34px; border-radius:999px; background:' + tone.bg + '; border:1px solid ' + tone.border + ';">' +
+                rdCategoryIconSvg(d.category || 'general', 20) +
+                '</span>',
                 '<div style="flex:1; min-width:0;">',
                 '  <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0 0 0.2rem;',
                 '            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + d.title + '</p>',

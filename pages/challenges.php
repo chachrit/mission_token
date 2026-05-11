@@ -1024,7 +1024,11 @@ require_once __DIR__ . '/../includes/header.php';
                                background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                                color:#6b6e77; cursor:pointer; font-size:0.85rem;
                                display:flex; align-items:center; justify-content:center;
-                               font-family:'Prompt',sans-serif;">✕</button>
+                               font-family:'Prompt',sans-serif;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
             <!-- Modal body -->
             <div style="padding:1.4rem;">
@@ -1203,7 +1207,11 @@ require_once __DIR__ . '/../includes/header.php';
                                background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                                color:#6b6e77; cursor:pointer; font-size:0.85rem;
                                display:flex; align-items:center; justify-content:center;
-                               font-family:'Prompt',sans-serif;">✕</button>
+                               font-family:'Prompt',sans-serif;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
             </div>
             <!-- Modal body -->
             <div style="padding:1.4rem;">

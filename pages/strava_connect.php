@@ -141,15 +141,15 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="display:flex; flex-direction:column; gap:0.75rem;">
                 <?php
                 $steps = [
-                    ['🔗', 'เชื่อมต่อบัญชี Strava ของคุณ (ทำครั้งเดียว)'],
-                    ['🏃', 'ออกกำลังกายและบันทึกใน Strava ตามปกติ'],
-                    ['✅', 'กด "ตรวจสอบกิจกรรม" ในหน้าภารกิจ'],
-                    ['🪙', 'ระบบดึงกิจกรรมมาเช็คเงื่อนไข — ผ่านก็ได้ Token ทันที'],
+                    ['<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 1 0 7 7l1-1"/></svg>', 'เชื่อมต่อบัญชี Strava ของคุณ (ทำครั้งเดียว)'],
+                    ['<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="14" cy="5" r="2"/><path d="M7 10l4-2 3 1 2 3"/><path d="M10 13l-2 4"/><path d="M13 13l4 5"/></svg>', 'ออกกำลังกายและบันทึกใน Strava ตามปกติ'],
+                    ['<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.8"/></svg>', 'กด "ตรวจสอบกิจกรรม" ในหน้าภารกิจ'],
+                    ['<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5"/><path d="M12 12l3 2"/></svg>', 'ระบบดึงกิจกรรมมาเช็คเงื่อนไข — ผ่านก็ได้ Token ทันที'],
                 ];
                 foreach ($steps as [$icon, $text]):
                 ?>
                 <div style="display:flex; align-items:flex-start; gap:0.75rem;">
-                    <span style="font-size:1rem; flex-shrink:0;"><?= $icon ?></span>
+                    <span style="font-size:1rem; flex-shrink:0; display:inline-flex; align-items:center;"><?= $icon ?></span>
                     <span style="font-size:0.82rem; color:#9ca3af; line-height:1.5;"><?= $text ?></span>
                 </div>
                 <?php endforeach; ?>
