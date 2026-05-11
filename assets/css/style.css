@@ -1603,6 +1603,19 @@ body:has(.ds-dashboard-wrap) {
 .ds-activity-token--earned { color: #dab937; }
 .ds-activity-token--none   { color: #6b6e77; }
 .ds-activity-date   { font-size: 0.72rem; color: #6b6e77; white-space: nowrap; }
+/* Responsive: drop Date col ≤560px, drop Token col ≤400px */
+@media (max-width: 560px) {
+    .ds-activity-header,
+    .ds-activity-row { grid-template-columns: 1fr auto auto; }
+    .ds-activity-date,
+    .ds-activity-header span:nth-child(4) { display: none; }
+}
+@media (max-width: 400px) {
+    .ds-activity-header,
+    .ds-activity-row { grid-template-columns: 1fr auto; }
+    .ds-activity-token,
+    .ds-activity-header span:nth-child(3) { display: none; }
+}
 
 /* ── Rankings (Leaderboard) ── */
 .ds-lb-card {
