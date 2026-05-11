@@ -125,8 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Wallet summary bar -->
-        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem;
-                    margin-bottom:2.25rem;">
+        <div class="hy-wallet-grid">
             <?php
             $walletStats = [
                 ['label' => 'รับทั้งหมด',    'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c',  'border' => 'rgba(81,142,92,0.55)',  'icon' => '↑', 'sub' => '+'],
@@ -220,9 +219,10 @@ require_once __DIR__ . '/../includes/header.php';
             ?>
             <div class="hy-tx-row" data-dir="<?= $isEarn ? 'earn' : 'spend' ?>"
                  onclick="openHyTxModal(<?= (int)$tx['tx_id'] ?>)"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHyTxModal(<?= (int)$tx['tx_id'] ?>);}"
+                 tabindex="0" role="button"
                  style="cursor:pointer; display:grid; grid-template-columns:1fr auto auto;
-                        gap:1rem; padding:0.75rem 1.25rem; align-items:center;
-                        border-left:3px solid <?= $isEarn ? 'rgba(81,142,92,0.40)' : 'rgba(210,89,42,0.35)' ?>;">
+                        gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
                 <div>
                     <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
                         <?= e(txTypeLabel($tx['tx_type'])) ?>
@@ -271,6 +271,8 @@ require_once __DIR__ . '/../includes/header.php';
                 $qs = $qStatusStyle[$q['status']] ?? $qStatusStyle['pending'];
             ?>
             <div class="hy-tx-row" onclick="openHyQuestModal(<?= (int)$q['submission_id'] ?>)"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHyQuestModal(<?= (int)$q['submission_id'] ?>);}"
+                 tabindex="0" role="button"
                  style="cursor:pointer; display:grid; grid-template-columns:1fr auto auto auto;
                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
                 <div>
@@ -326,6 +328,8 @@ require_once __DIR__ . '/../includes/header.php';
                 $rs = $rdStyle[$rd['status']] ?? $rdStyle['pending'];
             ?>
             <div class="hy-rd-row" onclick="openHyRdModal(<?= (int)$rd['redemption_id'] ?>)"
+                 onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHyRdModal(<?= (int)$rd['redemption_id'] ?>);}"
+                 tabindex="0" role="button"
                  style="cursor:pointer; padding:0.85rem 1.25rem; display:flex; flex-direction:column; gap:0.6rem;">
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
                              gap:1rem; align-items:center;">
@@ -504,6 +508,23 @@ require_once __DIR__ . '/../includes/header.php';
 }
 .hy-tx-row:hover, .hy-rd-row:hover {
     background: rgba(255,255,255,0.025);
+}
+/* ── Responsive ── */
+.hy-wallet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem; margin-bottom:2.25rem; }
+@media (max-width: 640px) {
+    .hy-wallet-grid { grid-template-columns:1fr; }
+}
+@media (max-width: 560px) {
+    #panel-token .hy-table-head,
+    #panel-token .hy-tx-row { grid-template-columns:1fr auto !important; }
+    #panel-token .hy-table-head span:nth-child(3),
+    #panel-token .hy-tx-row > :nth-child(3) { display:none; }
+    #panel-quest .hy-table-head,
+    #panel-quest .hy-tx-row { grid-template-columns:1fr auto !important; }
+    #panel-quest .hy-table-head span:nth-child(2),
+    #panel-quest .hy-table-head span:nth-child(3),
+    #panel-quest .hy-tx-row > :nth-child(2),
+    #panel-quest .hy-tx-row > :nth-child(3) { display:none; }
 }
 </style>
 

@@ -248,11 +248,11 @@ try {
 
 // ── Static lookups ───────────────────────────────────────────
 $catMeta = [
-    'voucher' => ['label' => 'คูปอง',        'color' => '#2f4e9d', 'bg' => '#eaedfa'],
-    'leave'   => ['label' => 'วันหยุดพิเศษ', 'color' => '#518e5c', 'bg' => '#e6f4e9'],
-    'merch'   => ['label' => 'ของที่ระลึก',   'color' => '#62307a', 'bg' => '#f1e8f7'],
-    'perk'    => ['label' => 'สิทธิพิเศษ',   'color' => '#c9a830', 'bg' => '#fdf4d0'],
-    'general' => ['label' => 'ทั่วไป',        'color' => '#6b6e77', 'bg' => '#eeecea'],
+    'voucher' => ['label' => 'คูปอง',        'color' => '#8fa8e0', 'bg' => '#eaedfa'],
+    'leave'   => ['label' => 'วันหยุดพิเศษ', 'color' => '#7ec98a', 'bg' => '#e6f4e9'],
+    'merch'   => ['label' => 'ของที่ระลึก',   'color' => '#c48fe0', 'bg' => '#f1e8f7'],
+    'perk'    => ['label' => 'สิทธิพิเศษ',   'color' => '#dab937', 'bg' => '#fdf4d0'],
+    'general' => ['label' => 'ทั่วไป',        'color' => '#8a8e97', 'bg' => '#eeecea'],
 ];
 
 $statusMeta = [
@@ -301,7 +301,7 @@ require_once __DIR__ . '/../includes/header.php';
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    transition: transform 0.22s cubic-bezier(.22,.97,.5,1.18),
+    transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
                 box-shadow 0.22s ease,
                 border-color 0.22s ease;
     cursor: default;
@@ -355,7 +355,7 @@ require_once __DIR__ . '/../includes/header.php';
     box-shadow: 0 0 0 1px rgba(255,255,255,0.04),
                 0 32px 80px rgba(9,17,19,0.80);
     overflow: hidden;
-    animation: rw-modal-in 0.28s cubic-bezier(.22,.97,.5,1.18);
+    animation: rw-modal-in 0.28s cubic-bezier(0.22,1,0.36,1);
     backdrop-filter: blur(20px);
 }
 @keyframes rw-modal-in {
@@ -374,7 +374,10 @@ require_once __DIR__ . '/../includes/header.php';
     70%  { transform: scale(1.15); }
     100% { transform: scale(1);   opacity: 1; }
 }
-.success-pop { animation: pop-in 0.4s cubic-bezier(.22,.97,.5,1.18) both; }
+.success-pop { animation: pop-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── Stats bar divider: hide on narrow mobile ── */
+@media (max-width: 560px) { .rw-stat-div { display: none; } }
 
 /* ── Low-stock pulse ─────────────────────────────────────── */
 @keyframes rw-stock-pulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
@@ -457,7 +460,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                 </div>
 
-                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+                <div class="rw-stat-div" style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
 
                 <div style="padding:0 0.25rem;">
                     <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
@@ -480,7 +483,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <?php if ($myPending > 0): ?>
-                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+                <div class="rw-stat-div" style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
                 <button onclick="openPendingList()"
                         style="display:flex; align-items:center; gap:0.5rem;
                                background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
@@ -690,6 +693,8 @@ require_once __DIR__ . '/../includes/header.php';
                     $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
                 ?>
                 <div class="rw-hist-row" onclick="openRdDetail(<?= (int)$rd['redemption_id'] ?>)"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRdDetail(<?= (int)$rd['redemption_id'] ?>);}"
+                     tabindex="0" role="button" aria-label="ดูรายละเอียด: <?= e($rd['reward_title']) ?>"
                      style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
                             gap:0.65rem; cursor:pointer;">
                     <!-- Main row -->
@@ -1218,16 +1223,15 @@ foreach ($myRedemptions as $_rd) {
 
 <style>
 @keyframes _rdCardIn {
-    0%   { opacity:0; transform:perspective(700px) scale(0.80) translateY(36px) rotateX(16deg); }
-    60%  { opacity:1; transform:perspective(700px) scale(1.03)  translateY(-4px) rotateX(-2deg); }
-    100% { opacity:1; transform:perspective(700px) scale(1)     translateY(0)    rotateX(0deg);  }
+    from { opacity:0; transform:perspective(700px) scale(0.88) translateY(28px); }
+    to   { opacity:1; transform:perspective(700px) scale(1)    translateY(0); }
 }
 @keyframes _rdCardOut { from{opacity:1;transform:scale(1) translateY(0)} to{opacity:0;transform:scale(0.86) translateY(22px)} }
 @keyframes _rdFadeIn  { from{opacity:0} to{opacity:1} }
 @keyframes _rdFadeOut { from{opacity:1} to{opacity:0} }
 .rd-ov-in    { animation:_rdFadeIn  230ms ease                             forwards; }
 .rd-ov-out   { animation:_rdFadeOut 155ms ease                             forwards; }
-.rd-card-in  { animation:_rdCardIn  420ms cubic-bezier(0.34,1.56,0.64,1)  forwards; }
+.rd-card-in  { animation:_rdCardIn  420ms cubic-bezier(0.22,1,0.36,1)  forwards; }
 .rd-card-out { animation:_rdCardOut 155ms ease-in                          forwards; }
 </style>
 

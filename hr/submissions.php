@@ -168,7 +168,7 @@ require_once __DIR__ . '/../includes/header.php';
             <!-- Stats chips -->
             <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
                 <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(245,158,11,0.10); color:#fbbf24; border:1px solid rgba(245,158,11,0.25);">
+                             background:rgba(218,185,55,0.10); color:#dab937; border:1px solid rgba(218,185,55,0.28);">
                     รอตรวจ: <?= (int)($stats['pending_count'] ?? 0) ?>
                 </span>
                 <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
@@ -227,9 +227,9 @@ require_once __DIR__ . '/../includes/header.php';
                 $barColor = '#d2592a';
                 $barBorder= 'rgba(210,89,42,0.28)';
             } else {
-                $barBg    = 'rgba(245,158,11,0.12)';
-                $barColor = '#fbbf24';
-                $barBorder= 'rgba(245,158,11,0.25)';
+                $barBg    = 'rgba(218,185,55,0.12)';
+                $barColor = '#dab937';
+                $barBorder= 'rgba(218,185,55,0.28)';
             }
 
             $photoName = !empty($sub['photo_path']) ? basename($sub['photo_path']) : null;
