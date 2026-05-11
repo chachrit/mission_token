@@ -364,9 +364,9 @@ require_once __DIR__ . '/../../includes/header.php';
                             <label class="ace-label">ประเภทภารกิจ <span style="color:#d2592a;">*</span></label>
                             <select name="type" id="challenge-type" class="journal-input"
                                     onchange="handleTypeChange(this.value)">
-                                <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>📝 Quiz (ตอบคำถาม)</option>
-                                <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>📷 Photo (ส่งรูปภาพ)</option>
-                                <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>🏃 Strava (กิจกรรมออกกำลังกาย)</option>
+                                <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>Quiz (ตอบคำถาม)</option>
+                                <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>Photo (ส่งรูปภาพ)</option>
+                                <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>Strava (กิจกรรมออกกำลังกาย)</option>
                             </select>
                         </div>
                         <div>
@@ -395,16 +395,16 @@ require_once __DIR__ . '/../../includes/header.php';
                         <div style="background:rgba(252,76,2,0.06); border:1px solid rgba(252,76,2,0.2);
                                     border-radius:12px; padding:1.1rem 1.25rem;">
                             <p style="font-size:0.72rem; font-weight:700; color:rgba(252,76,2,0.8);
-                                      letter-spacing:0.08em; text-transform:uppercase; margin:0 0 0.9rem;">🏃 Strava Conditions</p>
+                                      letter-spacing:0.08em; text-transform:uppercase; margin:0 0 0.9rem;">Strava Conditions</p>
                             <div class="ace-grid-strava">
                                 <div>
                                     <label class="ace-label">ประเภทกิจกรรม</label>
                                     <select name="strava_sport_type" class="journal-input">
                                         <?php foreach ([
-                                            'Run'=>'🏃 วิ่ง', 'Ride'=>'🚴 ปั่นจักรยาน', 'Walk'=>'🚶 เดิน',
-                                            'Hike'=>'🥾 เดินป่า', 'Swim'=>'🏊 ว่ายน้ำ', 'WeightTraining'=>'🏋️ ยกน้ำหนัก',
-                                            'Workout'=>'💪 Workout', 'Yoga'=>'🧘 โยคะ',
-                                            'VirtualRide'=>'🎮 Virtual Ride', 'VirtualRun'=>'🎮 Virtual Run',
+                                            'Run'=>'วิ่ง', 'Ride'=>'ปั่นจักรยาน', 'Walk'=>'เดิน',
+                                            'Hike'=>'เดินป่า', 'Swim'=>'ว่ายน้ำ', 'WeightTraining'=>'ยกน้ำหนัก',
+                                            'Workout'=>'Workout', 'Yoga'=>'โยคะ',
+                                            'VirtualRide'=>'Virtual Ride', 'VirtualRun'=>'Virtual Run',
                                         ] as $val => $lbl): ?>
                                         <option value="<?= e($val) ?>" <?= $scSportType === $val ? 'selected' : '' ?>><?= e($lbl) ?></option>
                                         <?php endforeach; ?>

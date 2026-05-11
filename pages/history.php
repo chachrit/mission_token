@@ -249,7 +249,6 @@ require_once __DIR__ . '/../includes/header.php';
         <div id="panel-quest" style="display:none;">
         <?php if (empty($quizHistory)): ?>
         <div class="hy-empty-state">
-            <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎯</p>
             <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติการทำภารกิจ</p>
         </div>
         <?php else: ?>
@@ -313,7 +312,6 @@ require_once __DIR__ . '/../includes/header.php';
         <div id="panel-reward" style="display:none;">
         <?php if (empty($redemptions)): ?>
         <div class="hy-empty-state">
-            <p style="font-size:2rem; margin:0 0 0.5rem; opacity:0.15;">🎁</p>
             <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีประวัติการแลกรางวัล</p>
         </div>
         <?php else: ?>

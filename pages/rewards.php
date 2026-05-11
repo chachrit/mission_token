@@ -965,7 +965,9 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- success state -->
         <div id="modal-success" style="display:none; padding:2.75rem 1.75rem; text-align:center;">
-            <div class="success-pop" style="font-size:4rem; margin-bottom:1rem; line-height:1;">🎉</div>
+            <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                 style="width:68px;height:68px;object-fit:contain;margin-bottom:1rem;
+                        filter:drop-shadow(0 0 14px rgba(218,185,55,0.55));">
             <h3 style="font-size:1.2rem; font-weight:700; color:#eeebe1; margin:0 0 0.45rem;">
                 แลกรางวัลสำเร็จ!
             </h3>
@@ -1491,12 +1493,12 @@ function rdDoCancel() {
             setTimeout(function() { location.reload(); }, 165);
         } else {
             cb.disabled  = false;
-            cb.innerHTML = '❌ ' + (data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
+            cb.innerHTML = (data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่');
         }
     })
     .catch(function() {
         cb.disabled  = false;
-        cb.innerHTML = '❌ การเชื่อมต่อขัดข้อง กรุณาลองใหม่';
+        cb.innerHTML = 'การเชื่อมต่อขัดข้อง กรุณาลองใหม่';
     });
 }
 

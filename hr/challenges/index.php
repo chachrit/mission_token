@@ -135,7 +135,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <!-- Row 2: type filter pills -->
             <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
                 <?php
-                $filters = ['' => 'ทั้งหมด', 'quiz' => '📝 Quiz', 'photo' => '📷 Photo', 'strava' => '🏃 Strava'];
+                $filters = ['' => 'ทั้งหมด', 'quiz' => 'Quiz', 'photo' => 'Photo', 'strava' => 'Strava'];
                 foreach ($filters as $val => $label):
                     $isActive = ($typeFilter === $val);
                 ?>
@@ -218,17 +218,17 @@ require_once __DIR__ . '/../../includes/header.php';
                     <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
                                  border-radius:999px; letter-spacing:0.03em;
                                  background:rgba(79,139,152,0.14); color:#4f8b98;
-                                 border:1px solid rgba(79,139,152,0.28);">📝 Quiz</span>
+                                 border:1px solid rgba(79,139,152,0.28);">Quiz</span>
                     <?php elseif ($isStrava): ?>
                     <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
                                  border-radius:999px; letter-spacing:0.03em;
                                  background:rgba(252,76,2,0.12); color:#FC4C02;
-                                 border:1px solid rgba(252,76,2,0.30);">&#127939; Strava</span>
+                                 border:1px solid rgba(252,76,2,0.30);">Strava</span>
                     <?php else: ?>
                     <span style="font-size:0.68rem; font-weight:700; padding:0.22rem 0.6rem;
                                  border-radius:999px; letter-spacing:0.03em;
                                  background:rgba(218,185,55,0.12); color:#dab937;
-                                 border:1px solid rgba(218,185,55,0.25);">📷 Photo</span>
+                                 border:1px solid rgba(218,185,55,0.25);">Photo</span>
                     <?php endif; ?>
                 </div>
 

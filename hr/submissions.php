@@ -246,7 +246,7 @@ require_once __DIR__ . '/../includes/header.php';
                         background:<?= $barBg ?>; border-bottom:1px solid <?= $barBorder ?>;
                         font-size:0.72rem; font-weight:700; color:<?= $barColor ?>;">
                 <span>
-                    <?php if ($isPending): ?>⏳ รอตรวจสอบ
+                    <?php if ($isPending): ?>รอตรวจสอบ
                     <?php elseif ($isApproved): ?>✓ อนุมัติแล้ว
                     <?php else: ?>✕ ปฏิเสธ<?php endif; ?>
                 </span>

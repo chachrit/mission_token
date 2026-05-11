@@ -381,7 +381,7 @@ $flash        = $flash ?? getFlash();
                                 <p class="text-xs mt-0.5" style="color:#6b6e77;"><?php echo e($_SESSION['employee_code'] ?? ''); ?></p>
                                 <?php if (!$isAdmin): ?>
                                 <p class="text-xs mt-1 font-semibold" style="color:#dab937;">
-                                    🪙 <?php echo formatTokens($navBalance); ?> token
+                                    <?php echo formatTokens($navBalance); ?> token
                                 </p>
                                 <?php endif; ?>
                             </div>

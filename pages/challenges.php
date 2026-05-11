@@ -200,7 +200,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($matched) {
                 awardTokens($employeeId, $awarded, 'quiz_reward', $subId, 'Strava: ' . $challenge['title']);
                 $actName = mb_substr($matched['name'] ?? 'กิจกรรม', 0, 60);
-                setFlash('success', "ยินดีด้วย! พบกิจกรรม \"{$actName}\" ที่ผ่านเงื่อนไข ได้รับ +{$awarded} Token 🎉");
+                setFlash('success', "ยินดีด้วย! พบกิจกรรม \"{$actName}\" ที่ผ่านเงื่อนไข ได้รับ +{$awarded} Token");
             } else {
                 setFlash('error', 'ไม่พบกิจกรรม Strava ที่ตรงเงื่อนไขในช่วงวันที่ภารกิจ กรุณาบันทึกกิจกรรมแล้วลองใหม่');
             }
@@ -357,7 +357,7 @@ require_once __DIR__ . '/../includes/header.php';
             <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token"
                  id="win-token"
                  class="h-20 w-20 mx-auto mb-4 ch-win-token">
-            <h2 class="text-2xl font-bold mb-2 ch-win-title">ยินดีด้วย! 🎉</h2>
+            <h2 class="text-2xl font-bold mb-2 ch-win-title">ยินดีด้วย!</h2>
             <p class="text-sm leading-relaxed mb-6 max-w-xs mx-auto ch-win-desc">
                 <?= e($flash['message']) ?>
             </p>
@@ -475,7 +475,7 @@ require_once __DIR__ . '/../includes/header.php';
         <!-- Mission info strip -->
         <div class="ch-mission-strip p-5 mb-4 flex items-center gap-4">
             <div class="flex-1 min-w-0">
-                <span class="badge ch-badge-quiz text-xs font-semibold mb-1.5 inline-block">📝 Quiz Mission</span>
+                <span class="badge ch-badge-quiz text-xs font-semibold mb-1.5 inline-block">Quiz Mission</span>
                 <h2 class="text-lg font-semibold ch-mission-title leading-snug"><?= e($ch['title']) ?></h2>
                 <p class="mt-1 text-sm ch-mission-desc leading-relaxed"><?= e((string)$ch['description']) ?></p>
             </div>
@@ -725,7 +725,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="ch-board-glow"></div>
         <div class="relative max-w-7xl mx-auto ch-board-hero-inner">
             <div>
-                <p class="text-[14px] font-bold uppercase mb-2.5 ch-board-hero-label">&#9876; Quest Board</p>
+                <p class="text-[14px] font-bold uppercase mb-2.5 ch-board-hero-label">Quest Board</p>
                 <h1 class="font-bold leading-tight ch-hero-title ch-hero-title-size">ภารกิจทั้งหมด</h1>
                 <p class="text-base mt-2.5 ch-hero-sub">เลือกภารกิจที่ต้องการ แล้วส่งหลักฐานเพื่อรับ Token</p>
             </div>
@@ -772,7 +772,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Top: type badge + urgency (if near deadline) -->
                         <div class="ch-quest-top-row">
                             <?php if ($ch['type'] === 'strava'): ?>
-                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">&#127939; Strava</span>
+                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">Strava</span>
                             <?php elseif ($ch['type'] === 'quiz'): ?>
                             <span class="ch-type-badge">Quiz</span>
                             <?php else: ?>
@@ -780,7 +780,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php endif; ?>
                             <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
                             <span style="font-size:0.65rem;font-weight:700;color:#d2592a;background:rgba(210,89,42,0.10);border:1px solid rgba(210,89,42,0.25);border-radius:6px;padding:0.18rem 0.55rem;">
-                                <?= $_daysLeft === 0 ? '⚡ วันนี้!' : '⚡ เหลือ ' . $_daysLeft . ' วัน' ?>
+                                <?= $_daysLeft === 0 ? 'วันนี้!' : 'เหลือ ' . $_daysLeft . ' วัน' ?>
                             </span>
                             <?php endif; ?>
                         </div>
@@ -824,7 +824,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Header: type badge -->
                         <div class="ch-flip-back-header">
                             <?php if ($ch['type'] === 'strava'): ?>
-                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">&#127939; Strava</span>
+                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">Strava</span>
                             <?php elseif ($ch['type'] === 'quiz'): ?>
                             <span class="ch-type-badge">Quiz</span>
                             <?php else: ?>
@@ -907,7 +907,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <?php elseif ($ch['type'] === 'strava'): ?>
                             <?php if (!$stravaConnected): ?>
-                            <p style="font-size:0.73rem;color:#d2592a;margin:0;">⚠️ ยังไม่ได้เชื่อมต่อ Strava</p>
+                            <p style="font-size:0.73rem;color:#d2592a;margin:0;">ยังไม่ได้เชื่อมต่อ Strava</p>
                             <?php elseif ($isRejected): ?>
                             <p style="font-size:0.73rem;color:rgba(252,76,2,0.7);margin:0;">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
                             <?php else: ?>
@@ -1060,14 +1060,14 @@ require_once __DIR__ . '/../includes/header.php';
                                                 color:rgba(252,76,2,0.85); margin:0 0 0.75rem;"></p>
                 <!-- Action: connect Strava -->
                 <div id="sm-connect-area" style="display:none;">
-                    <p style="font-size:0.8rem; color:#d2592a; margin:0 0 0.7rem;">⚠️ กรุณาเชื่อมต่อ Strava ก่อนทำภารกิจ</p>
+                    <p style="font-size:0.8rem; color:#d2592a; margin:0 0 0.7rem;">กรุณาเชื่อมต่อ Strava ก่อนทำภารกิจ</p>
                     <a href="<?= BASE_URL ?>/pages/strava_connect.php"
                        style="display:inline-flex; align-items:center; gap:0.5rem;
                               padding:0.65rem 1.25rem; border-radius:10px;
                               background:rgba(252,76,2,0.80); color:#fff;
                               font-size:0.85rem; font-weight:700;
                               font-family:'Prompt',sans-serif; text-decoration:none;">
-                        &#127939; เชื่อมต่อ Strava
+                        เชื่อมต่อ Strava
                     </a>
                 </div>
                 <!-- Action: submit form -->
@@ -1085,7 +1085,7 @@ require_once __DIR__ . '/../includes/header.php';
                                    font-size:0.85rem; font-weight:700;
                                    font-family:'Prompt',sans-serif;
                                    cursor:pointer; border:none;">
-                        &#127939; ตรวจสอบกิจกรรม Strava
+                        ตรวจสอบกิจกรรม Strava
                     </button>
                 </form>
             </div>
@@ -1122,9 +1122,9 @@ require_once __DIR__ . '/../includes/header.php';
         // End date
         var edEl = document.getElementById('sm-enddate');
         if (d.ed) {
-            var txt = '\ud83d\udcc5 \u0e2a\u0e34\u0e49\u0e19\u0e2a\u0e38\u0e14 ' + d.ed;
+            var txt = '\u0e2a\u0e34\u0e49\u0e19\u0e2a\u0e38\u0e14 ' + d.ed;
             if (d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7) {
-                txt += ' \u00b7 ' + (d.daysLeft === 0 ? '\u26a1 \u0e27\u0e31\u0e19\u0e19\u0e35\u0e49!' : '\u26a1 \u0e40\u0e2b\u0e25\u0e37\u0e2d\u0e2d\u0e35\u0e01 ' + d.daysLeft + ' \u0e27\u0e31\u0e19');
+                txt += ' \u00b7 ' + (d.daysLeft === 0 ? '\u0e27\u0e31\u0e19\u0e19\u0e35\u0e49!' : '\u0e40\u0e2b\u0e25\u0e37\u0e2d\u0e2d\u0e35\u0e01 ' + d.daysLeft + ' \u0e27\u0e31\u0e19');
             }
             edEl.textContent = txt;
             edEl.style.display = 'block';
@@ -1152,7 +1152,7 @@ require_once __DIR__ . '/../includes/header.php';
             connectEl.style.display = 'none';
             formEl.style.display    = 'block';
             document.getElementById('sm-cid-input').value = cid;
-            submitBtn.innerHTML  = '&#127939; ' + (d.rejected ? '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e2d\u0e35\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07' : '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21 Strava');
+            submitBtn.innerHTML  = d.rejected ? '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e2d\u0e35\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07' : '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21 Strava';
             submitBtn.disabled   = false;
         }
 
@@ -1195,7 +1195,6 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
                         display:flex; align-items:center; justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:0.6rem;">
-                    <span style="font-size:0.95rem;">📝</span>
                     <span style="font-size:0.68rem; font-weight:700; color:rgba(218,185,55,0.9);
                                  letter-spacing:0.08em; text-transform:uppercase;">Quiz Mission</span>
                 </div>
@@ -1273,9 +1272,9 @@ require_once __DIR__ . '/../includes/header.php';
             : 'ไม่มีคำถาม';
         var edEl = document.getElementById('qm-enddate');
         if (d.ed) {
-            var txt = '📅 สิ้นสุด ' + d.ed;
+            var txt = 'สิ้นสุด ' + d.ed;
             if (d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7)
-                txt += ' · ' + (d.daysLeft === 0 ? '⚡ วันนี้!' : '⚡ เหลืออีก ' + d.daysLeft + ' วัน');
+                txt += ' · ' + (d.daysLeft === 0 ? 'วันนี้!' : 'เหลืออีก ' + d.daysLeft + ' วัน');
             edEl.textContent = txt;
             edEl.style.display = 'block';
         } else {
@@ -1360,7 +1359,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </p>
                     <?php endif; ?>
                     <?php if ($isPending): ?>
-                    <p class="ch-pending-text">&#9203; รอการตรวจสอบจาก HR/Manager</p>
+                    <p class="ch-pending-text">รอการตรวจสอบจาก HR/Manager</p>
                     <?php elseif ($isRejected): ?>
                     <p class="ch-rejected-text">&#x2715; ไม่ผ่านเกณฑ์ &bull; ไม่สามารถส่งซ้ำได้</p>
                     <?php endif; ?>

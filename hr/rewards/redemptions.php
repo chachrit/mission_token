@@ -276,7 +276,6 @@ require_once __DIR__ . '/../../includes/header.php';
 
             <?php if (empty($redemptions)): ?>
             <div style="padding:3.5rem; text-align:center;">
-                <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20;">🎉</p>
                 <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ไม่มีรายการในสถานะนี้</p>
             </div>
             <?php else: ?>
