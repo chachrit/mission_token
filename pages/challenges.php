@@ -987,18 +987,17 @@ require_once __DIR__ . '/../includes/header.php';
     @keyframes _mFadeIn  { from{opacity:0} to{opacity:1} }
     @keyframes _mFadeOut { from{opacity:1} to{opacity:0} }
     @keyframes _mCardIn {
-        0%   { opacity:0; transform:perspective(700px) scale(0.76) translateY(44px) rotateX(20deg); }
-        60%  { opacity:1; transform:perspective(700px) scale(1.03) translateY(-5px)  rotateX(-2deg); }
-        100% { opacity:1; transform:perspective(700px) scale(1)    translateY(0)     rotateX(0deg);  }
+        0%   { opacity:0; transform:perspective(700px) scale(0.82) translateY(32px) rotateX(16deg); }
+        100% { opacity:1; transform:perspective(700px) scale(1)    translateY(0)    rotateX(0deg);  }
     }
     @keyframes _mCardOut {
         from { opacity:1; transform:scale(1)    translateY(0);  }
         to   { opacity:0; transform:scale(0.84) translateY(24px); }
     }
-    .modal-overlay-in  { animation:_mFadeIn  260ms ease            forwards; }
-    .modal-overlay-out { animation:_mFadeOut 180ms ease            forwards; }
-    .modal-card-in     { animation:_mCardIn  440ms cubic-bezier(0.34,1.56,0.64,1) forwards; }
-    .modal-card-out    { animation:_mCardOut 170ms ease-in         forwards; }
+    .modal-overlay-in  { animation:_mFadeIn  260ms ease                          forwards; }
+    .modal-overlay-out { animation:_mFadeOut 180ms ease                          forwards; }
+    .modal-card-in     { animation:_mCardIn  400ms cubic-bezier(0.22,1,0.36,1)   forwards; }
+    .modal-card-out    { animation:_mCardOut 170ms ease-in                       forwards; }
     </style>
 
     <!-- ── Strava Detail Modal ── -->
