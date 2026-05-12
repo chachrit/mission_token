@@ -489,6 +489,46 @@ require_once __DIR__ . '/../includes/header.php';
                           onsubmit="return confirm('ยืนยันการยกเลิกเชื่อมต่อ Strava?');">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="disconnect">
+                        <button type="submit" style="
+                            display:inline-flex;align-items:center;gap:6px;
+                            background:rgba(210,89,42,0.12);color:#d2592a;
+                            border:1px solid rgba(210,89,42,0.35);border-radius:8px;
+                            padding:7px 18px;font-size:0.82rem;font-weight:600;cursor:pointer;">
+                            ยกเลิกเชื่อมต่อ Strava
+                        </button>
+                    </form>
+
+                    <?php else: ?>
+                    <!-- Connect button -->
+                    <p style="font-size:0.82rem;color:#9ca3af;margin:0 0 1rem;line-height:1.6;">
+                        เชื่อมต่อ Strava เพื่อทำภารกิจ Activity Tracking อัตโนมัติ<br>
+                        <span style="font-size:0.72rem;color:#6b6e77;">ต้องการสิทธิ์อ่าน activity เท่านั้น</span>
+                    </p>
+                    <a href="<?= e($stravaAuthUrl) ?>"
+                       style="display:inline-flex;align-items:center;gap:8px;
+                              background:#FC4C02;color:#fff;border-radius:8px;
+                              padding:8px 20px;font-size:0.85rem;font-weight:700;
+                              text-decoration:none;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
+                        </svg>
+                        เชื่อมต่อกับ Strava
+                    </a>
+                    <?php endif; ?>
+
+                </div><!-- /strava card -->
+
+            </div><!-- /pf-col right -->
+
+        </div><!-- /pf-grid-2col -->
+
+    </div><!-- /pf-inner -->
+
+</div><!-- /pf-profile-wrap -->
+
+<?php require_once __DIR__ . '/../includes/footer.php'; ?>
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="disconnect">
                         <button type="submit"
                                 style="font-size:0.78rem;font-weight:600;padding:7px 18px;
                                        background:rgba(210,89,42,0.12);color:#d2592a;
