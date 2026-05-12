@@ -20,16 +20,22 @@ function isStravaConnected(int $employeeId): bool
 // ── Get stored Strava token row ───────────────────────────────
 function getStravaTokenRow(int $employeeId): ?array
 {
-    $pdo  = getDB();
-    $stmt = $pdo->prepare("
-        SELECT strava_athlete_id, strava_access_token,
-               strava_refresh_token, strava_token_expires_at, strava_scope
-        FROM   employees
-        WHERE  employee_id = ?
-    ");
-    $stmt->execute([$employeeId]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row ?: null;
+    try {
+        $pdo  = getDB();
+        $stmt = $pdo->prepare("
+            SELECT strava_athlete_id, strava_access_token,
+                   strava_refresh_token, strava_token_expires_at, strava_scope
+            FROM   employees
+            WHERE  employee_id = ?
+        ");
+        $stmt->execute([$employeeId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    } catch (\PDOException $e) {
+        // Strava columns may not exist yet (run strava_migration.sql)
+        error_log('[Strava] getStravaTokenRow: ' . $e->getMessage());
+        return null;
+    }
 }
 
 // ── Refresh token if it expires within 10 minutes ────────────

@@ -145,6 +145,7 @@
 
             // Click on notification item → dismiss + navigate
             document.addEventListener('click', function (e) {
+                if (!e.target || typeof e.target.closest !== 'function') return;
                 var item = e.target.closest('.nav-notif-item[data-key]');
                 if (!item) return;
                 var key = item.dataset.key;
@@ -172,6 +173,7 @@
 
             // Hover on any notification dropdown item → dismiss it
             document.addEventListener('mouseenter', function (e) {
+                if (!e.target || typeof e.target.closest !== 'function') return;
                 var item = e.target.closest('.nav-notif-item[data-key]');
                 if (!item) return;
                 var key = item.dataset.key;
