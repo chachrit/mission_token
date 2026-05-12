@@ -141,6 +141,35 @@ if (!empty($_SESSION['employee_id'])) {
                 'href'  => BASE_URL . '/pages/history.php',
             ];
         }
+
+        // 5. New challenges (created within last 3 days, active, not yet submitted)
+        $s5 = $pdo->prepare("
+            SELECT c.challenge_id, c.title, c.token_reward, c.type
+            FROM challenges c
+            WHERE c.is_active = 1
+              AND c.start_date <= CAST(GETDATE() AS DATE)
+              AND c.end_date   >= CAST(GETDATE() AS DATE)
+              AND c.created_at >= DATEADD(DAY, -3, GETDATE())
+              AND NOT EXISTS (
+                  SELECT 1 FROM challenge_submissions cs
+                  WHERE cs.employee_id   = ?
+                    AND cs.challenge_id  = c.challenge_id
+                    AND cs.status NOT IN ('rejected')
+              )
+            ORDER BY c.created_at DESC
+        ");
+        $s5->execute([$empId]);
+        foreach ($s5->fetchAll() as $r) {
+            $typeLabel = $r['type'] === 'quiz' ? 'Quiz' : ($r['type'] === 'strava' ? 'Strava' : 'ภาพถ่าย');
+            $allNotifs[] = [
+                'key'   => 'new_ch_' . $r['challenge_id'],
+                'type'  => 'new_challenge',
+                'title' => $r['title'],
+                'sub'   => 'ภารกิจใหม่! ' . $typeLabel . ' — รับ +' . number_format((int)$r['token_reward']) . ' Token',
+                'href'  => BASE_URL . '/pages/challenges.php',
+                'cid'   => (int)$r['challenge_id'],
+            ];
+        }
     } catch (Throwable $e) { /* silent */ }
 }
 $notifCount = count($allNotifs);
@@ -572,20 +601,23 @@ $notifCount = count($allNotifs);
                             <!-- Items -->
                             <?php
                             $_iconCfg = [
-                                'rejected'  => ['bg'=>'rgba(210,89,42,0.15)','bc'=>'rgba(210,89,42,0.3)','c'=>'#e8834a',
+                                'rejected'      => ['bg'=>'rgba(210,89,42,0.15)','bc'=>'rgba(210,89,42,0.3)','c'=>'#e8834a',
                                     'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'],
-                                'approved'  => ['bg'=>'rgba(81,142,92,0.15)','bc'=>'rgba(81,142,92,0.3)','c'=>'#7ec98a',
+                                'approved'      => ['bg'=>'rgba(81,142,92,0.15)','bc'=>'rgba(81,142,92,0.3)','c'=>'#7ec98a',
                                     'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'],
-                                'fulfilled' => ['bg'=>'rgba(218,185,55,0.12)','bc'=>'rgba(218,185,55,0.3)','c'=>'#dab937',
+                                'fulfilled'     => ['bg'=>'rgba(218,185,55,0.12)','bc'=>'rgba(218,185,55,0.3)','c'=>'#dab937',
                                     'icon'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 14.4 8.7 21.2 8.7 15.9 13.2 18.1 20 12 16.4 5.9 20 8.1 13.2 2.8 8.7 9.6 8.7z"/></svg>'],
-                                'cancelled' => ['bg'=>'rgba(107,110,119,0.15)','bc'=>'rgba(107,110,119,0.3)','c'=>'#6b6e77',
+                                'cancelled'     => ['bg'=>'rgba(107,110,119,0.15)','bc'=>'rgba(107,110,119,0.3)','c'=>'#6b6e77',
                                     'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'],
+                                'new_challenge' => ['bg'=>'rgba(79,139,152,0.15)','bc'=>'rgba(79,139,152,0.3)','c'=>'#4f8b98',
+                                    'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>'],
                             ];
                             $_badgeCfg = [
-                                'rejected'  => 'background:rgba(210,89,42,0.18);color:#e8834a;border-color:rgba(210,89,42,0.35);',
-                                'approved'  => 'background:rgba(81,142,92,0.18);color:#7ec98a;border-color:rgba(81,142,92,0.35);',
-                                'fulfilled' => 'background:rgba(218,185,55,0.15);color:#dab937;border-color:rgba(218,185,55,0.35);',
-                                'cancelled' => 'background:rgba(107,110,119,0.15);color:#6b6e77;border-color:rgba(107,110,119,0.3);',
+                                'rejected'      => 'background:rgba(210,89,42,0.18);color:#e8834a;border-color:rgba(210,89,42,0.35);',
+                                'approved'      => 'background:rgba(81,142,92,0.18);color:#7ec98a;border-color:rgba(81,142,92,0.35);',
+                                'fulfilled'     => 'background:rgba(218,185,55,0.15);color:#dab937;border-color:rgba(218,185,55,0.35);',
+                                'cancelled'     => 'background:rgba(107,110,119,0.15);color:#6b6e77;border-color:rgba(107,110,119,0.3);',
+                                'new_challenge' => 'background:rgba(79,139,152,0.15);color:#4f8b98;border-color:rgba(79,139,152,0.35);',
                             ];
                             ?>
                             <?php if (empty($allNotifs)): ?>
