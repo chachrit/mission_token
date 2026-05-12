@@ -754,12 +754,31 @@ require_once __DIR__ . '/../includes/header.php';
                     <span style="font-size:0.75rem; color:#6b6e77; white-space:nowrap;">
                         <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                     </span>
-                    <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
-                                 border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
-                                 background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                                 border:1px solid <?= $ds['border'] ?>;">
-                        <?= $sm['label'] ?>
-                    </span>
+                    <div style="display:flex; align-items:center; gap:0.45rem; justify-content:flex-end; flex-wrap:wrap;">
+                        <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
+                                     border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
+                                     background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                                     border:1px solid <?= $ds['border'] ?>;">
+                            <?= $sm['label'] ?>
+                        </span>
+                        <?php if ($rd['status'] === 'pending'): ?>
+                        <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
+                                style="display:inline-flex; align-items:center; gap:0.3rem;
+                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
+                                       border-radius:7px; padding:0.22rem 0.58rem; cursor:pointer;
+                                       font-size:0.66rem; font-weight:600; color:rgba(210,89,42,0.75);
+                                       font-family:'Prompt',sans-serif; letter-spacing:0.03em;
+                                       transition:background 0.15s, border-color 0.15s; white-space:nowrap;"
+                                onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
+                                onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
+                                title="ยกเลิกการแลกรางวัลนี้">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="10" height="10">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                            ยกเลิก
+                        </button>
+                        <?php endif; ?>
+                    </div>
                     </div><!-- /main row -->
 
                     <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
@@ -825,33 +844,6 @@ require_once __DIR__ . '/../includes/header.php';
                                 คัดลอก
                             </button>
                         </div>
-                    </div>
-                    <?php elseif ($rd['status'] === 'pending'): ?>
-                    <!-- Lock hint + cancel — pending -->
-                    <div style="border-top:1px dashed rgba(255,255,255,0.06); padding-top:0.5rem; margin-top:0.1rem;
-                                display:flex; align-items:center; justify-content:space-between; gap:0.75rem; flex-wrap:wrap;">
-                        <div style="display:flex; align-items:center; gap:0.4rem;">
-                            <svg fill="none" stroke="#3a3e43" viewBox="0 0 24 24" width="12" height="12" style="flex-shrink:0;">
-                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11V7a5 5 0 0110 0v4"/>
-                            </svg>
-                            <span style="font-size:0.68rem; color:#6b6e77;">รหัสคูปองจะปรากฏหลัง HR ยืนยันมอบรางวัล</span>
-                        </div>
-                        <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
-                                style="display:inline-flex; align-items:center; gap:0.3rem;
-                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
-                                       border-radius:7px; padding:0.25rem 0.65rem; cursor:pointer;
-                                       font-size:0.68rem; font-weight:600; color:rgba(210,89,42,0.75);
-                                       font-family:'Prompt',sans-serif; letter-spacing:0.03em;
-                                       transition:background 0.15s, border-color 0.15s; white-space:nowrap;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
-                                title="ยกเลิกการแลกรางวัลนี้">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            ยกเลิก
-                        </button>
                     </div>
                     <?php endif; ?>
                 </div><!-- /rw-hist-row -->

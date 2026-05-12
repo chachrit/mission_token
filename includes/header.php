@@ -30,6 +30,31 @@ if (!empty($_SESSION['employee_id'])) {
 }
 $pendingCount = $isAdminOrHr ? getPendingCount() : 0;
 $flash        = $flash ?? getFlash();
+
+// Notification bell: rejected photo/strava missions (employee zone only)
+$notifRejected = [];
+if (!empty($_SESSION['employee_id'])) {
+    try {
+        $notifStmt = getDB()->prepare("
+            WITH latest AS (
+                SELECT challenge_id, submission_id, status, review_note,
+                       ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
+                FROM challenge_submissions
+                WHERE employee_id = ? AND submission_type IN ('photo','strava')
+            )
+            SELECT l.challenge_id, l.submission_id, c.title, l.review_note
+            FROM latest l
+            JOIN challenges c ON l.challenge_id = c.challenge_id
+            WHERE l.rn = 1 AND l.status = 'rejected'
+              AND c.is_active = 1
+              AND c.end_date >= CAST(GETDATE() AS DATE)
+            ORDER BY c.end_date ASC
+        ");
+        $notifStmt->execute([(int)$_SESSION['employee_id']]);
+        $notifRejected = $notifStmt->fetchAll();
+    } catch (Throwable $e) { /* silent */ }
+}
+$notifCount = count($notifRejected);
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -214,6 +239,90 @@ $flash        = $flash ?? getFlash();
             border: 2px solid #091113;
         }
 
+        /* Notification Bell Button */
+        .nav-notif-btn {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 10px;
+            background: transparent; border: none; cursor: pointer;
+            color: #9ca3af; transition: color 0.15s, background 0.15s;
+        }
+        .nav-notif-btn:hover { color: #eeebe1; background: #1a1f20; }
+        .nav-notif-badge {
+            position: absolute; top: -5px; right: -5px;
+            min-width: 18px; height: 18px; padding: 0 4px;
+            background: #d2592a; color: #fff;
+            font-size: 0.65rem; font-weight: 700; font-family: 'Prompt', sans-serif;
+            border-radius: 999px; border: 2px solid #091113;
+            display: flex; align-items: center; justify-content: center;
+            animation: notif-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+        }
+        @keyframes notif-badge-pop {
+            from { transform: scale(0); opacity: 0; }
+            to   { transform: scale(1); opacity: 1; }
+        }
+
+        /* Notification Dropdown */
+        .nav-notif-dropdown {
+            position: absolute; right: 0; top: calc(100% + 10px);
+            width: 320px; max-height: 440px;
+            background: #0d1618; border: 1px solid #3a3e43;
+            border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.55);
+            overflow: hidden; z-index: 60;
+            animation: notif-drop-in 0.2s ease both;
+        }
+        @keyframes notif-drop-in {
+            from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .nav-notif-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0.85rem 1rem 0.7rem;
+            border-bottom: 1px solid #1f2b2e;
+        }
+        .nav-notif-header-title { font-size: 0.82rem; font-weight: 700; color: #eeebe1; letter-spacing: 0.01em; }
+        .nav-notif-header-count {
+            font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem;
+            background: rgba(210,89,42,0.18); color: #e8834a;
+            border: 1px solid rgba(210,89,42,0.35); border-radius: 999px;
+        }
+        .nav-notif-empty {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 2rem 1rem; color: #4a5054; font-size: 0.8rem;
+        }
+        .nav-notif-list { overflow-y: auto; max-height: 340px; }
+        .nav-notif-item {
+            display: flex; align-items: flex-start; gap: 0.75rem;
+            padding: 0.8rem 1rem; text-decoration: none;
+            border-bottom: 1px solid #1a2124;
+            transition: background 0.12s;
+        }
+        .nav-notif-item:hover { background: #111d20; }
+        .nav-notif-item-icon {
+            flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+            background: rgba(210,89,42,0.15); border: 1px solid rgba(210,89,42,0.3);
+            display: flex; align-items: center; justify-content: center;
+            color: #e8834a; margin-top: 0.1rem;
+        }
+        .nav-notif-item-body { flex: 1; min-width: 0; }
+        .nav-notif-item-title {
+            font-size: 0.82rem; font-weight: 600; color: #d8d4cb;
+            margin: 0 0 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .nav-notif-item-sub { font-size: 0.72rem; color: #6b6e77; margin: 0; line-height: 1.45; }
+        .nav-notif-item-new {
+            flex-shrink: 0; font-size: 0.62rem; font-weight: 700;
+            background: rgba(210,89,42,0.18); color: #e8834a;
+            border: 1px solid rgba(210,89,42,0.3); border-radius: 4px;
+            padding: 0.1rem 0.4rem; align-self: flex-start; margin-top: 0.15rem;
+        }
+        .nav-notif-footer-link {
+            display: block; text-align: center; padding: 0.7rem;
+            font-size: 0.78rem; font-weight: 600; color: #dab937;
+            border-top: 1px solid #1f2b2e; text-decoration: none;
+            transition: background 0.12s;
+        }
+        .nav-notif-footer-link:hover { background: #111d20; color: #f0c940; }
+
         /* Nav logo hover */
         .nav-logo {
             opacity: 0.88;
@@ -342,6 +451,82 @@ $flash        = $flash ?? getFlash();
                          style="background:#1a1f20; border: 1px solid #3a3e43;">
                         <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
                         <span class="text-sm font-semibold" id="nav-balance" style="color:#dab937;"><?php echo formatTokens($navBalance); ?></span>
+                    </div>
+                    <?php endif; ?>
+
+                    <!-- Notification Bell (employee zone) -->
+                    <?php if (!$isAdminPage || !$isAdminOrHr): ?>
+                    <div class="relative" id="notif-wrap">
+                        <button onclick="toggleNotifDropdown()" id="notif-bell-btn"
+                                class="nav-notif-btn"
+                                aria-label="การแจ้งเตือน">
+                            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                            </svg>
+                            <?php if ($notifCount > 0): ?>
+                            <span class="nav-notif-badge" id="nav-notif-badge"><?= $notifCount ?></span>
+                            <?php endif; ?>
+                        </button>
+
+                        <!-- Notification Dropdown -->
+                        <div id="notif-dropdown"
+                             class="nav-notif-dropdown hidden"
+                             role="menu" aria-label="การแจ้งเตือน">
+                            <!-- Header -->
+                            <div class="nav-notif-header">
+                                <span class="nav-notif-header-title">การแจ้งเตือน</span>
+                                <?php if ($notifCount > 0): ?>
+                                <span class="nav-notif-header-count" id="notif-header-count"><?= $notifCount ?> รายการ</span>
+                                <?php endif; ?>
+                            </div>
+                            <!-- Items -->
+                            <?php if (empty($notifRejected)): ?>
+                            <div id="notif-empty-state" class="nav-notif-empty">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:0.5rem;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                <p>ไม่มีการแจ้งเตือน</p>
+                            </div>
+                            <?php else: ?>
+                            <div class="nav-notif-list">
+                                <?php foreach ($notifRejected as $notif): ?>
+                                <a href="<?= BASE_URL ?>/pages/challenges.php"
+                                   class="nav-notif-item" role="menuitem"
+                                   data-cid="<?= (int)$notif['challenge_id'] ?>" data-sid="<?= (int)$notif['submission_id'] ?>">
+                                    <span class="nav-notif-item-icon">
+                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                    </span>
+                                    <div class="nav-notif-item-body">
+                                        <p class="nav-notif-item-title"><?= e($notif['title']) ?></p>
+                                        <p class="nav-notif-item-sub">
+                                            <?php if (!empty($notif['review_note'])): ?>
+                                            <?= e(mb_strimwidth((string)$notif['review_note'], 0, 60, '…', 'UTF-8')) ?>
+                                            <?php else: ?>
+                                            ภารกิจถูกปฏิเสธ — กดเพื่อส่งหลักฐานใหม่
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                    <span class="nav-notif-item-new">ใหม่</span>
+                                </a>
+                                <?php endforeach; ?>
+                            </div>
+                            <div id="notif-empty-state" class="nav-notif-empty" style="display:none;">
+                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:0.5rem;">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                          d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                                </svg>
+                                <p>ไม่มีการแจ้งเตือน</p>
+                            </div>
+                            <a href="<?= BASE_URL ?>/pages/challenges.php"
+                               class="nav-notif-footer-link" id="notif-footer-link">
+                                ดูภารกิจทั้งหมด →
+                            </a>
+                            <?php endif; ?>
+                        </div>
                     </div>
                     <?php endif; ?>
 

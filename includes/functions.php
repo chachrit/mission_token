@@ -117,8 +117,8 @@ function formatTokens(int $amount): string
 // ============================================================
 
 /**
- * Check if employee has submitted (or is pending) for a challenge.
- * Prevents double-submission regardless of status.
+ * Check if employee has an active submission for a challenge.
+ * Allows retry when latest/only submission is rejected.
  */
 function hasSubmittedChallenge(int $employeeId, int $challengeId): bool
 {
@@ -128,7 +128,7 @@ function hasSubmittedChallenge(int $employeeId, int $challengeId): bool
         FROM challenge_submissions
         WHERE employee_id  = ?
           AND challenge_id = ?
-          AND status NOT IN ('rejected')
+          AND status IN ('pending', 'approved', 'auto_approved')
     ");
     $stmt->execute([$employeeId, $challengeId]);
     $row = $stmt->fetch();

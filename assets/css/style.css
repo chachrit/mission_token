@@ -1876,6 +1876,42 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
 .ch-flash-modal--error .ch-flash-modal-btn { background: rgba(210,89,42,0.85); color: #fff; }
 .ch-flash-modal--info  .ch-flash-modal-btn { background: rgba(79,139,152,0.85); color: #fff; }
 
+/* ── Pending Submission Modal ── */
+.ch-pending-modal {
+    background: linear-gradient(160deg, #111c1e 0%, #0d1518 100%);
+    border: 1px solid rgba(218,185,55,0.25);
+    border-radius: 22px;
+    padding: 2.4rem 2rem 2rem;
+    width: 100%; max-width: 340px;
+    text-align: center;
+    box-shadow: 0 0 0 1px rgba(218,185,55,0.07), 0 32px 80px rgba(0,0,0,0.65);
+    animation: ch-modal-pop 0.38s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.ch-pending-modal-icon {
+    width: 62px; height: 62px; border-radius: 50%; margin: 0 auto 1.2rem;
+    background: rgba(218,185,55,0.12);
+    border: 1.5px solid rgba(218,185,55,0.3);
+    display: flex; align-items: center; justify-content: center;
+    color: #dab937;
+    box-shadow: 0 0 24px rgba(218,185,55,0.12);
+}
+.ch-pending-modal-title {
+    font-size: 1.2rem; font-weight: 700; color: #eeebe1;
+    margin: 0 0 0.5rem; letter-spacing: -0.01em;
+}
+.ch-pending-modal-sub {
+    font-size: 0.85rem; color: #7a8285; margin: 0 0 1.6rem; line-height: 1.6;
+}
+.ch-pending-modal-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 0.72rem 1rem;
+    background: #dab937; color: #091113;
+    border-radius: 12px; border: none;
+    font-size: 0.9rem; font-weight: 700; font-family: 'Prompt', sans-serif;
+    text-decoration: none; transition: background 0.15s, box-shadow 0.15s;
+}
+.ch-pending-modal-btn:hover { background: #c9a830; box-shadow: 0 0 18px rgba(218,185,55,0.3); }
+
 /* ── Quiz Breadcrumb ── */
 .ch-breadcrumb         { color: #4a4e57; }
 .ch-breadcrumb-link    { color: #6b6e77; text-decoration: none; }
@@ -2063,6 +2099,48 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
     box-shadow: 0 28px 60px rgba(9,17,19,0.55), 0 0 24px rgba(210,89,42,0.22);
     border-color: rgba(210,89,42,0.45);
 }
+/* ── Highlight: unseen card pulse ── */
+@keyframes ch-highlight-new {
+    0%, 100% { box-shadow: 0 4px 28px rgba(9,17,19,0.35), 0 0 18px rgba(218,185,55,0.14); }
+    50%       { box-shadow: 0 4px 28px rgba(9,17,19,0.35), 0 0 34px rgba(218,185,55,0.32); }
+}
+@keyframes ch-highlight-rejected {
+    0%, 100% { box-shadow: 0 4px 28px rgba(9,17,19,0.35), 0 0 18px rgba(210,89,42,0.18); }
+    50%       { box-shadow: 0 4px 28px rgba(9,17,19,0.35), 0 0 34px rgba(210,89,42,0.40); }
+}
+.ch-quest-flip-scene[data-highlight="new"] .ch-flip-front.ch-quest-card {
+    background: rgba(218,185,55,0.07);
+    border-color: rgba(218,185,55,0.42);
+    animation: ch-highlight-new 2.4s ease-in-out infinite;
+}
+.ch-quest-flip-scene[data-highlight="rejected"] .ch-flip-front.ch-quest-card {
+    background: rgba(210,89,42,0.10);
+    border-color: rgba(210,89,42,0.52);
+    animation: ch-highlight-rejected 2.4s ease-in-out infinite;
+}
+/* New badge */
+@keyframes ch-badge-float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(-3px); }
+}
+.ch-new-badge {
+    display: none;
+    position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%);
+    align-items: center; gap: 0.3rem;
+    font-size: 0.62rem; font-weight: 800; letter-spacing: 0.06em; white-space: nowrap;
+    color: #dab937; background: rgba(218,185,55,0.12);
+    border: 1px solid rgba(218,185,55,0.35); border-radius: 999px;
+    padding: 0.22rem 0.7rem;
+    pointer-events: none;
+}
+.ch-new-badge--rejected {
+    color: #e8834a; background: rgba(210,89,42,0.12);
+    border-color: rgba(210,89,42,0.38);
+}
+.ch-quest-flip-scene[data-highlight] .ch-new-badge {
+    display: inline-flex;
+    animation: ch-badge-float 2.4s ease-in-out infinite;
+}
 .ch-quest-accent-bar { height: 3px; background: linear-gradient(90deg, #dab937, #f8e769); }
 .ch-quest-accent-bar--rejected { background: linear-gradient(90deg, #d2592a, #e8834a); }
 .ch-quest-inner   { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.875rem; flex: 1; }
@@ -2074,6 +2152,20 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
 .ch-quest-meta    { font-size: 0.7rem; color: #4a4e57; margin: 0.4rem 0 0; }
 .ch-quest-footer  { padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.07); }
 .ch-rejected-msg  { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 600; color: #d2592a; }
+
+/* Rejected badge on card front */
+.ch-rejected-front-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.63rem; font-weight: 700; letter-spacing: 0.02em;
+    color: #e8834a; background: rgba(210,89,42,0.14);
+    border: 1px solid rgba(210,89,42,0.38); border-radius: 6px;
+    padding: 0.18rem 0.5rem;
+    animation: ch-badge-pulse 2.4s ease-in-out infinite;
+}
+@keyframes ch-badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(210,89,42,0.25); }
+    50%       { box-shadow: 0 0 0 5px rgba(210,89,42,0); }
+}
 .ch-btn-start {
     display: flex; align-items: center; justify-content: center; gap: 0.4rem;
     background: #dab937; color: #091113; font-size: 0.82rem; font-weight: 700;

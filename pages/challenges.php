@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 VALUES (?, ?, 'photo', ?, 'pending', 0)
             ");
             $stmt->execute([$employeeId, $challengeId, $filename]);
-            setFlash('success', 'ส่งหลักฐานสำเร็จ! รอการตรวจสอบจาก HR/Manager');
+            setFlash('pending', 'ส่งหลักฐานเรียบร้อย รอการตรวจสอบเพื่อรับ Token');
         } catch (Throwable $e) {
             error_log('[MissionToken] photo submit error: ' . $e->getMessage());
             @unlink($destPath);
@@ -234,13 +234,13 @@ try {
         // Latest submission per challenge in one query
         $subBatch = $pdo->prepare("
             WITH ranked AS (
-                SELECT challenge_id, status, token_awarded, submitted_at,
+                SELECT challenge_id, submission_id, status, token_awarded, submitted_at,
                        ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
                 FROM   challenge_submissions
                 WHERE  employee_id = ?
                   AND  challenge_id IN ($placeholders)
             )
-            SELECT challenge_id, status, token_awarded, submitted_at FROM ranked WHERE rn = 1
+            SELECT challenge_id, submission_id, status, token_awarded, submitted_at FROM ranked WHERE rn = 1
         ");
         $subBatch->execute([$employeeId, ...$chalIds]);
         foreach ($subBatch->fetchAll() as $row) {
@@ -262,6 +262,7 @@ try {
     foreach ($challenges as &$ch) {
         $sub = $mySubMap[(int)$ch['challenge_id']] ?? null;
         $ch['my_status']       = $sub ? $sub['status']        : null;
+        $ch['my_sub_id']       = $sub ? (int)$sub['submission_id'] : 0;
         $ch['my_token_awarded']= $sub ? (int)$sub['token_awarded'] : 0;
         $ch['my_submitted_at'] = $sub ? $sub['submitted_at']  : null;
 
@@ -325,7 +326,8 @@ try {
     error_log('[MissionToken] quiz review load error: ' . $e->getMessage());
 }
 
-$flash = getFlash();
+$flash    = getFlash();
+$noToast  = true; // all flash types handled by inline modals/cards
 
 $statusLabel = [
     'pending'       => ['text' => 'รอ Approve',  'bg' => '#fef9c3', 'color' => '#854d0e'],
@@ -345,7 +347,7 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="ds-page-inner">
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- Flash: Winning Moment (success) or error bar -->
+    <!-- Flash: Winning Moment (quiz/strava success) -->
     <?php if ($flash && $flash['type'] === 'success'): ?>
     <div id="win-card" class="mb-8 relative overflow-hidden rounded-2xl px-6 py-10 text-center ch-win-card">
         <div class="ch-win-glow"></div>
@@ -393,6 +395,24 @@ require_once __DIR__ . '/../includes/header.php';
         }
     })();
     </script>
+
+    <!-- Flash: Photo Submitted — Pending Approval -->
+    <?php elseif ($flash && $flash['type'] === 'pending'): ?>
+    <div id="ch-pending-overlay" class="ch-flash-overlay" onclick="if(event.target===this)this.style.display='none'">
+        <div class="ch-pending-modal">
+            <div class="ch-pending-modal-icon">
+                <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h3 class="ch-pending-modal-title">ส่งหลักฐานเรียบร้อย</h3>
+            <p class="ch-pending-modal-sub">รอการตรวจสอบเพื่อรับ Token</p>
+            <a href="<?= BASE_URL ?>/pages/challenges.php" class="ch-pending-modal-btn">ดูภารกิจอื่น</a>
+        </div>
+    </div>
+
+    <!-- Flash: Error -->
     <?php elseif ($flash): ?>
     <div id="ch-error-flash-overlay" class="ch-flash-overlay" onclick="if(event.target===this)this.style.display='none'">
         <div class="ch-flash-modal ch-flash-modal--error">
@@ -706,14 +726,15 @@ require_once __DIR__ . '/../includes/header.php';
         }
         $_total = count($challenges);
 
-        // Strava rejected → ยังทำซ้ำได้ → อยู่ในกลุ่ม available
+        // photo/strava rejected → ยังส่งซ้ำได้ → อยู่ในกลุ่ม available
+        // quiz rejected → ส่งซ้ำไม่ได้ → อยู่ในกลุ่ม done
         $questsAvailable = array_values(array_filter($challenges, fn($c) =>
             $c['my_status'] === null ||
-            ($c['type'] === 'strava' && $c['my_status'] === 'rejected')
+            ($c['my_status'] === 'rejected' && in_array($c['type'], ['photo', 'strava'], true))
         ));
         $questsDone      = array_values(array_filter($challenges, fn($c) =>
             in_array($c['my_status'], ['approved','auto_approved','pending'], true) ||
-            ($c['type'] !== 'strava' && $c['my_status'] === 'rejected')
+            ($c['type'] === 'quiz' && $c['my_status'] === 'rejected')
         ));
     ?>
 
@@ -762,7 +783,7 @@ require_once __DIR__ . '/../includes/header.php';
             $_ed        = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
             $_daysLeft  = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
         ?>
-        <div class="ch-quest-flip-scene">
+        <div class="ch-quest-flip-scene" data-cid="<?= $cid ?>" data-sid="<?= (int)$ch['my_sub_id'] ?>"<?= $isRejected ? ' data-rejected' : '' ?>>
             <div class="ch-flip-card" id="flip-<?= $cid ?>">
 
                 <!-- ── FRONT FACE ── -->
@@ -778,7 +799,14 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php else: ?>
                             <span class="ch-type-badge">Photo</span>
                             <?php endif; ?>
-                            <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
+                            <?php if ($isRejected): ?>
+                            <span class="ch-rejected-front-badge">
+                                <svg width="10" height="10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                ถูกปฏิเสธ
+                            </span>
+                            <?php elseif ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
                             <span style="font-size:0.65rem;font-weight:700;color:#d2592a;background:rgba(210,89,42,0.10);border:1px solid rgba(210,89,42,0.25);border-radius:6px;padding:0.18rem 0.55rem;">
                                 <?= $_daysLeft === 0 ? 'วันนี้!' : 'เหลือ ' . $_daysLeft . ' วัน' ?>
                             </span>
@@ -803,6 +831,20 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                         </div>
                     </div>
+                    <!-- Unseen highlight label -->
+                    <div class="ch-new-badge <?= $isRejected ? 'ch-new-badge--rejected' : '' ?>">
+                        <?php if ($isRejected): ?>
+                        <svg width="9" height="9" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"/>
+                        </svg>
+                        ส่งใหม่ได้
+                        <?php else: ?>
+                        <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+                        </svg>
+                        ภารกิจใหม่
+                        <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- ── BACK FACE ── -->
@@ -815,6 +857,11 @@ require_once __DIR__ . '/../includes/header.php';
                      <?php elseif ($ch['type'] === 'strava'): ?>
                      onclick="openStravaModal(<?= $cid ?>)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStravaModal(<?= $cid ?>);}"
+                     tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
+                     style="cursor:pointer;"
+                     <?php elseif ($ch['type'] === 'photo'): ?>
+                     onclick="openPhotoModal(<?= $cid ?>)"
+                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPhotoModal(<?= $cid ?>);}"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
                      style="cursor:pointer;"
                      <?php endif; ?>>
@@ -898,7 +945,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <!-- Action area -->
                         <div class="ch-flip-action">
-                            <?php if ($isRejected && $ch['type'] !== 'strava'): ?>
+                            <?php if ($isRejected && $ch['type'] === 'quiz'): ?>
                             <div class="ch-rejected-msg">
                                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -914,15 +961,11 @@ require_once __DIR__ . '/../includes/header.php';
                             <p style="font-size:0.73rem;color:rgba(252,76,2,0.5);margin:0;">กดการ์ดเพื่อเริ่มทำภารกิจ</p>
                             <?php endif; ?>
                             <?php elseif ($ch['type'] === 'photo'): ?>
-                            <form method="POST" action="<?= BASE_URL ?>/pages/challenges.php"
-                                  enctype="multipart/form-data" style="display:flex;flex-direction:column;gap:0.6rem;">
-                                <?= csrfField() ?>
-                                <input type="hidden" name="action" value="submit_photo">
-                                <input type="hidden" name="challenge_id" value="<?= $cid ?>">
-                                <input type="file" name="photo" accept="image/*" required class="ch-file-input">
-                                <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 20MB</p>
-                                <button type="submit" class="ch-btn-start">ส่งหลักฐาน</button>
-                            </form>
+                            <?php if ($isRejected): ?>
+                            <p style="font-size:0.72rem;color:#d2592a;margin:0;">งานก่อนหน้าถูกปฏิเสธ &bull; กดการ์ดเพื่อส่งใหม่</p>
+                            <?php else: ?>
+                            <p style="font-size:0.73rem;color:rgba(218,185,55,0.5);margin:0;">กดการ์ดเพื่อส่งหลักฐาน</p>
+                            <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
@@ -981,6 +1024,29 @@ require_once __DIR__ . '/../includes/header.php';
     }
     ?>
     var _quizModalData = <?= json_encode($quizModalData, JSON_UNESCAPED_UNICODE) ?>;
+    <?php
+    // Collect Photo challenge data for modal JS
+    $photoModalData = [];
+    foreach ($questsAvailable as $_pch) {
+        if ($_pch['type'] !== 'photo') continue;
+        $_pcid = (int)$_pch['challenge_id'];
+        $_pets = $_pch['end_date'] ? strtotime((string)$_pch['end_date']) : null;
+        $_ped  = $_pets ? date('d/m/Y', $_pets) : null;
+        $_pdl  = $_pets ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', $_pets)))->days
+                          * ((new DateTime('today') <= new DateTime(date('Y-m-d', $_pets))) ? 1 : -1) : null;
+        $photoModalData[$_pcid] = [
+            'title'        => $_pch['title'],
+            'desc'         => (string)($_pch['description'] ?? ''),
+            'instructions' => (string)($_pch['instructions'] ?? ''),
+            'token'        => (int)$_pch['token_reward'],
+            'rejected'     => $_pch['my_status'] === 'rejected',
+            'ed'           => $_ped,
+            'daysLeft'     => $_pdl,
+            'csrfField'    => csrfField(),
+        ];
+    }
+    ?>
+    var _photoModalData = <?= json_encode($photoModalData, JSON_UNESCAPED_UNICODE) ?>;
     </script>
 
     <style>
@@ -999,6 +1065,154 @@ require_once __DIR__ . '/../includes/header.php';
     .modal-card-in     { animation:_mCardIn  400ms cubic-bezier(0.22,1,0.36,1)   forwards; }
     .modal-card-out    { animation:_mCardOut 170ms ease-in                       forwards; }
     </style>
+
+    <!-- ── Photo Upload Modal ── -->
+    <div id="photo-modal"
+         style="display:none; position:fixed; inset:0; z-index:1000;
+                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
+                align-items:center; justify-content:center; padding:1rem;"
+         onclick="if(event.target===this)closePhotoModal()">
+        <div id="photo-modal-card" style="background:#0f1416; border:1px solid rgba(218,185,55,0.22); border-radius:20px;
+                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
+                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(218,185,55,0.10);">
+            <!-- Modal header -->
+            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
+                        display:flex; align-items:center; justify-content:space-between;">
+                <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <svg width="18" height="18" fill="none" stroke="#dab937" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span style="font-size:0.68rem; font-weight:700; color:rgba(218,185,55,0.9);
+                                 letter-spacing:0.08em; text-transform:uppercase;">Photo Mission</span>
+                </div>
+                <button onclick="closePhotoModal()"
+                        style="width:28px; height:28px; border-radius:50%;
+                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
+                               color:#6b6e77; cursor:pointer;
+                               display:flex; align-items:center; justify-content:center;
+                               font-family:'Prompt',sans-serif;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div style="padding:1.4rem;">
+                <!-- Token reward -->
+                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                         style="width:34px; height:34px; object-fit:contain;
+                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                    <div>
+                        <p id="pm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
+                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
+                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                    </div>
+                </div>
+                <!-- Title -->
+                <h2 id="pm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
+                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <!-- Description -->
+                <p id="pm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <!-- Instructions -->
+                <div id="pm-instructions"
+                     style="display:none; background:rgba(218,185,55,0.05);
+                            border:1px solid rgba(218,185,55,0.18); border-radius:10px;
+                            padding:0.7rem 1rem; margin-bottom:1rem;">
+                    <p style="font-size:0.63rem; font-weight:700; color:rgba(218,185,55,0.7);
+                               text-transform:uppercase; letter-spacing:0.08em; margin:0 0 0.35rem;">วิธีส่งหลักฐาน</p>
+                    <p id="pm-instructions-text" style="font-size:0.82rem; color:#cecdcd; margin:0; line-height:1.6;"></p>
+                </div>
+                <!-- End date -->
+                <p id="pm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <!-- Rejected message -->
+                <p id="pm-rejected-msg" style="display:none; font-size:0.8rem;
+                                                color:#d2592a; margin:0 0 0.75rem;"></p>
+                <!-- Upload form -->
+                <form id="pm-photo-form" method="POST"
+                      action="<?= BASE_URL ?>/pages/challenges.php"
+                      enctype="multipart/form-data"
+                      style="display:flex; flex-direction:column; gap:0.65rem;">
+                    <div id="pm-csrf"></div>
+                    <input type="hidden" name="action" value="submit_photo">
+                    <input type="hidden" name="challenge_id" id="pm-cid-input" value="">
+                    <input type="file" name="photo" accept="image/*" required class="ch-file-input">
+                    <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 20MB &bull; ได้รับ Token หลัง HR อนุมัติ</p>
+                    <button type="submit"
+                            style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
+                                   padding:0.65rem 1.25rem; border-radius:10px;
+                                   background:#dab937; color:#091113;
+                                   font-size:0.9rem; font-weight:700;
+                                   font-family:'Prompt',sans-serif; border:none; cursor:pointer;">
+                        ส่งหลักฐาน
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+    function openPhotoModal(cid) {
+        var d = _photoModalData[cid];
+        if (!d) return;
+
+        document.getElementById('pm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
+        document.getElementById('pm-title').textContent = d.title;
+
+        var descEl = document.getElementById('pm-desc');
+        descEl.textContent = d.desc;
+        descEl.style.display = d.desc ? '' : 'none';
+
+        var instrEl = document.getElementById('pm-instructions');
+        if (d.instructions) {
+            document.getElementById('pm-instructions-text').textContent = d.instructions;
+            instrEl.style.display = '';
+        } else {
+            instrEl.style.display = 'none';
+        }
+
+        var edEl = document.getElementById('pm-enddate');
+        if (d.ed) {
+            var txt = 'สิ้นสุด ' + d.ed;
+            if (d.daysLeft !== null && d.daysLeft >= 0 && d.daysLeft <= 7) {
+                txt += ' · เหลืออีก ' + (d.daysLeft === 0 ? 'วันนี้!' : d.daysLeft + ' วัน');
+            }
+            edEl.textContent = txt;
+            edEl.style.display = '';
+        } else {
+            edEl.style.display = 'none';
+        }
+
+        var rejEl = document.getElementById('pm-rejected-msg');
+        if (d.rejected) {
+            rejEl.textContent = 'งานก่อนหน้าถูกปฏิเสธ — สามารถส่งใหม่ได้';
+            rejEl.style.display = '';
+        } else {
+            rejEl.style.display = 'none';
+        }
+
+        document.getElementById('pm-cid-input').value = cid;
+        document.getElementById('pm-csrf').innerHTML = d.csrfField;
+
+        var overlay = document.getElementById('photo-modal');
+        var card    = document.getElementById('photo-modal-card');
+        overlay.style.display = 'flex';
+        overlay.classList.remove('modal-overlay-out');
+        card.classList.remove('modal-card-out');
+        overlay.classList.add('modal-overlay-in');
+        card.classList.add('modal-card-in');
+    }
+    function closePhotoModal() {
+        var overlay = document.getElementById('photo-modal');
+        var card    = document.getElementById('photo-modal-card');
+        overlay.classList.remove('modal-overlay-in');
+        card.classList.remove('modal-card-in');
+        overlay.classList.add('modal-overlay-out');
+        card.classList.add('modal-card-out');
+        setTimeout(function () { overlay.style.display = 'none'; }, 180);
+    }
+    </script>
 
     <!-- ── Strava Detail Modal ── -->
     <div id="strava-modal"
