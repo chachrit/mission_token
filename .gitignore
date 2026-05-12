@@ -13,6 +13,9 @@ Thumbs.db
 .vscode/
 *.swp
 
+# Database credentials — never commit, manage per-environment
+config/database.php
+
 # One-time setup script — never commit
 setup_git.php
 
