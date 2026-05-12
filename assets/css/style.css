@@ -1565,6 +1565,7 @@ body:has(.ds-dashboard-wrap) {
 .ds-quest-token  { display: flex; align-items: center; gap: 0.5rem; }
 .ds-token-coin   { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; background: rgba(218,185,55,0.14); border: 1px solid rgba(218,185,55,0.30); display: flex; align-items: center; justify-content: center; }
 .ds-token-coin-letter { font-size: 0.6rem; font-weight: 800; color: #dab937; }
+.ds-token-coin-img { width: 22px; height: 22px; object-fit: contain; flex-shrink: 0; }
 .ds-token-amount { font-size: 1rem; font-weight: 800; color: #dab937; letter-spacing: -0.02em; }
 .ds-quest-status-text { font-size: 0.70rem; font-weight: 600; }
 .ds-quest-status-text--pending  { color: #dab937; }

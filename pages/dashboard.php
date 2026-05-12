@@ -269,7 +269,19 @@ require_once __DIR__ . '/../includes/header.php';
                  onmousemove="questDragMove(event,this)"
                  onmouseup="questDragEnd(this)"
                  onmouseleave="questDragEnd(this)">
-                <?php foreach ($activeChallenges as $ch):
+                <?php
+                usort($activeChallenges, static function ($a, $b) {
+                    $rank = static function ($status) {
+                        return match(true) {
+                            in_array($status, ['approved', 'auto_approved'], true) => 3,
+                            $status === 'pending'  => 2,
+                            $status === 'rejected' => 1,
+                            default                => 0, // new / not submitted
+                        };
+                    };
+                    return $rank($a['my_status']) <=> $rank($b['my_status']);
+                });
+                foreach ($activeChallenges as $ch):
                     $myStatus   = $ch['my_status'];
                     $isDone     = in_array($myStatus, ['approved', 'auto_approved'], true);
                     $isPending  = $myStatus === 'pending';
@@ -300,9 +312,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="ds-quest-footer">
                         <div class="ds-quest-token">
-                            <div class="ds-token-coin">
-                                <span class="ds-token-coin-letter">T</span>
-                            </div>
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="token" class="ds-token-coin-img">
                             <span class="ds-token-amount">+<?= formatTokens((int)$ch['token_reward']) ?></span>
                         </div>
                         <?php if ($isPending): ?>
