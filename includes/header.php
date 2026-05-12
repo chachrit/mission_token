@@ -31,11 +31,15 @@ if (!empty($_SESSION['employee_id'])) {
 $pendingCount = $isAdminOrHr ? getPendingCount() : 0;
 $flash        = $flash ?? getFlash();
 
-// Notification bell: rejected photo/strava missions (employee zone only)
-$notifRejected = [];
+// Notification bell (employee zone only)
+$allNotifs = [];
 if (!empty($_SESSION['employee_id'])) {
+    $empId = (int)$_SESSION['employee_id'];
     try {
-        $notifStmt = getDB()->prepare("
+        $pdo = getDB();
+
+        // 1. Rejected photo/strava (latest per challenge, still active)
+        $s = $pdo->prepare("
             WITH latest AS (
                 SELECT challenge_id, submission_id, status, review_note,
                        ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
@@ -50,11 +54,72 @@ if (!empty($_SESSION['employee_id'])) {
               AND c.end_date >= CAST(GETDATE() AS DATE)
             ORDER BY c.end_date ASC
         ");
-        $notifStmt->execute([(int)$_SESSION['employee_id']]);
-        $notifRejected = $notifStmt->fetchAll();
+        $s->execute([$empId]);
+        foreach ($s->fetchAll() as $r) {
+            $allNotifs[] = [
+                'key'   => 'sub_rej_' . $r['submission_id'],
+                'type'  => 'rejected',
+                'title' => $r['title'],
+                'sub'   => !empty($r['review_note']) ? mb_strimwidth((string)$r['review_note'], 0, 60, '\u2026', 'UTF-8') : 'ภารกิจถูกปฏิเสธ \u2014 กดเพื่อส่งหลักฐานใหม่',
+                'href'  => BASE_URL . '/pages/challenges.php',
+                'cid'   => (int)$r['challenge_id'],
+                'sid'   => (int)$r['submission_id'],
+            ];
+        }
+
+        // 2. Approved photo/strava (recent 7 days)
+        $s2 = $pdo->prepare("
+            WITH latest AS (
+                SELECT challenge_id, submission_id, status, token_awarded, reviewed_at,
+                       ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
+                FROM challenge_submissions
+                WHERE employee_id = ? AND submission_type IN ('photo','strava')
+            )
+            SELECT l.challenge_id, l.submission_id, l.token_awarded, c.title
+            FROM latest l
+            JOIN challenges c ON l.challenge_id = c.challenge_id
+            WHERE l.rn = 1 AND l.status = 'approved'
+              AND l.reviewed_at >= DATEADD(DAY, -7, GETDATE())
+            ORDER BY l.reviewed_at DESC
+        ");
+        $s2->execute([$empId]);
+        foreach ($s2->fetchAll() as $r) {
+            $allNotifs[] = [
+                'key'   => 'sub_app_' . $r['submission_id'],
+                'type'  => 'approved',
+                'title' => $r['title'],
+                'sub'   => 'ผ่านการอนุมัติ! ได้รับ +' . (int)$r['token_awarded'] . ' Token',
+                'href'  => BASE_URL . '/pages/history.php',
+                'cid'   => (int)$r['challenge_id'],
+                'sid'   => (int)$r['submission_id'],
+            ];
+        }
+
+        // 3. Reward fulfilled / cancelled (recent 7 days)
+        $s3 = $pdo->prepare("
+            SELECT rr.redemption_id, rr.status, rr.tokens_spent, rr.admin_note, r.title AS reward_name
+            FROM reward_redemptions rr
+            JOIN rewards r ON rr.reward_id = r.reward_id
+            WHERE rr.employee_id = ? AND rr.status IN ('fulfilled','cancelled')
+              AND rr.processed_at >= DATEADD(DAY, -7, GETDATE())
+            ORDER BY rr.processed_at DESC
+        ");
+        $s3->execute([$empId]);
+        foreach ($s3->fetchAll() as $r) {
+            $isFul = $r['status'] === 'fulfilled';
+            $allNotifs[] = [
+                'key'   => 'red_' . ($isFul ? 'ful' : 'can') . '_' . $r['redemption_id'],
+                'type'  => $isFul ? 'fulfilled' : 'cancelled',
+                'title' => $r['reward_name'],
+                'sub'   => $isFul
+                            ? 'รางวัลพร้อมรับแล้ว! ใช้ ' . (int)$r['tokens_spent'] . ' Token'
+                            : (!empty($r['admin_note']) ? mb_strimwidth((string)$r['admin_note'], 0, 60, '\u2026', 'UTF-8') : 'คำขอแลกรางวัลถูกยกเลิก'),
+                'href'  => BASE_URL . '/pages/history.php',
+            ];
+        }
     } catch (Throwable $e) { /* silent */ }
 }
-$notifCount = count($notifRejected);
+$notifCount = count($allNotifs);
 ?>
 <!DOCTYPE html>
 <html lang="th">
@@ -481,7 +546,25 @@ $notifCount = count($notifRejected);
                                 <?php endif; ?>
                             </div>
                             <!-- Items -->
-                            <?php if (empty($notifRejected)): ?>
+                            <?php
+                            $_iconCfg = [
+                                'rejected'  => ['bg'=>'rgba(210,89,42,0.15)','bc'=>'rgba(210,89,42,0.3)','c'=>'#e8834a',
+                                    'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'],
+                                'approved'  => ['bg'=>'rgba(81,142,92,0.15)','bc'=>'rgba(81,142,92,0.3)','c'=>'#7ec98a',
+                                    'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>'],
+                                'fulfilled' => ['bg'=>'rgba(218,185,55,0.12)','bc'=>'rgba(218,185,55,0.3)','c'=>'#dab937',
+                                    'icon'=>'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 14.4 8.7 21.2 8.7 15.9 13.2 18.1 20 12 16.4 5.9 20 8.1 13.2 2.8 8.7 9.6 8.7z"/></svg>'],
+                                'cancelled' => ['bg'=>'rgba(107,110,119,0.15)','bc'=>'rgba(107,110,119,0.3)','c'=>'#6b6e77',
+                                    'icon'=>'<svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>'],
+                            ];
+                            $_badgeCfg = [
+                                'rejected'  => 'background:rgba(210,89,42,0.18);color:#e8834a;border-color:rgba(210,89,42,0.35);',
+                                'approved'  => 'background:rgba(81,142,92,0.18);color:#7ec98a;border-color:rgba(81,142,92,0.35);',
+                                'fulfilled' => 'background:rgba(218,185,55,0.15);color:#dab937;border-color:rgba(218,185,55,0.35);',
+                                'cancelled' => 'background:rgba(107,110,119,0.15);color:#6b6e77;border-color:rgba(107,110,119,0.3);',
+                            ];
+                            ?>
+                            <?php if (empty($allNotifs)): ?>
                             <div id="notif-empty-state" class="nav-notif-empty">
                                 <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:0.5rem;">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -491,26 +574,23 @@ $notifCount = count($notifRejected);
                             </div>
                             <?php else: ?>
                             <div class="nav-notif-list">
-                                <?php foreach ($notifRejected as $notif): ?>
-                                <a href="<?= BASE_URL ?>/pages/challenges.php"
+                                <?php foreach ($allNotifs as $_n):
+                                    $_ic = $_iconCfg[$_n['type']] ?? $_iconCfg['rejected'];
+                                    $_bc = $_badgeCfg[$_n['type']] ?? $_badgeCfg['rejected'];
+                                    $_dcid = isset($_n['cid']) ? ' data-cid="' . (int)$_n['cid'] . '"' : '';
+                                    $_dsid = isset($_n['sid']) ? ' data-sid="' . (int)$_n['sid'] . '"' : '';
+                                ?>
+                                <a href="<?= e($_n['href']) ?>"
                                    class="nav-notif-item" role="menuitem"
-                                   data-cid="<?= (int)$notif['challenge_id'] ?>" data-sid="<?= (int)$notif['submission_id'] ?>">
-                                    <span class="nav-notif-item-icon">
-                                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
+                                   data-key="<?= e($_n['key']) ?>"<?= $_dcid ?><?= $_dsid ?>>
+                                    <span class="nav-notif-item-icon" style="background:<?= $_ic['bg'] ?>;border-color:<?= $_ic['bc'] ?>;color:<?= $_ic['c'] ?>;">
+                                        <?= $_ic['icon'] ?>
                                     </span>
                                     <div class="nav-notif-item-body">
-                                        <p class="nav-notif-item-title"><?= e($notif['title']) ?></p>
-                                        <p class="nav-notif-item-sub">
-                                            <?php if (!empty($notif['review_note'])): ?>
-                                            <?= e(mb_strimwidth((string)$notif['review_note'], 0, 60, '…', 'UTF-8')) ?>
-                                            <?php else: ?>
-                                            ภารกิจถูกปฏิเสธ — กดเพื่อส่งหลักฐานใหม่
-                                            <?php endif; ?>
-                                        </p>
+                                        <p class="nav-notif-item-title"><?= e($_n['title']) ?></p>
+                                        <p class="nav-notif-item-sub"><?= e($_n['sub']) ?></p>
                                     </div>
-                                    <span class="nav-notif-item-new">ใหม่</span>
+                                    <span class="nav-notif-item-new" style="<?= $_bc ?>">ใหม่</span>
                                 </a>
                                 <?php endforeach; ?>
                             </div>
@@ -521,9 +601,9 @@ $notifCount = count($notifRejected);
                                 </svg>
                                 <p>ไม่มีการแจ้งเตือน</p>
                             </div>
-                            <a href="<?= BASE_URL ?>/pages/challenges.php"
+                            <a href="<?= BASE_URL ?>/pages/history.php"
                                class="nav-notif-footer-link" id="notif-footer-link">
-                                ดูภารกิจทั้งหมด →
+                                ดูประวัติทั้งหมด →
                             </a>
                             <?php endif; ?>
                         </div>

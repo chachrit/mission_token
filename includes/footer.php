@@ -79,23 +79,22 @@
                 try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
                 catch (e) { return []; }
             }
-            function markDismissed(cid, sid) {
-                const list = getDismissed();
-                const key  = cid + '_' + sid;
+            function markDismissed(key) {
+                var list = getDismissed();
                 if (!list.includes(key)) { list.push(key); localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
             }
             function rebuildBell() {
-                const dismissed = getDismissed();
-                const allItems  = document.querySelectorAll('.nav-notif-item[data-cid]');
-                let visible = 0;
+                var dismissed = getDismissed();
+                var allItems  = document.querySelectorAll('.nav-notif-item[data-key]');
+                var visible = 0;
                 allItems.forEach(function (item) {
-                    if (!dismissed.includes(item.dataset.cid + '_' + item.dataset.sid)) visible++;
+                    if (!dismissed.includes(item.dataset.key)) visible++;
                 });
-                const badge      = document.getElementById('nav-notif-badge');
-                const hCount     = document.getElementById('notif-header-count');
-                const emptyEl    = document.getElementById('notif-empty-state');
-                const list       = document.querySelector('.nav-notif-list');
-                const footerLink = document.getElementById('notif-footer-link');
+                var badge      = document.getElementById('nav-notif-badge');
+                var hCount     = document.getElementById('notif-header-count');
+                var emptyEl    = document.getElementById('notif-empty-state');
+                var list       = document.querySelector('.nav-notif-list');
+                var footerLink = document.getElementById('notif-footer-link');
                 if (badge) { badge.textContent = visible; badge.style.display = visible > 0 ? '' : 'none'; }
                 if (hCount) { hCount.textContent = visible + ' รายการ'; hCount.style.display = visible > 0 ? '' : 'none'; }
                 if (emptyEl && list) {
@@ -103,10 +102,10 @@
                     else               { list.style.display = '';     emptyEl.style.display = 'none'; if (footerLink) footerLink.style.display = ''; }
                 }
             }
-            function dismissItem(cid, sid) {
-                markDismissed(cid, sid);
+            function dismissItem(key, cid, sid) {
+                markDismissed(key);
                 // Fade out notification item
-                const item = document.querySelector('.nav-notif-item[data-cid="' + cid + '"][data-sid="' + sid + '"]');
+                var item = document.querySelector('.nav-notif-item[data-key="' + key + '"]');
                 if (item) {
                     item.style.transition = 'opacity 0.2s, max-height 0.3s';
                     item.style.opacity    = '0';
@@ -116,28 +115,29 @@
                 } else {
                     rebuildBell();
                 }
-                // Fade out card badge (only if sid matches current card's rejected submission)
-                const scene = document.querySelector('.ch-quest-flip-scene[data-cid="' + cid + '"]');
-                if (scene && scene.dataset.sid === String(sid)) {
-                    const badge = scene.querySelector('.ch-rejected-front-badge');
-                    if (badge) { badge.style.transition = 'opacity 0.35s'; badge.style.opacity = '0'; setTimeout(function() { badge.style.display = 'none'; }, 350); }
+                // Fade out card badge (rejected submissions only)
+                if (cid && sid) {
+                    var scene = document.querySelector('.ch-quest-flip-scene[data-cid="' + cid + '"]');
+                    if (scene && scene.dataset.sid === String(sid)) {
+                        var badge = scene.querySelector('.ch-rejected-front-badge');
+                        if (badge) { badge.style.transition = 'opacity 0.35s'; badge.style.opacity = '0'; setTimeout(function() { badge.style.display = 'none'; }, 350); }
+                    }
                 }
             }
 
             // Apply dismissals already stored → hide on page load
             (function applyStored() {
-                const dismissed = getDismissed();
+                var dismissed = getDismissed();
                 dismissed.forEach(function (key) {
-                    // key format: "cid_sid"
-                    const parts = key.split('_');
-                    const cid   = parts[0];
-                    const sid   = parts[1];
-                    const item  = document.querySelector('.nav-notif-item[data-cid="' + cid + '"][data-sid="' + sid + '"]');
+                    var item = document.querySelector('.nav-notif-item[data-key="' + key + '"]');
                     if (item) { item.style.display = 'none'; }
-                    const scene = document.querySelector('.ch-quest-flip-scene[data-cid="' + cid + '"]');
-                    if (scene && scene.dataset.sid === sid) {
-                        const badge = scene.querySelector('.ch-rejected-front-badge');
-                        if (badge) badge.style.display = 'none';
+                    // For rejected submissions: also hide card badge
+                    if (key.indexOf('sub_rej_') === 0) {
+                        var sid = key.replace('sub_rej_', '');
+                        document.querySelectorAll('.ch-quest-flip-scene[data-sid="' + sid + '"]').forEach(function (s) {
+                            var badge = s.querySelector('.ch-rejected-front-badge');
+                            if (badge) badge.style.display = 'none';
+                        });
                     }
                 });
                 rebuildBell();
@@ -145,18 +145,19 @@
 
             // Click on notification item → dismiss + navigate
             document.addEventListener('click', function (e) {
-                const item = e.target.closest('.nav-notif-item[data-cid]');
+                var item = e.target.closest('.nav-notif-item[data-key]');
                 if (!item) return;
-                const cid = item.dataset.cid;
-                const sid = item.dataset.sid;
-                markDismissed(cid, sid);
-                // Fade badge on card immediately (only if sid matches)
-                const scene = document.querySelector('.ch-quest-flip-scene[data-cid="' + cid + '"]');
-                if (scene && scene.dataset.sid === String(sid)) {
-                    const badge = scene.querySelector('.ch-rejected-front-badge');
-                    if (badge) { badge.style.transition = 'opacity 0.25s'; badge.style.opacity = '0'; setTimeout(function() { badge.style.display = 'none'; }, 250); }
+                var key = item.dataset.key;
+                var cid = item.dataset.cid || '';
+                var sid = item.dataset.sid || '';
+                markDismissed(key);
+                if (cid && sid) {
+                    var scene = document.querySelector('.ch-quest-flip-scene[data-cid="' + cid + '"]');
+                    if (scene && scene.dataset.sid === String(sid)) {
+                        var badge = scene.querySelector('.ch-rejected-front-badge');
+                        if (badge) { badge.style.transition = 'opacity 0.25s'; badge.style.opacity = '0'; setTimeout(function() { badge.style.display = 'none'; }, 250); }
+                    }
                 }
-                // Update bell count immediately then navigate
                 rebuildBell();
                 // Navigation happens naturally via <a href>
             });
@@ -164,9 +165,20 @@
             // Hover on rejected card → dismiss
             document.querySelectorAll('.ch-quest-flip-scene[data-rejected]').forEach(function (scene) {
                 scene.addEventListener('mouseenter', function () {
-                    dismissItem(scene.dataset.cid, scene.dataset.sid);
+                    var key = 'sub_rej_' + scene.dataset.sid;
+                    dismissItem(key, scene.dataset.cid, scene.dataset.sid);
                 }, { once: true }); // fire only once per session
             });
+
+            // Hover on any notification dropdown item → dismiss it
+            document.addEventListener('mouseenter', function (e) {
+                var item = e.target.closest('.nav-notif-item[data-key]');
+                if (!item) return;
+                var key = item.dataset.key;
+                var cid = item.dataset.cid || '';
+                var sid = item.dataset.sid || '';
+                dismissItem(key, cid, sid);
+            }, true); // use capture so it fires reliably inside dropdown
         })();
 
         // ── Mobile Menu ──────────────────────────────────────────
