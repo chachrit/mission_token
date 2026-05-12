@@ -172,6 +172,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT e.employee_id, e.employee_code, e.full_name,
                e.department, e.position, e.role, e.is_active, e.email, e.start_date,
+               e.avatar_url,
                ISNULL(w.balance, 0)      AS balance,
                ISNULL(w.total_earned, 0) AS total_earned,
                ISNULL(w.total_spent, 0)  AS total_spent
@@ -372,6 +373,20 @@ $roleMeta = [
 
                 <!-- Avatar + Name -->
                 <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
+                    <?php if (!empty($emp['avatar_url'])): ?>
+                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename((string)$emp['avatar_url'])) ?>"
+                         alt="" loading="lazy"
+                         style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
+                                object-fit:cover; border:1px solid rgba(218,185,55,0.28);"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
+                                background:linear-gradient(135deg,rgba(218,185,55,0.22),rgba(218,185,55,0.08));
+                                border:1px solid rgba(218,185,55,0.28);
+                                display:none; align-items:center; justify-content:center;
+                                font-size:0.9rem; font-weight:700; color:#dab937;">
+                        <?= mb_substr($emp['full_name'], 0, 1) ?>
+                    </div>
+                    <?php else: ?>
                     <div style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
                                 background:linear-gradient(135deg,rgba(218,185,55,0.22),rgba(218,185,55,0.08));
                                 border:1px solid rgba(218,185,55,0.28);
@@ -379,6 +394,7 @@ $roleMeta = [
                                 font-size:0.9rem; font-weight:700; color:#dab937;">
                         <?= mb_substr($emp['full_name'], 0, 1) ?>
                     </div>
+                    <?php endif; ?>
                     <div style="min-width:0;">
                         <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
