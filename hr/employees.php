@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect(BASE_URL . '/hr/employees.php');
         }
         $ok = awardTokens($targetId, $amount, 'admin_adjust', null,
-            ($note ?: ($amount > 0 ? 'โบนัสจาก HR/Admin' : 'ปรับลด Token โดย HR/Admin')),
+            $note,
             (int)$_SESSION['employee_id']);
         if ($ok) {
             setFlash('success', ($amount > 0 ? '+' : '') . formatTokens($amount) . ' Token — ปรับยอดแล้ว');
