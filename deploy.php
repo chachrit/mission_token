@@ -8,7 +8,7 @@
  */
 
 // ── Secret key — change this to something random ──────────
-define('DEPLOY_SECRET', 'OHERbnJ9ClkUsWfM7vmXFtBQ8w36Tryp');
+define('DEPLOY_SECRET', 'deploy_mt_2026_J4k9mPqW');
 
 // ── Auth check ─────────────────────────────────────────────
 $token = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? ($_GET['token'] ?? '');
