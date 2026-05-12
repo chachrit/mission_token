@@ -247,7 +247,12 @@ require_once __DIR__ . '/../includes/header.php';
                 ? uploadImgUrl('submissions', $photoName)
                 : null;
 
-            $submittedDate = date('d/m/Y H:i', strtotime((string)$sub['submitted_at']));
+            $_thMonths = ['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                          'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+            $_ts = strtotime((string)$sub['submitted_at']);
+            $submittedDate = (int)date('j', $_ts) . ' ' . $_thMonths[(int)date('n', $_ts)]
+                           . ' ' . ((int)date('Y', $_ts) + 543)
+                           . ' ' . date('H:i', $_ts);
         ?>
         <div class="asb-card <?= $cardClass ?>">
 
