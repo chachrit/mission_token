@@ -684,9 +684,9 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
 .hy-modal-x {
     width:28px; height:28px; border-radius:50%;
     background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-    color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
+    color:#6b6e77; cursor:pointer; line-height:0;
     display:flex; align-items:center; justify-content:center;
-    font-family:'Prompt',sans-serif;
+    transition:color 0.15s; flex-shrink:0;
 }
 .hy-ibox {
     background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
@@ -703,7 +703,13 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85)">รายการ Token</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('tx')">×</button>
+            <button class="hy-modal-x" onclick="closeHyModal('tx')"
+                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
+                    aria-label="ปิด">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
             <div style="display:flex; align-items:center; gap:0.75rem;
@@ -747,7 +753,13 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(79,139,152,0.90);">ภารกิจ</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('quest')">×</button>
+            <button class="hy-modal-x" onclick="closeHyModal('quest')"
+                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
+                    aria-label="ปิด">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
             <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
@@ -792,7 +804,13 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85);">การแลกรางวัล</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('rd')">×</button>
+            <button class="hy-modal-x" onclick="closeHyModal('rd')"
+                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
+                    aria-label="ปิด">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.85rem;">
             <div style="display:flex; align-items:center; gap:0.9rem;

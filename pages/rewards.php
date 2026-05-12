@@ -373,7 +373,7 @@ require_once __DIR__ . '/../includes/header.php';
     border: 1px solid rgba(218,185,55,0.20);
     border-radius: 22px;
     width: 100%;
-    max-width: 440px;
+    max-width: 380px;
     box-shadow: 0 0 0 1px rgba(255,255,255,0.04),
                 0 32px 80px rgba(9,17,19,0.80);
     overflow: hidden;
@@ -858,159 +858,68 @@ require_once __DIR__ . '/../includes/header.php';
 <!-- ══════════════════════════════════════════════════════════
      REDEEM CONFIRM MODAL
 ══════════════════════════════════════════════════════════ -->
-<div id="redeem-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+<div id="redeem-modal" role="dialog" aria-modal="true"
      onclick="if(event.target===this && !_redeemBusy) closeRedeem();">
     <div class="rw-modal-box">
 
-        <!-- confirm state -->
-        <div id="modal-confirm">
-
-            <!-- Header bar -->
-            <div style="background:linear-gradient(135deg,rgba(218,185,55,0.12),rgba(218,185,55,0.03));
-                        border-bottom:1px solid rgba(218,185,55,0.16);
-                        padding:1.15rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:34px;height:34px;border-radius:50%;
-                             background:rgba(218,185,55,0.15); border:1px solid rgba(218,185,55,0.38);
-                             display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="18" height="18" style="object-fit:contain;" alt="">
-                </div>
-                <h2 id="modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;">
-                    ยืนยันการแลกรางวัล
-                </h2>
-                <button onclick="closeRedeem()"
-                        style="margin-left:auto; background:none; border:none; cursor:pointer;
-                               color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
-                               transition:color 0.15s;"
-                        onmouseover="this.style.color='#eeebe1'"
-                        onmouseout="this.style.color='#4a4e57'"
-                        aria-label="ปิด">
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,rgba(218,185,55,0.12),rgba(218,185,55,0.03));
+                    border-bottom:1px solid rgba(218,185,55,0.16);
+                    padding:1rem 1.35rem; display:flex; align-items:center; gap:0.7rem;">
+            <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
+                         background:rgba(218,185,55,0.15); border:1px solid rgba(218,185,55,0.38);
+                         display:flex;align-items:center;justify-content:center;">
+                <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
+                     width="14" height="14" style="object-fit:contain;" alt="">
             </div>
-
-            <!-- Body -->
-            <div style="padding:1.4rem 1.65rem;">
-
-                <!-- Reward display -->
-                <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.4rem;
-                             background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
-                             border-radius:14px; padding:0.9rem 1.15rem;">
-                    <span id="modal-emoji" style="display:inline-flex; align-items:center; justify-content:center;
-                                                     width:42px; height:42px; user-select:none; line-height:1;
-                                                     color:#dab937; border-radius:999px;
-                                                     border:1px solid rgba(218,185,55,0.40);
-                                                     background:rgba(218,185,55,0.16);"></span>
-                    <div>
-                        <p style="font-size:0.60rem; letter-spacing:0.12em; text-transform:uppercase;
-                                  color:#6b6e77; margin:0 0 0.18rem; font-weight:700;">รางวัลที่เลือก</p>
-                        <p id="modal-reward-name"
-                           style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></p>
-                    </div>
-                </div>
-
-                <!-- Cost breakdown -->
-                <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
-                             border-radius:12px; padding:0.9rem 1.1rem; margin-bottom:1.35rem;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
-                        <span style="font-size:0.82rem; color:#6b6e77;">ราคา</span>
-                        <div style="display:flex; align-items:center; gap:0.28rem;">
-                            <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="12" height="12" style="object-fit:contain;" alt="">
-                            <span id="modal-cost" style="font-size:0.92rem; font-weight:700; color:#d2592a;"></span>
-                            <span style="font-size:0.70rem; color:#4a4e57;">token</span>
-                        </div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.55rem;">
-                        <span style="font-size:0.82rem; color:#6b6e77;">ยอดปัจจุบัน</span>
-                        <div style="display:flex; align-items:center; gap:0.28rem;">
-                            <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="12" height="12" style="object-fit:contain;" alt="">
-                            <span id="modal-balance-before"
-                                  style="font-size:0.92rem; font-weight:600; color:#eeebe1;"></span>
-                        </div>
-                    </div>
-                    <div style="height:1px; background:rgba(255,255,255,0.07); margin-bottom:0.55rem;"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.85rem; font-weight:600; color:#eeebe1;">ยอดหลังแลก</span>
-                        <div style="display:flex; align-items:center; gap:0.28rem;">
-                            <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="12" height="12"
-                                 style="object-fit:contain; filter:drop-shadow(0 0 4px rgba(218,185,55,0.55));" alt="">
-                            <span id="modal-balance-after"
-                                  style="font-size:1.05rem; font-weight:800; color:#f8e769;"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Notice -->
-                <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.20);
-                             border-radius:10px; padding:0.7rem 0.95rem; margin-bottom:1.35rem;
-                             display:flex; gap:0.55rem; align-items:flex-start;">
-                    <span style="flex-shrink:0; font-size:0.85rem; opacity:0.75; margin-top:1px; color:#d4a52a;
-                                 display:inline-flex; align-items:center;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <circle cx="12" cy="12" r="9" stroke-width="2"/>
-                            <path d="M12 11v5" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="12" cy="8" r="1" fill="currentColor" stroke="none"/>
-                        </svg>
-                    </span>
-                    <p style="font-size:0.77rem; color:#d4a52a; margin:0; line-height:1.55;">
-                        หลังยืนยัน HR จะติดต่อกลับเพื่อดำเนินการมอบรางวัลให้คุณ
-                    </p>
-                </div>
-
-                <!-- Error message -->
-                <div id="modal-error"
-                     style="display:none; background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28);
-                            border-radius:10px; padding:0.6rem 0.95rem; margin-bottom:1rem;
-                            font-size:0.82rem; color:#d2592a;"></div>
-
-                <!-- Buttons -->
-                <div style="display:flex; gap:0.65rem;">
-                    <button onclick="closeRedeem()"
-                            id="modal-cancel-btn"
-                            style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                                   color:#eeebe1; transition:background 0.18s;"
-                            onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                            onmouseout="this.style.background='rgba(255,255,255,0.06)'">
-                        ยกเลิก
-                    </button>
-                    <button onclick="submitRedeem()"
-                            class="ch-btn-start"
-                            style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; border-radius:10px;
-                                   display:flex; align-items:center; justify-content:center; gap:0.5rem;"
-                            id="modal-confirm-btn">
-                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                             width="15" height="15" style="object-fit:contain;" alt="">
-                        ยืนยันแลกรางวัล
-                    </button>
-                </div>
-            </div>
+            <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">ยืนยันการแลกรางวัล</span>
+            <button onclick="closeRedeem()"
+                    style="margin-left:auto; background:none; border:none; cursor:pointer;
+                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
+                           transition:color 0.15s;"
+                    onmouseover="this.style.color='#eeebe1'"
+                    onmouseout="this.style.color='#4a4e57'" aria-label="ปิด">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
         </div>
 
-        <!-- success state -->
-        <div id="modal-success" style="display:none; padding:2.75rem 1.75rem; text-align:center;">
-            <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
-                 style="width:68px;height:68px;object-fit:contain;margin-bottom:1rem;
-                        filter:drop-shadow(0 0 14px rgba(218,185,55,0.55));">
-            <h3 style="font-size:1.2rem; font-weight:700; color:#eeebe1; margin:0 0 0.45rem;">
-                แลกรางวัลสำเร็จ
-            </h3>
-            <p style="font-size:0.85rem; color:#6b6e77; line-height:1.6; margin:0 0 0.2rem;">
-                รอการยืนยันเพื่อรับรางวัล
-            </p>
-            <p id="success-balance-text" style="font-size:0.85rem; color:#4a4e57; margin:0 0 2rem;"></p>
-            <button onclick="closeRedeem()" class="ch-btn-start"
-                    style="width:100%; padding:0.62rem 1rem;
-                           display:flex; align-items:center; justify-content:center;">
-                รับทราบ
-            </button>
+        <!-- Body -->
+        <div style="padding:1.35rem 1.5rem;">
+            <p id="modal-body-text" style="font-size:0.88rem; color:#9ca3af; line-height:1.7;
+                                           margin:0 0 1.35rem;"></p>
+
+            <!-- Error message -->
+            <div id="modal-error"
+                 style="display:none; background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28);
+                        border-radius:10px; padding:0.6rem 0.95rem; margin-bottom:1rem;
+                        font-size:0.82rem; color:#d2592a;"></div>
+
+            <!-- Buttons -->
+            <div style="display:flex; gap:0.65rem;">
+                <button onclick="closeRedeem()"
+                        id="modal-cancel-btn"
+                        style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
+                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+                               color:#eeebe1; transition:background 0.18s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                    ยกเลิก
+                </button>
+                <button onclick="submitRedeem()"
+                        id="modal-confirm-btn"
+                        style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; font-weight:700;
+                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                               background:rgba(218,185,55,0.18); color:#f8e769;
+                               border:1px solid rgba(218,185,55,0.35); transition:background 0.18s;"
+                        onmouseover="this.style.background='rgba(218,185,55,0.30)'"
+                        onmouseout="this.style.background='rgba(218,185,55,0.18)'">
+                    ยืนยันแลกรางวัล
+                </button>
+            </div>
         </div>
 
     </div>
@@ -1069,25 +978,16 @@ require_once __DIR__ . '/../includes/header.php';
             document.getElementById('hdr-balance').textContent.replace(/,/g, ''), 10
         ) || <?php echo (int)$wallet['balance']; ?>;
 
-        var card = document.querySelector('.rw-reward-card[data-reward-id="' + id + '"]');
-        var category = card ? (card.dataset.category || 'general') : 'general';
-        var tone = rwCategoryTone(category);
+        document.getElementById('modal-body-text').innerHTML =
+            'แลกรางวัล <strong style="color:#eeebe1;">' + title + '</strong> ' +
+            'ใช้ <strong style="color:#f8e769;">' + cost.toLocaleString() + ' Token</strong> ใช่หรือไม่?<br>' +
+            '<span style="font-size:0.78rem;color:#4a4e57;">ยอดคงเหลือ ' + (balance - cost).toLocaleString() + ' Token</span>';
 
-        document.getElementById('modal-emoji').innerHTML            = rwCategoryIconSvg(category);
-        document.getElementById('modal-emoji').style.background     = tone.bg;
-        document.getElementById('modal-emoji').style.borderColor    = tone.border;
-        document.getElementById('modal-emoji').style.color          = tone.color;
-        document.getElementById('modal-reward-name').textContent    = title;
-        document.getElementById('modal-cost').textContent           = cost;
-        document.getElementById('modal-balance-before').textContent = balance;
-        document.getElementById('modal-balance-after').textContent  = (balance - cost);
         document.getElementById('modal-error').style.display        = 'none';
-        document.getElementById('modal-confirm').style.display      = '';
-        document.getElementById('modal-success').style.display      = 'none';
 
         var confirmBtn = document.getElementById('modal-confirm-btn');
         confirmBtn.disabled  = false;
-        confirmBtn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
+        confirmBtn.textContent = 'ยืนยันแลกรางวัล';
 
         document.getElementById('redeem-modal').classList.add('open');
         document.body.style.overflow = 'hidden';
@@ -1136,24 +1036,19 @@ require_once __DIR__ . '/../includes/header.php';
                 var navBal = document.getElementById('nav-balance');
                 if (navBal) navBal.textContent = newBal.toLocaleString('th-TH');
 
-                document.getElementById('success-balance-text').textContent =
-                    'ยอด Token คงเหลือ: ' + newBal.toLocaleString('th-TH') + ' token';
-
-                document.getElementById('modal-confirm').style.display = 'none';
-                document.getElementById('modal-success').style.display = '';
-
                 document.querySelectorAll('.rw-reward-card').forEach(function (card) {
                     var anyBtn = card.querySelector('button[onclick*="openRedeem(' + _currentRewardId + ',"]');
                     if (anyBtn) { anyBtn.disabled = true; anyBtn.textContent = 'แลกแล้ว'; }
                 });
 
-                window.__reloadOnClose = true;
+                closeRedeem();
+                showRedeemToast('แลกรางวัลสำเร็จ — รอ HR ดำเนินการมอบรางวัล');
             } else {
                 var errEl = document.getElementById('modal-error');
                 errEl.textContent   = data.message || 'เกิดข้อผิดพลาด';
                 errEl.style.display = 'block';
                 btn.disabled = false;
-                btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
+                btn.textContent = 'ยืนยันแลกรางวัล';
                 document.getElementById('modal-cancel-btn').disabled = false;
             }
         })
@@ -1165,25 +1060,37 @@ require_once __DIR__ . '/../includes/header.php';
             errEl.style.display = 'block';
             var btn = document.getElementById('modal-confirm-btn');
             btn.disabled  = false;
-            btn.innerHTML = '<img src="<?php echo BASE_URL; ?>/assets/images/token.png" width="15" height="15" style="object-fit:contain;margin-right:5px" alt=""> ยืนยันแลกรางวัล';
+            btn.textContent = 'ยืนยันแลกรางวัล';
             document.getElementById('modal-cancel-btn').disabled = false;
         });
-    };
-
-    /* Reload after success close */
-    var origClose = window.closeRedeem;
-    window.closeRedeem = function () {
-        origClose();
-        if (window.__reloadOnClose) {
-            window.__reloadOnClose = false;
-            location.reload();
-        }
     };
 
     /* Escape key closes modal */
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') window.closeRedeem();
     });
+
+    /* Toast notification — reuse global #app-toast from footer.php */
+    function showRedeemToast(msg) {
+        var t = document.getElementById('app-toast');
+        if (!t) return;
+        t.className = 'toast-success';
+        t.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0">'
+            + '<polyline points="20 6 9 17 4 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+            + '<span>' + msg + '</span>';
+        t.style.opacity = '';
+        t.style.transform = '';
+        t.style.transition = '';
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () { t.classList.add('show'); });
+        });
+        setTimeout(function () {
+            t.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+            t.style.opacity = '0';
+            t.style.transform = 'translate(-50%,-50%) scale(0.9)';
+        }, 3200);
+    }
+    window.showRedeemToast = showRedeemToast;
 }());
 
 /* ── Coupon toggle ────────────────────────────────────────── */
@@ -1314,9 +1221,14 @@ foreach ($myRedemptions as $_rd) {
             <button onclick="closeRdDetail()"
                     style="width:28px; height:28px; border-radius:50%;
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                           color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
-                           display:flex; align-items:center; justify-content:center;
-                   font-family:'Prompt',sans-serif;">ปิด</button>
+                           color:#6b6e77; cursor:pointer; display:flex; align-items:center;
+                           justify-content:center; transition:color 0.15s; flex-shrink:0;"
+                    onmouseover="this.style.color='#eeebe1'"
+                    onmouseout="this.style.color='#6b6e77'" aria-label="ปิด">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
 
         <!-- Body -->
@@ -1621,9 +1533,14 @@ document.addEventListener('keydown', function(e) {
             <button onclick="closePendingList()"
                     style="width:28px; height:28px; border-radius:50%;
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                           color:#6b6e77; cursor:pointer; font-size:0.85rem; line-height:1;
-                           display:flex; align-items:center; justify-content:center;
-                       font-family:'Prompt',sans-serif;">ปิด</button>
+                           color:#6b6e77; cursor:pointer; display:flex; align-items:center;
+                           justify-content:center; transition:color 0.15s; flex-shrink:0;"
+                    onmouseover="this.style.color='#eeebe1'"
+                    onmouseout="this.style.color='#6b6e77'" aria-label="ปิด">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
         </div>
         <!-- List -->
         <div id="pending-list-body" style="padding:0.75rem 0;"></div>
