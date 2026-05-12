@@ -22,8 +22,16 @@ $projectDir = __DIR__;
 $output = [];
 $return = 0;
 
+// IIS AppPool can't write global gitconfig — write a local one instead
+$safeCfg = $projectDir . DIRECTORY_SEPARATOR . '.gitconfig_deploy';
+file_put_contents($safeCfg, "[safe]\n\tdirectory = " . str_replace('\\', '/', $projectDir) . "\n");
+putenv('GIT_CONFIG_GLOBAL=' . $safeCfg);
+
 exec('git -C ' . escapeshellarg($projectDir) . ' fetch --all 2>&1', $output, $return);
 exec('git -C ' . escapeshellarg($projectDir) . ' reset --hard origin/main 2>&1', $output, $return);
+
+// Clean up temp config
+@unlink($safeCfg);
 
 header('Content-Type: application/json');
 echo json_encode([
