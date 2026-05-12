@@ -18,20 +18,18 @@ if (!hash_equals(DEPLOY_SECRET, $token)) {
 }
 
 // ── Run git pull ───────────────────────────────────────────
-$projectDir = __DIR__;
+$projectDir = realpath(__DIR__);
+$safeDir    = str_replace('\\', '/', $projectDir);
 $output = [];
 $return = 0;
 
-// IIS AppPool can't write global gitconfig — write a local one instead
-$safeCfg = $projectDir . DIRECTORY_SEPARATOR . '.gitconfig_deploy';
-file_put_contents($safeCfg, "[safe]\n\tdirectory = " . str_replace('\\', '/', $projectDir) . "\n");
-putenv('GIT_CONFIG_GLOBAL=' . $safeCfg);
+// Pass safe.directory inline via -c flag (bypasses global config permission issues on IIS)
+$gitBase = 'git -C ' . escapeshellarg($projectDir)
+         . ' -c safe.directory=' . escapeshellarg($safeDir);
 
-exec('git -C ' . escapeshellarg($projectDir) . ' fetch --all 2>&1', $output, $return);
-exec('git -C ' . escapeshellarg($projectDir) . ' reset --hard origin/main 2>&1', $output, $return);
-
-// Clean up temp config
-@unlink($safeCfg);
+exec($gitBase . ' fetch --all 2>&1', $output, $return);
+exec($gitBase . ' reset --hard origin/main 2>&1', $output, $return2);
+$return = max($return, $return2);
 
 header('Content-Type: application/json');
 echo json_encode([
