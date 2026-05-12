@@ -105,7 +105,7 @@ $submissions = $pdo->query("
            cs.submission_type, cs.photo_path,
            cs.status, cs.token_awarded, cs.submitted_at,
            cs.reviewed_at, cs.review_note,
-           e.full_name, e.employee_code, e.position,
+           e.full_name, e.employee_code, e.position, e.avatar_url,
            c.title AS challenge_title, c.token_reward
     FROM   dbo.challenge_submissions cs
     JOIN   dbo.employees  e ON e.employee_id  = cs.employee_id
@@ -308,6 +308,20 @@ require_once __DIR__ . '/../includes/header.php';
                 </p>
 
                 <div style="display:flex; align-items:center; gap:0.6rem;">
+                    <?php if (!empty($sub['avatar_url'])): ?>
+                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename((string)$sub['avatar_url'])) ?>"
+                         alt="" loading="lazy"
+                         style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
+                                object-fit:cover; border:1px solid rgba(218,185,55,0.25);"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
+                                background:linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
+                                border:1px solid rgba(218,185,55,0.25);
+                                display:none; align-items:center; justify-content:center;
+                                font-size:0.85rem; font-weight:700; color:#dab937;">
+                        <?= mb_substr($sub['full_name'], 0, 1) ?>
+                    </div>
+                    <?php else: ?>
                     <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
                                 background:linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
                                 border:1px solid rgba(218,185,55,0.25);
@@ -315,6 +329,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 font-size:0.85rem; font-weight:700; color:#dab937;">
                         <?= mb_substr($sub['full_name'], 0, 1) ?>
                     </div>
+                    <?php endif; ?>
                     <div style="min-width:0;">
                         <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
