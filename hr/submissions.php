@@ -263,37 +263,31 @@ require_once __DIR__ . '/../includes/header.php';
                 <span style="font-weight:400; opacity:0.70; font-size:0.68rem;"><?= $submittedDate ?></span>
             </div>
 
-            <!-- Photo preview -->
-            <?php if (!empty($photoFiles)): ?>
-            <?php if (count($photoFiles) === 1): ?>
-            <?php $singleUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($photoFiles[0]); ?>
-            <a href="<?= $singleUrl ?>" target="_blank" rel="noopener"
-               style="display:block; overflow:hidden; flex-shrink:0;
-                      background:rgba(255,255,255,0.04); height:180px;">
-                <img src="<?= $singleUrl ?>" alt="หลักฐาน"
-                     loading="lazy"
-                     style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
-                     onmouseover="this.style.transform='scale(1.04)'"
-                     onmouseout="this.style.transform='scale(1)'"
-                     onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#6b6e77;\'>ไม่สามารถโหลดรูปภาพได้</div>'">
-            </a>
-            <?php else: ?>
-            <div style="display:grid; grid-template-columns:repeat(<?= min(count($photoFiles), 3) ?>,1fr);
-                        gap:2px; flex-shrink:0; background:rgba(255,255,255,0.04); height:180px;">
-                <?php foreach ($photoFiles as $pf): ?>
-                <?php $pfUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($pf); ?>
-                <a href="<?= $pfUrl ?>" target="_blank" rel="noopener"
-                   style="overflow:hidden; display:block; height:100%;">
-                    <img src="<?= $pfUrl ?>" alt="หลักฐาน"
-                         loading="lazy"
-                         style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
-                         onmouseover="this.style.transform='scale(1.06)'"
-                         onmouseout="this.style.transform='scale(1)'"
-                         onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:#6b6e77;background:rgba(255,255,255,0.03);\'>โหลดไม่ได้</div>'">
-                </a>
+            <!-- Photo preview (click = lightbox) -->
+            <?php if (!empty($photoFiles)):
+                $jsonUrls   = htmlspecialchars(json_encode(array_map(
+                    fn($f) => BASE_URL . '/uploads/submissions/' . rawurlencode($f), $photoFiles
+                ), JSON_UNESCAPED_SLASHES), ENT_QUOTES);
+                $photoCount = count($photoFiles);
+            ?>
+            <div class="asb-thumb-strip" onclick="openLightbox('<?= $jsonUrls ?>', 0)">
+                <?php foreach ($photoFiles as $idx => $pf):
+                    $pfUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($pf);
+                ?>
+                <div class="asb-thumb-cell">
+                    <img src="<?= $pfUrl ?>" alt="หลักฐาน" loading="lazy"
+                         onerror="this.style.display='none'">
+                    <?php if ($idx === 2 && $photoCount > 3): ?>
+                    <div class="asb-thumb-more">+<?= $photoCount - 3 ?></div>
+                    <?php endif; ?>
+                </div>
+                <?php if ($idx >= 2) break; ?>
                 <?php endforeach; ?>
+                <div class="asb-thumb-overlay">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+                    <span><?= $photoCount ?> รูป</span>
+                </div>
             </div>
-            <?php endif; ?>
             <?php else: ?>
             <div style="height:72px; background:rgba(255,255,255,0.03);
                         display:flex; align-items:center; justify-content:center;
@@ -419,5 +413,183 @@ require_once __DIR__ . '/../includes/header.php';
     </div><!-- /inner -->
 </div><!-- /asb-submissions-wrap -->
 
+
+<!-- ── LIGHTBOX ─────────────────────────────────────────────── -->
+<div id="asb-lightbox" onclick="lbBgClick(event)"
+     style="display:none; position:fixed; inset:0; z-index:9999;
+            background:rgba(0,0,0,0.92); align-items:center; justify-content:center;">
+
+    <!-- Close -->
+    <button onclick="closeLightbox()"
+            style="position:absolute; top:1rem; right:1.2rem;
+                   background:none; border:none; cursor:pointer; color:#eeebe1; font-size:1.6rem;
+                   line-height:1; padding:0.25rem 0.5rem; opacity:0.65; transition:opacity 0.15s;"
+            onmouseover="this.style.opacity='1'"
+            onmouseout="this.style.opacity='0.65'"
+            title="ปิด (Esc)">&#x2715;</button>
+
+    <!-- Counter -->
+    <div id="lb-counter"
+         style="position:absolute; top:1.1rem; left:50%; transform:translateX(-50%);
+                font-size:0.8rem; color:rgba(238,235,225,0.5); font-family:'Prompt',sans-serif;
+                pointer-events:none; letter-spacing:0.04em;"></div>
+
+    <!-- Prev -->
+    <button id="lb-prev" onclick="lbNav(-1)"
+            style="position:absolute; left:1rem; top:50%; transform:translateY(-50%);
+                   background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+                   color:#eeebe1; border-radius:50%; width:46px; height:46px;
+                   font-size:1.5rem; cursor:pointer; display:flex; align-items:center;
+                   justify-content:center; transition:background 0.15s; z-index:1;"
+            onmouseover="this.style.background='rgba(255,255,255,0.20)'"
+            onmouseout="this.style.background='rgba(255,255,255,0.08)'">&#8249;</button>
+
+    <!-- Image wrapper (fade) -->
+    <div style="display:flex; align-items:center; justify-content:center;
+                max-width:90vw; max-height:88vh;">
+        <img id="lb-img" src="" alt="preview"
+             style="max-width:90vw; max-height:88vh; object-fit:contain;
+                    border-radius:8px; box-shadow:0 8px 48px rgba(0,0,0,0.7);
+                    transition:opacity 0.18s; user-select:none; display:block;">
+    </div>
+
+    <!-- Next -->
+    <button id="lb-next" onclick="lbNav(1)"
+            style="position:absolute; right:1rem; top:50%; transform:translateY(-50%);
+                   background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.14);
+                   color:#eeebe1; border-radius:50%; width:46px; height:46px;
+                   font-size:1.5rem; cursor:pointer; display:flex; align-items:center;
+                   justify-content:center; transition:background 0.15s; z-index:1;"
+            onmouseover="this.style.background='rgba(255,255,255,0.20)'"
+            onmouseout="this.style.background='rgba(255,255,255,0.08)'">&#8250;</button>
+
+    <!-- Dot strip -->
+    <div id="lb-dots"
+         style="position:absolute; bottom:1.3rem; left:50%; transform:translateX(-50%);
+                display:flex; gap:0.5rem; align-items:center;"></div>
+
+    <!-- Download -->
+    <a id="lb-download" href="" download
+       style="position:absolute; bottom:1.15rem; right:1.4rem;
+              font-size:0.72rem; color:rgba(218,185,55,0.65); text-decoration:none;
+              font-family:'Prompt',sans-serif; display:flex; align-items:center; gap:0.3rem;
+              transition:color 0.15s;"
+       onmouseover="this.style.color='#dab937'"
+       onmouseout="this.style.color='rgba(218,185,55,0.65)'">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        ดาวน์โหลด
+    </a>
+</div>
+
+<style>
+.asb-thumb-strip {
+    position: relative; flex-shrink: 0; height: 180px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    background: rgba(255,255,255,0.04); cursor: zoom-in; overflow: hidden;
+}
+.asb-thumb-strip:hover .asb-thumb-overlay { opacity: 1; }
+.asb-thumb-cell { overflow: hidden; position: relative; height: 100%; }
+.asb-thumb-cell img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.28s; display: block; }
+.asb-thumb-strip:hover .asb-thumb-cell img { transform: scale(1.05); }
+.asb-thumb-more {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; background: rgba(9,17,19,0.68);
+    font-size: 1.2rem; font-weight: 700; color: #eeebe1;
+    font-family: 'Prompt', sans-serif;
+}
+.asb-thumb-overlay {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    justify-content: center; gap: 0.45rem;
+    background: rgba(9,17,19,0.52); opacity: 0;
+    transition: opacity 0.2s; pointer-events: none;
+    font-size: 0.82rem; font-weight: 600; color: #fff;
+    font-family: 'Prompt', sans-serif;
+}
+</style>
+
+<script>
+(function () {
+    var _lbUrls = [];
+    var _lbIdx  = 0;
+
+    window.openLightbox = function (urlsJson, startIdx) {
+        _lbUrls = typeof urlsJson === 'string' ? JSON.parse(urlsJson) : urlsJson;
+        _lbIdx  = startIdx || 0;
+        document.getElementById('asb-lightbox').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        _lbRender();
+    };
+
+    window.closeLightbox = function () {
+        document.getElementById('asb-lightbox').style.display = 'none';
+        document.body.style.overflow = '';
+    };
+
+    window.lbNav = function (dir) {
+        _lbIdx = (_lbIdx + dir + _lbUrls.length) % _lbUrls.length;
+        _lbRender();
+    };
+
+    window.lbBgClick = function (e) {
+        if (e.target === document.getElementById('asb-lightbox')) closeLightbox();
+    };
+
+    function _lbRender() {
+        var img     = document.getElementById('lb-img');
+        var prev    = document.getElementById('lb-prev');
+        var next    = document.getElementById('lb-next');
+        var counter = document.getElementById('lb-counter');
+        var dotsEl  = document.getElementById('lb-dots');
+        var dlLink  = document.getElementById('lb-download');
+
+        img.style.opacity = '0';
+        img.src = _lbUrls[_lbIdx];
+        img.onload = function () { img.style.opacity = '1'; };
+
+        var multi = _lbUrls.length > 1;
+        prev.style.display = multi ? 'flex' : 'none';
+        next.style.display = multi ? 'flex' : 'none';
+
+        counter.textContent = multi ? (_lbIdx + 1) + ' / ' + _lbUrls.length : '';
+
+        dotsEl.innerHTML = '';
+        if (multi) {
+            _lbUrls.forEach(function (_, i) {
+                var dot = document.createElement('div');
+                dot.style.cssText = 'width:7px;height:7px;border-radius:50%;cursor:pointer;transition:background 0.15s,transform 0.15s;background:' +
+                    (i === _lbIdx ? '#dab937' : 'rgba(255,255,255,0.28)') + ';transform:' +
+                    (i === _lbIdx ? 'scale(1.35)' : 'scale(1)') + ';';
+                dot.addEventListener('click', function (e) { e.stopPropagation(); _lbIdx = i; _lbRender(); });
+                dotsEl.appendChild(dot);
+            });
+        }
+
+        dlLink.href = _lbUrls[_lbIdx];
+    }
+
+    // Keyboard
+    document.addEventListener('keydown', function (e) {
+        if (document.getElementById('asb-lightbox').style.display !== 'flex') return;
+        if (e.key === 'Escape')      closeLightbox();
+        if (e.key === 'ArrowLeft')   lbNav(-1);
+        if (e.key === 'ArrowRight')  lbNav(1);
+    });
+
+    // Touch swipe
+    var _tsX = null;
+    var lb = document.getElementById('asb-lightbox');
+    lb.addEventListener('touchstart', function (e) { _tsX = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend',   function (e) {
+        if (_tsX === null) return;
+        var dx = e.changedTouches[0].clientX - _tsX;
+        if (Math.abs(dx) > 45) lbNav(dx < 0 ? 1 : -1);
+        _tsX = null;
+    }, { passive: true });
+})();
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
