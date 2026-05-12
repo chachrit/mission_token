@@ -21,19 +21,25 @@
     <!-- ===================================================
          GLOBAL TOAST
          =================================================== -->
-    <?php if (!empty($flash) && $flash['type'] !== 'pending' && empty($noToast)): ?>
     <?php
-        $toastIcon = $flash['type'] === 'success'
-            ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'
-            : ($flash['type'] === 'warning'
-                ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
-                : '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
+        $toastIcon = '';
+        $toastClass = '';
+        $toastMsg   = '';
+        if (!empty($flash) && $flash['type'] !== 'pending' && empty($noToast)) {
+            $toastClass = 'toast-' . e($flash['type']);
+            $toastMsg   = e($flash['message']);
+            $toastIcon  = $flash['type'] === 'success'
+                ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>'
+                : ($flash['type'] === 'warning'
+                    ? '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>'
+                    : '<svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>');
+        }
     ?>
-    <div id="app-toast" class="toast-<?php echo e($flash['type']); ?>">
+    <!-- #app-toast is always present so JS can trigger it dynamically -->
+    <div id="app-toast" class="<?php echo $toastClass; ?>">
         <?php echo $toastIcon; ?>
-        <span><?php echo e($flash['message']); ?></span>
+        <?php if ($toastMsg): ?><span><?php echo $toastMsg; ?></span><?php endif; ?>
     </div>
-    <?php endif; ?>
 
     <!-- ===================================================
          JAVASCRIPT

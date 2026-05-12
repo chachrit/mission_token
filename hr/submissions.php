@@ -372,42 +372,28 @@ require_once __DIR__ . '/../includes/header.php';
                               class="asb-note-input"></textarea>
                 </div>
                 <div style="display:flex; gap:0.5rem;">
-                    <form method="POST" action="<?= BASE_URL ?>/hr/submissions.php"
-                          style="flex:1;"
-                          onsubmit="syncNote(<?= $sub['submission_id'] ?>, 'approve-note-<?= $sub['submission_id'] ?>')">
-                        <?= csrfField() ?>
-                        <input type="hidden" name="action" value="approve">
-                        <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
-                        <input type="hidden" name="filter" value="<?= e($filter) ?>">
-                        <input type="hidden" name="review_note" id="approve-note-<?= $sub['submission_id'] ?>">
-                        <button type="submit"
-                                style="width:100%; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
-                                       border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                       background:rgba(81,142,92,0.15); color:#7ec98a;
-                                       border:1px solid rgba(81,142,92,0.30); transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(81,142,92,0.28)'"
-                                onmouseout="this.style.background='rgba(81,142,92,0.15)'">
-                            อนุมัติ
-                        </button>
-                    </form>
-                    <form method="POST" action="<?= BASE_URL ?>/hr/submissions.php"
-                          style="flex:1;"
-                          onsubmit="return confirmReject(<?= $sub['submission_id'] ?>)">
-                        <?= csrfField() ?>
-                        <input type="hidden" name="action" value="reject">
-                        <input type="hidden" name="submission_id" value="<?= $sub['submission_id'] ?>">
-                        <input type="hidden" name="filter" value="<?= e($filter) ?>">
-                        <input type="hidden" name="review_note" id="reject-note-<?= $sub['submission_id'] ?>">
-                        <button type="submit"
-                                style="width:100%; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
-                                       border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                       background:rgba(210,89,42,0.12); color:#d2592a;
-                                       border:1px solid rgba(210,89,42,0.28); transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.25)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
-                            ปฏิเสธ
-                        </button>
-                    </form>
+                    <!-- Approve -->
+                    <button type="button"
+                            onclick="openConfirmModal('approve', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
+                            style="flex:1; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   background:rgba(81,142,92,0.15); color:#7ec98a;
+                                   border:1px solid rgba(81,142,92,0.30); transition:background 0.15s;"
+                            onmouseover="this.style.background='rgba(81,142,92,0.28)'"
+                            onmouseout="this.style.background='rgba(81,142,92,0.15)'">
+                        &#10003;&ensp;อนุมัติ
+                    </button>
+                    <!-- Reject -->
+                    <button type="button"
+                            onclick="openConfirmModal('reject', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
+                            style="flex:1; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
+                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                                   background:rgba(210,89,42,0.12); color:#d2592a;
+                                   border:1px solid rgba(210,89,42,0.28); transition:background 0.15s;"
+                            onmouseover="this.style.background='rgba(210,89,42,0.25)'"
+                            onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                        &#10007;&ensp;ปฏิเสธ
+                    </button>
                 </div>
                 <button onclick="toggleNote(<?= $sub['submission_id'] ?>)"
                         style="margin-top:0.5rem; width:100%; font-size:0.73rem; color:#4a4e57;
@@ -433,6 +419,77 @@ require_once __DIR__ . '/../includes/header.php';
     </div><!-- /inner -->
 </div><!-- /asb-submissions-wrap -->
 
+
+<!-- ── CONFIRM MODAL ───────────────────────────────────────── -->
+<style>
+#asb-confirm-modal { display:none; position:fixed; inset:0; z-index:10000;
+  background:rgba(9,17,19,0.72); backdrop-filter:blur(6px);
+  align-items:center; justify-content:center; padding:1.5rem; }
+#asb-confirm-modal.open { display:flex; }
+.asb-modal-box {
+  background:rgba(15,20,23,0.97); border-radius:22px; width:100%; max-width:380px;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
+  overflow:hidden; backdrop-filter:blur(20px);
+  animation:asb-modal-in 0.28s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes asb-modal-in {
+  from { opacity:0; transform:scale(0.88) translateY(24px); }
+  to   { opacity:1; transform:scale(1) translateY(0); }
+}
+</style>
+<div id="asb-confirm-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
+    <div class="asb-modal-box">
+        <!-- Header -->
+        <div id="cm-header"
+             style="border-bottom:1px solid rgba(255,255,255,0.08);
+                    padding:1rem 1.35rem; display:flex; align-items:center; gap:0.7rem;">
+            <div id="cm-icon"
+                 style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
+                        display:flex;align-items:center;justify-content:center;"></div>
+            <span id="cm-title" style="font-size:0.95rem; font-weight:700; color:#eeebe1;"></span>
+            <button onclick="closeConfirmModal()"
+                    style="margin-left:auto; background:none; border:none; cursor:pointer;
+                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
+                           transition:color 0.15s;"
+                    onmouseover="this.style.color='#eeebe1'"
+                    onmouseout="this.style.color='#4a4e57'" aria-label="ปิด">
+                <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <!-- Body -->
+        <div style="padding:1.35rem 1.5rem;">
+            <p id="cm-body" style="font-size:0.88rem; color:#9ca3af; line-height:1.7;
+                                    margin:0 0 1.35rem;"></p>
+            <div style="display:flex; gap:0.65rem;">
+                <button onclick="closeConfirmModal()"
+                        style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
+                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+                               color:#eeebe1; transition:background 0.18s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                    ยกเลิก
+                </button>
+                <button id="cm-confirm-btn" onclick="submitConfirmModal()"
+                        style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; font-weight:700;
+                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
+                               transition:background 0.18s;">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- hidden form — submitted by modal JS -->
+<form id="asb-confirm-form" method="POST" action="<?= BASE_URL ?>/hr/submissions.php" style="display:none;">
+    <?= csrfField() ?>
+    <input type="hidden" name="action" id="cf-action">
+    <input type="hidden" name="submission_id" id="cf-sid">
+    <input type="hidden" name="filter" id="cf-filter">
+    <input type="hidden" name="review_note" id="cf-note">
+</form>
 
 <!-- ── LIGHTBOX ─────────────────────────────────────────────── -->
 <div id="asb-lightbox" onclick="lbBgClick(event)"
@@ -609,6 +666,80 @@ require_once __DIR__ . '/../includes/header.php';
         if (Math.abs(dx) > 45) lbNav(dx < 0 ? 1 : -1);
         _tsX = null;
     }, { passive: true });
+})();
+
+// ── Confirm Modal ─────────────────────────────────────────────
+(function () {
+    var _cmAction = '', _cmSid = 0, _cmFilter = '';
+
+    window.openConfirmModal = function (action, sid, empName, challengeTitle, tokenReward, filter) {
+        _cmAction = action;
+        _cmSid    = sid;
+        _cmFilter = filter;
+
+        var isApprove = action === 'approve';
+        var accentClr = isApprove ? '#7ec98a' : '#d2592a';
+        var accentBg  = isApprove ? 'rgba(81,142,92,0.18)' : 'rgba(210,89,42,0.15)';
+        var accentBdr = isApprove ? 'rgba(81,142,92,0.35)' : 'rgba(210,89,42,0.30)';
+        var hoverBg   = isApprove ? 'rgba(81,142,92,0.30)' : 'rgba(210,89,42,0.28)';
+
+        // Header accent
+        var hdrGrad = isApprove
+            ? 'linear-gradient(135deg,rgba(81,142,92,0.14),rgba(81,142,92,0.04))'
+            : 'linear-gradient(135deg,rgba(210,89,42,0.14),rgba(210,89,42,0.04))';
+        var hdrBdr  = isApprove ? 'rgba(81,142,92,0.20)' : 'rgba(210,89,42,0.20)';
+        var hdr = document.getElementById('cm-header');
+        hdr.style.background   = hdrGrad;
+        hdr.style.borderBottomColor = hdrBdr;
+
+        // Icon
+        document.getElementById('cm-icon').style.background = isApprove ? 'rgba(81,142,92,0.18)' : 'rgba(210,89,42,0.12)';
+        document.getElementById('cm-icon').style.border     = '1px solid ' + accentBdr;
+        document.getElementById('cm-icon').innerHTML = isApprove
+            ? '<svg width="14" height="14" fill="none" stroke="#7ec98a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>'
+            : '<svg width="14" height="14" fill="none" stroke="#d2592a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+
+        document.getElementById('cm-title').textContent = isApprove ? 'ยืนยันการอนุมัติ' : 'ยืนยันการปฏิเสธ';
+        document.getElementById('cm-body').innerHTML =
+            (isApprove
+                ? 'อนุมัติงานของ <strong style="color:#eeebe1;">' + (empName || '–') + '</strong> และมอบรางวัล <strong style="color:#f8e769;">' + tokenReward.toLocaleString() + ' Token</strong> ใช่หรือไม่?'
+                : 'ปฏิเสธงานของ <strong style="color:#eeebe1;">' + (empName || '–') + '</strong> ใช่หรือไม่?');
+
+        // Box border accent
+        document.querySelector('.asb-modal-box').style.border = '1px solid ' + accentBdr;
+
+        var btn = document.getElementById('cm-confirm-btn');
+        btn.textContent = isApprove ? '✓  อนุมัติ' : '✕  ปฏิเสธ';
+        btn.style.background = accentBg;
+        btn.style.color      = accentClr;
+        btn.style.border     = '1px solid ' + accentBdr;
+        btn.onmouseover = function () { this.style.background = hoverBg; };
+        btn.onmouseout  = function () { this.style.background = accentBg; };
+
+        var modal = document.getElementById('asb-confirm-modal');
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeConfirmModal = function () {
+        document.getElementById('asb-confirm-modal').classList.remove('open');
+        document.body.style.overflow = '';
+    };
+
+    window.submitConfirmModal = function () {
+        // sync note from per-card textarea (if user filled it before clicking)
+        var noteEl = document.getElementById('note-input-' + _cmSid);
+        document.getElementById('cf-action').value = _cmAction;
+        document.getElementById('cf-sid').value    = _cmSid;
+        document.getElementById('cf-filter').value = _cmFilter;
+        document.getElementById('cf-note').value   = noteEl ? noteEl.value : '';
+        document.getElementById('asb-confirm-form').submit();
+    };
+
+    document.addEventListener('keydown', function (e) {
+        if (!document.getElementById('asb-confirm-modal').classList.contains('open')) return;
+        if (e.key === 'Escape') closeConfirmModal();
+    });
 })();
 </script>
 

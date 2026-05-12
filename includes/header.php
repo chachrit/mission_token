@@ -468,7 +468,6 @@ $notifCount = count($allNotifs);
             padding: 1rem 1.5rem;
             border-radius: 16px;
             font-size: 0.95rem; font-weight: 500; font-family: 'Prompt', sans-serif;
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 16px 48px rgba(0,0,0,0.5);
             transform: translate(-50%, -50%) scale(0.85); opacity: 0;
             transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
