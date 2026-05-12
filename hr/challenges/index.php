@@ -71,6 +71,15 @@ if ($typeFilter) {
 }
 $challenges = $stmt->fetchAll();
 
+// Sort: non-expired first (order by created_at DESC within each group), expired last
+$_now = time();
+usort($challenges, function ($a, $b) use ($_now) {
+    $aExp = strtotime((string)$a['end_date']) < $_now ? 1 : 0;
+    $bExp = strtotime((string)$b['end_date']) < $_now ? 1 : 0;
+    if ($aExp !== $bExp) return $aExp - $bExp; // non-expired first
+    return strtotime((string)$b['created_at']) - strtotime((string)$a['created_at']); // newest first within group
+});
+
 // Thai month names (Buddhist Era = +543)
 $thMonths = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 function thDate(string $dateStr, array $months): string {
@@ -173,31 +182,44 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
 
             <?php foreach ($challenges as $ch):
-                $isActive = (bool)$ch['is_active'];
+                $isActive  = (bool)$ch['is_active'];
                 $sd = thDate((string)$ch['start_date'], $thMonths);
                 $ed = thDate((string)$ch['end_date'],   $thMonths);
-                $isQuiz   = $ch['type'] === 'quiz';
-                $isStrava = $ch['type'] === 'strava';
+                $isQuiz    = $ch['type'] === 'quiz';
+                $isStrava  = $ch['type'] === 'strava';
 
                 // Date status
-                $now = time();
+                $now   = time();
                 $start = strtotime((string)$ch['start_date']);
                 $end   = strtotime((string)$ch['end_date']);
-                if (!$isActive) {
-                    $dateClr = '#8a8e97';
-                } elseif ($now < $start) {
-                    $dateClr = '#4f8b98';  // upcoming — teal
-                } elseif ($now > $end) {
+                $isExpired  = $end !== false && $now > $end;
+                $isUpcoming = $start !== false && $now < $start;
+
+                if ($isExpired) {
                     $dateClr = '#d2592a';  // expired — orange
+                } elseif (!$isActive) {
+                    $dateClr = '#8a8e97';  // inactive — grey
+                } elseif ($isUpcoming) {
+                    $dateClr = '#4f8b98';  // upcoming — teal
                 } else {
                     $dateClr = '#518e5c';  // live — green
+                }
+
+                // Row opacity: expired = very dim, inactive = slight dim, live = normal
+                if ($isExpired) {
+                    $rowOpacity = 'opacity:0.45;';
+                } elseif (!$isActive) {
+                    $rowOpacity = 'opacity:0.55;';
+                } else {
+                    $rowOpacity = '';
                 }
             ?>
             <div class="ac-row"
                  style="display:grid; grid-template-columns:1fr 105px 75px 190px 65px 85px 105px;
                         gap:0; padding:0.9rem 1.25rem; align-items:center;
                         border-bottom:1px solid rgba(255,255,255,0.05);
-                        <?= $isActive ? '' : 'opacity:0.5;' ?>">
+                        <?= $isExpired ? 'background:rgba(210,89,42,0.04);' : '' ?>
+                        <?= $rowOpacity ?>">
 
                 <!-- Title -->
                 <div style="min-width:0; padding-right:1rem;">
@@ -245,6 +267,13 @@ require_once __DIR__ . '/../../includes/header.php';
                 <!-- Date range -->
                 <div style="font-size:0.72rem; color:<?= $dateClr ?>; line-height:1.6;">
                     <?= $sd ?> – <?= $ed ?>
+                    <?php if ($isExpired): ?>
+                    <span style="display:inline-block; margin-left:0.3rem; font-size:0.60rem;
+                                 font-weight:800; letter-spacing:0.05em;
+                                 background:rgba(210,89,42,0.18); color:#d2592a;
+                                 border:1px solid rgba(210,89,42,0.40);
+                                 border-radius:999px; padding:0 0.45rem; vertical-align:middle;">หมดอายุ</span>
+                    <?php endif; ?>
                 </div>
 
                 <!-- Submissions -->
@@ -258,10 +287,12 @@ require_once __DIR__ . '/../../includes/header.php';
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="toggle_active">
                         <input type="hidden" name="challenge_id" value="<?= (int)$ch['challenge_id'] ?>">
-                        <label class="ac-toggle-switch" title="<?= $isActive ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด' ?>">
+                        <label class="ac-toggle-switch <?= $isExpired ? 'ac-toggle-expired' : '' ?>"
+                               title="<?= $isExpired ? 'หมดอายุแล้ว — ขยายวันหรือลบสิ้น' : ($isActive ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด') ?>">
                             <input type="checkbox"
-                                   <?= $isActive ? 'checked' : '' ?>
-                                   onchange="this.form.submit()">
+                                   <?= (!$isExpired && $isActive) ? 'checked' : '' ?>
+                                   <?= $isExpired ? 'disabled' : '' ?>
+                                   <?= !$isExpired ? 'onchange="this.form.submit()"' : '' ?>>
                             <span class="ac-toggle-track">
                                 <span class="ac-toggle-thumb"></span>
                             </span>
@@ -382,6 +413,18 @@ require_once __DIR__ . '/../../includes/header.php';
 }
 .ac-toggle-switch:hover .ac-toggle-track {
     border-color: rgba(218,185,55,0.45);
+}
+/* Expired state: locked off with orange tint */
+.ac-toggle-expired {
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.ac-toggle-expired .ac-toggle-track {
+    background: rgba(210,89,42,0.12);
+    border-color: rgba(210,89,42,0.30);
+}
+.ac-toggle-expired .ac-toggle-thumb {
+    background: rgba(210,89,42,0.50);
 }
 
 /* ── Responsive ─────────────────────────────────────────── */
