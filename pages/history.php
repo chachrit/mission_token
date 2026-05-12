@@ -236,8 +236,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
                         <?php
                         if ($tx['tx_type'] === 'admin_adjust') {
-                            $adjName = !empty($tx['created_by_name']) ? e($tx['created_by_name']) : 'Admin';
-                            echo $isEarn ? 'ได้รับ token โดย ' . $adjName : 'ถูกหัก token โดย ' . $adjName;
+                            echo $isEarn ? 'ได้รับ Token' : 'ถูกหัก Token';
                         } else {
                             echo e(txTypeLabel($tx['tx_type']));
                         }
@@ -608,7 +607,7 @@ foreach ($txAll as $_tx) {
     $_earn = $_amt > 0;
     if ($_tx['tx_type'] === 'admin_adjust') {
         $_adjName = !empty($_tx['created_by_name']) ? $_tx['created_by_name'] : 'Admin';
-        $_typeLabel = $_earn ? 'ได้รับ token โดย ' . $_adjName : 'ถูกหัก token โดย ' . $_adjName;
+        $_typeLabel = $_earn ? 'ได้รับ Token โดย ' . $_adjName : 'ถูกหัก Token โดย ' . $_adjName;
     } else {
         $_typeLabel = txTypeLabel((string)$_tx['tx_type']);
     }
