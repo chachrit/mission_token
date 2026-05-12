@@ -117,6 +117,30 @@ if (!empty($_SESSION['employee_id'])) {
                 'href'  => BASE_URL . '/pages/history.php',
             ];
         }
+
+        // 4. Admin/HR token adjustments (recent 7 days)
+        $s4 = $pdo->prepare("
+            SELECT tt.tx_id, tt.amount, tt.note, adj.full_name AS adj_name
+            FROM token_transactions tt
+            LEFT JOIN employees adj ON adj.employee_id = tt.created_by
+            WHERE tt.employee_id = ? AND tt.tx_type = 'admin_adjust'
+              AND tt.created_at >= DATEADD(DAY, -7, GETDATE())
+            ORDER BY tt.created_at DESC
+        ");
+        $s4->execute([$empId]);
+        foreach ($s4->fetchAll() as $r) {
+            $isPos   = (int)$r['amount'] > 0;
+            $adjName = !empty($r['adj_name']) ? $r['adj_name'] : 'Admin';
+            $allNotifs[] = [
+                'key'   => 'adj_' . $r['tx_id'],
+                'type'  => $isPos ? 'approved' : 'cancelled',
+                'title' => $isPos ? 'ได้รับ Token จาก ' . $adjName : 'ถูกหัก Token โดย ' . $adjName,
+                'sub'   => !empty($r['note'])
+                            ? mb_strimwidth((string)$r['note'], 0, 60, '\u2026', 'UTF-8')
+                            : ($isPos ? '+' . number_format((int)$r['amount']) . ' Token' : number_format((int)$r['amount']) . ' Token'),
+                'href'  => BASE_URL . '/pages/history.php',
+            ];
+        }
     } catch (Throwable $e) { /* silent */ }
 }
 $notifCount = count($allNotifs);

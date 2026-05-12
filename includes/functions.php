@@ -21,7 +21,7 @@ require_once __DIR__ . '/../config/database.php';
  * @param string $note
  * @return bool
  */
-function awardTokens(int $employeeId, int $amount, string $txType, ?int $referenceId = null, string $note = ''): bool
+function awardTokens(int $employeeId, int $amount, string $txType, ?int $referenceId = null, string $note = '', ?int $createdBy = null): bool
 {
     $pdo = getDB();
     try {
@@ -29,10 +29,10 @@ function awardTokens(int $employeeId, int $amount, string $txType, ?int $referen
 
         // Record transaction
         $stmt = $pdo->prepare("
-            INSERT INTO token_transactions (employee_id, amount, tx_type, reference_id, note)
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO token_transactions (employee_id, amount, tx_type, reference_id, note, created_by)
+            VALUES (?, ?, ?, ?, ?, ?)
         ");
-        $stmt->execute([$employeeId, $amount, $txType, $referenceId, $note]);
+        $stmt->execute([$employeeId, $amount, $txType, $referenceId, $note, $createdBy]);
 
         // Update wallet
         if ($txType === 'admin_adjust') {

@@ -22,10 +22,12 @@ $txAll       = [];
 try {
     // All token transactions
     $stmt = $pdo->prepare("
-        SELECT tx_id, amount, tx_type, note, created_at
-        FROM   dbo.token_transactions
-        WHERE  employee_id = ?
-        ORDER BY created_at DESC
+        SELECT tt.tx_id, tt.amount, tt.tx_type, tt.note, tt.created_at,
+               adj.full_name AS created_by_name
+        FROM   dbo.token_transactions tt
+        LEFT JOIN dbo.employees adj ON adj.employee_id = tt.created_by
+        WHERE  tt.employee_id = ?
+        ORDER BY tt.created_at DESC
     ");
     $stmt->execute([$employeeId]);
     $txAll = $stmt->fetchAll();
@@ -232,7 +234,14 @@ require_once __DIR__ . '/../includes/header.php';
                         gap:1rem; padding:0.75rem 1.25rem; align-items:center;">
                 <div>
                     <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0 0 0.06rem;">
-                        <?= e(txTypeLabel($tx['tx_type'])) ?>
+                        <?php
+                        if ($tx['tx_type'] === 'admin_adjust') {
+                            $adjName = !empty($tx['created_by_name']) ? e($tx['created_by_name']) : 'Admin';
+                            echo $isEarn ? 'ได้รับ token โดย ' . $adjName : 'ถูกหัก token โดย ' . $adjName;
+                        } else {
+                            echo e(txTypeLabel($tx['tx_type']));
+                        }
+                        ?>
                     </p>
                     <?php if (!empty($tx['note'])): ?>
                     <p style="font-size:0.70rem; color:#6b6e77; margin:0;"><?= e($tx['note']) ?></p>
@@ -595,9 +604,17 @@ window.hycopyCoupon = function (code, id) {
 <?php
 $hyTxData = [];
 foreach ($txAll as $_tx) {
+    $_amt  = (int)$_tx['amount'];
+    $_earn = $_amt > 0;
+    if ($_tx['tx_type'] === 'admin_adjust') {
+        $_adjName = !empty($_tx['created_by_name']) ? $_tx['created_by_name'] : 'Admin';
+        $_typeLabel = $_earn ? 'ได้รับ token โดย ' . $_adjName : 'ถูกหัก token โดย ' . $_adjName;
+    } else {
+        $_typeLabel = txTypeLabel((string)$_tx['tx_type']);
+    }
     $hyTxData[(int)$_tx['tx_id']] = [
-        'type'   => txTypeLabel((string)$_tx['tx_type']),
-        'amount' => (int)$_tx['amount'],
+        'type'   => $_typeLabel,
+        'amount' => $_amt,
         'note'   => (string)($_tx['note'] ?? ''),
         'at'     => date('d/m/Y H:i', strtotime((string)$_tx['created_at'])),
     ];
