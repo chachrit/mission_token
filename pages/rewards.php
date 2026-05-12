@@ -1000,10 +1000,10 @@ require_once __DIR__ . '/../includes/header.php';
                  style="width:68px;height:68px;object-fit:contain;margin-bottom:1rem;
                         filter:drop-shadow(0 0 14px rgba(218,185,55,0.55));">
             <h3 style="font-size:1.2rem; font-weight:700; color:#eeebe1; margin:0 0 0.45rem;">
-                แลกรางวัลสำเร็จ!
+                แลกรางวัลสำเร็จ
             </h3>
             <p style="font-size:0.85rem; color:#6b6e77; line-height:1.6; margin:0 0 0.2rem;">
-                HR จะติดต่อกลับเพื่อดำเนินการมอบรางวัลให้คุณเร็วๆ นี้
+                รอการยืนยันเพื่อรับรางวัล
             </p>
             <p id="success-balance-text" style="font-size:0.85rem; color:#4a4e57; margin:0 0 2rem;"></p>
             <button onclick="closeRedeem()" class="ch-btn-start"
