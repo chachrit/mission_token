@@ -167,7 +167,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         setFlash('success', $msg);
-        redirect(BASE_URL . '/hr/challenges/edit.php?id=' . $savedId);
+        if ($isEdit) {
+            redirect(BASE_URL . '/hr/challenges/edit.php?id=' . $savedId);
+        } else {
+            redirect(BASE_URL . '/hr/challenges/index.php');
+        }
 
     } catch (Throwable $e) {
         error_log('[MissionToken] challenge save error: ' . $e->getMessage());
