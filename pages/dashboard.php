@@ -160,9 +160,6 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="ds-id-info">
                         <p class="ds-id-eyebrow"><?= e($greeting) ?><span class="ds-id-dot">·</span>OPERATIVE</p>
                         <h1 class="ds-id-name"><?= e($employeeName) ?></h1>
-                        <?php if ($department): ?>
-                        <p class="ds-id-dept"><?= e($department) ?></p>
-                        <?php endif; ?>
                         <div class="ds-id-badges">
                             <?php if ($streak > 0): ?>
                             <span class="ds-badge-streak">

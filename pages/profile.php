@@ -221,12 +221,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="pf-hero-info">
                 <h1 class="pf-name"><?= e($profile['full_name'] ?? '') ?></h1>
-                <p class="pf-sub">
-                    <?= e($profile['position'] ?? '') ?>
-                    <?php if ($profile['department'] ?? ''): ?>
-                    <span class="pf-dot">·</span><?= e($profile['department']) ?>
-                    <?php endif; ?>
-                </p>
+                <p class="pf-sub"><?= e($profile['position'] ?? '') ?></p>
                 <p class="pf-code"><?= e($profile['employee_code'] ?? '') ?></p>
             </div>
             <!-- Token balance pill -->
@@ -338,10 +333,6 @@ require_once __DIR__ . '/../includes/header.php';
                         <div class="pf-info-item">
                             <span class="pf-info-key">รหัสพนักงาน</span>
                             <span class="pf-info-val pf-mono"><?= e($profile['employee_code'] ?? '-') ?></span>
-                        </div>
-                        <div class="pf-info-item">
-                            <span class="pf-info-key">แผนก</span>
-                            <span class="pf-info-val"><?= e($profile['department'] ?? '-') ?></span>
                         </div>
                         <div class="pf-info-item">
                             <span class="pf-info-key">ตำแหน่ง</span>
