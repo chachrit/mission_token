@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * pages/profile.php
  * Employee profile — view info, work tenure, change password
@@ -527,45 +527,3 @@ require_once __DIR__ . '/../includes/header.php';
 </div><!-- /pf-profile-wrap -->
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
-                        <?= csrfField() ?>
-                        <input type="hidden" name="action" value="disconnect">
-                        <button type="submit"
-                                style="font-size:0.78rem;font-weight:600;padding:7px 18px;
-                                       background:rgba(210,89,42,0.12);color:#d2592a;
-                                       border:1px solid rgba(210,89,42,0.35);border-radius:8px;
-                                       cursor:pointer;transition:background 0.2s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
-                            ยกเลิกเชื่อมต่อ
-                        </button>
-                    </form>
-
-                    <?php else: ?>
-                    <!-- Not connected — show connect button -->
-                    <p style="font-size:0.8rem;color:#9ca3af;margin:0 0 1rem;line-height:1.6;">
-                        เชื่อมต่อบัญชี Strava เพื่อให้ระบบดึงข้อมูลกิจกรรมของคุณ<br>
-                        และใช้ยืนยันภารกิจประเภท Strava ได้อัตโนมัติ
-                    </p>
-                    <a href="<?= e($stravaAuthUrl) ?>"
-                       style="display:inline-flex;align-items:center;gap:8px;font-size:0.85rem;
-                              font-weight:700;padding:9px 20px;border-radius:9px;
-                              background:#FC4C02;color:#fff;text-decoration:none;
-                              transition:background 0.2s;"
-                       onmouseover="this.style.background='#e04400'"
-                       onmouseout="this.style.background='#FC4C02'">
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff">
-                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
-                        </svg>
-                        เชื่อมต่อกับ Strava
-                    </a>
-                    <?php endif; ?>
-                </div>
-
-            </div><!-- /pf-col right -->
-
-        </div><!-- /pf-grid-2col -->
-    </div><!-- /pf-inner -->
-</div><!-- /pf-profile-wrap -->
-
-<?php require_once __DIR__ . '/../includes/footer.php'; ?>
-
