@@ -151,7 +151,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="ds-id-avatar">
                         <?php $_dsAvatar = $_SESSION['avatar_url'] ?? ''; ?>
                         <?php if ($_dsAvatar): ?>
-                        <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename($_dsAvatar)) ?>"
+                        <img src="<?= uploadImgUrl('avatars', $_dsAvatar) ?>"
                              alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
                         <?php else: ?>
                         <span><?= mb_substr($employeeName, 0, 1, 'UTF-8') ?: '?' ?></span>

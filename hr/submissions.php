@@ -244,7 +244,7 @@ require_once __DIR__ . '/../includes/header.php';
                 }
             }
             $photoUrl  = $photoName
-                ? BASE_URL . '/uploads/submissions/' . rawurlencode($photoName)
+                ? uploadImgUrl('submissions', $photoName)
                 : null;
 
             $submittedDate = date('d/m/Y H:i', strtotime((string)$sub['submitted_at']));
@@ -266,13 +266,13 @@ require_once __DIR__ . '/../includes/header.php';
             <!-- Photo preview (click = lightbox) -->
             <?php if (!empty($photoFiles)):
                 $jsonUrls   = htmlspecialchars(json_encode(array_map(
-                    fn($f) => BASE_URL . '/uploads/submissions/' . rawurlencode($f), $photoFiles
+                    fn($f) => uploadImgUrl('submissions', $f), $photoFiles
                 ), JSON_UNESCAPED_SLASHES), ENT_QUOTES);
                 $photoCount = count($photoFiles);
             ?>
             <div class="asb-thumb-strip" onclick="openLightbox('<?= $jsonUrls ?>', 0)">
                 <?php foreach ($photoFiles as $idx => $pf):
-                    $pfUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($pf);
+                    $pfUrl = uploadImgUrl('submissions', $pf);
                 ?>
                 <div class="asb-thumb-cell">
                     <img src="<?= $pfUrl ?>" alt="หลักฐาน" loading="lazy"
@@ -309,7 +309,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <div style="display:flex; align-items:center; gap:0.6rem;">
                     <?php if (!empty($sub['avatar_url'])): ?>
-                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename((string)$sub['avatar_url'])) ?>"
+                    <img src="<?= uploadImgUrl('avatars', (string)$sub['avatar_url']) ?>"
                          alt="" loading="lazy"
                          style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
                                 object-fit:cover; border:1px solid rgba(218,185,55,0.25);"

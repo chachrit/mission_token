@@ -678,7 +678,7 @@ $notifCount = count($allNotifs);
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden"
                                  style="background:#dab937; color:#091113;">
                                 <?php if ($_navAvatar): ?>
-                                <img src="<?php echo BASE_URL; ?>/uploads/avatars/<?php echo rawurlencode(basename($_navAvatar)); ?>"
+                                <img src="<?php echo uploadImgUrl('avatars', $_navAvatar); ?>"
                                      alt="" style="width:100%;height:100%;object-fit:cover;">
                                 <?php else: ?>
                                 <?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1, 'UTF-8'); ?>

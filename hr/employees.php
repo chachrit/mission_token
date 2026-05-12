@@ -374,7 +374,7 @@ $roleMeta = [
                 <!-- Avatar + Name -->
                 <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
                     <?php if (!empty($emp['avatar_url'])): ?>
-                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename((string)$emp['avatar_url'])) ?>"
+                    <img src="<?= uploadImgUrl('avatars', (string)$emp['avatar_url']) ?>"
                          alt="" loading="lazy"
                          style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
                                 object-fit:cover; border:1px solid rgba(218,185,55,0.28);"

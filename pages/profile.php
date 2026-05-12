@@ -182,7 +182,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="pf-avatar-wrap">
                 <div class="pf-avatar">
                     <?php if (!empty($profile['avatar_url'])): ?>
-                    <img src="<?= BASE_URL ?>/uploads/avatars/<?= rawurlencode(basename($profile['avatar_url'])) ?>"
+                    <img src="<?= uploadImgUrl('avatars', $profile['avatar_url']) ?>"
                          alt="<?= e($profile['full_name']) ?>" class="pf-avatar-img">
                     <?php else: ?>
                     <?= mb_substr($profile['full_name'] ?? 'U', 0, 1, 'UTF-8') ?>

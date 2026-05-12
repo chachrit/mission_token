@@ -112,6 +112,17 @@ function formatTokens(int $amount): string
     return number_format($amount);
 }
 
+/**
+ * Return URL to serve an uploaded image via PHP (bypasses IIS Windows Auth).
+ * @param string $type   'avatars' or 'submissions'
+ * @param string $filename  basename of the file
+ */
+function uploadImgUrl(string $type, string $filename): string
+{
+    return BASE_URL . '/uploads/img.php?d=' . urlencode($type)
+         . '&f=' . urlencode(basename($filename));
+}
+
 // ============================================================
 // Challenge Helpers
 // ============================================================
