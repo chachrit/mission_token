@@ -100,38 +100,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ── PHOTO submission ─────────────────────────────────────
     if ($action === 'submit_photo') {
-        $file = $_FILES['photo'] ?? null;
+        define('PHOTO_MAX_FILES', 5);
 
-        if (!$file || $file['error'] !== UPLOAD_ERR_OK) {
-            setFlash('error', 'กรุณาเลือกไฟล์รูปภาพ');
+        // Restructure $_FILES['photos'] from PHP's multi-file format
+        $rawFiles = $_FILES['photos'] ?? null;
+        if (!$rawFiles || empty($rawFiles['name'][0])) {
+            setFlash('error', 'กรุณาเลือกไฟล์รูปภาพอย่างน้อย 1 ไฟล์');
             redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
         }
 
-        // Validate size
-        if ($file['size'] > UPLOAD_MAX_SIZE) {
-            setFlash('error', 'ไฟล์ใหญ่เกิน 20MB');
+        // Flatten into array of individual file entries
+        $uploads = [];
+        foreach ($rawFiles['name'] as $i => $name) {
+            if ($rawFiles['error'][$i] === UPLOAD_ERR_NO_FILE) continue;
+            $uploads[] = [
+                'name'     => $name,
+                'tmp_name' => $rawFiles['tmp_name'][$i],
+                'error'    => $rawFiles['error'][$i],
+                'size'     => $rawFiles['size'][$i],
+            ];
+        }
+
+        if (empty($uploads)) {
+            setFlash('error', 'กรุณาเลือกไฟล์รูปภาพอย่างน้อย 1 ไฟล์');
             redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
         }
 
-        // Validate MIME type from file content (not extension)
-        $finfo    = new finfo(FILEINFO_MIME_TYPE);
-        $mimeType = $finfo->file($file['tmp_name']);
-        if (!in_array($mimeType, ALLOWED_MIME, true)) {
-            setFlash('error', 'ไฟล์ต้องเป็นรูปภาพ (jpg, png, gif, webp) เท่านั้น');
+        if (count($uploads) > PHOTO_MAX_FILES) {
+            setFlash('error', 'อัปโหลดได้สูงสุด ' . PHOTO_MAX_FILES . ' รูปต่อครั้ง');
             redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
         }
 
-        // Generate safe filename
-        $ext      = pathinfo($file['name'], PATHINFO_EXTENSION);
-        $ext      = strtolower(preg_replace('/[^a-z0-9]/i', '', $ext));
-        if (!in_array($ext, ALLOWED_EXT, true)) { $ext = 'jpg'; }
-        $filename = sprintf('sub_%d_%d_%s.%s', $employeeId, $challengeId, bin2hex(random_bytes(6)), $ext);
-        $destPath = UPLOAD_PATH . $filename;
+        $finfo     = new finfo(FILEINFO_MIME_TYPE);
+        $savedFiles = [];
 
-        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
-            setFlash('error', 'อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่');
-            redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
+        foreach ($uploads as $file) {
+            if ($file['error'] !== UPLOAD_ERR_OK) {
+                setFlash('error', 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่');
+                foreach ($savedFiles as $sf) { @unlink(UPLOAD_PATH . $sf); }
+                redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
+            }
+
+            if ($file['size'] > UPLOAD_MAX_SIZE) {
+                setFlash('error', 'ไฟล์ ' . htmlspecialchars($file['name']) . ' ใหญ่เกิน 20MB');
+                foreach ($savedFiles as $sf) { @unlink(UPLOAD_PATH . $sf); }
+                redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
+            }
+
+            $mimeType = $finfo->file($file['tmp_name']);
+            if (!in_array($mimeType, ALLOWED_MIME, true)) {
+                setFlash('error', 'ไฟล์ต้องเป็นรูปภาพ (jpg, png, gif, webp) เท่านั้น');
+                foreach ($savedFiles as $sf) { @unlink(UPLOAD_PATH . $sf); }
+                redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
+            }
+
+            $ext = strtolower(preg_replace('/[^a-z0-9]/i', '', pathinfo($file['name'], PATHINFO_EXTENSION)));
+            if (!in_array($ext, ALLOWED_EXT, true)) { $ext = 'jpg'; }
+            $filename = sprintf('sub_%d_%d_%s.%s', $employeeId, $challengeId, bin2hex(random_bytes(6)), $ext);
+            $destPath = UPLOAD_PATH . $filename;
+
+            if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+                setFlash('error', 'อัปโหลดไฟล์ไม่สำเร็จ กรุณาลองใหม่');
+                foreach ($savedFiles as $sf) { @unlink(UPLOAD_PATH . $sf); }
+                redirect(BASE_URL . '/pages/challenges.php?id=' . $challengeId);
+            }
+
+            $savedFiles[] = $filename;
         }
+
+        // Store as JSON array (single-file submissions stored as JSON too for consistency)
+        $photoPathValue = json_encode($savedFiles, JSON_UNESCAPED_UNICODE);
 
         try {
             $stmt = $pdo->prepare("
@@ -139,11 +177,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     (employee_id, challenge_id, submission_type, photo_path, status, token_awarded)
                 VALUES (?, ?, 'photo', ?, 'pending', 0)
             ");
-            $stmt->execute([$employeeId, $challengeId, $filename]);
-            setFlash('pending', 'ส่งหลักฐานเรียบร้อย รอการตรวจสอบเพื่อรับ Token');
+            $stmt->execute([$employeeId, $challengeId, $photoPathValue]);
+            $fileCount = count($savedFiles);
+            setFlash('pending', 'ส่งหลักฐาน ' . $fileCount . ' รูปเรียบร้อย รอการตรวจสอบเพื่อรับ Token');
         } catch (Throwable $e) {
             error_log('[MissionToken] photo submit error: ' . $e->getMessage());
-            @unlink($destPath);
+            foreach ($savedFiles as $sf) { @unlink(UPLOAD_PATH . $sf); }
             setFlash('error', 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง');
         }
 
@@ -1137,8 +1176,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <div id="pm-csrf"></div>
                     <input type="hidden" name="action" value="submit_photo">
                     <input type="hidden" name="challenge_id" id="pm-cid-input" value="">
-                    <input type="file" name="photo" accept="image/*" required class="ch-file-input">
-                    <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 20MB &bull; ได้รับ Token หลัง HR อนุมัติ</p>
+                    <input type="file" name="photos[]" accept="image/*" multiple required class="ch-file-input">
+                    <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5 รูป &bull; แต่ละรูปไม่เกิน 20MB &bull; ได้รับ Token หลัง HR อนุมัติ</p>
                     <button type="submit"
                             style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
                                    padding:0.65rem 1.25rem; border-radius:10px;

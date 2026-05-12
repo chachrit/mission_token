@@ -232,6 +232,17 @@ require_once __DIR__ . '/../includes/header.php';
             }
 
             $photoName = !empty($sub['photo_path']) ? basename($sub['photo_path']) : null;
+            // Support both new JSON array format and legacy single filename
+            $photoRaw = $sub['photo_path'] ?? '';
+            $photoFiles = [];
+            if ($photoRaw !== '' && $photoRaw !== null) {
+                $decoded = json_decode($photoRaw, true);
+                if (is_array($decoded)) {
+                    $photoFiles = array_map('basename', $decoded);
+                } else {
+                    $photoFiles = [basename($photoRaw)]; // legacy single file
+                }
+            }
             $photoUrl  = $photoName
                 ? BASE_URL . '/uploads/submissions/' . rawurlencode($photoName)
                 : null;
@@ -253,17 +264,36 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
 
             <!-- Photo preview -->
-            <?php if ($photoUrl): ?>
-            <a href="<?= $photoUrl ?>" target="_blank" rel="noopener"
+            <?php if (!empty($photoFiles)): ?>
+            <?php if (count($photoFiles) === 1): ?>
+            <?php $singleUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($photoFiles[0]); ?>
+            <a href="<?= $singleUrl ?>" target="_blank" rel="noopener"
                style="display:block; overflow:hidden; flex-shrink:0;
                       background:rgba(255,255,255,0.04); height:180px;">
-                <img src="<?= $photoUrl ?>" alt="หลักฐาน"
+                <img src="<?= $singleUrl ?>" alt="หลักฐาน"
                      loading="lazy"
                      style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
                      onmouseover="this.style.transform='scale(1.04)'"
                      onmouseout="this.style.transform='scale(1)'"
                      onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#6b6e77;\'>ไม่สามารถโหลดรูปภาพได้</div>'">
             </a>
+            <?php else: ?>
+            <div style="display:grid; grid-template-columns:repeat(<?= min(count($photoFiles), 3) ?>,1fr);
+                        gap:2px; flex-shrink:0; background:rgba(255,255,255,0.04); height:180px;">
+                <?php foreach ($photoFiles as $pf): ?>
+                <?php $pfUrl = BASE_URL . '/uploads/submissions/' . rawurlencode($pf); ?>
+                <a href="<?= $pfUrl ?>" target="_blank" rel="noopener"
+                   style="overflow:hidden; display:block; height:100%;">
+                    <img src="<?= $pfUrl ?>" alt="หลักฐาน"
+                         loading="lazy"
+                         style="width:100%; height:100%; object-fit:cover; transition:transform 0.25s;"
+                         onmouseover="this.style.transform='scale(1.06)'"
+                         onmouseout="this.style.transform='scale(1)'"
+                         onerror="this.parentElement.innerHTML='<div style=\'width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:#6b6e77;background:rgba(255,255,255,0.03);\'>โหลดไม่ได้</div>'">
+                </a>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
             <?php else: ?>
             <div style="height:72px; background:rgba(255,255,255,0.03);
                         display:flex; align-items:center; justify-content:center;
