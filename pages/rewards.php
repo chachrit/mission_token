@@ -294,69 +294,140 @@ require_once __DIR__ . '/../includes/header.php';
 
 <style>
 /* ─────────────────────────────────────────────────────────────
-   REWARDS PAGE  "The Vault"  prefix: rw-
+   REWARDS PAGE  "The Exchange"  prefix: rw-
 ───────────────────────────────────────────────────────────── */
 
-/* ── Category filter pills ───────────────────────────────── */
-.rw-cat-pill {
-    padding: 0.35rem 1rem;
-    border-radius: 999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    border: 1.5px solid rgba(255,255,255,0.10);
-    background: transparent;
-    color: #6b6e77;
-    cursor: pointer;
-    transition: all 0.18s;
-    font-family: 'Prompt', sans-serif;
-    letter-spacing: 0.03em;
+@keyframes rw-aurora-drift {
+    0%   { transform: translate(0,0) scale(1); }
+    50%  { transform: translate(2%,3%) scale(1.04); }
+    100% { transform: translate(-2%,-2%) scale(0.97); }
 }
-.rw-cat-pill:hover  { border-color: rgba(218,185,55,0.40); color: #eeebe1; background: rgba(218,185,55,0.06); }
-.rw-cat-pill.active { background: rgba(218,185,55,0.15); border-color: rgba(218,185,55,0.45); color: #f8e769; }
 
-/* ── Reward card ─────────────────────────────────────────── */
+/* ── Category filter pills ── */
+.rw-cat-pill {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    padding: 0.36rem 0.92rem; border-radius: 999px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em;
+    border: 1px solid rgba(255,255,255,0.10);
+    background: transparent; color: #6b6e77;
+    cursor: pointer; transition: all 0.18s;
+    font-family: 'Prompt', sans-serif; white-space: nowrap;
+}
+.rw-cat-pill:hover  { border-color: rgba(218,185,55,0.35); color: #d8d4cb; background: rgba(218,185,55,0.05); }
+.rw-cat-pill.active { background: rgba(218,185,55,0.14); border-color: rgba(218,185,55,0.42); color: #f0c940; }
+
+/* ── Reward card ── */
 .rw-reward-card {
+    position: relative;
     background: rgba(255,255,255,0.025);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 18px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    overflow: hidden;
     transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
-                box-shadow 0.22s ease,
-                border-color 0.22s ease;
-    cursor: default;
-    backdrop-filter: blur(8px);
+                box-shadow 0.22s ease, border-color 0.22s ease;
 }
 .rw-reward-card:hover {
-    transform: translateY(-6px) scale(1.015);
-    box-shadow: 0 0 0 1px rgba(218,185,55,0.35),
-                0 16px 40px rgba(9,17,19,0.55),
-                0 0 32px rgba(218,185,55,0.08);
-    border-color: rgba(218,185,55,0.35);
+    transform: translateY(-5px);
+    border-color: rgba(218,185,55,0.38);
+    box-shadow: 0 0 0 1px rgba(218,185,55,0.10),
+                0 18px 48px rgba(9,17,19,0.55),
+                0 0 28px rgba(218,185,55,0.06);
 }
-.rw-reward-card.rw-no-balance {
-    opacity: 0.40;
+.rw-reward-card.rw-no-balance { opacity: 0.42; }
+.rw-reward-card.rw-hidden { display: none !important; }
+
+/* ── Card banner (colored hero area per category) ── */
+.rw-banner {
+    position: relative; height: 88px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
 }
-.rw-reward-card.rw-hidden { display: none; }
+.rw-banner::after {
+    content: ''; position: absolute;
+    bottom: 0; left: 0; right: 0; height: 28px;
+    background: linear-gradient(to bottom, transparent, rgba(9,17,19,0.5));
+    z-index: 0;
+}
+/* Glow orb behind icon */
+.rw-banner::before {
+    content: ''; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 72px; height: 72px; border-radius: 50%;
+    opacity: 0.38; filter: blur(18px);
+}
+.rw-banner-voucher        { background: linear-gradient(150deg, #0e1e55, #080f30); }
+.rw-banner-voucher::before{ background: #3d5fd9; }
+.rw-banner-leave          { background: linear-gradient(150deg, #0a2618, #060f0d); }
+.rw-banner-leave::before  { background: #4a9e62; }
+.rw-banner-merch          { background: linear-gradient(150deg, #1c0f38, #100820); }
+.rw-banner-merch::before  { background: #9844d4; }
+.rw-banner-perk           { background: linear-gradient(150deg, #221900, #120e00); }
+.rw-banner-perk::before   { background: #c9a830; }
+.rw-banner-general        { background: linear-gradient(150deg, #141618, #0c0f11); }
+.rw-banner-general::before{ background: #6b7280; }
 
-/* ── Card top accent bar ─────────────────────────────────── */
-.rw-card-top-bar { height: 2px; background: linear-gradient(90deg, #dab937, #f8e769); flex-shrink: 0; }
+/* Icon wrapper inside banner */
+.rw-banner-icon {
+    position: relative; z-index: 1;
+    width: 48px; height: 48px; border-radius: 13px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.22s cubic-bezier(0.22,1,0.36,1);
+}
+.rw-reward-card:hover .rw-banner-icon { transform: scale(1.10); }
 
-/* ── Emoji circle ────────────────────────────────────────── */
-.rw-emoji-wrap {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05),
-                0 8px 20px rgba(0,0,0,0.22);
-    flex-shrink: 0;
+/* Category tag on banner (top-right) */
+.rw-banner-tag {
+    position: absolute; top: 10px; right: 11px; z-index: 1;
+    font-size: 0.58rem; font-weight: 700;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    border-radius: 5px; padding: 0.17rem 0.46rem;
 }
 
-/* ── Modal backdrop ──────────────────────────────────────── */
+/* ── Card body ── */
+.rw-card-body {
+    padding: 0.95rem 1.15rem 0.7rem;
+    flex: 1; display: flex; flex-direction: column; gap: 0.35rem;
+}
+.rw-card-title { font-size: 0.93rem; font-weight: 700; color: #eeebe1; margin: 0; line-height: 1.35; }
+.rw-card-desc  { font-size: 0.76rem; color: #5a5e67; line-height: 1.55; margin: 0;
+                 display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ── Card footer ── */
+.rw-card-foot {
+    padding: 0.78rem 1.15rem 1rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between; gap: 0.65rem;
+}
+.rw-cost-wrap { display: flex; flex-direction: column; gap: 0.1rem; }
+.rw-cost-row  { display: flex; align-items: center; gap: 0.3rem; }
+.rw-cost-amt  { font-size: 1.12rem; font-weight: 800; color: #f8e769; letter-spacing: -0.02em; }
+.rw-cost-lbl  { font-size: 0.63rem; color: #3a3e43; font-weight: 500; }
+.rw-stock-txt { font-size: 0.62rem; line-height: 1; }
+
+/* Redeem button */
+.rw-redeem-btn {
+    padding: 0.44rem 0.95rem; font-size: 0.79rem; font-weight: 700;
+    border-radius: 9px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+    font-family: 'Prompt', sans-serif;
+    background: rgba(218,185,55,0.14); color: #f0c940;
+    border: 1px solid rgba(218,185,55,0.32);
+    transition: background 0.17s, border-color 0.17s;
+}
+.rw-redeem-btn:hover { background: rgba(218,185,55,0.27); border-color: rgba(218,185,55,0.52); }
+
+/* Lock / can't afford state */
+.rw-lock-badge {
+    display: flex; align-items: center; gap: 0.32rem; flex-shrink: 0;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 8px; padding: 0.38rem 0.7rem;
+}
+.rw-lock-name { font-size: 0.69rem; font-weight: 600; color: #3a3e43; line-height: 1.25; }
+.rw-lock-need { font-size: 0.61rem; color: #4a4e57; font-weight: 500; display: block; }
+
+/* ── Modal backdrop ── */
 #redeem-modal {
     display: none;
     position: fixed; inset: 0; z-index: 9000;
@@ -402,72 +473,52 @@ require_once __DIR__ . '/../includes/header.php';
 @media (max-width: 560px) { .rw-stat-div { display: none; } }
 
 /* ── Low-stock pulse ─────────────────────────────────────── */
-@keyframes rw-stock-pulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+@keyframes rw-stock-pulse { 0%,100%{opacity:1} 50%{opacity:0.42} }
 .rw-stock-low { animation: rw-stock-pulse 1.4s ease-in-out infinite; }
+@keyframes pop-in { 0%{transform:scale(.5);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+.success-pop { animation: pop-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
+@media (max-width: 560px) { .rw-stat-div { display: none; } }
 </style>
 
 <div class="rw-rewards-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
-    <!-- ── Aurora background blobs ────────────────────────── -->
+    <!-- Aurora blobs -->
     <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
         <div style="position:absolute; width:700px; height:700px; border-radius:50%;
                     background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
                     top:-150px; right:-150px; filter:blur(70px);
-                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
+                    animation:rw-aurora-drift 20s ease-in-out infinite alternate;"></div>
         <div style="position:absolute; width:550px; height:550px; border-radius:50%;
                     background:radial-gradient(circle,rgba(79,139,152,0.06) 0%,transparent 65%);
                     bottom:-130px; left:-100px; filter:blur(80px);
-                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+                    animation:rw-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
         <div style="position:absolute; width:320px; height:320px; border-radius:50%;
                     background:radial-gradient(circle,rgba(218,185,55,0.04) 0%,transparent 65%);
                     top:45%; left:38%; filter:blur(50px);
-                    animation:ch-aurora-drift 16s ease-in-out infinite alternate;"></div>
+                    animation:rw-aurora-drift 16s ease-in-out infinite alternate;"></div>
     </div>
 
     <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:0 1.5rem 5rem;">
 
-        <!-- ══════════════════════════════════════════════════
-             VAULT ACCESS HEADER
-        ══════════════════════════════════════════════════ -->
-        <div style="padding:2.75rem 0 2.5rem;">
-
+        <!-- ══ HEADER ══ -->
+        <div style="padding:2.75rem 0 2.25rem;">
             <p style="font-size:0.57rem; font-weight:700; letter-spacing:0.44em;
-                      text-transform:uppercase; color:rgba(218,185,55,0.65); margin:0 0 0.6rem;">
-                ⬡ &nbsp;VAULT ACCESS
+                      text-transform:uppercase; color:rgba(218,185,55,0.65); margin:0 0 0.65rem;">
+                ⬡ &nbsp;OPERATIVE EXCHANGE
             </p>
-
             <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;">
                 <div>
                     <h1 style="font-size:2.35rem; font-weight:800; color:#eeebe1; line-height:1.08;
-                                margin:0 0 0.35rem; letter-spacing:-0.02em;">
-                        ร้านแลกรางวัล
-                    </h1>
+                                margin:0 0 0.35rem; letter-spacing:-0.02em;">ร้านแลกรางวัล</h1>
                     <p style="font-size:0.88rem; color:#6b6e77; margin:0; line-height:1.5;">
                         ใช้ Token สะสมแลกรับรางวัลและสิทธิประโยชน์พิเศษจาก JOURNAL
                     </p>
                 </div>
-                <div style="flex-shrink:0; display:flex; align-items:center;" aria-hidden="true">
-                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         style="width:58px;height:58px;object-fit:contain;opacity:0.65;
-                                filter:drop-shadow(0 0 18px rgba(218,185,55,0.55));" alt="">
-                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         style="width:36px;height:36px;object-fit:contain;opacity:0.28;
-                                margin-left:-10px; margin-top:16px;
-                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.30));" alt="">
-                </div>
-            </div>
-
-            <!-- Stats bar -->
-            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;
-                        margin-top:1.75rem; padding-top:1.5rem;
-                        border-top:1px solid rgba(255,255,255,0.07);">
-
                 <!-- Balance pill -->
-                <div style="display:flex; align-items:center; gap:0.65rem;
+                <div style="display:flex; align-items:center; gap:0.65rem; flex-shrink:0;
                              background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.22);
                              border-radius:14px; padding:0.65rem 1.15rem;">
-                    <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="22" height="22"
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" width="22" height="22"
                          style="object-fit:contain; filter:drop-shadow(0 0 8px rgba(218,185,55,0.65));" alt="">
                     <div>
                         <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.16em;
@@ -477,56 +528,56 @@ require_once __DIR__ . '/../includes/header.php';
                         <div id="hdr-balance"
                              style="font-size:1.5rem; font-weight:800; color:#f8e769;
                                     line-height:1; letter-spacing:-0.02em;">
-                            <?php echo formatTokens((int)$wallet['balance']); ?>
+                            <?= formatTokens((int)$wallet['balance']) ?>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="rw-stat-div" style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
-
+            <!-- Stats bar -->
+            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;
+                        margin-top:1.5rem; padding-top:1.25rem;
+                        border-top:1px solid rgba(255,255,255,0.07);">
                 <div style="padding:0 0.25rem;">
-                    <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
-                        <?php echo formatTokens((int)$wallet['total_spent']); ?>
+                    <div style="font-size:1.05rem; font-weight:700; color:#eeebe1; line-height:1;">
+                        <?= formatTokens((int)$wallet['total_spent']) ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em;
+                                text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
                         Token ที่ใช้ไป
                     </div>
                 </div>
-
-                <div style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
-
+                <div class="rw-stat-div" style="width:1px; height:38px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
                 <div style="padding:0 0.25rem;">
-                    <div style="font-size:1.1rem; font-weight:700; color:#eeebe1; line-height:1;">
-                        <?php echo count($myRedemptions); ?>
+                    <div style="font-size:1.05rem; font-weight:700; color:#eeebe1; line-height:1;">
+                        <?= count($myRedemptions) ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em; text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
+                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em;
+                                text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
                         รายการแลกแล้ว
                     </div>
                 </div>
-
                 <?php if ($myPending > 0): ?>
-                <div class="rw-stat-div" style="width:1px; height:44px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+                <div class="rw-stat-div" style="width:1px; height:38px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
                 <button onclick="openPendingList()"
                         style="display:flex; align-items:center; gap:0.5rem;
                                background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
                                border-radius:999px; padding:0.35rem 0.9rem; cursor:pointer;
-                               font-family:'Prompt',sans-serif;
-                               transition:background 0.18s, border-color 0.18s;"
+                               font-family:'Prompt',sans-serif; transition:background 0.18s, border-color 0.18s;"
                         onmouseover="this.style.background='rgba(245,158,11,0.18)'; this.style.borderColor='rgba(245,158,11,0.42)'"
                         onmouseout="this.style.background='rgba(245,158,11,0.10)'; this.style.borderColor='rgba(245,158,11,0.22)'">
                     <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;
                                   flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
                     <span style="font-size:0.78rem; font-weight:600; color:#fbbf24;">
-                        <?php echo $myPending; ?> รายการรอดำเนินการ
+                        <?= $myPending ?> รายการรอดำเนินการ
                     </span>
                     <svg fill="none" stroke="#fbbf24" viewBox="0 0 24 24" width="12" height="12" style="opacity:0.65;">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
                 <?php endif; ?>
-
             </div>
-        </div><!-- end header -->
+        </div><!-- /header -->
 
         <?php if ($dataError): ?>
         <div style="margin-bottom:1.5rem; border-radius:12px;
@@ -536,15 +587,14 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <?php endif; ?>
 
-        <!-- ══════════════════════════════════════════════════
-             SECTION LABEL + CATEGORY PILLS
-        ══════════════════════════════════════════════════ -->
-        <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1.35rem; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:0.55rem; margin-right:0.4rem;">
-                <div style="width:4px; height:24px; background:linear-gradient(180deg,#dab937,#c9a830); border-radius:999px; flex-shrink:0;"></div>
-                <span style="font-size:0.98rem; font-weight:700; color:#eeebe1;">สินค้า</span>
-                <span style="font-size:0.68rem; font-weight:700; color:#091113; background:#dab937;
-                             border-radius:999px; padding:0.15rem 0.55rem;"><?= count($rewards) ?></span>
+        <!-- ══ FILTER ROW ══ -->
+        <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1.5rem; flex-wrap:wrap;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-right:0.3rem;">
+                <div style="width:4px; height:22px; background:linear-gradient(180deg,#dab937,#c9a830);
+                             border-radius:999px; flex-shrink:0;"></div>
+                <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">สินค้า</span>
+                <span style="font-size:0.66rem; font-weight:700; color:#091113; background:#dab937;
+                             border-radius:999px; padding:0.14rem 0.52rem;"><?= count($rewards) ?></span>
             </div>
             <button class="rw-cat-pill active" data-cat="all" onclick="filterCat(this,'all')">ทั้งหมด</button>
             <?php foreach ($activeCategories as $cat):
@@ -552,122 +602,109 @@ require_once __DIR__ . '/../includes/header.php';
                 $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
             ?>
             <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" onclick="filterCat(this,'<?= e($cat) ?>')">
-                <?= e($meta['label']) ?> <span style="opacity:0.55; font-size:0.70rem;">(<?= $count ?>)</span>
+                <?= e($meta['label']) ?> <span style="opacity:0.5; font-size:0.68rem;">(<?= $count ?>)</span>
             </button>
             <?php endforeach; ?>
         </div>
 
-        <!-- ══════════════════════════════════════════════════
-             REWARDS GRID
-        ══════════════════════════════════════════════════ -->
+        <!-- ══ REWARDS GRID ══ -->
         <?php if (empty($rewards)): ?>
         <div style="text-align:center; padding:5rem 1rem;">
-            <div style="font-size:2.2rem; margin-bottom:1rem; opacity:0.22;">LOCK</div>
             <p style="font-size:1rem; font-weight:600; color:#6b6e77; margin:0 0 0.3rem;">Vault ว่างอยู่ในขณะนี้</p>
-            <p style="font-size:0.82rem; color:#6b6e77; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
+            <p style="font-size:0.82rem; color:#4a4e57; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
         </div>
         <?php else: ?>
         <div id="rewards-grid"
-             style="display:grid; grid-template-columns:repeat(auto-fill,minmax(265px,1fr));
-                    gap:1.25rem; margin-bottom:3rem;">
+             style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+                    gap:1.2rem; margin-bottom:3rem;">
             <?php
             $myBalance = (int)$wallet['balance'];
+            $bannerCls = [
+                'voucher' => 'rw-banner-voucher',
+                'leave'   => 'rw-banner-leave',
+                'merch'   => 'rw-banner-merch',
+                'perk'    => 'rw-banner-perk',
+                'general' => 'rw-banner-general',
+            ];
+            $bannerTagStyle = [
+                'voucher' => 'background:rgba(13,24,73,0.72); color:rgba(157,180,247,0.85);',
+                'leave'   => 'background:rgba(6,21,14,0.72);  color:rgba(143,218,160,0.85);',
+                'merch'   => 'background:rgba(22,8,46,0.72);  color:rgba(211,172,232,0.85);',
+                'perk'    => 'background:rgba(27,19,0,0.72);  color:rgba(248,231,105,0.85);',
+                'general' => 'background:rgba(10,12,14,0.72); color:rgba(165,169,181,0.85);',
+            ];
             foreach ($rewards as $rw):
-                $cat       = $rw['category'];
-                $meta      = $catMeta[$cat] ?? $catMeta['general'];
+                $cat       = (string)$rw['category'];
+                $meta      = $catMeta[$cat]  ?? $catMeta['general'];
+                $tone      = $catTone[$cat]  ?? $catTone['general'];
                 $cost      = (int)$rw['token_cost'];
                 $canAfford = $myBalance >= $cost;
                 $stockLeft = $rw['stock'] === null ? null : (int)$rw['stock'];
-                $glowMap   = [
-                    'voucher' => ['bg' => 'rgba(47,78,157,0.16)',   'border' => 'rgba(47,78,157,0.32)'],
-                    'leave'   => ['bg' => 'rgba(81,142,92,0.16)',   'border' => 'rgba(81,142,92,0.32)'],
-                    'merch'   => ['bg' => 'rgba(98,48,122,0.16)',   'border' => 'rgba(98,48,122,0.32)'],
-                    'perk'    => ['bg' => 'rgba(201,168,48,0.16)',  'border' => 'rgba(201,168,48,0.32)'],
-                    'general' => ['bg' => 'rgba(107,110,119,0.14)','border' => 'rgba(107,110,119,0.28)'],
-                ];
-                $glow     = $glowMap[$cat] ?? $glowMap['general'];
-                $tone     = $catTone[$cat] ?? $catTone['general'];
+                $banClass  = $bannerCls[$cat]      ?? 'rw-banner-general';
+                $tagStyle  = $bannerTagStyle[$cat]  ?? $bannerTagStyle['general'];
+                $needed    = $cost - $myBalance;
+                $iconBig   = str_replace(['width="18"', 'height="18"'], ['width="22"', 'height="22"'],
+                                         rewardCategoryIconSvg($cat));
             ?>
             <div class="rw-reward-card <?= $canAfford ? '' : 'rw-no-balance' ?>"
                  data-category="<?= e($cat) ?>"
                  data-reward-id="<?= (int)$rw['reward_id'] ?>">
 
-                <div class="rw-card-top-bar"></div>
-
-                <div style="padding:1.35rem 1.35rem 0.75rem; display:flex;
-                             flex-direction:column; gap:0.85rem; flex:1;">
-
-                    <!-- Top: category icon + category badge -->
-                    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:0.75rem;">
-                        <div class="rw-emoji-wrap"
-                             style="background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>; color:<?= $tone['icon_color'] ?>;">
-                            <?= rewardCategoryIconSvg((string)$cat) ?>
-                        </div>
-                        <span style="font-size:0.63rem; font-weight:700; padding:0.22rem 0.65rem;
-                                     border-radius:999px; letter-spacing:0.04em; white-space:nowrap; margin-top:4px;
-                                     background:<?= $glow['bg'] ?>; color:<?= $meta['color'] ?>;
-                                     border:1px solid <?= $glow['border'] ?>;">
-                            <?= e($meta['label']) ?>
-                        </span>
+                <!-- Banner -->
+                <div class="rw-banner <?= $banClass ?>">
+                    <div class="rw-banner-icon"
+                         style="background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>; color:<?= $tone['icon_color'] ?>;">
+                        <?= $iconBig ?>
                     </div>
-
-                    <!-- Title + description -->
-                    <div style="flex:1;">
-                        <h3 style="font-size:0.97rem; font-weight:700; color:#eeebe1;
-                                   margin:0 0 0.3rem; line-height:1.35;">
-                            <?= e($rw['title']) ?>
-                        </h3>
-                        <?php if (!empty($rw['description'])): ?>
-                        <p style="font-size:0.78rem; color:#6b6e77; line-height:1.55; margin:0;
-                                  display:-webkit-box; -webkit-line-clamp:2;
-                                  -webkit-box-orient:vertical; overflow:hidden;">
-                            <?= e($rw['description']) ?>
-                        </p>
-                        <?php endif; ?>
-                    </div>
+                    <span class="rw-banner-tag" style="<?= $tagStyle ?>">
+                        <?= e($meta['label']) ?>
+                    </span>
                 </div>
 
-                <!-- Footer: cost + action -->
-                <div style="padding:0.85rem 1.35rem 1.25rem;
-                             border-top:1px solid rgba(255,255,255,0.07);
-                             display:flex; align-items:center; justify-content:space-between; gap:0.75rem;">
-                    <div>
-                        <div style="display:flex; align-items:center; gap:0.35rem; margin-bottom:0.18rem;">
-                            <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                                 width="15" height="15"
+                <!-- Body -->
+                <div class="rw-card-body">
+                    <h3 class="rw-card-title"><?= e($rw['title']) ?></h3>
+                    <?php if (!empty($rw['description'])): ?>
+                    <p class="rw-card-desc"><?= e($rw['description']) ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Footer -->
+                <div class="rw-card-foot">
+                    <div class="rw-cost-wrap">
+                        <div class="rw-cost-row">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" width="14" height="14"
                                  style="object-fit:contain; filter:drop-shadow(0 0 5px rgba(218,185,55,0.55));" alt="">
-                            <span style="font-size:1.2rem; font-weight:800; color:#f8e769; letter-spacing:-0.02em;"><?= $cost ?></span>
-                            <span style="font-size:0.67rem; color:#4a4e57; font-weight:500;">token</span>
+                            <span class="rw-cost-amt"><?= number_format($cost) ?></span>
+                            <span class="rw-cost-lbl">token</span>
                         </div>
                         <?php if ($stockLeft !== null): ?>
-                        <span class="<?= $stockLeft <= 3 ? 'rw-stock-low' : '' ?>"
-                              style="font-size:0.65rem; display:block;
-                                     color:<?= $stockLeft <= 3 ? '#d2592a' : '#4a4e57' ?>;">
-                            <?= $stockLeft <= 3 ? 'ใกล้หมด: ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
+                        <span class="rw-stock-txt <?= $stockLeft <= 3 ? 'rw-stock-low' : '' ?>"
+                              style="color:<?= $stockLeft <= 3 ? '#d2592a' : '#4a4e57' ?>;">
+                            <?= $stockLeft <= 3 ? 'ใกล้หมด · ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
                         </span>
                         <?php else: ?>
-                        <span style="font-size:0.65rem; color:#6b6e77; display:block;">ไม่จำกัดจำนวน</span>
+                        <span class="rw-stock-txt" style="color:#3a3e43;">ไม่จำกัดจำนวน</span>
                         <?php endif; ?>
                     </div>
 
                     <?php if ($canAfford): ?>
-                    <button class="ch-btn-start"
-                            style="padding:0.48rem 1rem; font-size:0.8rem; border-radius:10px;
-                                   flex-shrink:0; white-space:nowrap;"
+                    <button class="rw-redeem-btn"
                             onclick='openRedeem(<?= (int)$rw['reward_id'] ?>, <?= json_encode($rw['title']) ?>, <?= $cost ?>)'>
                         แลกเลย
                     </button>
                     <?php else: ?>
-                    <div style="display:flex; align-items:center; gap:0.3rem; flex-shrink:0;
-                                 background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);
-                                 border-radius:10px; padding:0.44rem 0.8rem;">
+                    <div class="rw-lock-badge">
                         <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
-                             stroke="rgba(107,110,119,0.65)" stroke-width="2.5"
-                             stroke-linecap="round" stroke-linejoin="round">
+                             stroke="rgba(74,78,87,0.65)" stroke-width="2.5"
+                             stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
-                        <span style="font-size:0.73rem; color:#6b6e77; font-weight:500;">Token ไม่พอ</span>
+                        <div>
+                            <span class="rw-lock-name">Token ไม่พอ</span>
+                            <span class="rw-lock-need">ต้องการอีก <?= number_format($needed) ?></span>
+                        </div>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -676,32 +713,26 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <?php endif; ?>
 
-        <!-- ══════════════════════════════════════════════════
-             MISSION LOGS — MY REDEMPTIONS
-        ══════════════════════════════════════════════════ -->
+        <!-- ══ HISTORY ══ -->
         <?php if (!empty($myRedemptions)): ?>
         <section style="margin-bottom:3rem;">
             <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1.2rem;">
-                <div style="width:4px; height:24px; background:linear-gradient(180deg,rgba(218,185,55,0.55),rgba(218,185,55,0.20)); border-radius:999px; flex-shrink:0;"></div>
-                <span style="font-size:0.98rem; font-weight:700; color:#eeebe1;">ประวัติการแลกรางวัล</span>
-                <span style="font-size:0.65rem; font-weight:700; color:#091113;
-                             background:#dab937; border-radius:999px;
-                             padding:0.15rem 0.55rem;"><?= count($myRedemptions) ?></span>
+                <div style="width:4px; height:22px; background:linear-gradient(180deg,rgba(218,185,55,0.55),rgba(218,185,55,0.18)); border-radius:999px; flex-shrink:0;"></div>
+                <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">ประวัติการแลกรางวัล</span>
+                <span style="font-size:0.63rem; font-weight:700; color:#091113; background:#dab937;
+                             border-radius:999px; padding:0.14rem 0.52rem;"><?= count($myRedemptions) ?></span>
             </div>
 
             <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                         border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
                 <!-- Table header -->
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
-                             gap:1rem; padding:0.7rem 1.25rem;
+                             gap:1rem; padding:0.65rem 1.25rem;
                              background:rgba(255,255,255,0.03);
                              border-bottom:1px solid rgba(255,255,255,0.07);
-                             font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
+                             font-size:0.60rem; font-weight:700; letter-spacing:0.10em;
                              text-transform:uppercase; color:#6b6e77;">
-                    <span>รางวัล</span>
-                    <span>Token</span>
-                    <span>วันที่</span>
-                    <span>สถานะ</span>
+                    <span>รางวัล</span><span>Token</span><span>วันที่</span><span>สถานะ</span>
                 </div>
 
                 <?php
@@ -711,8 +742,8 @@ require_once __DIR__ . '/../includes/header.php';
                     'cancelled' => ['color' => '#d2592a', 'bg' => 'rgba(210,89,42,0.10)',   'border' => 'rgba(210,89,42,0.25)'],
                 ];
                 foreach ($myRedemptions as $rd):
-                    $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
-                    $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+                    $sm    = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
+                    $ds    = $dsDark[$rd['status']]     ?? $dsDark['pending'];
                     $rdCat = (string)($rd['category'] ?? 'general');
                     $tone  = $catTone[$rdCat] ?? $catTone['general'];
                 ?>
@@ -724,63 +755,62 @@ require_once __DIR__ . '/../includes/header.php';
                     <!-- Main row -->
                     <div style="display:grid; grid-template-columns:1fr auto auto auto;
                                  gap:1rem; align-items:center;">
-                    <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                        <span style="display:inline-flex; align-items:center; justify-content:center;
-                                     width:28px; height:28px; flex-shrink:0; user-select:none;
-                                     line-height:1; color:<?= $tone['icon_color'] ?>;
-                                     background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>;
-                                     border-radius:999px;">
-                            <?= rewardCategoryIconSvg($rdCat) ?>
+                        <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
+                            <span style="display:inline-flex; align-items:center; justify-content:center;
+                                         width:28px; height:28px; flex-shrink:0;
+                                         color:<?= $tone['icon_color'] ?>;
+                                         background:<?= $tone['icon_bg'] ?>;
+                                         border:1px solid <?= $tone['icon_border'] ?>;
+                                         border-radius:999px;">
+                                <?= rewardCategoryIconSvg($rdCat) ?>
+                            </span>
+                            <div style="min-width:0;">
+                                <p style="font-size:0.85rem; font-weight:500; color:#eeebe1; margin:0;
+                                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    <?= e($rd['reward_title']) ?>
+                                </p>
+                                <?php if (!empty($rd['admin_note'])): ?>
+                                <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
+                                    <?= e($rd['admin_note']) ?>
+                                </p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png"
+                                 width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
+                            <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
+                                <?= (int)$rd['tokens_spent'] ?>
+                            </span>
+                        </div>
+                        <span style="font-size:0.75rem; color:#6b6e77; white-space:nowrap;">
+                            <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                         </span>
-                        <div style="min-width:0;">
-                            <p style="font-size:0.85rem; font-weight:500; color:#eeebe1; margin:0;
-                                       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                <?= e($rd['reward_title']) ?>
-                            </p>
-                            <?php if (!empty($rd['admin_note'])): ?>
-                            <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
-                                <?= e($rd['admin_note']) ?>
-                            </p>
+                        <div style="display:flex; align-items:center; gap:0.45rem; justify-content:flex-end; flex-wrap:wrap;">
+                            <span style="font-size:0.63rem; font-weight:700; padding:0.20rem 0.65rem;
+                                         border-radius:999px; white-space:nowrap;
+                                         background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                                         border:1px solid <?= $ds['border'] ?>;">
+                                <?= $sm['label'] ?>
+                            </span>
+                            <?php if ($rd['status'] === 'pending'): ?>
+                            <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
+                                    style="display:inline-flex; align-items:center; gap:0.3rem;
+                                           background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
+                                           border-radius:7px; padding:0.20rem 0.55rem; cursor:pointer;
+                                           font-size:0.64rem; font-weight:600; color:rgba(210,89,42,0.75);
+                                           font-family:'Prompt',sans-serif; transition:background 0.15s; white-space:nowrap;"
+                                    onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
+                                    onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
+                                    title="ยกเลิกการแลกรางวัลนี้">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="10" height="10">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                ยกเลิก
+                            </button>
                             <?php endif; ?>
                         </div>
-                    </div>
-                    <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
-                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                             width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
-                        <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
-                            <?= (int)$rd['tokens_spent'] ?>
-                        </span>
-                    </div>
-                    <span style="font-size:0.75rem; color:#6b6e77; white-space:nowrap;">
-                        <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
-                    </span>
-                    <div style="display:flex; align-items:center; gap:0.45rem; justify-content:flex-end; flex-wrap:wrap;">
-                        <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
-                                     border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
-                                     background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                                     border:1px solid <?= $ds['border'] ?>;">
-                            <?= $sm['label'] ?>
-                        </span>
-                        <?php if ($rd['status'] === 'pending'): ?>
-                        <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
-                                style="display:inline-flex; align-items:center; gap:0.3rem;
-                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
-                                       border-radius:7px; padding:0.22rem 0.58rem; cursor:pointer;
-                                       font-size:0.66rem; font-weight:600; color:rgba(210,89,42,0.75);
-                                       font-family:'Prompt',sans-serif; letter-spacing:0.03em;
-                                       transition:background 0.15s, border-color 0.15s; white-space:nowrap;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
-                                title="ยกเลิกการแลกรางวัลนี้">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="10" height="10">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                            ยกเลิก
-                        </button>
-                        <?php endif; ?>
-                    </div>
                     </div><!-- /main row -->
-
                     <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
                     <!-- Coupon code row -->
                     <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.6rem; margin-top:0.1rem;
@@ -807,8 +837,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </svg>
                             <span id="coupon-btn-label-<?= (int)$rd['redemption_id'] ?>">แสดงรหัสคูปอง</span>
                         </button>
-
-                        <!-- coupon box (hidden by default, right side) -->
+                        <!-- coupon box (hidden by default) -->
                         <div id="coupon-box-<?= (int)$rd['redemption_id'] ?>"
                              style="display:none; align-items:center; gap:0.6rem; flex-wrap:wrap;
                                     background:rgba(218,185,55,0.05); border:1px solid rgba(218,185,55,0.22);
@@ -830,8 +859,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
                                            background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
                                            border-radius:6px; color:#dab937; cursor:pointer;
-                                           font-size:0.68rem; font-weight:600;
-                                           font-family:'Prompt',sans-serif;
+                                           font-size:0.68rem; font-weight:600; font-family:'Prompt',sans-serif;
                                            padding:0.22rem 0.55rem; line-height:1.4;
                                            transition:background 0.15s; white-space:nowrap;"
                                     onmouseover="this.style.background='rgba(218,185,55,0.22)'"
@@ -848,7 +876,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
                 </div><!-- /rw-hist-row -->
                 <?php endforeach; ?>
-            </div>
+            </div><!-- /history table -->
         </section>
         <?php endif; ?>
 
