@@ -230,23 +230,23 @@ $notifCount = count($allNotifs);
     <style>
         /* Base */
         *, *::before, *::after { box-sizing: border-box; }
-        body  { font-family: 'Prompt', sans-serif; background-color: #eeebe1; color: #091113; display: block; }
+        body  { font-family: 'Prompt', sans-serif; background-color: var(--j-white); color: var(--j-dark); display: block; }
 
         /* Custom scrollbar */
         ::-webkit-scrollbar       { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #eeebe1; }
-        ::-webkit-scrollbar-thumb { background: #cecdcd; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #6b6e77; }
+        ::-webkit-scrollbar-track { background: var(--j-white); }
+        ::-webkit-scrollbar-thumb { background: var(--j-silver); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--j-slate); }
 
         /* Nav active link */
         .nav-active {
-            color: #dab937 !important;
-            border-bottom: 2px solid #dab937;
+            color: var(--j-gold) !important;
+            border-bottom: 2px solid var(--j-gold);
         }
 
         /* Global keyboard focus ring (WCAG 2.1 AA on dark backgrounds) */
         :focus-visible {
-            outline: 2px solid #dab937;
+            outline: 2px solid var(--j-gold);
             outline-offset: 3px;
             border-radius: 4px;
         }
@@ -258,7 +258,7 @@ $notifCount = count($allNotifs);
         /* Card base */
         .journal-card {
             background: #fdfcdf;
-            border: 1px solid #cecdcd;
+            border: 1px solid var(--j-silver);
             border-radius: 12px;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -267,42 +267,42 @@ $notifCount = count($allNotifs);
         /* Buttons */
         .btn-dark {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: #091113; color: #eeebe1;
+            background: var(--j-dark); color: var(--j-white);
             padding: 0.6rem 1.4rem; border-radius: 8px;
             font-size: 0.9rem; font-weight: 500; font-family: 'Prompt', sans-serif;
             border: none; cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             text-decoration: none;
         }
-        .btn-dark:hover  { background: #3a3e43; }
+        .btn-dark:hover  { background: var(--j-charcoal); }
         .btn-dark:active { transform: scale(0.97); }
 
         .btn-gold {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: #dab937; color: #091113;
+            background: var(--j-gold); color: var(--j-dark);
             padding: 0.6rem 1.4rem; border-radius: 8px;
             font-size: 0.9rem; font-weight: 600; font-family: 'Prompt', sans-serif;
             border: none; cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             text-decoration: none;
         }
-        .btn-gold:hover  { background: #c9a830; }
+        .btn-gold:hover  { background: var(--j-gold-dk); }
         .btn-gold:active { transform: scale(0.97); }
 
         .btn-outline {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: transparent; color: #091113;
+            background: transparent; color: var(--j-dark);
             padding: 0.6rem 1.4rem; border-radius: 8px;
             font-size: 0.9rem; font-weight: 500; font-family: 'Prompt', sans-serif;
-            border: 1.5px solid #3a3e43; cursor: pointer;
+            border: 1.5px solid var(--j-charcoal); cursor: pointer;
             transition: all 0.2s;
             text-decoration: none;
         }
-        .btn-outline:hover { background: #091113; color: #eeebe1; }
+        .btn-outline:hover { background: var(--j-dark); color: var(--j-white); }
 
         .btn-danger {
             display: inline-flex; align-items: center; gap: 0.5rem;
-            background: #d2592a; color: #fff;
+            background: var(--j-orange); color: #fff;
             padding: 0.6rem 1.4rem; border-radius: 8px;
             font-size: 0.9rem; font-weight: 500; font-family: 'Prompt', sans-serif;
             border: none; cursor: pointer;
@@ -315,20 +315,20 @@ $notifCount = count($allNotifs);
         .journal-input {
             width: 100%;
             background: #fff;
-            border: 1.5px solid #cecdcd;
+            border: 1.5px solid var(--j-silver);
             border-radius: 8px;
             padding: 0.65rem 1rem;
             font-size: 0.9rem;
             font-family: 'Prompt', sans-serif;
-            color: #091113;
+            color: var(--j-dark);
             transition: border-color 0.2s, box-shadow 0.2s;
         }
         .journal-input:focus {
             outline: none;
-            border-color: #dab937;
+            border-color: var(--j-gold);
             box-shadow: 0 0 0 3px rgba(218,185,55,0.15);
         }
-        .journal-input::placeholder { color: #6b6e77; }
+        .journal-input::placeholder { color: var(--j-slate); }
 
         /* Badge */
         .badge {
@@ -340,22 +340,22 @@ $notifCount = count($allNotifs);
 
         /* Section heading */
         .section-title {
-            font-size: 1.25rem; font-weight: 600; color: #091113;
+            font-size: 1.25rem; font-weight: 600; color: var(--j-dark);
             letter-spacing: -0.01em;
             padding-bottom: 0.5rem;
-            border-bottom: 2px solid #dab937;
+            border-bottom: 2px solid var(--j-gold);
             display: inline-block;
         }
 
         /* Divider */
-        .divider { border: none; border-top: 1px solid #cecdcd; margin: 1.5rem 0; }
+        .divider { border: none; border-top: 1px solid var(--j-silver); margin: 1.5rem 0; }
 
         /* Notification dot */
         .notif-dot {
             position: absolute; top: -4px; right: -4px;
             width: 10px; height: 10px;
-            background: #d2592a; border-radius: 50%;
-            border: 2px solid #091113;
+            background: var(--j-orange); border-radius: 50%;
+            border: 2px solid var(--j-dark);
         }
 
         /* Notification Bell Button */
@@ -365,13 +365,13 @@ $notifCount = count($allNotifs);
             background: transparent; border: none; cursor: pointer;
             color: #9ca3af; transition: color 0.15s, background 0.15s;
         }
-        .nav-notif-btn:hover { color: #eeebe1; background: #1a1f20; }
+        .nav-notif-btn:hover { color: var(--j-white); background: #1a1f20; }
         .nav-notif-badge {
             position: absolute; top: -5px; right: -5px;
             min-width: 18px; height: 18px; padding: 0 4px;
-            background: #d2592a; color: #fff;
+            background: var(--j-orange); color: #fff;
             font-size: 0.65rem; font-weight: 700; font-family: 'Prompt', sans-serif;
-            border-radius: 999px; border: 2px solid #091113;
+            border-radius: 999px; border: 2px solid var(--j-dark);
             display: flex; align-items: center; justify-content: center;
             animation: notif-badge-pop 0.4s cubic-bezier(0.16,1,0.3,1) both;
         }ไมท่ม
@@ -384,7 +384,7 @@ $notifCount = count($allNotifs);
         .nav-notif-dropdown {
             position: absolute; right: 0; top: calc(100% + 10px);
             width: 320px; max-height: 440px;
-            background: #0d1618; border: 1px solid #3a3e43;
+            background: var(--j-panel); border: 1px solid var(--j-charcoal);
             border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.55);
             overflow: hidden; z-index: 60;
             animation: notif-drop-in 0.2s ease both;
@@ -398,7 +398,7 @@ $notifCount = count($allNotifs);
             padding: 0.85rem 1rem 0.7rem;
             border-bottom: 1px solid #1f2b2e;
         }
-        .nav-notif-header-title { font-size: 0.82rem; font-weight: 700; color: #eeebe1; letter-spacing: 0.01em; }
+        .nav-notif-header-title { font-size: 0.82rem; font-weight: 700; color: var(--j-white); letter-spacing: 0.01em; }
         .nav-notif-header-count {
             font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.5rem;
             background: rgba(255,255,255,0.07); color: #8a8e97;
@@ -428,7 +428,7 @@ $notifCount = count($allNotifs);
             font-size: 0.82rem; font-weight: 600; color: #d8d4cb;
             margin: 0 0 0.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
-        .nav-notif-item-sub { font-size: 0.72rem; color: #6b6e77; margin: 0; line-height: 1.45; }
+        .nav-notif-item-sub { font-size: 0.72rem; color: var(--j-slate); margin: 0; line-height: 1.45; }
         .nav-notif-item-new {
             flex-shrink: 0; font-size: 0.62rem; font-weight: 700;
             background: rgba(255,255,255,0.07); color: #8a8e97;
@@ -437,7 +437,7 @@ $notifCount = count($allNotifs);
         }
         .nav-notif-footer-link {
             display: block; text-align: center; padding: 0.7rem;
-            font-size: 0.78rem; font-weight: 600; color: #dab937;
+            font-size: 0.78rem; font-weight: 600; color: var(--j-gold);
             border-top: 1px solid #1f2b2e; text-decoration: none;
             transition: background 0.12s;
         }
@@ -479,7 +479,7 @@ $notifCount = count($allNotifs);
         #app-toast.toast-success { background: rgba(20,44,26,0.94); border: 1px solid rgba(81,142,92,0.5);  color: #7ec98a; }
         #app-toast.toast-error   { background: rgba(52,18,10,0.94); border: 1px solid rgba(210,89,42,0.5);  color: #e07a55; }
         #app-toast.toast-info    { background: rgba(14,30,70,0.94); border: 1px solid rgba(79,139,152,0.5); color: #5fa8ba; }
-        #app-toast.toast-warning { background: rgba(50,40,10,0.94); border: 1px solid rgba(218,185,55,0.5); color: #dab937; }
+        #app-toast.toast-warning { background: rgba(50,40,10,0.94); border: 1px solid rgba(218,185,55,0.5); color: var(--j-gold); }
     </style>
 </head>
 
@@ -488,7 +488,7 @@ $notifCount = count($allNotifs);
     <!-- ===================================================
          NAVIGATION BAR
          =================================================== -->
-    <nav style="background-color:#091113;" class="sticky top-0 z-50" id="main-nav">
+    <nav style="background-color:var(--j-dark);" class="sticky top-0 z-50" id="main-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 
@@ -502,11 +502,11 @@ $notifCount = count($allNotifs);
                          alt="JOURNAL"
                          class="nav-logo h-20 w-auto">
                     <?php if ($isAdmin): ?>
-                    <span class="badge text-xs" style="background:#62307a; color:#eeebe1;">Admin</span>
+                    <span class="badge text-xs" style="background:#62307a; color:var(--j-white);">Admin</span>
                     <?php elseif ($isHr): ?>
-                    <span class="badge text-xs" style="background:#4f8b98; color:#eeebe1;">HR</span>
+                    <span class="badge text-xs" style="background:#4f8b98; color:var(--j-white);">HR</span>
                     <?php elseif ($isIt): ?>
-                    <span class="badge text-xs" style="background:#2f4e9d; color:#eeebe1;">IT</span>
+                    <span class="badge text-xs" style="background:#2f4e9d; color:var(--j-white);">IT</span>
                     <?php endif; ?>
                 </div>
 
@@ -548,13 +548,13 @@ $notifCount = count($allNotifs);
                     ?>
                     <a href="<?php echo $link['href']; ?>"
                        class="relative flex items-center gap-1.5 px-4 py-5 text-sm font-medium transition-colors <?php echo $isActive ? 'nav-active' : ''; ?>"
-                       style="color:<?php echo $isActive ? '#dab937' : '#9ca3af'; ?>;"
+                       style="color:<?php echo $isActive ? 'var(--j-gold)' : '#9ca3af'; ?>;"
                        onmouseover="if(!this.classList.contains('nav-active')) this.style.color='#eeebe1'"
                        onmouseout="if(!this.classList.contains('nav-active')) this.style.color='#9ca3af'">
                         <?php echo $link['label']; ?>
                         <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
                         <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full font-bold"
-                              style="background:#d2592a; color:#fff;"><?php echo $link['badge']; ?></span>
+                              style="background:var(--j-orange); color:#fff;"><?php echo $link['badge']; ?></span>
                         <?php endif; ?>
                     </a>
                     <?php endforeach; ?>
@@ -567,9 +567,9 @@ $notifCount = count($allNotifs);
                     <!-- Token Balance — แสดงเมื่ออยู่ใน employee zone -->
                     <?php if (!$isAdminPage || !$isAdminOrHr): ?>
                     <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
-                         style="background:#1a1f20; border: 1px solid #3a3e43;">
+                         style="background:#1a1f20; border: 1px solid var(--j-charcoal);">
                         <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
-                        <span class="text-sm font-semibold" id="nav-balance" style="color:#dab937;"><?php echo formatTokens($navBalance); ?></span>
+                        <span class="text-sm font-semibold" id="nav-balance" style="color:var(--j-gold);"><?php echo formatTokens($navBalance); ?></span>
                     </div>
                     <?php endif; ?>
 
@@ -665,7 +665,7 @@ $notifCount = count($allNotifs);
                             <!-- Avatar -->
                             <?php $_navAvatar = $_SESSION['avatar_url'] ?? ''; ?>
                             <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden"
-                                 style="background:#dab937; color:#091113;">
+                                 style="background:var(--j-gold); color:var(--j-dark);">
                                 <?php if ($_navAvatar): ?>
                                 <img src="<?php echo uploadImgUrl('avatars', $_navAvatar); ?>"
                                      alt="" style="width:100%;height:100%;object-fit:cover;">
@@ -673,7 +673,7 @@ $notifCount = count($allNotifs);
                                 <?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1, 'UTF-8'); ?>
                                 <?php endif; ?>
                             </div>
-                            <span class="hidden sm:block text-sm font-medium max-w-[120px] truncate" style="color:#eeebe1;">
+                            <span class="hidden sm:block text-sm font-medium max-w-[120px] truncate" style="color:var(--j-white);">
                                 <?php echo e($_SESSION['full_name'] ?? ''); ?>
                             </span>
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -684,13 +684,13 @@ $notifCount = count($allNotifs);
                         <!-- Dropdown -->
                         <div id="user-dropdown"
                              class="hidden absolute right-0 mt-2 w-52 rounded-xl shadow-2xl overflow-hidden z-50"
-                             style="background:#0d1618; border:1px solid #3a3e43;">
+                             style="background:var(--j-panel); border:1px solid var(--j-charcoal);">
                             <!-- User info -->
-                            <div class="px-4 py-3 border-b" style="border-color:#3a3e43;">
-                                <p class="text-sm font-medium" style="color:#eeebe1;"><?php echo e($_SESSION['full_name'] ?? ''); ?></p>
-                                <p class="text-xs mt-0.5" style="color:#6b6e77;"><?php echo e($_SESSION['employee_code'] ?? ''); ?></p>
+                            <div class="px-4 py-3 border-b" style="border-color:var(--j-charcoal);">
+                                <p class="text-sm font-medium" style="color:var(--j-white);"><?php echo e($_SESSION['full_name'] ?? ''); ?></p>
+                                <p class="text-xs mt-0.5" style="color:var(--j-slate);"><?php echo e($_SESSION['employee_code'] ?? ''); ?></p>
                                 <?php if (!$isAdmin): ?>
-                                <p class="text-xs mt-1 font-semibold" style="color:#dab937;">
+                                <p class="text-xs mt-1 font-semibold" style="color:var(--j-gold);">
                                     <?php echo formatTokens($navBalance); ?> token
                                 </p>
                                 <?php endif; ?>
@@ -701,7 +701,7 @@ $notifCount = count($allNotifs);
                             <?php if ($isAdminPage): ?>
                             <a href="<?php echo BASE_URL; ?>/pages/dashboard.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
-                               style="color:#9ca3af; border-color:#3a3e43;"
+                               style="color:#9ca3af; border-color:var(--j-charcoal);"
                                onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
                                onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -713,7 +713,7 @@ $notifCount = count($allNotifs);
                             <?php else: ?>
                             <a href="<?php echo BASE_URL; ?>/hr/submissions.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
-                               style="color:#9ca3af; border-color:#3a3e43;"
+                               style="color:#9ca3af; border-color:var(--j-charcoal);"
                                onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
                                onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -727,7 +727,7 @@ $notifCount = count($allNotifs);
                             <?php if (!$isAdmin): ?>
                             <a href="<?php echo BASE_URL; ?>/pages/profile.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
-                               style="color:#9ca3af; border-color:#3a3e43;"
+                               style="color:#9ca3af; border-color:var(--j-charcoal);"
                                onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
                                onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -738,7 +738,7 @@ $notifCount = count($allNotifs);
                             </a>
                             <a href="<?php echo BASE_URL; ?>/pages/strava_dashboard.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
-                               style="color:#9ca3af; border-color:#3a3e43;"
+                               style="color:#9ca3af; border-color:var(--j-charcoal);"
                                onmouseover="this.style.color='#FC4C02'; this.style.background='#1a1f20'"
                                onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -749,7 +749,7 @@ $notifCount = count($allNotifs);
                             <?php endif; ?>
                             <a href="<?php echo BASE_URL; ?>/pages/help.php"
                                class="flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b"
-                               style="color:#9ca3af; border-color:#3a3e43;"
+                               style="color:#9ca3af; border-color:var(--j-charcoal);"
                                onmouseover="this.style.color='#eeebe1'; this.style.background='#1a1f20'"
                                onmouseout="this.style.color='#9ca3af'; this.style.background='transparent'">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -786,24 +786,24 @@ $notifCount = count($allNotifs);
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden border-t" style="border-color:#3a3e43; background:#091113;">
+        <div id="mobile-menu" class="hidden md:hidden border-t" style="border-color:var(--j-charcoal); background:var(--j-dark);">
             <div class="px-4 py-3 space-y-1">
                 <?php foreach ($navLinks as $key => $link): ?>
                 <a href="<?php echo $link['href']; ?>"
                    class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
-                   style="color:<?php echo ($currentActive === $key) ? '#dab937' : '#9ca3af'; ?>;
+                   style="color:<?php echo ($currentActive === $key) ? 'var(--j-gold)' : '#9ca3af'; ?>;
                           background:<?php echo ($currentActive === $key) ? '#1a1f20' : 'transparent'; ?>;">
                     <?php echo $link['label']; ?>
                     <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
-                    <span class="px-1.5 py-0.5 text-xs rounded-full font-bold" style="background:#d2592a; color:#fff;"><?php echo $link['badge']; ?></span>
+                    <span class="px-1.5 py-0.5 text-xs rounded-full font-bold" style="background:var(--j-orange); color:#fff;"><?php echo $link['badge']; ?></span>
                     <?php endif; ?>
                 </a>
                 <?php endforeach; ?>
                 <!-- Token balance on mobile -->
                 <?php if (!$isAdmin): ?>
                 <div class="flex items-center gap-2 px-3 py-2 mt-2 rounded-lg" style="background:#1a1f20;">
-                    <span class="text-xs" style="color:#6b6e77;">Token ของคุณ:</span>
-                    <span class="text-sm font-semibold" style="color:#dab937;"><?php echo formatTokens($navBalance); ?></span>
+                    <span class="text-xs" style="color:var(--j-slate);">Token ของคุณ:</span>
+                    <span class="text-sm font-semibold" style="color:var(--j-gold);"><?php echo formatTokens($navBalance); ?></span>
                 </div>
                 <?php endif; ?>
             </div>
