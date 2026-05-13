@@ -138,15 +138,14 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="hy-wallet-grid">
             <?php
             $walletStats = [
-                ['label' => 'รับทั้งหมด',    'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c',  'border' => 'rgba(81,142,92,0.55)',  'icon' => '↑', 'sub' => '+'],
-                ['label' => 'ใช้ไปทั้งหมด',  'value' => formatTokens($wallet['total_spent']),  'color' => '#d2592a',  'border' => 'rgba(210,89,42,0.50)',  'icon' => '↓', 'sub' => '−'],
-                ['label' => 'รายการทั้งหมด', 'value' => (string)(count($txAll)),                'color' => '#cecdcd',  'border' => 'rgba(206,205,205,0.35)', 'icon' => '◊', 'sub' => ''],
+                ['label' => 'รับทั้งหมด',    'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c',  'border' => 'rgba(81,142,92,0.22)',   'icon' => '↑', 'sub' => '+'],
+                ['label' => 'ใช้ไปทั้งหมด',  'value' => formatTokens($wallet['total_spent']),  'color' => '#d2592a',  'border' => 'rgba(210,89,42,0.20)',   'icon' => '↓', 'sub' => '−'],
+                ['label' => 'รายการทั้งหมด', 'value' => (string)(count($txAll)),                'color' => '#cecdcd',  'border' => 'rgba(206,205,205,0.15)', 'icon' => '◊', 'sub' => ''],
             ];
             foreach ($walletStats as $ws):
             ?>
             <div style="background:rgba(255,255,255,0.025);
-                        border:1px solid rgba(255,255,255,0.08);
-                        border-left:3px solid <?= $ws['border'] ?>;
+                        border:1px solid <?= $ws['border'] ?>;
                         border-radius:14px; padding:1.1rem 1.25rem; backdrop-filter:blur(8px);">
                 <div style="display:flex; align-items:center; gap:0.45rem; margin-bottom:0.45rem;">
                     <span style="font-size:0.95rem; color:<?= $ws['color'] ?>; line-height:1; opacity:0.7;"><?= $ws['icon'] ?></span>

@@ -106,10 +106,10 @@ elseif ($hour < 17)  $greeting = 'สวัสดีตอนบ่าย';
 else                 $greeting = 'สวัสดีตอนเย็น';
 
 $statusLabel = [
-    'pending'       => ['text' => 'รอ Approve',  'color' => '#b45309', 'bg' => '#fffbeb', 'bar' => '#f59e0b'],
-    'approved'      => ['text' => 'อนุมัติแล้ว', 'color' => '#166534', 'bg' => '#f0fdf4', 'bar' => '#22c55e'],
-    'auto_approved' => ['text' => 'ผ่านแล้ว',    'color' => '#166534', 'bg' => '#f0fdf4', 'bar' => '#22c55e'],
-    'rejected'      => ['text' => 'ไม่ผ่าน',     'color' => '#9f1239', 'bg' => '#fff1f2', 'bar' => '#f43f5e'],
+    'pending'       => ['text' => 'รอ Approve',  'color' => '#dab937', 'bg' => 'rgba(218,185,55,0.10)', 'bar' => '#dab937'],
+    'approved'      => ['text' => 'อนุมัติแล้ว', 'color' => '#518e5c', 'bg' => 'rgba(81,142,92,0.12)',  'bar' => '#518e5c'],
+    'auto_approved' => ['text' => 'ผ่านแล้ว',    'color' => '#518e5c', 'bg' => 'rgba(81,142,92,0.12)',  'bar' => '#518e5c'],
+    'rejected'      => ['text' => 'ไม่ผ่าน',     'color' => '#d2592a', 'bg' => 'rgba(210,89,42,0.10)', 'bar' => '#d2592a'],
 ];
 
 $pageTitle  = 'Dashboard';

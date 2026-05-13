@@ -369,10 +369,10 @@ $flash    = getFlash();
 $noToast  = true; // all flash types handled by inline modals/cards
 
 $statusLabel = [
-    'pending'       => ['text' => 'รอ Approve',  'bg' => '#fef9c3', 'color' => '#854d0e'],
-    'approved'      => ['text' => 'อนุมัติแล้ว', 'bg' => '#dcfce7', 'color' => '#166534'],
-    'auto_approved' => ['text' => 'ผ่านแล้ว',    'bg' => '#dcfce7', 'color' => '#166534'],
-    'rejected'      => ['text' => 'ไม่ผ่าน',      'bg' => '#fee2e2', 'color' => '#991b1b'],
+    'pending'       => ['text' => 'รอ Approve',  'bg' => 'rgba(218,185,55,0.10)',  'color' => '#dab937'],
+    'approved'      => ['text' => 'อนุมัติแล้ว', 'bg' => 'rgba(81,142,92,0.12)',   'color' => '#518e5c'],
+    'auto_approved' => ['text' => 'ผ่านแล้ว',    'bg' => 'rgba(81,142,92,0.12)',   'color' => '#518e5c'],
+    'rejected'      => ['text' => 'ไม่ผ่าน',      'bg' => 'rgba(210,89,42,0.10)',  'color' => '#d2592a'],
 ];
 
 $pageTitle  = 'ภารกิจ';

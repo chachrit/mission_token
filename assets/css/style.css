@@ -46,6 +46,12 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
 }
+
+:focus-visible {
+    outline: 2px solid var(--j-gold);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
 /* Login page — dark full-screen centered */
 body.layout-login {
     background-color: #091113;
@@ -106,12 +112,8 @@ body.layout-login {
    Typography
 --------------------------------------------------------------- */
 .text-shimmer {
-    background: linear-gradient(90deg, var(--j-gold) 0%, var(--j-gold-l) 45%, var(--j-gold-dk) 55%, var(--j-gold) 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: shimmer 3s linear infinite;
+    color: var(--j-gold);
+    font-weight: 700;
 }
 
 /* ---------------------------------------------------------------
