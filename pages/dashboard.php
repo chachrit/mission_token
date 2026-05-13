@@ -158,17 +158,17 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php endif; ?>
                     </div>
                     <div class="ds-id-info">
-                        <p class="ds-id-eyebrow"><?= e($greeting) ?><span class="ds-id-dot">·</span>OPERATIVE</p>
+                        <p class="ds-id-eyebrow"><?= e($greeting) ?><span class="ds-id-dot">·</span>ผู้ปฏิบัติภารกิจ</p>
                         <h1 class="ds-id-name"><?= e($employeeName) ?></h1>
                         <div class="ds-id-badges">
                             <?php if ($streak > 0): ?>
                             <span class="ds-badge-streak">
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M13.5 0.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67z"/></svg>
-                                <?= $streak ?> DAY STREAK
+                                <?= $streak ?> วันติดต่อกัน
                             </span>
                             <?php endif; ?>
                             <?php if ($myRank > 0): ?>
-                            <span class="ds-badge-rank">RANK #<?= $myRank ?></span>
+                            <span class="ds-badge-rank">อันดับ #<?= $myRank ?></span>
                             <?php endif; ?>
                         </div>
                         <?php if ($tenure): ?>
@@ -185,18 +185,18 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Right: balance -->
                 <div class="ds-id-right">
-                    <p class="ds-id-bal-label">ASSET BALANCE</p>
+                    <p class="ds-id-bal-label">ยอด Token คงเหลือ</p>
                     <span class="ds-id-bal-num" data-countup="<?= (int)$wallet['balance'] ?>" data-dur="1800">0</span>
                     <p class="ds-id-bal-unit">TOKEN</p>
                     <div class="ds-id-substats">
                         <div>
                             <p class="ds-id-subval">+<?= formatTokens((int)$wallet['total_earned']) ?></p>
-                            <p class="ds-id-sublbl">RECEIVED</p>
+                            <p class="ds-id-sublbl">รับแล้ว</p>
                         </div>
                         <div class="ds-id-sdiv"></div>
                         <div>
                             <p class="ds-id-subval ds-id-subval--spent"><?= formatTokens((int)$wallet['total_spent']) ?></p>
-                            <p class="ds-id-sublbl">SPENT</p>
+                            <p class="ds-id-sublbl">ใช้ไป</p>
                         </div>
                     </div>
                 </div>

@@ -734,6 +734,13 @@ require_once __DIR__ . '/../includes/header.php';
         document.getElementById('quiz-form').addEventListener('submit', function (e) {
             e.preventDefault();
             const form = this;
+
+            // Confirmation: quiz is one-attempt only
+            const confirmed = window.confirm(
+                'ยืนยันการส่งคำตอบ?\n\nคุณมีสิทธิ์ทำ Quiz นี้ได้เพียง 1 ครั้ง ไม่สามารถแก้ไขหรือลองใหม่ได้'
+            );
+            if (!confirmed) return;
+
             const dotsTimer = showProcessingModal();
             function doSubmit() { clearInterval(dotsTimer); form.submit(); }
             function fireAndSubmit() {
