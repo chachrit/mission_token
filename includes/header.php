@@ -389,6 +389,12 @@ $notifCount = count($allNotifs);
             overflow: hidden; z-index: 60;
             animation: notif-drop-in 0.2s ease both;
         }
+        @media (max-width: 480px) {
+            .nav-notif-dropdown {
+                position: fixed; left: 1rem; right: 1rem; top: 4.25rem;
+                width: auto; max-width: none; border-radius: 14px;
+            }
+        }
         @keyframes notif-drop-in {
             from { opacity: 0; transform: translateY(-6px) scale(0.98); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
