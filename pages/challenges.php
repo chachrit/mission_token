@@ -828,7 +828,7 @@ require_once __DIR__ . '/../includes/header.php';
             $_ed        = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
             $_daysLeft  = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
         ?>
-        <div class="ch-quest-flip-scene" data-cid="<?= $cid ?>" data-sid="<?= (int)$ch['my_sub_id'] ?>"<?= $isRejected ? ' data-rejected' : '' ?>>
+        <div class="ch-quest-flip-scene" data-cid="<?= $cid ?>" data-type="<?= e($ch['type']) ?>" data-sid="<?= (int)$ch['my_sub_id'] ?>"<?= $isRejected ? ' data-rejected' : '' ?>>
             <div class="ch-flip-card" id="flip-<?= $cid ?>">
 
                 <!-- ── FRONT FACE ── -->
@@ -913,6 +913,11 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"
                          <?php if ($ch['type'] === 'strava'): ?>style="background:linear-gradient(90deg,#FC4C02,#e04400);"<?php endif; ?>></div>
                     <div class="ch-flip-back-body">
+                        <!-- Touch close button (pointer: coarse only — see style.css) -->
+                        <button type="button" class="ch-flip-back-close" aria-label="ย้อนกลับ">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                            ย้อนกลับ
+                        </button>
                         <!-- Header: type badge -->
                         <div class="ch-flip-back-header">
                             <?php if ($ch['type'] === 'strava'): ?>
@@ -1659,5 +1664,34 @@ require_once __DIR__ . '/../includes/header.php';
 </div><!-- /max-w-7xl -->
 </div><!-- /ds-page-inner -->
 </div><!-- /ch-challenges-wrap -->
+
+<script>
+// ── Touch flip: tap front → flip card, tap close button → unflip
+// Only runs on touch/coarse pointer devices; hover devices keep CSS-only flip
+(function () {
+    var isTouch = window.matchMedia('(pointer: coarse)').matches;
+    if (!isTouch) return;
+
+    document.querySelectorAll('.ch-quest-flip-scene').forEach(function (scene) {
+        // Tap on front face → add .is-flipped
+        var front = scene.querySelector('.ch-flip-front');
+        if (front) {
+            front.addEventListener('click', function (e) {
+                if (e.target.closest('a,button,input,label,select,textarea')) return;
+                scene.classList.add('is-flipped');
+            });
+        }
+
+        // Tap close button → remove .is-flipped (stopPropagation prevents back onclick)
+        var closeBtn = scene.querySelector('.ch-flip-back-close');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                scene.classList.remove('is-flipped');
+            });
+        }
+    });
+}());
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

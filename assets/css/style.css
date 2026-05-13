@@ -2266,8 +2266,11 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     transform-style: preserve-3d;
     transition: transform 0.72s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-/* Hover on the scene flips the card — pure CSS, no JS required */
-.ch-quest-flip-scene:hover .ch-flip-card { transform: rotateY(180deg); }
+/* Hover flips card on pointer devices; .is-flipped used by JS on touch */
+@media (hover: hover) {
+    .ch-quest-flip-scene:hover .ch-flip-card { transform: rotateY(180deg); }
+}
+.ch-quest-flip-scene.is-flipped .ch-flip-card { transform: rotateY(180deg); }
 
 /* ============================================================
    PROFILE PAGE  (pf-*)
@@ -2702,28 +2705,67 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     display: flex;
     flex-direction: column;
 }
-/* Front: suppress individual hover-lift (scene handles interaction) */
-.ch-flip-front.ch-quest-card:hover,
-.ch-flip-front.ch-quest-card--rejected:hover {
-    transform: none;
-    box-shadow: 0 4px 24px rgba(9,17,19,0.30);
-    border-color: rgba(255,255,255,0.08);
+/* Front: suppress individual hover-lift on pointer devices */
+@media (hover: hover) {
+    .ch-flip-front.ch-quest-card:hover,
+    .ch-flip-front.ch-quest-card--rejected:hover {
+        transform: none;
+        box-shadow: 0 4px 24px rgba(9,17,19,0.30);
+        border-color: rgba(255,255,255,0.08);
+    }
+    /* Kill front pointer events when hovered */
+    .ch-quest-flip-scene:hover .ch-flip-front {
+        pointer-events: none;
+    }
 }
-/* Front face is hidden when scene is hovered — also kill pointer events */
-.ch-quest-flip-scene:hover .ch-flip-front {
+/* Kill front pointer events when JS-flipped (touch) */
+.ch-quest-flip-scene.is-flipped .ch-flip-front {
     pointer-events: none;
 }
 /* Back face */
-.ch-flip-back.ch-quest-card       { transform: rotateY(180deg); overflow-y: auto; }
-.ch-flip-back.ch-quest-card:hover { transform: rotateY(180deg); } /* keep rotated */
-/* Back face glow on reveal */
-.ch-quest-flip-scene:hover .ch-flip-back.ch-quest-card {
+.ch-flip-back.ch-quest-card { transform: rotateY(180deg); overflow-y: auto; }
+@media (hover: hover) {
+    .ch-flip-back.ch-quest-card:hover { transform: rotateY(180deg); }
+    /* Back face glow on hover reveal */
+    .ch-quest-flip-scene:hover .ch-flip-back.ch-quest-card {
+        box-shadow: 0 28px 60px rgba(9,17,19,0.55), 0 0 32px rgba(218,185,55,0.20);
+        border-color: rgba(218,185,55,0.38);
+    }
+    .ch-quest-flip-scene:hover .ch-flip-back.ch-quest-card--rejected {
+        box-shadow: 0 28px 60px rgba(9,17,19,0.55), 0 0 24px rgba(210,89,42,0.25);
+        border-color: rgba(210,89,42,0.48);
+    }
+}
+/* Back face glow on JS-flip reveal (touch) */
+.ch-quest-flip-scene.is-flipped .ch-flip-back.ch-quest-card {
     box-shadow: 0 28px 60px rgba(9,17,19,0.55), 0 0 32px rgba(218,185,55,0.20);
     border-color: rgba(218,185,55,0.38);
 }
-.ch-quest-flip-scene:hover .ch-flip-back.ch-quest-card--rejected {
+.ch-quest-flip-scene.is-flipped .ch-flip-back.ch-quest-card--rejected {
     box-shadow: 0 28px 60px rgba(9,17,19,0.55), 0 0 24px rgba(210,89,42,0.25);
     border-color: rgba(210,89,42,0.48);
+}
+/* Close/back button — only shown on touch (pointer: coarse) */
+.ch-flip-back-close {
+    display: none;
+}
+@media (pointer: coarse) {
+    .ch-flip-back-close {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        align-self: flex-start;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        color: var(--j-slate);
+        cursor: pointer;
+        margin-bottom: 0.75rem;
+        font-family: 'Prompt', sans-serif;
+    }
 }
 /* ── Front face: mystery / teaser layout ── */
 .ch-front-token-hero {
