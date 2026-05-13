@@ -7,6 +7,14 @@
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+function hyThaiDate(string $dateStr, bool $withTime = false): string {
+    $ts = strtotime($dateStr);
+    $m  = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    $out = (int)date('j',$ts) . ' ' . $m[(int)date('n',$ts)] . ' ' . ((int)date('Y',$ts)+543);
+    if ($withTime) $out .= ' ' . date('H:i',$ts);
+    return $out;
+}
+
 $employeeId = (int)$_SESSION['employee_id'];
 $pdo        = getDB();
 
@@ -132,7 +140,7 @@ require_once __DIR__ . '/../includes/header.php';
             $walletStats = [
                 ['label' => 'รับทั้งหมด',    'value' => formatTokens($wallet['total_earned']), 'color' => '#518e5c',  'border' => 'rgba(81,142,92,0.55)',  'icon' => '↑', 'sub' => '+'],
                 ['label' => 'ใช้ไปทั้งหมด',  'value' => formatTokens($wallet['total_spent']),  'color' => '#d2592a',  'border' => 'rgba(210,89,42,0.50)',  'icon' => '↓', 'sub' => '−'],
-                ['label' => 'รายการทั้งหมด', 'value' => (string)(count($txAll)),                'color' => '#4f8b98',  'border' => 'rgba(79,139,152,0.50)', 'icon' => '◊', 'sub' => ''],
+                ['label' => 'รายการทั้งหมด', 'value' => (string)(count($txAll)),                'color' => '#cecdcd',  'border' => 'rgba(206,205,205,0.35)', 'icon' => '◊', 'sub' => ''],
             ];
             foreach ($walletStats as $ws):
             ?>
@@ -294,12 +302,9 @@ require_once __DIR__ . '/../includes/header.php';
                         <?= e($q['challenge_title']) ?>
                     </p>
                     <p style="font-size:0.70rem; color:#6b6e77; margin:0;">
-                        <?= date('d/m/y', strtotime($q['submitted_at'])) ?>
+                        <?= hyThaiDate($q['submitted_at']) ?>
                         <?php if (!empty($q['review_note'])): ?>
                         · <?= e($q['review_note']) ?>
-                        <?php endif; ?>
-                        <?php if (!empty($q['reviewed_by_name']) && in_array($q['status'], ['approved','rejected'])): ?>
-                        · <span style="color:rgba(218,185,55,0.55);">อนุมัติโดย <?= e($q['reviewed_by_name']) ?></span>
                         <?php endif; ?>
                     </p>
                 </div>
@@ -370,7 +375,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </span>
                     </div>
                     <span style="font-size:0.73rem; color:#9ca3af; white-space:nowrap;">
-                        <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
+                        <?= hyThaiDate($rd['redeemed_at']) ?>
                     </span>
                     <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
                                  border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
@@ -615,7 +620,7 @@ foreach ($txAll as $_tx) {
         'type'   => $_typeLabel,
         'amount' => $_amt,
         'note'   => (string)($_tx['note'] ?? ''),
-        'at'     => date('d/m/Y H:i', strtotime((string)$_tx['created_at'])),
+        'at'     => hyThaiDate((string)$_tx['created_at'], true),
     ];
 }
 $hyQuestData = [];
@@ -625,7 +630,7 @@ foreach ($quizHistory as $_q) {
         'ctype'    => $_q['challenge_type'],
         'status'   => $_q['status'],
         'token'    => (int)$_q['token_awarded'],
-        'at'       => date('d/m/Y H:i', strtotime((string)$_q['submitted_at'])),
+        'at'       => hyThaiDate((string)$_q['submitted_at'], true),
         'note'     => (string)($_q['review_note'] ?? ''),
         'reviewer' => (string)($_q['reviewed_by_name'] ?? ''),
     ];
@@ -638,8 +643,8 @@ foreach ($redemptions as $_rd) {
         'emoji'  => 'R',
         'tokens' => (int)$_rd['tokens_spent'],
         'status' => $_rd['status'],
-        'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
-        'procAt' => $_rd['processed_at'] ? date('d/m/Y H:i', strtotime((string)$_rd['processed_at'])) : null,
+        'reqAt'  => hyThaiDate((string)$_rd['redeemed_at'], true),
+        'procAt' => $_rd['processed_at'] ? hyThaiDate((string)$_rd['processed_at'], true) : null,
         'note'   => (string)($_rd['admin_note'] ?? ''),
         'procBy' => (string)($_rd['processed_by_name'] ?? ''),
         'coupon' => ($_rd['status'] === 'fulfilled') ? (string)($_rd['coupon_code'] ?? '') : '',
@@ -768,7 +773,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                     <span id="hyq-ctype" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
                                 border-radius:999px; border:1px solid rgba(79,139,152,0.35);
-                                background:rgba(79,139,152,0.10); color:#4f8b98;"></span>
+                                background:rgba(255,255,255,0.07); color:#cecdcd; border:1px solid rgba(255,255,255,0.15);"></span>
                     <span id="hyq-status" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
                                 border-radius:999px;"></span>
                 </div>
@@ -785,11 +790,15 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                     <p id="hyq-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
                 </div>
             </div>
-            <div id="hyq-note-wrap" class="hy-ibox" style="display:none; border-color:rgba(79,139,152,0.22); background:rgba(79,139,152,0.07);">
+            <div id="hyq-reviewer-wrap" class="hy-ibox" style="display:none;">
+                <p id="hyq-reviewer-lbl" style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
+                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">อนุมัติโดย</p>
+                <p id="hyq-reviewer" style="font-size:0.83rem; font-weight:600; color:#eeebe1; margin:0;"></p>
+            </div>
+            <div class="hy-ibox">
                 <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจากผู้ตรวจ</p>
+                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.3rem;">หมายเหตุ</p>
                 <p id="hyq-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
-                <p id="hyq-reviewer" style="font-size:0.72rem; color:#6b6e77; margin:0.3rem 0 0; display:none;"></p>
             </div>
         </div>
     </div>
@@ -840,9 +849,9 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                     <p id="hyrd-proc-by" style="font-size:0.70rem; color:#6b6e77; margin:0.2rem 0 0; display:none;"></p>
                 </div>
             </div>
-            <div id="hyrd-note-wrap" class="hy-ibox" style="display:none; border-color:rgba(79,139,152,0.22); background:rgba(79,139,152,0.07);">
+            <div id="hyrd-note-wrap" class="hy-ibox" style="display:none;">
                 <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจาก HR</p>
+                           text-transform:uppercase; color:#6b6e77; margin:0 0 0.3rem;">หมายเหตุจาก HR</p>
                 <p id="hyrd-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
             </div>
             <div id="hyrd-coupon-sec" style="display:none;">
@@ -942,13 +951,16 @@ function openHyQuestModal(subId) {
     if (d.token > 0) { tkEl.textContent = '+' + d.token.toLocaleString() + ' Token'; tkEl.style.color = '#dab937'; }
     else               { tkEl.textContent = '—'; tkEl.style.color = '#3a3e43'; }
     document.getElementById('hyq-at').textContent = d.at;
-    var nw = document.getElementById('hyq-note-wrap');
-    if (d.note || d.reviewer) {
-        if (d.note) document.getElementById('hyq-note').textContent = d.note;
-        var rvEl = document.getElementById('hyq-reviewer');
-        if (d.reviewer) { rvEl.textContent = 'โดย ' + d.reviewer; rvEl.style.display = 'block'; } else { rvEl.style.display = 'none'; }
-        nw.style.display = d.note ? 'block' : 'none';
-    } else { nw.style.display = 'none'; }
+    // reviewer box
+    var rvWrap = document.getElementById('hyq-reviewer-wrap');
+    var rvEl   = document.getElementById('hyq-reviewer');
+    if (d.reviewer) {
+        document.getElementById('hyq-reviewer-lbl').textContent = d.status === 'rejected' ? 'ไม่อนุมัติโดย' : 'อนุมัติโดย';
+        rvEl.textContent = d.reviewer;
+        rvWrap.style.display = 'block';
+    } else { rvWrap.style.display = 'none'; }
+    // note (always shown)
+    document.getElementById('hyq-note').textContent = d.note || '—';
     _hyOpen('quest');
 }
 

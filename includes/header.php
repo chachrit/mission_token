@@ -216,6 +216,7 @@ $notifCount = count($allNotifs);
                 }
             }
         }
+    }
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -373,7 +374,7 @@ $notifCount = count($allNotifs);
             border-radius: 999px; border: 2px solid #091113;
             display: flex; align-items: center; justify-content: center;
             animation: notif-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-        }
+        }ไมท่ม
         @keyframes notif-badge-pop {
             from { transform: scale(0); opacity: 0; }
             to   { transform: scale(1); opacity: 1; }

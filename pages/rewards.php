@@ -1210,7 +1210,7 @@ foreach ($myRedemptions as $_rd) {
     ];
 }
 ?>
-<script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE) ?>;</script>
+<script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>;</script>
 
 <style>
 @keyframes _rdCardIn {
