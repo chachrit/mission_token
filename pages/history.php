@@ -176,16 +176,28 @@ require_once __DIR__ . '/../includes/header.php';
         <div style="display:flex; gap:0.5rem; margin-bottom:1.5rem; flex-wrap:wrap;">
             <?php
             $tabs = [
-                'token' => ['label' => 'Token',   'icon' => '◈', 'count' => count($txAll)],
-                'quest' => ['label' => 'ภารกิจ',  'icon' => '◎', 'count' => count($quizHistory)],
-                'reward'=> ['label' => 'รางวัล',  'icon' => '◇', 'count' => count($redemptions)],
+                'token' => [
+                    'label' => 'Token',
+                    'count' => count($txAll),
+                    'svg'   => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><line x1="4" y1="20" x2="20" y2="20"/><rect x="6" y="11" width="3" height="7"/><rect x="11" y="7" width="3" height="11"/><rect x="16" y="4" width="3" height="14"/></svg>',
+                ],
+                'quest' => [
+                    'label' => 'ภารกิจ',
+                    'count' => count($quizHistory),
+                    'svg'   => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="m9 14 2 2 4-4"/></svg>',
+                ],
+                'reward' => [
+                    'label' => 'รางวัล',
+                    'count' => count($redemptions),
+                    'svg'   => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>',
+                ],
             ];
             foreach ($tabs as $key => $t):
             ?>
             <button id="tab-<?= $key ?>" onclick="switchTab('<?= $key ?>')"
                     class="hy-tab <?= $key === 'token' ? 'hy-tab--active' : '' ?>"
                     style="display:flex; align-items:center; gap:0.4rem;">
-                <span style="font-size:0.75rem; opacity:0.7;"><?= $t['icon'] ?></span>
+                <span style="display:inline-flex; opacity:0.75;"><?= $t['svg'] ?></span>
                 <?= $t['label'] ?>
                 <span class="hy-tab-badge"><?= $t['count'] ?></span>
             </button>
@@ -351,8 +363,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
                              gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                        <span style="font-size:1.2rem; flex-shrink:0; line-height:1; user-select:none;">
-                            R
+                        <span style="flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;
+                                     width:32px; height:32px; border-radius:9px;
+                                     background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
+                                     color:rgba(218,185,55,0.75); line-height:1; user-select:none;">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
                         </span>
                         <div style="min-width:0;">
                             <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;

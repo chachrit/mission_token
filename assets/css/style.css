@@ -1257,7 +1257,7 @@ body:has(.ds-dashboard-wrap) {
     font-size: 1.75rem; font-weight: 700; color: var(--j-gold);
     overflow: hidden;
 }
-.ds-id-info  { min-width: 0; }
+.ds-id-info  { min-width: 0; flex: 1; }
 .ds-id-eyebrow {
     font-size: 0.58rem; font-weight: 600;
     letter-spacing: 0.28em; text-transform: uppercase;
@@ -1268,6 +1268,53 @@ body:has(.ds-dashboard-wrap) {
     font-size: 1.75rem; font-weight: 700; color: var(--j-white);
     margin: 0 0 0.2rem; line-height: 1.15;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px;
+}
+/* ── ID Card responsive ── */
+@media (max-width: 600px) {
+    /* Card padding tighter */
+    .ds-id-card  { padding: 1.1rem 1.1rem; }
+
+    /* Stack left + right vertically */
+    .ds-id-inner { flex-direction: column; align-items: stretch; gap: 0; }
+
+    /* Top: avatar + info row */
+    .ds-id-left  {
+        gap: 0.9rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(218,185,55,0.14);
+    }
+    .ds-id-avatar  { width: 50px; height: 50px; font-size: 1.35rem; }
+    .ds-id-info    { min-width: 0; flex: 1; }
+    .ds-id-eyebrow { font-size: 0.52rem; letter-spacing: 0.13em; }
+    .ds-id-name    { font-size: 1.1rem; max-width: 100%; white-space: normal; line-height: 1.3; }
+
+    /* Hide original vertical divider */
+    .ds-id-vdiv  { display: none; }
+
+    /* Bottom: balance section — column, left-aligned */
+    .ds-id-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        padding-top: 1rem;
+    }
+    .ds-id-bal-label { margin-bottom: 0.25rem; }
+    /* Number + TOKEN unit side-by-side */
+    .ds-id-bal-row  {
+        display: flex;
+        align-items: baseline;
+        gap: 0.45rem;
+        margin-bottom: 0;
+    }
+    .ds-id-bal-num  { font-size: 2.75rem; text-align: left; line-height: 1; }
+    .ds-id-bal-unit { display: block; font-size: 0.65rem; letter-spacing: 0.18em; margin: 0; align-self: flex-end; padding-bottom: 0.2rem; }
+    .ds-id-substats {
+        gap: 1.25rem;
+        margin-top: 0.75rem;
+        width: 100%;
+    }
+    .ds-id-subval { text-align: left; font-size: 1rem; }
+    .ds-id-sublbl { text-align: left; }
 }
 .ds-id-dept  { font-size: 0.8rem; color: var(--j-slate); margin: 0 0 0.9rem; }
 .ds-id-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
@@ -1316,6 +1363,8 @@ body:has(.ds-dashboard-wrap) {
     letter-spacing: 0.26em; text-transform: uppercase;
     color: var(--j-slate); margin: 0 0 0.15rem;
 }
+/* Desktop: bal-row is transparent — just stacks children vertically via column flex */
+.ds-id-bal-row { display: contents; }
 .ds-id-bal-num {
     font-size: 4.5rem; font-weight: 800; color: var(--j-gold);
     letter-spacing: -0.04em; line-height: 1; display: block; text-align: right;

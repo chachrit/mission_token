@@ -186,8 +186,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- Right: balance -->
                 <div class="ds-id-right">
                     <p class="ds-id-bal-label">ยอด Token คงเหลือ</p>
-                    <span class="ds-id-bal-num" data-countup="<?= (int)$wallet['balance'] ?>" data-dur="1800">0</span>
-                    <p class="ds-id-bal-unit">TOKEN</p>
+                    <div class="ds-id-bal-row">
+                        <span class="ds-id-bal-num" data-countup="<?= (int)$wallet['balance'] ?>" data-dur="1800">0</span>
+                        <p class="ds-id-bal-unit">TOKEN</p>
+                    </div>
                     <div class="ds-id-substats">
                         <div>
                             <p class="ds-id-subval">+<?= formatTokens((int)$wallet['total_earned']) ?></p>
