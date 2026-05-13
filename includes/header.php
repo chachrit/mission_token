@@ -373,7 +373,7 @@ $notifCount = count($allNotifs);
             font-size: 0.65rem; font-weight: 700; font-family: 'Prompt', sans-serif;
             border-radius: 999px; border: 2px solid #091113;
             display: flex; align-items: center; justify-content: center;
-            animation: notif-badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+            animation: notif-badge-pop 0.4s cubic-bezier(0.16,1,0.3,1) both;
         }ไมท่ม
         @keyframes notif-badge-pop {
             from { transform: scale(0); opacity: 0; }
@@ -472,7 +472,7 @@ $notifCount = count($allNotifs);
             font-size: 0.95rem; font-weight: 500; font-family: 'Prompt', sans-serif;
             box-shadow: 0 16px 48px rgba(0,0,0,0.5);
             transform: translate(-50%, -50%) scale(0.85); opacity: 0;
-            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s ease;
+            transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), opacity 0.25s ease;
             pointer-events: none; white-space: nowrap;
         }
         #app-toast.show  { transform: translate(-50%, -50%) scale(1); opacity: 1; }
