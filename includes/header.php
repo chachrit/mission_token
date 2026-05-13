@@ -383,7 +383,7 @@ $notifCount = count($allNotifs);
         /* Notification Dropdown */
         .nav-notif-dropdown {
             position: absolute; right: 0; top: calc(100% + 10px);
-            width: 320px; max-height: 440px;
+            width: 320px; max-width: calc(100vw - 2rem); max-height: 440px;
             background: var(--j-panel); border: 1px solid var(--j-charcoal);
             border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.55);
             overflow: hidden; z-index: 60;
@@ -578,7 +578,9 @@ $notifCount = count($allNotifs);
                     <div class="relative" id="notif-wrap">
                         <button onclick="toggleNotifDropdown()" id="notif-bell-btn"
                                 class="nav-notif-btn"
-                                aria-label="การแจ้งเตือน">
+                                aria-label="การแจ้งเตือน"
+                                aria-expanded="false"
+                                aria-controls="notif-dropdown">
                             <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -659,6 +661,8 @@ $notifCount = count($allNotifs);
                     <div class="relative">
                         <button onclick="toggleUserMenu()" id="user-menu-btn"
                                 class="flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors"
+                                aria-expanded="false"
+                                aria-controls="user-dropdown"
                                 style="color:#9ca3af;"
                                 onmouseover="this.style.background='#1a1f20'"
                                 onmouseout="this.style.background='transparent'">

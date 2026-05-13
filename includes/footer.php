@@ -50,30 +50,44 @@
         // ── User Dropdown ────────────────────────────────────────
         function toggleUserMenu() {
             const menu  = document.getElementById('user-dropdown');
+            const btn   = document.getElementById('user-menu-btn');
             const notif = document.getElementById('notif-dropdown');
+            const bell  = document.getElementById('notif-bell-btn');
             if (notif) notif.classList.add('hidden');
-            if (menu) menu.classList.toggle('hidden');
+            if (bell)  bell.setAttribute('aria-expanded', 'false');
+            if (menu) {
+                const open = menu.classList.toggle('hidden');
+                if (btn) btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+            }
         }
         document.addEventListener('click', function(e) {
             const btn  = document.getElementById('user-menu-btn');
             const menu = document.getElementById('user-dropdown');
             if (menu && btn && !btn.contains(e.target) && !menu.contains(e.target)) {
                 menu.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
             }
         });
 
         // ── Notification Bell ────────────────────────────────────
         function toggleNotifDropdown() {
             const notif = document.getElementById('notif-dropdown');
+            const bell  = document.getElementById('notif-bell-btn');
             const menu  = document.getElementById('user-dropdown');
-            if (menu) menu.classList.add('hidden');
-            if (notif) notif.classList.toggle('hidden');
+            const uBtn  = document.getElementById('user-menu-btn');
+            if (menu)  menu.classList.add('hidden');
+            if (uBtn)  uBtn.setAttribute('aria-expanded', 'false');
+            if (notif) {
+                const open = notif.classList.toggle('hidden');
+                if (bell) bell.setAttribute('aria-expanded', open ? 'false' : 'true');
+            }
         }
         document.addEventListener('click', function(e) {
             const btn   = document.getElementById('notif-bell-btn');
             const notif = document.getElementById('notif-dropdown');
             if (notif && btn && !btn.contains(e.target) && !notif.contains(e.target)) {
                 notif.classList.add('hidden');
+                btn.setAttribute('aria-expanded', 'false');
             }
         });
 

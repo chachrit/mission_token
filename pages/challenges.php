@@ -1152,7 +1152,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="padding:1.4rem;">
                 <!-- Token reward -->
                 <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
-                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
                          style="width:34px; height:34px; object-fit:contain;
                                 filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
                     <div>
@@ -1298,7 +1298,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="padding:1.4rem;">
                 <!-- Token reward -->
                 <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
-                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
                          style="width:34px; height:34px; object-fit:contain;
                                 filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
                     <div>
@@ -1481,7 +1481,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div style="padding:1.4rem;">
                 <!-- Token reward -->
                 <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
-                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
+                    <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
                          style="width:34px; height:34px; object-fit:contain;
                                 filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
                     <div>

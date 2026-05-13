@@ -80,12 +80,12 @@ require_once __DIR__ . '/includes/header.php';
 
         <!-- Floating coins (right) -->
         <div class="hero-coins" aria-hidden="true">
-            <div class="hcoin hcoin-1"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
-            <div class="hcoin hcoin-2"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
-            <div class="hcoin hcoin-3"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
-            <div class="hcoin hcoin-4"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
-            <div class="hcoin hcoin-5"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
-            <div class="hcoin hcoin-6"><img src="<?= BASE_URL ?>/assets/images/token.png" alt=""></div>
+            <div class="hcoin hcoin-1"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-2"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-3"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-4"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-5"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-6"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
         </div>
 
         <!-- Hero content (always centered) -->

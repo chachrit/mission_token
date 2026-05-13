@@ -777,7 +777,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                         </div>
                         <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png"
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" loading="lazy"
                                  width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
                             <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
                                 <?= (int)$rd['tokens_spent'] ?>
