@@ -10,6 +10,48 @@ require_once __DIR__ . '/../../includes/functions.php';
 $adminId = (int)$_SESSION['employee_id'];
 $pdo     = getDB();
 
+function rewardCategoryIconSvg(string $category): string
+{
+    $icons = [
+        'voucher' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        'leave'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'merch'   => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        'perk'    => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        'general' => '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>',
+    ];
+
+    return $icons[$category] ?? $icons['general'];
+}
+
+function formatThaiBuddhistDate(string $dateTime): string
+{
+    $timestamp = strtotime($dateTime);
+    if ($timestamp === false) {
+        return '-';
+    }
+
+    $thaiMonths = [
+        1 => 'มกราคม',
+        2 => 'กุมภาพันธ์',
+        3 => 'มีนาคม',
+        4 => 'เมษายน',
+        5 => 'พฤษภาคม',
+        6 => 'มิถุนายน',
+        7 => 'กรกฎาคม',
+        8 => 'สิงหาคม',
+        9 => 'กันยายน',
+        10 => 'ตุลาคม',
+        11 => 'พฤศจิกายน',
+        12 => 'ธันวาคม',
+    ];
+
+    $day = (int)date('j', $timestamp);
+    $month = $thaiMonths[(int)date('n', $timestamp)] ?? '';
+    $year = (int)date('Y', $timestamp) + 543;
+
+    return $day . ' ' . $month . ' ' . $year;
+}
+
 // ══════════════════════════════════════════════════════════════
 // POST actions: fulfill or cancel a redemption
 // ══════════════════════════════════════════════════════════════
@@ -164,6 +206,14 @@ $catMeta = [
     'general' => ['label' => 'ทั่วไป'],
 ];
 
+$catTone = [
+    'voucher' => ['icon_bg' => 'rgba(47,78,157,0.30)',  'icon_border' => 'rgba(123,159,245,0.52)', 'icon_color' => '#9db4f7'],
+    'leave'   => ['icon_bg' => 'rgba(81,142,92,0.30)',  'icon_border' => 'rgba(126,201,138,0.52)', 'icon_color' => '#8fdaa0'],
+    'merch'   => ['icon_bg' => 'rgba(98,48,122,0.32)',  'icon_border' => 'rgba(196,157,224,0.54)', 'icon_color' => '#d3ace8'],
+    'perk'    => ['icon_bg' => 'rgba(201,168,48,0.30)', 'icon_border' => 'rgba(248,231,105,0.52)', 'icon_color' => '#f8e769'],
+    'general' => ['icon_bg' => 'rgba(107,110,119,0.32)','icon_border' => 'rgba(165,169,181,0.52)', 'icon_color' => '#c9ccd4'],
+];
+
 $pageTitle  = 'คำขอแลกรางวัล';
 $activePage = 'admin_redemptions';
 $canManage  = in_array($_SESSION['role'] ?? '', ['admin', 'hr'], true);
@@ -282,6 +332,8 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php foreach ($redemptions as $rd):
                 $sm = $statusMeta[$rd['status']] ?? $statusMeta['pending'];
                 $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
+                $rdCat = (string)($rd['category'] ?? 'general');
+                $tone = $catTone[$rdCat] ?? $catTone['general'];
             ?>
             <div class="ard-row"
                  style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
@@ -302,7 +354,14 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Reward -->
                 <div style="display:flex; align-items:center; gap:0.5rem; min-width:0;">
-                    <span style="font-size:1rem; flex-shrink:0; line-height:1; font-weight:700; color:#dab937;">R</span>
+                    <span style="display:inline-flex; align-items:center; justify-content:center;
+                                 width:28px; height:28px; flex-shrink:0;
+                                 color:<?= $tone['icon_color'] ?>;
+                                 background:<?= $tone['icon_bg'] ?>;
+                                 border:1px solid <?= $tone['icon_border'] ?>;
+                                 border-radius:999px;">
+                        <?= rewardCategoryIconSvg($rdCat) ?>
+                    </span>
                     <div style="min-width:0;">
                         <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
                                    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
@@ -328,7 +387,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <!-- Date -->
                 <div>
                     <span style="font-size:0.82rem; color:#eeebe1;">
-                        <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
+                        <?= e(formatThaiBuddhistDate((string)$rd['redeemed_at'])) ?>
                     </span>
                     <br>
                     <span style="font-size:0.70rem; color:#6b6e77;">
