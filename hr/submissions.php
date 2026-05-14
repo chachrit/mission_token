@@ -275,7 +275,9 @@ require_once __DIR__ . '/../includes/header.php';
                 ), JSON_UNESCAPED_SLASHES), ENT_QUOTES);
                 $photoCount = count($photoFiles);
             ?>
-            <div class="asb-thumb-strip" onclick="openLightbox('<?= $jsonUrls ?>', 0)">
+            <div class="asb-thumb-strip"
+                 style="grid-template-columns:<?= $photoCount === 1 ? '1fr' : ($photoCount === 2 ? '1fr 1fr' : 'repeat(3,1fr)') ?>;"
+                 onclick="openLightbox('<?= $jsonUrls ?>', 0)">
                 <?php foreach ($photoFiles as $idx => $pf):
                     $pfUrl = uploadImgUrl('submissions', $pf);
                 ?>
@@ -565,7 +567,7 @@ require_once __DIR__ . '/../includes/header.php';
 <style>
 .asb-thumb-strip {
     position: relative; flex-shrink: 0; height: 180px;
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px;
+    display: grid; gap: 2px;
     background: rgba(255,255,255,0.04); cursor: zoom-in; overflow: hidden;
 }
 .asb-thumb-strip:hover .asb-thumb-overlay { opacity: 1; }
