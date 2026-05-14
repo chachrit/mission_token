@@ -503,7 +503,11 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Reward name + emoji -->
                 <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
-                    <span style="display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; color:#dab937; line-height:1;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center;
+                                 width:30px; height:30px; flex-shrink:0; border-radius:999px; line-height:1;
+                                 color:<?= $glow['color'] ?>;
+                                 background:<?= $glow['bg'] ?>;
+                                 border:1px solid <?= $glow['border'] ?>;">
                         <?= rewardCategoryIconSvg((string)$cat) ?>
                     </span>
                     <div style="min-width:0;">
