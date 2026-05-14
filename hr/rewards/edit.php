@@ -24,7 +24,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $title      = trim($_POST['title']       ?? '');
     $desc       = trim($_POST['description'] ?? '');
-    $emoji      = mb_substr(trim($_POST['image_emoji'] ?? 'R'), 0, 4, 'UTF-8');
     $category   = $_POST['category']         ?? 'general';
     $cost       = max(1, (int)($_POST['token_cost'] ?? 50));
     $stockRaw   = trim($_POST['stock']       ?? '');
@@ -51,11 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $pdo->prepare("
             UPDATE dbo.rewards
-            SET title = ?, description = ?, image_emoji = ?,
+            SET title = ?, description = ?,
                 category = ?, token_cost = ?, stock = ?, is_active = ?,
                 coupon_code = ?, coupon_expires_at = ?
             WHERE reward_id = ?
-        ")->execute([$title, $desc, $emoji, $category, $cost, $stock, $isActive,
+        ")->execute([$title, $desc, $category, $cost, $stock, $isActive,
                      $couponCode ?: null, $couponExpiresAt, $rewardId]);
         setFlash('success', 'แก้ไขรางวัล "' . $title . '" เรียบร้อยแล้ว');
     } catch (Throwable $e) {
@@ -130,10 +129,8 @@ require_once __DIR__ . '/../../includes/header.php';
 }
 .are-active-toggle.on::after { transform: translateX(20px); background: #7ec98a; }
 /* Responsive grids */
-.are-grid-emoji { display: grid; grid-template-columns: 90px 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
 .are-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
 @media (max-width: 560px) {
-    .are-grid-emoji { grid-template-columns: 64px 1fr; gap: 0.85rem; }
     .are-grid-3 { grid-template-columns: 1fr; }
 }
 </style>
@@ -210,22 +207,13 @@ function arToggleCoupon(cat) {
             <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
                         border-radius:20px; padding:2rem; backdrop-filter:blur(12px);">
 
-                <!-- Icon + title -->
-                <div class="are-grid-emoji">
-                    <div>
-                        <label class="are-label">ไอคอน</label>
-                        <input type="text" name="image_emoji"
-                               value="<?= e($reward['image_emoji'] ?: 'R') ?>"
-                               maxlength="4" class="journal-input"
-                               style="font-size:1.8rem; text-align:center; padding:0.4rem;">
-                    </div>
-                    <div>
-                        <label class="are-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
-                        <input type="text" name="title" required maxlength="200"
-                               value="<?= e($reward['title']) ?>"
-                               placeholder="ชื่อรางวัล"
-                               class="journal-input">
-                    </div>
+                <!-- Title -->
+                <div style="margin-bottom:1.25rem;">
+                    <label class="are-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
+                    <input type="text" name="title" required maxlength="200"
+                           value="<?= e($reward['title']) ?>"
+                           placeholder="ชื่อรางวัล"
+                           class="journal-input">
                 </div>
 
                 <!-- Description -->

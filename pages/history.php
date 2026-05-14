@@ -78,6 +78,26 @@ try {
     $dataError = 'ไม่สามารถโหลดข้อมูลได้ กรุณาลองใหม่';
 }
 
+// ── Category icon helper (same as rewards/redemptions pages) ──────────
+function hyRewardCategoryIconSvg(string $category): string {
+    $icons = [
+        'voucher' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M4 7h16v4a2 2 0 0 0 0 4v4H4v-4a2 2 0 0 0 0-4V7z" stroke-width="1.9"/><path d="M12 7v12" stroke-width="1.9" stroke-dasharray="2 2"/></svg>',
+        'leave'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2" stroke-width="1.9"/><path d="M8 3v4M16 3v4M3 10h18" stroke-width="1.9" stroke-linecap="round"/><path d="m9 15 2 2 4-4" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+        'merch'   => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M12 3v18" stroke-width="1.9"/><path d="M3 8h18" stroke-width="1.9"/><rect x="3" y="8" width="18" height="13" rx="2" stroke-width="1.9"/><path d="M7 3h10v2a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V3z" stroke-width="1.9"/></svg>',
+        'perk'    => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="m12 3 2.7 5.48 6.05.88-4.38 4.26 1.03 6.02L12 16.8l-5.4 2.84 1.03-6.02-4.38-4.26 6.05-.88L12 3z" stroke-width="1.9" stroke-linejoin="round"/></svg>',
+        'general' => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M3 8h18" stroke-width="1.9"/><path d="M4 8l8 5 8-5" stroke-width="1.9"/><rect x="3" y="8" width="18" height="12" rx="2" stroke-width="1.9"/></svg>',
+    ];
+    return $icons[$category] ?? $icons['general'];
+}
+
+$hyCatTone = [
+    'voucher' => ['icon_bg' => 'rgba(47,78,157,0.28)',   'icon_border' => 'rgba(123,159,245,0.45)', 'icon_color' => '#9db4f7'],
+    'leave'   => ['icon_bg' => 'rgba(81,142,92,0.28)',   'icon_border' => 'rgba(126,201,138,0.45)', 'icon_color' => '#8fdaa0'],
+    'merch'   => ['icon_bg' => 'rgba(98,48,122,0.30)',   'icon_border' => 'rgba(196,157,224,0.48)', 'icon_color' => '#d3ace8'],
+    'perk'    => ['icon_bg' => 'rgba(201,168,48,0.28)',  'icon_border' => 'rgba(248,231,105,0.45)', 'icon_color' => '#f8e769'],
+    'general' => ['icon_bg' => 'rgba(107,110,119,0.28)', 'icon_border' => 'rgba(165,169,181,0.45)', 'icon_color' => '#c9ccd4'],
+];
+
 $pageTitle  = 'ประวัติการทำรายการ';
 $activePage = 'history';
 
@@ -354,7 +374,9 @@ require_once __DIR__ . '/../includes/header.php';
                 'cancelled' => ['color'=>'#d2592a', 'bg'=>'rgba(210,89,42,0.10)',   'border'=>'rgba(210,89,42,0.25)',  'label'=>'ยกเลิก'],
             ];
             foreach ($redemptions as $rd):
-                $rs = $rdStyle[$rd['status']] ?? $rdStyle['pending'];
+                $rs    = $rdStyle[$rd['status']] ?? $rdStyle['pending'];
+                $rdCat = (string)($rd['category'] ?? 'general');
+                $tone  = $hyCatTone[$rdCat] ?? $hyCatTone['general'];
             ?>
             <div class="hy-rd-row" onclick="openHyRdModal(<?= (int)$rd['redemption_id'] ?>)"
                  onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openHyRdModal(<?= (int)$rd['redemption_id'] ?>);}"
@@ -364,10 +386,10 @@ require_once __DIR__ . '/../includes/header.php';
                              gap:1rem; align-items:center;">
                     <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
                         <span style="flex-shrink:0; display:inline-flex; align-items:center; justify-content:center;
-                                     width:32px; height:32px; border-radius:9px;
-                                     background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
-                                     color:rgba(218,185,55,0.75); line-height:1; user-select:none;">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M20 12v10H4V12"/><path d="M22 7H2v5h20V7z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+                                     width:32px; height:32px; border-radius:999px;
+                                     background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>;
+                                     color:<?= $tone['icon_color'] ?>; line-height:1; user-select:none;">
+                            <?= hyRewardCategoryIconSvg($rdCat) ?>
                         </span>
                         <div style="min-width:0;">
                             <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
@@ -461,7 +483,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </button>
                     </div>
                 </div>
-                <?php elseif ($rd['status'] === 'pending'): ?>
+                <?php elseif ($rd['status'] === 'pending' && !empty($rd['coupon_code'])): ?>
                 <div style="display:inline-flex; align-items:center; gap:0.4rem; align-self:flex-start;">
                     <span style="font-size:0.68rem; color:#6b6e77; display:inline-flex; align-items:center;">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -651,10 +673,15 @@ foreach ($quizHistory as $_q) {
 }
 $hyRdData = [];
 foreach ($redemptions as $_rd) {
-    $_rid = (int)$_rd['redemption_id'];
+    $_rid    = (int)$_rd['redemption_id'];
+    $_rdCat  = (string)($_rd['category'] ?? 'general');
+    $_rdTone = $hyCatTone[$_rdCat] ?? $hyCatTone['general'];
     $hyRdData[$_rid] = [
-        'title'  => $_rd['reward_title'],
-        'emoji'  => 'R',
+        'title'       => $_rd['reward_title'],
+        'iconSvg'     => hyRewardCategoryIconSvg($_rdCat),
+        'iconBg'      => $_rdTone['icon_bg'],
+        'iconBorder'  => $_rdTone['icon_border'],
+        'iconColor'   => $_rdTone['icon_color'],
         'tokens' => (int)$_rd['tokens_spent'],
         'status' => $_rd['status'],
         'reqAt'  => hyThaiDate((string)$_rd['redeemed_at'], true),
@@ -839,7 +866,8 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
             <div style="display:flex; align-items:center; gap:0.9rem;
                         background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
                         border-radius:14px; padding:0.9rem 1.1rem;">
-                <span id="hyrd-emoji" style="font-size:2.4rem; flex-shrink:0; line-height:1; user-select:none;"></span>
+                <span id="hyrd-icon" style="display:inline-flex; align-items:center; justify-content:center;
+                             width:40px; height:40px; border-radius:999px; flex-shrink:0; line-height:1;"></span>
                 <div style="flex:1; min-width:0;">
                     <p id="hyrd-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0 0 0.4rem; line-height:1.3;"></p>
                     <span id="hyrd-status" style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem; border-radius:999px;"></span>
@@ -981,7 +1009,11 @@ function openHyQuestModal(subId) {
 // ── Reward modal ──
 function openHyRdModal(rdId) {
     var d = _hyRdData[rdId]; if (!d) return;
-    document.getElementById('hyrd-emoji').textContent  = d.emoji;
+    var iconEl = document.getElementById('hyrd-icon');
+    iconEl.innerHTML = d.iconSvg;
+    iconEl.style.background = d.iconBg;
+    iconEl.style.border = '1px solid ' + d.iconBorder;
+    iconEl.style.color = d.iconColor;
     document.getElementById('hyrd-title').textContent  = d.title;
     document.getElementById('hyrd-tokens').textContent = d.tokens.toLocaleString() + ' token';
     document.getElementById('hyrd-req-at').textContent = d.reqAt;

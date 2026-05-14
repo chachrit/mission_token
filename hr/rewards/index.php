@@ -400,9 +400,9 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
             </div>
 
-            <div style="margin-bottom:1.25rem; padding:1rem 1.25rem;
+            <div id="create-coupon-wrap" style="margin-bottom:1.25rem; padding:1rem 1.25rem;
                         background:rgba(218,185,55,0.04); border-radius:12px;
-                        border:1px solid rgba(218,185,55,0.12);">
+                        border:1px solid rgba(218,185,55,0.12); display:none;">
                 <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem;">
                     <span style="font-size:0.95rem; display:inline-flex; align-items:center;">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -655,6 +655,18 @@ function arUpdateAutoIcon(category) {
     var hint = document.getElementById('ar-auto-icon-hint');
     if (preview) preview.innerHTML = arCategoryIconSvg(category);
     if (hint) hint.textContent = 'ไอคอนตามหมวดหมู่: ' + (labels[category] || labels.general);
+    // Show coupon section only for voucher category
+    var couponWrap = document.getElementById('create-coupon-wrap');
+    if (couponWrap) {
+        if (category === 'voucher') {
+            couponWrap.style.display = 'block';
+        } else {
+            couponWrap.style.display = 'none';
+            // Clear coupon fields when hidden
+            var codeInput = document.getElementById('create_coupon_code');
+            if (codeInput) { codeInput.value = ''; arCreateToggleExpiry(''); }
+        }
+    }
 }
 
 function arCreateToggleExpiry(val) {
