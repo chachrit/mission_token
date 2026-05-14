@@ -113,6 +113,43 @@ function formatTokens(int $amount): string
 }
 
 /**
+ * Format a datetime string as Thai Buddhist date with optional time.
+ */
+function formatThaiBuddhistDateTime(string $dateTime, bool $withTime = false): string
+{
+    $timestamp = strtotime($dateTime);
+    if ($timestamp === false) {
+        return '-';
+    }
+
+    $thaiMonths = [
+        1 => 'มกราคม',
+        2 => 'กุมภาพันธ์',
+        3 => 'มีนาคม',
+        4 => 'เมษายน',
+        5 => 'พฤษภาคม',
+        6 => 'มิถุนายน',
+        7 => 'กรกฎาคม',
+        8 => 'สิงหาคม',
+        9 => 'กันยายน',
+        10 => 'ตุลาคม',
+        11 => 'พฤศจิกายน',
+        12 => 'ธันวาคม',
+    ];
+
+    $day = (int)date('j', $timestamp);
+    $month = $thaiMonths[(int)date('n', $timestamp)] ?? '';
+    $year = (int)date('Y', $timestamp) + 543;
+
+    $formatted = $day . ' ' . $month . ' ' . $year;
+    if ($withTime) {
+        $formatted .= ' ' . date('H:i', $timestamp);
+    }
+
+    return $formatted;
+}
+
+/**
  * Return URL to serve an uploaded image via PHP (bypasses IIS Windows Auth).
  * @param string $type   'avatars' or 'submissions'
  * @param string $filename  basename of the file

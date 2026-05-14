@@ -1200,9 +1200,9 @@ foreach ($myRedemptions as $_rd) {
         'category' => (string)($_rd['category'] ?? 'general'),
         'tokens' => (int)$_rd['tokens_spent'],
         'status' => $_rd['status'],
-        'reqAt'  => date('d/m/Y H:i', strtotime((string)$_rd['redeemed_at'])),
+        'reqAt'  => formatThaiBuddhistDateTime((string)$_rd['redeemed_at'], true),
         'procAt' => $_rd['processed_at']
-                    ? date('d/m/Y H:i', strtotime((string)$_rd['processed_at']))
+                    ? formatThaiBuddhistDateTime((string)$_rd['processed_at'], true)
                     : null,
         'note'   => (string)($_rd['admin_note']        ?? ''),
         'procBy' => (string)($_rd['processed_by_name'] ?? ''),
