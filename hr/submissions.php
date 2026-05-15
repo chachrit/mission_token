@@ -355,48 +355,34 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Action area (pending only) -->
             <?php if ($isPending): ?>
-            <div style="padding:0 1rem 1rem;">
+            <div class="asb-action-wrap">
             <?php if ($canManage): ?>
-                <div id="note-area-<?= $sub['submission_id'] ?>" class="hidden" style="margin-bottom:0.6rem;">
+                <div id="note-area-<?= $sub['submission_id'] ?>" class="hidden asb-note-wrap">
                     <textarea id="note-input-<?= $sub['submission_id'] ?>"
                               rows="2"
                               placeholder="หมายเหตุถึงพนักงาน (ไม่บังคับ)…"
                               class="asb-note-input"></textarea>
                 </div>
-                <div style="display:flex; gap:0.5rem;">
+                <div class="asb-action-row">
                     <!-- Approve -->
                     <button type="button"
                             onclick="openConfirmModal('approve', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
-                            style="flex:1; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   background:rgba(81,142,92,0.15); color:#7ec98a;
-                                   border:1px solid rgba(81,142,92,0.30); transition:background 0.15s;"
-                            onmouseover="this.style.background='rgba(81,142,92,0.28)'"
-                            onmouseout="this.style.background='rgba(81,142,92,0.15)'">
+                            class="asb-action-btn asb-action-btn--approve">
                         &#10003;&ensp;อนุมัติ
                     </button>
                     <!-- Reject -->
                     <button type="button"
                             onclick="openConfirmModal('reject', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
-                            style="flex:1; padding:0.5rem 0; font-size:0.82rem; font-weight:700;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   background:rgba(210,89,42,0.12); color:#d2592a;
-                                   border:1px solid rgba(210,89,42,0.28); transition:background 0.15s;"
-                            onmouseover="this.style.background='rgba(210,89,42,0.25)'"
-                            onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                            class="asb-action-btn asb-action-btn--reject">
                         &#10007;&ensp;ปฏิเสธ
                     </button>
                 </div>
                 <button onclick="toggleNote(<?= $sub['submission_id'] ?>)"
-                        style="margin-top:0.5rem; width:100%; font-size:0.73rem; color:#4a4e57;
-                               background:none; border:none; cursor:pointer; font-family:'Prompt',sans-serif;
-                               padding:0.3rem; transition:color 0.15s;"
-                        onmouseover="this.style.color='#eeebe1'"
-                        onmouseout="this.style.color='#4a4e57'">
+                        class="asb-note-toggle">
                     + เพิ่มหมายเหตุ
                 </button>
             <?php else: ?>
-                <p style="margin:0.5rem 0 0; font-size:0.72rem; color:#4a4e57; text-align:center; padding:0.4rem;">
+                <p class="asb-wait-note">
                     รอ HR ดำเนินการ
                 </p>
             <?php endif; ?>
