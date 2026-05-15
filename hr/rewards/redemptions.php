@@ -260,10 +260,9 @@ require_once __DIR__ . '/../../includes/header.php';
                 ];
                 foreach (['pending','fulfilled','cancelled'] as $s):
                     $ds = $dsDark[$s];
+                    $statusTheme = 'ard-status-theme--' . preg_replace('/[^a-z0-9_-]/i', '', (string)$s);
                 ?>
-                <span class="ard-stat-chip"
-                      style="background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                             border:1px solid <?= $ds['border'] ?>;">
+                <span class="ard-stat-chip <?= e($statusTheme) ?>">
                     <?= $statusMeta[$s]['label'] ?>: <?= $counts[$s] ?>
                 </span>
                 <?php endforeach; ?>
@@ -316,6 +315,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 $ds = $dsDark[$rd['status']] ?? $dsDark['pending'];
                 $rdCat = (string)($rd['category'] ?? 'general');
                 $tone = $catTone[$rdCat] ?? $catTone['general'];
+                $statusTheme = 'ard-status-theme--' . preg_replace('/[^a-z0-9_-]/i', '', (string)($rd['status'] ?? 'pending'));
+                $catTheme = 'ard-cat-theme--' . preg_replace('/[^a-z0-9_-]/i', '', $rdCat);
             ?>
             <div class="ard-row ard-row-grid">
 
@@ -334,10 +335,7 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Reward -->
                 <div class="ard-reward-cell">
-                    <span class="ard-reward-icon"
-                          style="color:<?= $tone['icon_color'] ?>;
-                                 background:<?= $tone['icon_bg'] ?>;
-                                 border:1px solid <?= $tone['icon_border'] ?>;">
+                    <span class="ard-reward-icon <?= e($catTheme) ?>">
                         <?= rewardCategoryIconSvg($rdCat) ?>
                     </span>
                     <div class="ard-reward-text-wrap">
@@ -374,22 +372,20 @@ require_once __DIR__ . '/../../includes/header.php';
 
                 <!-- Status + actions -->
                 <div class="ard-status-col">
-                    <span class="ard-status-badge"
-                          style="background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                                 border:1px solid <?= $ds['border'] ?>;">
+                    <span class="ard-status-badge <?= e($statusTheme) ?>">
                         <?= $sm['label'] ?>
                     </span>
 
                     <?php if ($rd['status'] === 'pending'): ?>
                     <?php if ($canManage): ?>
                     <div class="ard-action-row">
-                        <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
+                        <button data-onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
                                                        <?= json_encode($rd['full_name']) ?>,
                                                        <?= json_encode($rd['reward_title']) ?>)'
                                 class="ard-action-btn ard-action-btn--fulfill">
                             มอบรางวัลแล้ว
                         </button>
-                        <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
+                        <button data-onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
                                                        <?= json_encode($rd['full_name']) ?>,
                                                        <?= json_encode($rd['reward_title']) ?>)'
                                 class="ard-action-btn ard-action-btn--cancel">
@@ -419,7 +415,7 @@ require_once __DIR__ . '/../../includes/header.php';
     <div class="ard-modal-box">
         <div class="ard-modal-head">
             <h2 id="ard-modal-title" class="ard-modal-title"></h2>
-            <button onclick="ardCloseAction()"
+            <button data-onclick="ardCloseAction()"
                     class="ard-modal-close">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -445,7 +441,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <div class="ard-modal-actions">
-                    <button type="button" onclick="ardCloseAction()"
+                    <button type="button" data-onclick="ardCloseAction()"
                             class="ard-modal-btn ard-modal-btn--cancel">
                         ยกเลิก
                     </button>
@@ -461,3 +457,4 @@ require_once __DIR__ . '/../../includes/header.php';
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

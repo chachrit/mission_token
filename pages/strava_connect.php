@@ -50,38 +50,33 @@ $activePage = 'strava_connect';
 
 require_once __DIR__ . '/../includes/header.php';
 ?>
-<div style="max-width:680px; margin:0 auto; padding:2rem 1rem;">
+<div class="sc-u001">
 
     <!-- Card -->
-    <div style="background:#0d1618; border:1px solid #2a3038; border-radius:16px; overflow:hidden;">
+    <div class="sc-u002">
 
         <!-- Header -->
-        <div style="background:linear-gradient(135deg,#1a1f20,#0d1618); padding:1.5rem 1.75rem;
-                    border-bottom:1px solid #2a3038; display:flex; align-items:center; gap:1rem;">
-            <div style="width:48px; height:48px; background:#FC4C02; border-radius:12px;
-                        display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <div class="sc-u003">
+            <div class="sc-u004">
                 <svg width="26" height="26" fill="none" stroke="#fff" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
             </div>
             <div>
-                <h1 style="font-size:1.15rem; font-weight:700; color:#eeebe1; margin:0;">เชื่อมต่อ Strava</h1>
-                <p style="font-size:0.78rem; color:#6b6e77; margin:0.2rem 0 0;">ระบบจะดึงกิจกรรมออกกำลังกายมาตรวจสอบเงื่อนไขภารกิจอัตโนมัติ</p>
+                <h1 class="sc-u005">เชื่อมต่อ Strava</h1>
+                <p class="sc-u006">ระบบจะดึงกิจกรรมออกกำลังกายมาตรวจสอบเงื่อนไขภารกิจอัตโนมัติ</p>
             </div>
         </div>
 
-        <div style="padding:1.75rem;">
+        <div class="sc-u007">
 
             <?php if ($connected): ?>
             <!-- ── CONNECTED STATE ── -->
-            <div style="background:rgba(81,142,92,0.1); border:1px solid rgba(81,142,92,0.3);
-                        border-radius:12px; padding:1.1rem 1.25rem; margin-bottom:1.5rem;
-                        display:flex; align-items:center; gap:0.75rem;">
-                <div style="width:10px; height:10px; background:#518e5c; border-radius:50%; flex-shrink:0;
-                             box-shadow:0 0 8px rgba(81,142,92,0.7);"></div>
+            <div class="sc-u008">
+                <div class="sc-u009"></div>
                 <div>
-                    <p style="font-size:0.85rem; font-weight:600; color:#518e5c; margin:0;">เชื่อมต่อแล้ว</p>
-                    <p style="font-size:0.75rem; color:#6b6e77; margin:0.15rem 0 0;">
+                    <p class="sc-u010">เชื่อมต่อแล้ว</p>
+                    <p class="sc-u011">
                         Athlete ID: <?= e((string)$tokenRow['strava_athlete_id']) ?>
                         &bull; Scope: <?= e((string)$tokenRow['strava_scope']) ?>
                     </p>
@@ -92,7 +87,7 @@ require_once __DIR__ . '/../includes/header.php';
                         ? 'Token หมดอายุใน ' . round($diff/3600, 1) . ' ชั่วโมง'
                         : 'Token หมดอายุแล้ว (จะ refresh อัตโนมัติเมื่อตรวจสอบ)';
                     ?>
-                    <p style="font-size:0.72rem; color:#4f8b98; margin:0.15rem 0 0;"><?= e($expStr) ?></p>
+                    <p class="sc-u012"><?= e($expStr) ?></p>
                 </div>
             </div>
 
@@ -101,28 +96,19 @@ require_once __DIR__ . '/../includes/header.php';
                   data-confirm="ยืนยันการยกเลิกเชื่อมต่อ Strava?">
                 <?= csrfField() ?>
                 <input type="hidden" name="action" value="disconnect">
-                <button type="submit" style="
-                    background:rgba(210,89,42,0.15); border:1px solid rgba(210,89,42,0.4);
-                    color:#d2592a; padding:0.55rem 1.1rem; border-radius:8px;
-                    font-family:'Prompt',sans-serif; font-size:0.85rem; cursor:pointer;
-                    transition:background 0.2s;">
+                <button class="sc-u013" type="submit">
                     ยกเลิกการเชื่อมต่อ
                 </button>
             </form>
 
             <?php else: ?>
             <!-- ── NOT CONNECTED STATE ── -->
-            <p style="font-size:0.85rem; color:#9ca3af; margin:0 0 1.5rem; line-height:1.6;">
+            <p class="sc-u014">
                 กด "เชื่อมต่อกับ Strava" เพื่อ authorize ให้ระบบ JOURNAL ดึงข้อมูลกิจกรรมของคุณมาตรวจสอบภารกิจ<br>
-                ระบบจะเห็นเฉพาะ <strong style="color:#eeebe1;">กิจกรรมที่ตั้งค่าเป็น Everyone / Followers</strong> เท่านั้น
+                ระบบจะเห็นเฉพาะ <strong class="sc-u015">กิจกรรมที่ตั้งค่าเป็น Everyone / Followers</strong> เท่านั้น
             </p>
             <a href="<?= e($authURL) ?>"
-               class="sc-connect-btn"
-               style="display:inline-flex; align-items:center; gap:0.6rem;
-                      background:#FC4C02; color:#fff; padding:0.7rem 1.4rem;
-                      border-radius:10px; font-size:0.9rem; font-weight:600;
-                      font-family:'Prompt',sans-serif; text-decoration:none;
-                      transition:background 0.2s;">
+                    class="sc-connect-btn sc-connect-inline">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -131,13 +117,13 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
 
             <!-- Divider -->
-            <hr style="border:none; border-top:1px solid #2a3038; margin:1.75rem 0;">
+            <hr class="sc-u016">
 
             <!-- How it works -->
-            <p style="font-size:0.78rem; font-weight:600; color:#6b6e77; letter-spacing:0.06em; margin:0 0 0.85rem; text-transform:uppercase;">
+            <p class="sc-u017">
                 วิธีการทำงาน
             </p>
-            <div style="display:flex; flex-direction:column; gap:0.75rem;">
+            <div class="sc-u018">
                 <?php
                 $steps = [
                     ['<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 1 0 7 7l1-1"/></svg>', 'เชื่อมต่อบัญชี Strava ของคุณ (ทำครั้งเดียว)'],
@@ -147,9 +133,9 @@ require_once __DIR__ . '/../includes/header.php';
                 ];
                 foreach ($steps as [$icon, $text]):
                 ?>
-                <div style="display:flex; align-items:flex-start; gap:0.75rem;">
-                    <span style="font-size:1rem; flex-shrink:0; display:inline-flex; align-items:center;"><?= $icon ?></span>
-                    <span style="font-size:0.82rem; color:#9ca3af; line-height:1.5;"><?= $text ?></span>
+                <div class="sc-u019">
+                    <span class="sc-u020"><?= $icon ?></span>
+                    <span class="sc-u021"><?= $text ?></span>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -158,10 +144,9 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Back link -->
-    <div style="margin-top:1.25rem; text-align:center;">
+    <div class="sc-u022">
         <a href="<?= BASE_URL ?>/pages/challenges.php"
-           class="sc-back-link"
-           style="font-size:0.82rem; color:#6b6e77; text-decoration:none;">
+              class="sc-back-link sc-back-link-muted">
             ← กลับไปหน้าภารกิจ
         </a>
     </div>

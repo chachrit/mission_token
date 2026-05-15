@@ -566,7 +566,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="quiz-progress-track">
                     <div class="quiz-progress-fill" id="quiz-progress"
-                        style="width:<?= round(100 / $totalQ) ?>%"></div>
+                        data-progress-init="<?= round(100 / $totalQ) ?>"></div>
                 </div>
             </div>
 
@@ -675,6 +675,17 @@ require_once __DIR__ . '/../includes/header.php';
     <script>
     (function () {
         const totalQ = <?= (int)$totalQ ?>;
+
+        const quizProgressEl = document.getElementById('quiz-progress');
+        if (quizProgressEl) {
+            const init = parseInt(quizProgressEl.getAttribute('data-progress-init') || '0', 10);
+            quizProgressEl.style.width = Math.max(0, Math.min(100, init)) + '%';
+        }
+
+        document.querySelectorAll('.ch-board-progress-fill[data-progress-width]').forEach(function (el) {
+            const pct = parseInt(el.getAttribute('data-progress-width') || '0', 10);
+            el.style.width = Math.max(0, Math.min(100, pct)) + '%';
+        });
 
         /* ── Step navigation ─────────────────────────────── */
         window.quizGoStep = function (idx) {
@@ -802,7 +813,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="ch-board-progress-track">
                     <div class="ch-board-progress-fill"
-                         style="width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;"></div>
+                         data-progress-width="<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>"></div>
                 </div>
                 <p class="text-xs font-semibold uppercase tracking-widest ch-board-progress-percent">
                     <?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete

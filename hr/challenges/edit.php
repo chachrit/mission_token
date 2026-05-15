@@ -301,7 +301,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <div>
                             <label class="ace-label">ประเภทภารกิจ <span class="ace-required">*</span></label>
                             <select name="type" id="challenge-type" class="journal-input"
-                                    onchange="handleTypeChange(this.value)">
+                                    data-onchange="handleTypeChange(this.value)">
                                 <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>Quiz (ตอบคำถาม)</option>
                                 <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>Photo (ส่งรูปภาพ)</option>
                                 <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>Strava (กิจกรรมออกกำลังกาย)</option>
@@ -356,7 +356,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                                class="journal-input ace-dist-input"
                                                placeholder="0">
                                         <select name="strava_dist_unit" id="strava-dist-unit"
-                                                onchange="stravaDistUnitChange(this.value)"
+                                                data-onchange="stravaDistUnitChange(this.value)"
                                                 class="journal-input ace-dist-unit">
                                             <option value="m"  <?= $scMinDist < 1000 ? 'selected' : '' ?>>เมตร</option>
                                             <option value="km" <?= $scMinDist >= 1000 ? 'selected' : '' ?>>กิโลเมตร</option>
@@ -409,7 +409,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <?php if ($isEdit): ?>
-                    <button type="button" onclick="confirmDeleteChallenge()"
+                    <button type="button" data-onclick="confirmDeleteChallenge()"
                             class="ace-delete-btn">
                         <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
                              stroke="currentColor" stroke-width="2"
@@ -455,7 +455,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     </span>
                     <?php endif; ?>
                 </div>
-                <button type="button" onclick="addQuestion()" class="ace-add-q-btn">
+                <button type="button" data-onclick="addQuestion()" class="ace-add-q-btn">
                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor" stroke-width="2.5"
                          stroke-linecap="round" stroke-linejoin="round">
@@ -484,7 +484,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <form method="POST"
                               action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>"
                               class="ace-q-delete-form"
-                              onsubmit="return confirm('ลบคำถามนี้?')">
+                              data-onsubmit="return confirm('ลบคำถามนี้?')">
                             <?= csrfField() ?>
                             <input type="hidden" name="action" value="delete_question">
                             <input type="hidden" name="challenge_id" value="<?= $challengeId ?>">
@@ -628,7 +628,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                 <button type="submit" class="ch-btn-start ace-new-q-submit-btn">
                                     บันทึกคำถาม
                                 </button>
-                                <button type="button" onclick="cancelAddQuestion()" class="ace-new-q-cancel-btn">
+                                <button type="button" data-onclick="cancelAddQuestion()" class="ace-new-q-cancel-btn">
                                     ยกเลิก
                                 </button>
                             </div>
@@ -695,3 +695,4 @@ function cancelAddQuestion() {
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

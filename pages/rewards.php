@@ -292,54 +292,39 @@ $activePage = 'rewards';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="rw-rewards-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="rw-rewards-wrap rw-u001">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
-        <div style="position:absolute; width:700px; height:700px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
-                    top:-150px; right:-150px; filter:blur(70px);
-                    animation:rw-aurora-drift 20s ease-in-out infinite alternate;"></div>
-        <div style="position:absolute; width:550px; height:550px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(79,139,152,0.06) 0%,transparent 65%);
-                    bottom:-130px; left:-100px; filter:blur(80px);
-                    animation:rw-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
-        <div style="position:absolute; width:320px; height:320px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.04) 0%,transparent 65%);
-                    top:45%; left:38%; filter:blur(50px);
-                    animation:rw-aurora-drift 16s ease-in-out infinite alternate;"></div>
+        <div class="rw-u002"></div>
+        <div class="rw-u003"></div>
+        <div class="rw-u004"></div>
     </div>
 
     <div class="jp-page-inner jp-page-inner--flush-top">
 
         <!-- ══ HEADER ══ -->
-        <div style="padding:2.75rem 0 2.25rem;">
-            <p style="font-size:0.57rem; font-weight:700; letter-spacing:0.44em;
-                      text-transform:uppercase; color:rgba(218,185,55,0.65); margin:0 0 0.65rem;">
+        <div class="rw-u005">
+            <p class="rw-u006">
                 ⬡ &nbsp;OPERATIVE EXCHANGE
             </p>
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;">
+            <div class="rw-u007">
                 <div>
-                    <h1 style="font-size:2.35rem; font-weight:800; color:#eeebe1; line-height:1.08;
-                                margin:0 0 0.35rem; letter-spacing:-0.02em;">ร้านแลกรางวัล</h1>
-                    <p style="font-size:0.88rem; color:#6b6e77; margin:0; line-height:1.5;">
+                    <h1 class="rw-u008">ร้านแลกรางวัล</h1>
+                    <p class="rw-u009">
                         ใช้ Token สะสมแลกรับรางวัลและสิทธิประโยชน์พิเศษจาก JOURNAL
                     </p>
                 </div>
                 <!-- Balance pill -->
-                <div style="display:flex; align-items:center; gap:0.65rem; flex-shrink:0;
-                             background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.22);
-                             border-radius:14px; padding:0.65rem 1.15rem;">
+                <div class="rw-u010">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" width="22" height="22"
-                         style="object-fit:contain; filter:drop-shadow(0 0 8px rgba(218,185,55,0.65));" alt="">
+                         class="rw-token-img-md" alt="">
                     <div>
-                        <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.16em;
-                                    text-transform:uppercase; color:rgba(218,185,55,0.55); margin-bottom:0.08rem;">
+                        <div class="rw-u011">
                             ยอดคงเหลือ
                         </div>
-                        <div id="hdr-balance"
-                             style="font-size:1.5rem; font-weight:800; color:#f8e769;
-                                    line-height:1; letter-spacing:-0.02em;">
+                        <div class="rw-u012" id="hdr-balance"
+                            >
                             <?= formatTokens((int)$wallet['balance']) ?>
                         </div>
                     </div>
@@ -347,42 +332,34 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
 
             <!-- Stats bar -->
-            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:0.75rem;
-                        margin-top:1.5rem; padding-top:1.25rem;
-                        border-top:1px solid rgba(255,255,255,0.07);">
-                <div style="padding:0 0.25rem;">
-                    <div style="font-size:1.05rem; font-weight:700; color:#eeebe1; line-height:1;">
+            <div class="rw-u013">
+                <div class="rw-u014">
+                    <div class="rw-u015">
                         <?= formatTokens((int)$wallet['total_spent']) ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em;
-                                text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
+                    <div class="rw-u016">
                         Token ที่ใช้ไป
                     </div>
                 </div>
-                <div class="rw-stat-div" style="width:1px; height:38px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
-                <div style="padding:0 0.25rem;">
-                    <div style="font-size:1.05rem; font-weight:700; color:#eeebe1; line-height:1;">
+                <div class="rw-stat-div rw-u017"></div>
+                <div class="rw-u014">
+                    <div class="rw-u015">
                         <?= count($myRedemptions) ?>
                     </div>
-                    <div style="font-size:0.52rem; font-weight:700; letter-spacing:0.14em;
-                                text-transform:uppercase; color:#6b6e77; margin-top:0.15rem;">
+                    <div class="rw-u016">
                         รายการแลกแล้ว
                     </div>
                 </div>
                 <?php if ($myPending > 0): ?>
-                <div class="rw-stat-div" style="width:1px; height:38px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
+                <div class="rw-stat-div rw-u017"></div>
                 <button data-action="open-pending-list"
-                        style="display:flex; align-items:center; gap:0.5rem;
-                               background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
-                               border-radius:999px; padding:0.35rem 0.9rem; cursor:pointer;
-                               font-family:'Prompt',sans-serif; transition:background 0.18s, border-color 0.18s;"
-                    class="rw-btn-pending-open">
-                    <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;
-                                  flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
-                    <span style="font-size:0.78rem; font-weight:600; color:#fbbf24;">
+                       
+                    class="rw-btn-pending-open rw-u018">
+                    <span class="rw-u019"></span>
+                    <span class="rw-u020">
                         <?= $myPending ?> รายการรอดำเนินการ
                     </span>
-                    <svg fill="none" stroke="#fbbf24" viewBox="0 0 24 24" width="12" height="12" style="opacity:0.65;">
+                    <svg class="rw-u021" fill="none" stroke="#fbbf24" viewBox="0 0 24 24" width="12" height="12">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                     </svg>
                 </button>
@@ -397,13 +374,11 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
 
         <!-- ══ FILTER ROW ══ -->
-        <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:0.5rem; margin-right:0.3rem;">
-                <div style="width:4px; height:22px; background:linear-gradient(180deg,#dab937,#c9a830);
-                             border-radius:999px; flex-shrink:0;"></div>
-                <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">สินค้า</span>
-                <span style="font-size:0.66rem; font-weight:700; color:#091113; background:#dab937;
-                             border-radius:999px; padding:0.14rem 0.52rem;"><?= count($rewards) ?></span>
+        <div class="rw-u022">
+            <div class="rw-u023">
+                <div class="rw-u024"></div>
+                <span class="rw-u025">สินค้า</span>
+                <span class="rw-u026"><?= count($rewards) ?></span>
             </div>
             <button class="rw-cat-pill active" data-cat="all" data-action="filter-cat">ทั้งหมด</button>
             <?php foreach ($activeCategories as $cat):
@@ -411,21 +386,20 @@ require_once __DIR__ . '/../includes/header.php';
                 $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
             ?>
             <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" data-action="filter-cat">
-                <?= e($meta['label']) ?> <span style="opacity:0.5; font-size:0.68rem;">(<?= $count ?>)</span>
+                <?= e($meta['label']) ?> <span class="rw-u027">(<?= $count ?>)</span>
             </button>
             <?php endforeach; ?>
         </div>
 
         <!-- ══ REWARDS GRID ══ -->
         <?php if (empty($rewards)): ?>
-        <div style="text-align:center; padding:5rem 1rem;">
-            <p style="font-size:1rem; font-weight:600; color:#6b6e77; margin:0 0 0.3rem;">Vault ว่างอยู่ในขณะนี้</p>
-            <p style="font-size:0.82rem; color:#4a4e57; margin:0;">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
+        <div class="rw-u028">
+            <p class="rw-u029">Vault ว่างอยู่ในขณะนี้</p>
+            <p class="rw-u030">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
         </div>
         <?php else: ?>
-        <div id="rewards-grid"
-             style="display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-                    gap:1.2rem; margin-bottom:3rem;">
+        <div class="rw-u031" id="rewards-grid"
+            >
             <?php
             $myBalance = (int)$wallet['balance'];
             $bannerCls = [
@@ -435,12 +409,12 @@ require_once __DIR__ . '/../includes/header.php';
                 'perk'    => 'rw-banner-perk',
                 'general' => 'rw-banner-general',
             ];
-            $bannerTagStyle = [
-                'voucher' => 'background:rgba(13,24,73,0.72); color:rgba(157,180,247,0.85);',
-                'leave'   => 'background:rgba(6,21,14,0.72);  color:rgba(143,218,160,0.85);',
-                'merch'   => 'background:rgba(22,8,46,0.72);  color:rgba(211,172,232,0.85);',
-                'perk'    => 'background:rgba(27,19,0,0.72);  color:rgba(248,231,105,0.85);',
-                'general' => 'background:rgba(10,12,14,0.72); color:rgba(165,169,181,0.85);',
+            $bannerToneCls = [
+                'voucher' => 'rw-tone-voucher',
+                'leave'   => 'rw-tone-leave',
+                'merch'   => 'rw-tone-merch',
+                'perk'    => 'rw-tone-perk',
+                'general' => 'rw-tone-general',
             ];
             foreach ($rewards as $rw):
                 $cat       = (string)$rw['category'];
@@ -450,7 +424,7 @@ require_once __DIR__ . '/../includes/header.php';
                 $canAfford = $myBalance >= $cost;
                 $stockLeft = $rw['stock'] === null ? null : (int)$rw['stock'];
                 $banClass  = $bannerCls[$cat]      ?? 'rw-banner-general';
-                $tagStyle  = $bannerTagStyle[$cat]  ?? $bannerTagStyle['general'];
+                $toneClass = $bannerToneCls[$cat]    ?? $bannerToneCls['general'];
                 $needed    = $cost - $myBalance;
                 $iconBig   = str_replace(['width="18"', 'height="18"'], ['width="22"', 'height="22"'],
                                          rewardCategoryIconSvg($cat));
@@ -461,11 +435,10 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Banner -->
                 <div class="rw-banner <?= $banClass ?>">
-                    <div class="rw-banner-icon"
-                         style="background:<?= $tone['icon_bg'] ?>; border:1px solid <?= $tone['icon_border'] ?>; color:<?= $tone['icon_color'] ?>;">
+                    <div class="rw-banner-icon <?= e($toneClass) ?>">
                         <?= $iconBig ?>
                     </div>
-                    <span class="rw-banner-tag" style="<?= $tagStyle ?>">
+                    <span class="rw-banner-tag <?= e($toneClass) ?>">
                         <?= e($meta['label']) ?>
                     </span>
                 </div>
@@ -483,17 +456,16 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="rw-cost-wrap">
                         <div class="rw-cost-row">
                             <img src="<?= BASE_URL ?>/assets/images/token.png" width="14" height="14"
-                                 style="object-fit:contain; filter:drop-shadow(0 0 5px rgba(218,185,55,0.55));" alt="">
+                                 class="rw-token-img-sm" alt="">
                             <span class="rw-cost-amt"><?= number_format($cost) ?></span>
                             <span class="rw-cost-lbl">token</span>
                         </div>
                         <?php if ($stockLeft !== null): ?>
-                        <span class="rw-stock-txt <?= $stockLeft <= 3 ? 'rw-stock-low' : '' ?>"
-                              style="color:<?= $stockLeft <= 3 ? '#d2592a' : '#4a4e57' ?>;">
+                        <span class="rw-stock-txt <?= $stockLeft <= 3 ? 'rw-stock-low' : 'rw-stock-muted' ?>">
                             <?= $stockLeft <= 3 ? 'ใกล้หมด · ' : '' ?>เหลือ <?= $stockLeft ?> ชิ้น
                         </span>
                         <?php else: ?>
-                        <span class="rw-stock-txt" style="color:#3a3e43;">ไม่จำกัดจำนวน</span>
+                        <span class="rw-stock-txt rw-u032">ไม่จำกัดจำนวน</span>
                         <?php endif; ?>
                     </div>
 
@@ -507,9 +479,9 @@ require_once __DIR__ . '/../includes/header.php';
                     </button>
                     <?php else: ?>
                     <div class="rw-lock-badge">
-                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
+                        <svg class="rw-u033" width="11" height="11" viewBox="0 0 24 24" fill="none"
                              stroke="rgba(74,78,87,0.65)" stroke-width="2.5"
-                             stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;">
+                             stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                             <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                         </svg>
@@ -527,22 +499,16 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- ══ HISTORY ══ -->
         <?php if (!empty($myRedemptions)): ?>
-        <section style="margin-bottom:3rem;">
-            <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1.2rem;">
-                <div style="width:4px; height:22px; background:linear-gradient(180deg,rgba(218,185,55,0.55),rgba(218,185,55,0.18)); border-radius:999px; flex-shrink:0;"></div>
-                <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">ประวัติการแลกรางวัล</span>
-                <span style="font-size:0.63rem; font-weight:700; color:#091113; background:#dab937;
-                             border-radius:999px; padding:0.14rem 0.52rem;"><?= count($myRedemptions) ?></span>
+        <section class="rw-u034">
+            <div class="rw-u035">
+                <div class="rw-u036"></div>
+                <span class="rw-u025">ประวัติการแลกรางวัล</span>
+                <span class="rw-u037"><?= count($myRedemptions) ?></span>
             </div>
 
-            <div class="jp-glass-card jp-glass-card--md" style="overflow:hidden;">
+            <div class="jp-glass-card jp-glass-card--md rw-u038">
                 <!-- Table header -->
-                <div style="display:grid; grid-template-columns:1fr auto auto auto;
-                             gap:1rem; padding:0.65rem 1.25rem;
-                             background:rgba(255,255,255,0.03);
-                             border-bottom:1px solid rgba(255,255,255,0.07);
-                             font-size:0.60rem; font-weight:700; letter-spacing:0.10em;
-                             text-transform:uppercase; color:#6b6e77;">
+                <div class="rw-u039">
                     <span>รางวัล</span><span>Token</span><span>วันที่</span><span>สถานะ</span>
                 </div>
 
@@ -557,51 +523,41 @@ require_once __DIR__ . '/../includes/header.php';
                     $ds    = $dsDark[$rd['status']]     ?? $dsDark['pending'];
                     $rdCat = (string)($rd['category'] ?? 'general');
                     $tone  = $catTone[$rdCat] ?? $catTone['general'];
+                    $rowToneClass = $bannerToneCls[$rdCat] ?? $bannerToneCls['general'];
                 ?>
                  <div class="rw-hist-row rw-hist-detail-trigger"
                      data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
                      tabindex="0" role="button" aria-label="ดูรายละเอียด: <?= e($rd['reward_title']) ?>"
-                     style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
-                            gap:0.65rem; cursor:pointer;">
+                     class="rw-hist-row-wrap">
                     <!-- Main row -->
-                    <div style="display:grid; grid-template-columns:1fr auto auto auto;
-                                 gap:1rem; align-items:center;">
-                        <div style="display:flex; align-items:center; gap:0.6rem; min-width:0;">
-                            <span style="display:inline-flex; align-items:center; justify-content:center;
-                                         width:28px; height:28px; flex-shrink:0;
-                                         color:<?= $tone['icon_color'] ?>;
-                                         background:<?= $tone['icon_bg'] ?>;
-                                         border:1px solid <?= $tone['icon_border'] ?>;
-                                         border-radius:999px;">
+                    <div class="rw-u040">
+                        <div class="rw-u041">
+                            <span class="rw-hist-icon <?= e($rowToneClass) ?>">
                                 <?= rewardCategoryIconSvg($rdCat) ?>
                             </span>
-                            <div style="min-width:0;">
-                                <p style="font-size:0.85rem; font-weight:500; color:#eeebe1; margin:0;
-                                           white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            <div class="rw-u042">
+                                <p class="rw-u043">
                                     <?= e($rd['reward_title']) ?>
                                 </p>
                                 <?php if (!empty($rd['admin_note'])): ?>
-                                <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
+                                <p class="rw-u044">
                                     <?= e($rd['admin_note']) ?>
                                 </p>
                                 <?php endif; ?>
                             </div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:0.28rem; white-space:nowrap;">
+                        <div class="rw-u045">
                             <img src="<?= BASE_URL ?>/assets/images/token.png" loading="lazy"
-                                 width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
-                            <span style="font-size:0.85rem; font-weight:700; color:#dab937;">
+                                 width="12" height="12" class="rw-token-img-xs-muted" alt="">
+                            <span class="rw-u046">
                                 <?= (int)$rd['tokens_spent'] ?>
                             </span>
                         </div>
-                        <span style="font-size:0.75rem; color:#6b6e77; white-space:nowrap;">
+                        <span class="rw-u047">
                             <?= date('d/m/y', strtotime($rd['redeemed_at'])) ?>
                         </span>
-                        <div style="display:flex; align-items:center; gap:0.45rem; justify-content:flex-end; flex-wrap:wrap;">
-                            <span style="font-size:0.63rem; font-weight:700; padding:0.20rem 0.65rem;
-                                         border-radius:999px; white-space:nowrap;
-                                         background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
-                                         border:1px solid <?= $ds['border'] ?>;">
+                        <div class="rw-u048">
+                            <span class="rw-status-pill rw-status-<?= e($rd['status']) ?>">
                                 <?= $sm['label'] ?>
                             </span>
                             <?php if ($rd['status'] === 'pending'): ?>
@@ -609,12 +565,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
                                     data-reward-title="<?= e($rd['reward_title']) ?>"
                                     data-cost="<?= (int)$rd['tokens_spent'] ?>"
-                                    style="display:inline-flex; align-items:center; gap:0.3rem;
-                                           background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
-                                           border-radius:7px; padding:0.20rem 0.55rem; cursor:pointer;
-                                           font-size:0.64rem; font-weight:600; color:rgba(210,89,42,0.75);
-                                           font-family:'Prompt',sans-serif; transition:background 0.15s; white-space:nowrap;"
-                                    class="rw-btn-cancel-redemption"
+                                    class="rw-btn-cancel-redemption rw-btn-cancel-inline"
                                     title="ยกเลิกการแลกรางวัลนี้">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="10" height="10">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -626,23 +577,15 @@ require_once __DIR__ . '/../includes/header.php';
                     </div><!-- /main row -->
                     <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
                     <!-- Coupon code row -->
-                    <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.6rem; margin-top:0.1rem;
-                                display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
+                    <div class="rw-u049">
                         <!-- toggle button (left) -->
                         <button data-action="toggle-coupon-inline"
                             data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
-                                style="display:inline-flex; align-items:center; gap:0.38rem;
-                                       background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
-                                       border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
-                                       font-size:0.7rem; font-weight:700; color:rgba(218,185,55,0.75);
-                                       letter-spacing:0.06em; text-transform:uppercase;
-                                       font-family:'Prompt',sans-serif;
-                                       transition:background 0.15s, border-color 0.15s;"
-                            class="rw-btn-toggle-coupon"
+                            class="rw-btn-toggle-coupon rw-btn-toggle-inline"
                                 title="แสดง/ซ่อนรหัสคูปอง">
-                            <svg id="coupon-eye-<?= (int)$rd['redemption_id'] ?>"
+                               <svg id="coupon-eye-<?= (int)$rd['redemption_id'] ?>"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                                 width="12" height="12" style="flex-shrink:0;">
+                                   width="12" height="12" class="rw-flex-shrink-0">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -652,18 +595,13 @@ require_once __DIR__ . '/../includes/header.php';
                         </button>
                         <!-- coupon box (hidden by default) -->
                         <div id="coupon-box-<?= (int)$rd['redemption_id'] ?>"
-                             style="display:none; align-items:center; gap:0.6rem; flex-wrap:wrap;
-                                    background:rgba(218,185,55,0.05); border:1px solid rgba(218,185,55,0.22);
-                                    border-radius:10px; padding:0.32rem 0.85rem;">
-                            <div style="display:flex; flex-direction:column; gap:0.06rem;">
-                                <span style="font-size:0.55rem; font-weight:600; letter-spacing:0.08em;
-                                             color:rgba(218,185,55,0.38); text-transform:uppercase; line-height:1;">
+                                class="rw-inline-coupon-box">
+                            <div class="rw-u050">
+                                <span class="rw-u051">
                                     อนุมัติโดย: <?= e($rd['processed_by_name'] ?? '—') ?>
                                 </span>
                                 <span id="coupon-code-<?= (int)$rd['redemption_id'] ?>"
-                                      style="font-size:1rem; font-weight:800; color:#f8e769;
-                                             letter-spacing:0.12em; font-family:monospace,'Prompt';
-                                             user-select:all; word-break:break-all; line-height:1.3;">
+                                      class="rw-inline-coupon-code">
                                     <?= e($rd['coupon_code']) ?>
                                 </span>
                             </div>
@@ -671,13 +609,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
                                     data-code="<?= e((string)$rd['coupon_code']) ?>"
                                     id="coupon-copy-<?= (int)$rd['redemption_id'] ?>"
-                                    style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
-                                           background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
-                                           border-radius:6px; color:#dab937; cursor:pointer;
-                                           font-size:0.68rem; font-weight:600; font-family:'Prompt',sans-serif;
-                                           padding:0.22rem 0.55rem; line-height:1.4;
-                                           transition:background 0.15s; white-space:nowrap;"
-                                    class="rw-btn-copy-coupon"
+                                     class="rw-btn-copy-coupon rw-btn-copy-inline"
                                     title="คัดลอก">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -704,21 +636,15 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="rw-modal-box">
 
         <!-- Header -->
-        <div style="background:linear-gradient(135deg,rgba(218,185,55,0.12),rgba(218,185,55,0.03));
-                    border-bottom:1px solid rgba(218,185,55,0.16);
-                    padding:1rem 1.35rem; display:flex; align-items:center; gap:0.7rem;">
-            <div style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
-                         background:rgba(218,185,55,0.15); border:1px solid rgba(218,185,55,0.38);
-                         display:flex;align-items:center;justify-content:center;">
+        <div class="rw-u052">
+            <div class="rw-u053">
                 <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                     width="14" height="14" style="object-fit:contain;" alt="">
+                     width="14" height="14" class="rw-token-img-contain" alt="">
             </div>
-            <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">ยืนยันการแลกรางวัล</span>
+            <span class="rw-u025">ยืนยันการแลกรางวัล</span>
                 <button data-action="close-redeem"
-                    style="margin-left:auto; background:none; border:none; cursor:pointer;
-                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
-                           transition:color 0.15s;"
-                    class="rw-btn-modal-close" aria-label="ปิด">
+                   
+                    class="rw-btn-modal-close rw-u054" aria-label="ปิด">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12"/>
@@ -727,34 +653,25 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Body -->
-        <div style="padding:1.35rem 1.5rem;">
-            <p id="modal-body-text" style="font-size:0.88rem; color:#9ca3af; line-height:1.7;
-                                           margin:0 0 1.35rem;"></p>
+        <div class="rw-u055">
+            <p class="rw-u056" id="modal-body-text"></p>
 
             <!-- Error message -->
-            <div id="modal-error"
-                 style="display:none; background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28);
-                        border-radius:10px; padding:0.6rem 0.95rem; margin-bottom:1rem;
-                        font-size:0.82rem; color:#d2592a;"></div>
+            <div class="rw-u057" id="modal-error"
+                ></div>
 
             <!-- Buttons -->
-            <div style="display:flex; gap:0.65rem;">
+            <div class="rw-u058">
                 <button data-action="close-redeem"
                         id="modal-cancel-btn"
-                        style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                               color:#eeebe1; transition:background 0.18s;"
-                    class="rw-btn-modal-cancel">
+                       
+                    class="rw-btn-modal-cancel rw-u059">
                     ยกเลิก
                 </button>
                 <button data-action="submit-redeem"
                         id="modal-confirm-btn"
-                        style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; font-weight:700;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(218,185,55,0.18); color:#f8e769;
-                               border:1px solid rgba(218,185,55,0.35); transition:background 0.18s;"
-                    class="rw-btn-modal-confirm">
+                       
+                    class="rw-btn-modal-confirm rw-u060">
                     ยืนยันแลกรางวัล
                 </button>
             </div>
@@ -817,9 +734,9 @@ require_once __DIR__ . '/../includes/header.php';
         ) || <?php echo (int)$wallet['balance']; ?>;
 
         document.getElementById('modal-body-text').innerHTML =
-            'แลกรางวัล <strong style="color:#eeebe1;">' + title + '</strong> ' +
-            'ใช้ <strong style="color:#f8e769;">' + cost.toLocaleString() + ' Token</strong> ใช่หรือไม่?<br>' +
-            '<span style="font-size:0.78rem;color:#4a4e57;">ยอดคงเหลือ ' + (balance - cost).toLocaleString() + ' Token</span>';
+            'แลกรางวัล <strong class="rw-modal-strong">' + title + '</strong> ' +
+            'ใช้ <strong class="rw-modal-token">' + cost.toLocaleString() + ' Token</strong> ใช่หรือไม่?<br>' +
+            '<span class="rw-modal-sub">ยอดคงเหลือ ' + (balance - cost).toLocaleString() + ' Token</span>';
 
         document.getElementById('modal-error').style.display        = 'none';
 
@@ -1007,7 +924,7 @@ require_once __DIR__ . '/../includes/header.php';
         var t = document.getElementById('app-toast');
         if (!t) return;
         t.className = 'toast-success';
-        t.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="flex-shrink:0">'
+        t.innerHTML = '<svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="rw-flex-shrink-0">'
             + '<polyline points="20 6 9 17 4 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             + '<span>' + msg + '</span>';
         t.style.opacity = '';
@@ -1117,30 +1034,21 @@ foreach ($myRedemptions as $_rd) {
 <script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>;</script>
 
 <!-- ── Redemption Detail Modal ── -->
-<div id="rd-detail-modal" data-action-overlay="close-rd-detail"
-     style="display:none; position:fixed; inset:0; z-index:9500;
-            background:rgba(0,0,0,0.80); backdrop-filter:blur(7px);
-         align-items:center; justify-content:center; padding:1rem;">
+<div class="rw-u061" id="rd-detail-modal" data-action-overlay="close-rd-detail"
+    >
 
-    <div id="rd-detail-card"
-         style="background:#0f1416; border:1px solid rgba(255,255,255,0.10); border-radius:20px;
-                max-width:430px; width:100%; max-height:90vh; overflow-y:auto;
-                box-shadow:0 24px 60px rgba(0,0,0,0.72);">
+    <div class="rw-u062" id="rd-detail-card"
+        >
 
         <!-- Header -->
-        <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                    display:flex; align-items:center; justify-content:space-between;">
-            <div style="display:flex; align-items:center; gap:0.55rem;">
-            <span style="font-size:0.7rem; font-weight:700; color:#dab937;">DOC</span>
-                <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
-                             text-transform:uppercase; color:rgba(218,185,55,0.85);">รายละเอียดคำขอแลกรางวัล</span>
+        <div class="rw-u063">
+            <div class="rw-u064">
+            <span class="rw-u065">DOC</span>
+                <span class="rw-u066">รายละเอียดคำขอแลกรางวัล</span>
             </div>
                 <button data-action="close-rd-detail"
-                    style="width:28px; height:28px; border-radius:50%;
-                           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                           color:#6b6e77; cursor:pointer; display:flex; align-items:center;
-                           justify-content:center; transition:color 0.15s; flex-shrink:0;"
-                    class="rw-btn-modal-close" aria-label="ปิด">
+                   
+                    class="rw-btn-modal-close rw-u067" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -1148,99 +1056,67 @@ foreach ($myRedemptions as $_rd) {
         </div>
 
         <!-- Body -->
-        <div style="padding:1.35rem 1.4rem; display:flex; flex-direction:column; gap:0.9rem;">
+        <div class="rw-u068">
 
             <!-- Reward card -->
-            <div style="display:flex; align-items:center; gap:1rem;
-                        background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
-                        border-radius:14px; padding:0.95rem 1.1rem;">
-                <span id="rdd-emoji" style="font-size:2.5rem; flex-shrink:0; line-height:1; user-select:none;"></span>
-                <div style="flex:1; min-width:0;">
-                    <p id="rdd-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1;
-                                              margin:0 0 0.4rem; line-height:1.3;"></p>
-                    <span id="rdd-status-badge"
-                          style="font-size:0.63rem; font-weight:700; padding:0.2rem 0.65rem;
-                                 border-radius:999px; letter-spacing:0.04em; white-space:nowrap;"></span>
+            <div class="rw-u069">
+                <span class="rw-u070" id="rdd-emoji"></span>
+                <div class="rw-u071">
+                    <p class="rw-u072" id="rdd-title"></p>
+                    <span class="rw-u073" id="rdd-status-badge"
+                         ></span>
                 </div>
             </div>
 
             <!-- Info grid -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
-                <div style="background:rgba(218,185,55,0.07); border:1px solid rgba(218,185,55,0.18);
-                            border-radius:12px; padding:0.7rem 0.9rem;">
-                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">Token ที่ใช้</p>
-                    <p id="rdd-tokens" style="font-size:1.15rem; font-weight:800; color:#dab937; margin:0;"></p>
+            <div class="rw-u074">
+                <div class="rw-u075">
+                    <p class="rw-u076">Token ที่ใช้</p>
+                    <p class="rw-u077" id="rdd-tokens"></p>
                 </div>
-                <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
-                            border-radius:12px; padding:0.7rem 0.9rem;">
-                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ขอแลก</p>
-                    <p id="rdd-req-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0; line-height:1.4;"></p>
+                <div class="rw-u078">
+                    <p class="rw-u076">วันที่ขอแลก</p>
+                    <p class="rw-u079" id="rdd-req-at"></p>
                 </div>
-                <div id="rdd-proc-row" style="display:none; grid-column:1/-1;
-                            background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.07);
-                            border-radius:12px; padding:0.7rem 0.9rem;">
-                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                               text-transform:uppercase; color:#6b6e77; margin:0 0 0.25rem;">วันที่ดำเนินการ</p>
-                    <p id="rdd-proc-at" style="font-size:0.75rem; font-weight:600; color:#eeebe1; margin:0;"></p>
-                    <p id="rdd-proc-by" style="font-size:0.70rem; color:#6b6e77; margin:0.2rem 0 0; display:none;"></p>
+                <div class="rw-u080" id="rdd-proc-row">
+                    <p class="rw-u076">วันที่ดำเนินการ</p>
+                    <p class="rw-u081" id="rdd-proc-at"></p>
+                    <p class="rw-u082" id="rdd-proc-by"></p>
                 </div>
             </div>
 
             <!-- Admin note -->
-            <div id="rdd-note-wrap" style="display:none;
-                        background:rgba(79,139,152,0.07); border:1px solid rgba(79,139,152,0.22);
-                        border-radius:12px; padding:0.75rem 0.95rem;">
-                <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                           text-transform:uppercase; color:#4f8b98; margin:0 0 0.3rem;">หมายเหตุจาก HR</p>
-                <p id="rdd-note" style="font-size:0.83rem; color:#eeebe1; margin:0; line-height:1.55;"></p>
+            <div class="rw-u083" id="rdd-note-wrap">
+                <p class="rw-u084">หมายเหตุจาก HR</p>
+                <p class="rw-u085" id="rdd-note"></p>
             </div>
 
             <!-- Coupon reveal (fulfilled + has coupon) -->
-            <div id="rdd-coupon-section" style="display:none;">
-                <button data-action="rd-toggle-coupon"
-                        style="display:inline-flex; align-items:center; gap:0.4rem; width:100%;
-                               justify-content:center; background:rgba(218,185,55,0.08);
-                               border:1px solid rgba(218,185,55,0.25); border-radius:10px;
-                               padding:0.5rem 1rem; cursor:pointer; font-size:0.78rem; font-weight:700;
-                               color:rgba(218,185,55,0.80); font-family:'Prompt',sans-serif; transition:background 0.15s;">
+            <div class="rw-u086" id="rdd-coupon-section">
+                <button class="rw-u087" data-action="rd-toggle-coupon"
+                       >
                     <span id="rdd-coupon-label">แสดงรหัสคูปอง</span>
                 </button>
-                <div id="rdd-coupon-box" style="display:none; margin-top:0.5rem;
-                            background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.25);
-                            border-radius:10px; padding:0.75rem 1rem;
-                            flex-direction:column; gap:0.35rem;">
-                    <p style="font-size:0.58rem; font-weight:700; letter-spacing:0.10em;
-                               text-transform:uppercase; color:rgba(218,185,55,0.45); margin:0;">รหัสคูปอง</p>
-                    <div style="display:flex; align-items:center; gap:0.65rem;">
-                        <p id="rdd-coupon-code"
-                           style="font-size:1.15rem; font-weight:800; color:#f8e769;
-                                  letter-spacing:0.12em; font-family:monospace,'Prompt';
-                                  user-select:all; word-break:break-all; margin:0; flex:1;"></p>
-                        <button data-action="rd-copy-coupon"
+                <div class="rw-u088" id="rdd-coupon-box">
+                    <p class="rw-u089">รหัสคูปอง</p>
+                    <div class="rw-u090">
+                        <p class="rw-u091" id="rdd-coupon-code"
+                          ></p>
+                        <button class="rw-u092" data-action="rd-copy-coupon"
                                 id="rdd-coupon-copy"
-                                style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
-                                       background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.25);
-                                       border-radius:7px; color:#dab937; cursor:pointer;
-                                       font-size:0.72rem; font-weight:600; font-family:'Prompt',sans-serif;
-                                       padding:0.3rem 0.65rem; transition:background 0.15s; white-space:nowrap;">คัดลอก</button>
+                               >คัดลอก</button>
                     </div>
                 </div>
             </div>
 
             <!-- Cancel section (pending only) -->
-            <div id="rdd-cancel-section" style="display:none;">
-                <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:0.85rem;">
-                    <p style="font-size:0.68rem; color:#6b6e77; text-align:center; margin:0 0 0.6rem;">
+            <div class="rw-u086" id="rdd-cancel-section">
+                <div class="rw-u093">
+                    <p class="rw-u094">
                         Token จะถูกคืนให้ทันที หลังยืนยันยกเลิก
                     </p>
-                        <button id="rdd-cancel-btn" data-action="rd-do-cancel"
-                            style="display:flex; align-items:center; justify-content:center; gap:0.5rem;
-                                   width:100%; padding:0.6rem 1rem; border-radius:11px; cursor:pointer;
-                                   background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.30);
-                                   color:rgba(210,89,42,0.85); font-size:0.83rem; font-weight:600;
-                                   font-family:'Prompt',sans-serif; transition:background 0.15s, color 0.15s; line-height:1.4;"></button>
+                        <button class="rw-u095" id="rdd-cancel-btn" data-action="rd-do-cancel"
+                           ></button>
                 </div>
             </div>
 
@@ -1470,40 +1346,28 @@ document.addEventListener('click', function(e) {
 </script>
 
 <!-- ── Pending List Modal ── -->
-<div id="rd-pending-modal" data-action-overlay="close-pending-list"
-     style="display:none; position:fixed; inset:0; z-index:9600;
-            background:rgba(0,0,0,0.82); backdrop-filter:blur(7px);
-         align-items:center; justify-content:center; padding:1rem;">
-    <div id="rd-pending-card"
-         style="background:#0f1416; border:1px solid rgba(245,158,11,0.22); border-radius:20px;
-                max-width:420px; width:100%; max-height:82vh; overflow-y:auto;
-                box-shadow:0 24px 60px rgba(0,0,0,0.72);">
+<div class="rw-u096" id="rd-pending-modal" data-action-overlay="close-pending-list"
+    >
+    <div class="rw-u097" id="rd-pending-card"
+        >
         <!-- Header -->
-        <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                    display:flex; align-items:center; justify-content:space-between; position:sticky; top:0;
-                    background:#0f1416; z-index:1; border-radius:20px 20px 0 0;">
-            <div style="display:flex; align-items:center; gap:0.55rem;">
-                <span style="width:8px;height:8px;border-radius:50%;background:#f59e0b;
-                              flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
-                <span style="font-size:0.70rem; font-weight:700; letter-spacing:0.08em;
-                             text-transform:uppercase; color:#fbbf24;">รอดำเนินการ</span>
-                <span id="pending-count-badge"
-                      style="font-size:0.62rem; font-weight:700; color:#091113;
-                             background:#f59e0b; border-radius:999px; padding:0.10rem 0.48rem;"></span>
+        <div class="rw-u098">
+            <div class="rw-u064">
+                <span class="rw-u099"></span>
+                <span class="rw-u100">รอดำเนินการ</span>
+                <span class="rw-u101" id="pending-count-badge"
+                     ></span>
             </div>
                 <button data-action="close-pending-list"
-                    style="width:28px; height:28px; border-radius:50%;
-                           background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                           color:#6b6e77; cursor:pointer; display:flex; align-items:center;
-                           justify-content:center; transition:color 0.15s; flex-shrink:0;"
-                    class="rw-btn-modal-close" aria-label="ปิด">
+                   
+                    class="rw-btn-modal-close rw-u067" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
         </div>
         <!-- List -->
-        <div id="pending-list-body" style="padding:0.75rem 0;"></div>
+        <div class="rw-u102" id="pending-list-body"></div>
     </div>
 </div>
 
@@ -1514,11 +1378,11 @@ function openPendingList() {
     document.getElementById('pending-count-badge').textContent = pending.length;
     body.innerHTML = '';
     if (pending.length === 0) {
-        body.innerHTML = '<p style="text-align:center; font-size:0.83rem; color:#6b6e77; padding:1.5rem;">ไม่มีรายการรอดำเนินการ</p>';
+        body.innerHTML = '<p class="rw-pending-empty">ไม่มีรายการรอดำเนินการ</p>';
     } else {
         pending.forEach(function(entry, idx) {
             var rdId = entry[0], d = entry[1];
-            var tone = rdCategoryTone(d.category || 'general');
+            var toneClass = 'rw-tone-' + (d.category || 'general');
             var row = document.createElement('div');
             row.style.cssText = [
                 'display:flex; align-items:center; gap:0.85rem;',
@@ -1533,19 +1397,19 @@ function openPendingList() {
                 setTimeout(function() { openRdDetail(parseInt(rdId)); }, 140);
             };
             row.innerHTML = [
-                '<span style="display:inline-flex; align-items:center; justify-content:center; color:' + tone.color + '; flex-shrink:0; line-height:1; user-select:none; width:34px; height:34px; border-radius:999px; background:' + tone.bg + '; border:1px solid ' + tone.border + ';">' +
+                '<span class="rw-pending-icon ' + toneClass + '">' +
                 rdCategoryIconSvg(d.category || 'general', 20) +
                 '</span>',
-                '<div style="flex:1; min-width:0;">',
-                '  <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0 0 0.2rem;',
+                '<div class="rw-pending-main">',
+                '  <p class="rw-pending-title">',
                 '            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">' + d.title + '</p>',
-                '  <p style="font-size:0.72rem; color:#6b6e77; margin:0;">ขอวันที่ ' + d.reqAt + '</p>',
+                '  <p class="rw-pending-date">ขอวันที่ ' + d.reqAt + '</p>',
                 '</div>',
-                '<div style="display:flex; align-items:center; gap:0.25rem; flex-shrink:0;">',
-                '  <span style="font-size:0.88rem; font-weight:800; color:#dab937;">' + d.tokens.toLocaleString() + '</span>',
-                '  <span style="font-size:0.62rem; color:#6b6e77;">token</span>',
+                '<div class="rw-pending-token-wrap">',
+                '  <span class="rw-pending-token-value">' + d.tokens.toLocaleString() + '</span>',
+                '  <span class="rw-pending-token-label">token</span>',
                 '</div>',
-                '<svg fill="none" stroke="#6b6e77" viewBox="0 0 24 24" width="14" height="14" style="flex-shrink:0;">',
+                '<svg fill="none" stroke="#6b6e77" viewBox="0 0 24 24" width="14" height="14" class="rw-pending-arrow">',
                 '  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>',
                 '</svg>',
             ].join('');

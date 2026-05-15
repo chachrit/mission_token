@@ -233,7 +233,7 @@ $notifCount = count($allNotifs);
     <!-- ===================================================
          NAVIGATION BAR
          =================================================== -->
-    <nav style="background-color:var(--j-dark);" class="sticky top-0 z-50" id="main-nav">
+    <nav class="sticky top-0 z-50 nh-u001" id="main-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
 
@@ -247,11 +247,11 @@ $notifCount = count($allNotifs);
                          alt="JOURNAL"
                          class="nav-logo h-20 w-auto">
                     <?php if ($isAdmin): ?>
-                    <span class="badge text-xs" style="background:#62307a; color:var(--j-white);">Admin</span>
+                    <span class="badge text-xs nh-u002">Admin</span>
                     <?php elseif ($isHr): ?>
-                    <span class="badge text-xs" style="background:#4f8b98; color:var(--j-white);">HR</span>
+                    <span class="badge text-xs nh-u003">HR</span>
                     <?php elseif ($isIt): ?>
-                    <span class="badge text-xs" style="background:#2f4e9d; color:var(--j-white);">IT</span>
+                    <span class="badge text-xs nh-u004">IT</span>
                     <?php endif; ?>
                 </div>
 
@@ -295,8 +295,8 @@ $notifCount = count($allNotifs);
                               class="nav-link-hover relative flex items-center gap-1.5 px-4 py-5 text-sm font-medium transition-colors <?php echo $isActive ? 'nav-active' : 'nav-link-default'; ?>">
                         <?php echo $link['label']; ?>
                         <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
-                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full font-bold"
-                              style="background:var(--j-orange); color:#fff;"><?php echo $link['badge']; ?></span>
+                        <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full font-bold nh-u005"
+                             ><?php echo $link['badge']; ?></span>
                         <?php endif; ?>
                     </a>
                     <?php endforeach; ?>
@@ -308,10 +308,10 @@ $notifCount = count($allNotifs);
 
                     <!-- Token Balance – แสดงเฉพาะ employee zone -->
                     <?php if (!$isAdminPage || !$isAdminOrHr): ?>
-                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full"
-                         style="background:#1a1f20; border: 1px solid var(--j-charcoal);">
-                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" style="object-fit:contain;" class="token-spin">
-                        <span class="text-sm font-semibold" id="nav-balance" style="color:var(--j-gold);"><?php echo formatTokens($navBalance); ?></span>
+                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full nh-u006"
+                        >
+                        <img src="<?php echo BASE_URL; ?>/assets/images/token.png" alt="token" width="18" height="18" class="token-spin nh-token-img">
+                        <span class="text-sm font-semibold nh-u007" id="nav-balance"><?php echo formatTokens($navBalance); ?></span>
                     </div>
                     <?php endif; ?>
 
@@ -356,7 +356,7 @@ $notifCount = count($allNotifs);
                             ?>
                             <?php if (empty($allNotifs)): ?>
                             <div id="notif-empty-state" class="nav-notif-empty">
-                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:0.5rem;">
+                                <svg class="nh-u008" width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                           d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                                 </svg>
@@ -383,8 +383,8 @@ $notifCount = count($allNotifs);
                                 </a>
                                 <?php endforeach; ?>
                             </div>
-                            <div id="notif-empty-state" class="nav-notif-empty" style="display:none;">
-                                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="opacity:.3;margin-bottom:0.5rem;">
+                            <div id="notif-empty-state" class="nav-notif-empty nh-u009">
+                                <svg class="nh-u008" width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
                                           d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                                 </svg>
@@ -402,22 +402,22 @@ $notifCount = count($allNotifs);
                     <!-- User Menu -->
                     <div class="relative">
                         <button id="user-menu-btn"
-                            class="nav-user-menu-btn flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors"
+                            class="nav-user-menu-btn flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors nh-u010"
                                 aria-expanded="false"
                                 aria-controls="user-dropdown"
-                            style="color:#9ca3af;">
+                           >
                             <!-- Avatar -->
                             <?php $_navAvatar = $_SESSION['avatar_url'] ?? ''; ?>
-                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden"
-                                 style="background:var(--j-gold); color:var(--j-dark);">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden nh-u011"
+                                >
                                 <?php if ($_navAvatar): ?>
-                                <img src="<?php echo uploadImgUrl('avatars', $_navAvatar); ?>"
-                                     alt="" style="width:100%;height:100%;object-fit:cover;">
+                                  <img src="<?php echo uploadImgUrl('avatars', $_navAvatar); ?>"
+                                      alt="" class="nh-avatar-img">
                                 <?php else: ?>
                                 <?php echo mb_substr($_SESSION['full_name'] ?? 'U', 0, 1, 'UTF-8'); ?>
                                 <?php endif; ?>
                             </div>
-                            <span class="hidden sm:block text-sm font-medium max-w-[120px] truncate" style="color:var(--j-white);">
+                            <span class="hidden sm:block text-sm font-medium max-w-[120px] truncate nh-u012">
                                 <?php echo e($_SESSION['full_name'] ?? ''); ?>
                             </span>
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -427,14 +427,14 @@ $notifCount = count($allNotifs);
 
                         <!-- Dropdown -->
                         <div id="user-dropdown"
-                             class="hidden absolute right-0 mt-2 w-52 rounded-xl shadow-2xl overflow-hidden z-50"
-                             style="background:var(--j-panel); border:1px solid var(--j-charcoal);">
+                             class="hidden absolute right-0 mt-2 w-52 rounded-xl shadow-2xl overflow-hidden z-50 nh-u013"
+                            >
                             <!-- User info -->
-                            <div class="px-4 py-3 border-b" style="border-color:var(--j-charcoal);">
-                                <p class="text-sm font-medium" style="color:var(--j-white);"><?php echo e($_SESSION['full_name'] ?? ''); ?></p>
-                                <p class="text-xs mt-0.5" style="color:var(--j-slate);"><?php echo e($_SESSION['employee_code'] ?? ''); ?></p>
+                            <div class="px-4 py-3 border-b nh-u014">
+                                <p class="text-sm font-medium nh-u012"><?php echo e($_SESSION['full_name'] ?? ''); ?></p>
+                                <p class="text-xs mt-0.5 nh-u015"><?php echo e($_SESSION['employee_code'] ?? ''); ?></p>
                                 <?php if (!$isAdmin): ?>
-                                <p class="text-xs mt-1 font-semibold" style="color:var(--j-gold);">
+                                <p class="text-xs mt-1 font-semibold nh-u007">
                                     <?php echo formatTokens($navBalance); ?> token
                                 </p>
                                 <?php endif; ?>
@@ -499,8 +499,8 @@ $notifCount = count($allNotifs);
                     </div>
 
                     <!-- Mobile Hamburger -->
-                        <button id="mobile-menu-btn" class="nav-mobile-menu-btn md:hidden p-2 rounded-lg"
-                            style="color:#9ca3af;">
+                        <button id="mobile-menu-btn" class="nav-mobile-menu-btn md:hidden p-2 rounded-lg nh-u010"
+                           >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
@@ -510,22 +510,22 @@ $notifCount = count($allNotifs);
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden border-t" style="border-color:var(--j-charcoal); background:var(--j-dark);">
+        <div id="mobile-menu" class="hidden md:hidden border-t nh-u016">
             <div class="px-4 py-3 space-y-1">
                 <?php foreach ($navLinks as $key => $link): ?>
                 <a href="<?php echo $link['href']; ?>"
                    class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?php echo ($currentActive === $key) ? 'nav-link-active bg-[#1a1f20]' : 'nav-link-default'; ?>">
                     <?php echo $link['label']; ?>
                     <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
-                    <span class="px-1.5 py-0.5 text-xs rounded-full font-bold" style="background:var(--j-orange); color:#fff;"><?php echo $link['badge']; ?></span>
+                    <span class="px-1.5 py-0.5 text-xs rounded-full font-bold nh-u005"><?php echo $link['badge']; ?></span>
                     <?php endif; ?>
                 </a>
                 <?php endforeach; ?>
                 <!-- Token balance on mobile -->
                 <?php if (!$isAdmin): ?>
-                <div class="flex items-center gap-2 px-3 py-2 mt-2 rounded-lg" style="background:#1a1f20;">
-                    <span class="text-xs" style="color:var(--j-slate);">Token คงเหลือ:</span>
-                    <span class="text-sm font-semibold" style="color:var(--j-gold);"><?php echo formatTokens($navBalance); ?></span>
+                <div class="flex items-center gap-2 px-3 py-2 mt-2 rounded-lg nh-u017">
+                    <span class="text-xs nh-u015">Token คงเหลือ:</span>
+                    <span class="text-sm font-semibold nh-u007"><?php echo formatTokens($navBalance); ?></span>
                 </div>
                 <?php endif; ?>
             </div>

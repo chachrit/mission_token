@@ -349,12 +349,12 @@ if (isPost()) {
         <!-- Logo -->
         <div class="text-center mb-8">
             <img src="<?php echo BASE_URL; ?>/assets/images/logo.png" alt="JOURNAL" class="login-logo mx-auto mb-5">
-            <p class="text-xs font-semibold tracking-[0.32em] uppercase" style="color:#dab937;">MISSION TOKEN</p>
+            <p class="text-xs font-semibold tracking-[0.32em] uppercase lg-u001">MISSION TOKEN</p>
         </div>
 
         <div class="mb-7">
-            <h2 class="text-xl font-bold tracking-wide" style="color:#eeebe1;">เข้าสู่ระบบ</h2>
-            <p class="mt-1.5 text-sm" style="color:#6b6e77;">ใช้รหัสพนักงานและรหัสผ่านของคุณ</p>
+            <h2 class="text-xl font-bold tracking-wide lg-u002">เข้าสู่ระบบ</h2>
+            <p class="mt-1.5 text-sm lg-u003">ใช้รหัสพนักงานและรหัสผ่านของคุณ</p>
         </div>
 
         <!-- Timeout alert -->
@@ -382,7 +382,7 @@ if (isPost()) {
 
             <!-- Employee Code -->
             <div class="mb-4">
-                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase" style="color:#6b6e77;" for="employee_code">
+                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase lg-u003" for="employee_code">
                     รหัสพนักงาน
                 </label>
                 <input
@@ -400,7 +400,7 @@ if (isPost()) {
 
             <!-- Password -->
             <div class="mb-7">
-                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase" style="color:#6b6e77;" for="password">
+                <label class="mb-1.5 block text-xs font-medium tracking-wider uppercase lg-u003" for="password">
                     รหัสผ่าน
                 </label>
                 <div class="pass-wrap">
@@ -426,7 +426,7 @@ if (isPost()) {
         </form>
 
         <!-- Back to home -->
-        <div class="mt-6 text-center" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="mt-6 text-center lg-u004">
             <a href="<?php echo BASE_URL; ?>/index.php" class="login-footer-link">
                 ← กลับหน้าแรก
             </a>

@@ -162,35 +162,28 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Flash -->
         <?php if ($flash): ?>
-        <div style="margin-bottom:1.25rem; padding:0.85rem 1.1rem; border-radius:10px; font-size:0.85rem;
-                    background:<?= $flash['type']==='success' ? 'rgba(81,142,92,0.12)' : 'rgba(210,89,42,0.12)' ?>;
-                    border:1px solid <?= $flash['type']==='success' ? 'rgba(81,142,92,0.3)' : 'rgba(210,89,42,0.3)' ?>;
-                    color:<?= $flash['type']==='success' ? '#7ec98a' : '#e07a55' ?>;">
+        <div class="sv-flash <?= $flash['type']==='success' ? 'sv-flash-success' : 'sv-flash-error' ?>">
             <?= e($flash['message']) ?>
         </div>
         <?php endif; ?>
 
         <!-- Header -->
-        <div style="display:flex; align-items:flex-start; justify-content:space-between;
-                    flex-wrap:wrap; gap:1rem; margin-bottom:1.75rem;">
-            <div style="display:flex; align-items:center; gap:14px;">
+        <div class="sd-u001">
+            <div class="sd-u002">
                 <svg viewBox="0 0 24 24" width="36" height="36" fill="#FC4C02">
                     <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                 </svg>
                 <div>
-                    <p style="font-size:0.6rem; font-weight:700; letter-spacing:0.14em;
-                               text-transform:uppercase; color:rgba(252,76,2,0.55); margin:0 0 2px;">
+                    <p class="sd-u003">
                         STRAVA DASHBOARD
                     </p>
-                    <h1 style="font-size:1.45rem; font-weight:800; color:#eeebe1; margin:0;">
+                    <h1 class="sd-u004">
                         กิจกรรมออกกำลังกาย
                     </h1>
                 </div>
             </div>
             <a href="<?= BASE_URL ?>/pages/strava_connect.php"
-               style="font-size:0.78rem; color:#FC4C02; text-decoration:none; padding:0.4rem 0.9rem;
-                      border:1px solid rgba(252,76,2,0.3); border-radius:9px;
-                      background:rgba(252,76,2,0.07); display:inline-flex; align-items:center; gap:6px;">
+                    class="sv-manage-link">
                 <?php if ($connected): ?>
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <circle cx="12" cy="12" r="3"></circle>
@@ -209,20 +202,18 @@ require_once __DIR__ . '/../includes/header.php';
 
         <?php if (!$connected): ?>
         <!-- Not connected state -->
-        <div class="sv-card" style="text-align:center; padding:3rem 2rem; border-color:rgba(252,76,2,0.2);">
-            <svg viewBox="0 0 24 24" width="52" height="52" fill="rgba(252,76,2,0.3)" style="margin-bottom:1rem;">
+        <div class="sv-card sd-u005">
+            <svg class="sd-u006" viewBox="0 0 24 24" width="52" height="52" fill="rgba(252,76,2,0.3)">
                 <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
             </svg>
-            <p style="font-size:1rem; font-weight:700; color:#eeebe1; margin:0 0 0.5rem;">
+            <p class="sd-u007">
                 ยังไม่ได้เชื่อมต่อ Strava
             </p>
-            <p style="font-size:0.82rem; color:#6b6e77; margin:0 0 1.5rem;">
+            <p class="sd-u008">
                 เชื่อมต่อบัญชี Strava เพื่อดูสถิติการออกกำลังกายของคุณ
             </p>
             <a href="<?= BASE_URL ?>/pages/strava_connect.php"
-               style="display:inline-flex; align-items:center; gap:8px; padding:0.65rem 1.5rem;
-                      background:#FC4C02; color:#fff; font-weight:700; font-size:0.9rem;
-                      border-radius:10px; text-decoration:none;">
+               class="sv-connect-btn-inline">
                 <svg viewBox="0 0 24 24" width="16" height="16" fill="#fff">
                     <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                 </svg>
@@ -233,9 +224,8 @@ require_once __DIR__ . '/../includes/header.php';
         <?php else: ?>
 
         <?php if ($fetchError): ?>
-        <div style="margin-bottom:1rem; padding:0.85rem 1.1rem; border-radius:10px; font-size:0.82rem;
-                    background:rgba(210,89,42,0.1); border:1px solid rgba(210,89,42,0.3); color:#e07a55;">
-            <span style="display:inline-flex; align-items:center; gap:0.4rem;">
+        <div class="sd-u009">
+            <span class="sd-u010">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M12 9v4" stroke-width="2" stroke-linecap="round"/>
                     <circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/>
@@ -266,7 +256,7 @@ require_once __DIR__ . '/../includes/header.php';
                 $stravaActiveCount = (int)($acStmt->fetch()['cnt'] ?? 0);
             } catch (Throwable $ignored) {}
         ?>
-        <div class="ds-strava-card" style="margin-bottom:1.5rem;">
+        <div class="ds-strava-card sd-u011">
             <div class="ds-strava-topbar">
                 <div class="ds-strava-brand">
                     <div class="ds-strava-brand-icon">
@@ -291,14 +281,14 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="ds-strava-track-header">
                     <span class="ds-strava-track-km">
                         <?php if ($yearStatsLoaded): ?>
-                            <?= number_format($yearlyKm, 1) ?> <span style="font-size:0.8rem;font-weight:600;color:#6b6e77;">/ <?= $yearGoalKm ?> km</span>
+                            <?= number_format($yearlyKm, 1) ?> <span class="sd-u012">/ <?= $yearGoalKm ?> km</span>
                             <?php if ($yearProgressPct >= 100): ?>
                                 <span class="ds-strava-goal-badge">สำเร็จแล้ว!</span>
                             <?php else: ?>
                                 <span class="ds-strava-pct-badge"><?= $yearProgressPct ?>%</span>
                             <?php endif; ?>
                         <?php else: ?>
-                            <span style="font-size:0.8rem;color:#6b6e77;">กำลังโหลด...</span>
+                            <span class="sd-u013">กำลังโหลด...</span>
                         <?php endif; ?>
                     </span>
                     <span class="ds-strava-track-goal">เป้าหมาย <?= $yearGoalKm ?> กม./ปี</span>
@@ -337,7 +327,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             <div class="ds-strava-stats-row">
                 <div class="ds-strava-stat2">
-                    <span class="ds-strava-stat2-val" style="color:#FC4C02;"><?= $yearStatsLoaded ? number_format($yearlyKm, 1) : '—' ?></span>
+                    <span class="ds-strava-stat2-val sd-u014"><?= $yearStatsLoaded ? number_format($yearlyKm, 1) : '—' ?></span>
                     <span class="ds-strava-stat2-lbl">กม. รวมปีนี้</span>
                 </div>
                 <div class="ds-strava-stat2-div"></div>
@@ -382,13 +372,13 @@ require_once __DIR__ . '/../includes/header.php';
         $avgDist  = count($activities) > 0 ? $totalDist / count($activities) / 1000 : 0;
         ?>
         <div class="sv-stat-grid">
-            <div class="sv-stat" style="border-color:rgba(252,76,2,0.2);">
+            <div class="sv-stat sd-u015">
                 <div class="sv-stat-val"><?= number_format($km, 2) ?></div>
                 <div class="sv-stat-unit">กิโลเมตร</div>
                 <div class="sv-stat-label">ระยะทางรวม <?= $periodOptions[$period] ?></div>
             </div>
             <div class="sv-stat">
-                <div class="sv-stat-val"><?= $hrs > 0 ? $hrs . '<span style="font-size:1rem">h</span> ' : '' ?><?= $mins ?><span style="font-size:1rem">m</span></div>
+                <div class="sv-stat-val"><?= $hrs > 0 ? $hrs . '<span class="sd-u016">h</span> ' : '' ?><?= $mins ?><span class="sd-u016">m</span></div>
                 <div class="sv-stat-unit">ชั่วโมง:นาที</div>
                 <div class="sv-stat-label">เวลาเคลื่อนที่รวม</div>
             </div>
@@ -416,13 +406,13 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endif; ?>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem;">
+        <div class="sd-u017">
 
             <!-- Sport breakdown -->
             <div class="sv-card">
                 <p class="sv-card-title">ประเภทกิจกรรม</p>
                 <?php if (empty($countByType)): ?>
-                <p style="font-size:0.8rem; color:#6b6e77;">ไม่มีข้อมูล</p>
+                <p class="sd-u013">ไม่มีข้อมูล</p>
                 <?php else:
                 $maxCount = max($countByType);
                 foreach ($countByType as $stype => $cnt):
@@ -432,7 +422,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="sv-bar-row">
                     <span class="sv-bar-label"><?= e($stype) ?></span>
                     <div class="sv-bar-track">
-                        <div class="sv-bar-fill" style="width:<?= $pct ?>%;"></div>
+                        <div class="sv-bar-fill" data-width="<?= $pct ?>"></div>
                     </div>
                     <span class="sv-bar-num"><?= $cnt ?> ครั้ง · <?= $d ?> กม.</span>
                 </div>
@@ -443,7 +433,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="sv-card">
                 <p class="sv-card-title">กิจกรรมรายวัน <?= $periodOptions[$period] ?>ล่าสุด</p>
                 <?php if (empty($byDate)): ?>
-                <p style="font-size:0.8rem; color:#6b6e77;">ไม่มีข้อมูล</p>
+                <p class="sd-u013">ไม่มีข้อมูล</p>
                 <?php else:
                 // Fill all dates in range
                 $allDates = [];
@@ -452,7 +442,7 @@ require_once __DIR__ . '/../includes/header.php';
                 }
                 $allDates = array_reverse($allDates);
                 $maxDistDay = max(array_column($byDate, 'dist') ?: [0]);
-                echo '<div style="display:flex; flex-wrap:wrap; gap:4px;">';
+                echo '<div>';
                 foreach ($allDates as $dd):
                     $has = isset($byDate[$dd]);
                     $opacity = $has && $maxDistDay > 0
@@ -463,14 +453,12 @@ require_once __DIR__ . '/../includes/header.php';
                         : e($dd . ': ไม่มีกิจกรรม');
                 ?>
                 <div title="<?= $title ?>"
-                     style="width:14px; height:14px; border-radius:3px;
-                            background:<?= $has ? 'rgba(252,76,2,' . number_format($opacity, 2) . ')' : 'rgba(255,255,255,0.05)' ?>;
-                            border:1px solid <?= $has ? 'rgba(252,76,2,0.4)' : 'rgba(255,255,255,0.04)' ?>;
-                            cursor:default;">
+                     class="sv-heat-cell <?= $has ? 'sv-heat-cell-active' : 'sv-heat-cell-empty' ?>"
+                     data-opacity="<?= $has ? number_format($opacity, 2) : '0' ?>">
                 </div>
                 <?php endforeach;
                 echo '</div>';
-                echo '<p style="font-size:0.65rem; color:#6b6e77; margin:0.6rem 0 0;">■ สีเข้ม = ระยะทางมาก | hover เพื่อดูรายละเอียด</p>';
+                echo '<p class="sd-u019">■ สีเข้ม = ระยะทางมาก | hover เพื่อดูรายละเอียด</p>';
                 endif; ?>
             </div>
         </div>
@@ -479,12 +467,12 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="sv-card">
             <p class="sv-card-title">รายการกิจกรรมทั้งหมด (<?= count($activities) ?> รายการ)</p>
             <?php if (empty($activities)): ?>
-            <p style="font-size:0.82rem; color:#6b6e77; text-align:center; padding:1.5rem 0;">
+            <p class="sd-u020">
                 ไม่พบกิจกรรมใน <?= $periodOptions[$period] ?>ที่ผ่านมา<br>
-                <span style="font-size:0.72rem;">ตรวจสอบว่ากิจกรรมใน Strava ตั้งค่าเป็น "Everyone" หรือ "Followers"</span>
+                <span class="sd-u021">ตรวจสอบว่ากิจกรรมใน Strava ตั้งค่าเป็น "Everyone" หรือ "Followers"</span>
             </p>
             <?php else: ?>
-            <div style="overflow-x:auto;">
+            <div class="sd-u022">
             <table class="sv-table">
                 <thead>
                     <tr>
@@ -507,25 +495,24 @@ require_once __DIR__ . '/../includes/header.php';
                     $actUrl = 'https://www.strava.com/activities/' . ($a['id'] ?? '');
                 ?>
                 <tr>
-                    <td style="font-weight:600; max-width:220px;">
+                    <td class="sd-u023">
                         <a href="<?= e($actUrl) ?>" target="_blank" rel="noopener"
-                           class="sv-activity-link"
-                           style="color:#eeebe1; text-decoration:none;">
+                           class="sv-activity-link sv-activity-link-inline">
                             <?= e($a['name'] ?? '-') ?>
-                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor"
-                                 stroke-width="2.5" style="opacity:0.4; margin-left:3px; vertical-align:middle;">
+                            <svg class="sd-u024" viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor"
+                                 stroke-width="2.5">
                                 <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
                                 <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>
                             </svg>
                         </a>
                     </td>
                     <td><span class="sv-type-pill"><?= e($stype) ?></span></td>
-                    <td style="color:#f8e769; font-weight:700;"><?= number_format($dist/1000, 2) ?> <span style="color:#6b6e77; font-weight:400;">กม.</span></td>
-                    <td style="color:#4f8b98;">
-                        <?= $mtime >= 3600 ? floor($mtime/3600) . 'h ' : '' ?><?= floor(($mtime % 3600)/60) ?> <span style="color:#6b6e77;">นาที</span>
+                    <td class="sd-u025"><?= number_format($dist/1000, 2) ?> <span class="sd-u026">กม.</span></td>
+                    <td class="sd-u027">
+                        <?= $mtime >= 3600 ? floor($mtime/3600) . 'h ' : '' ?><?= floor(($mtime % 3600)/60) ?> <span class="sd-u028">นาที</span>
                     </td>
-                    <td style="color:#518e5c;"><?= number_format($elev, 0) ?> <span style="color:#6b6e77;">ม.</span></td>
-                    <td style="color:#6b6e77; font-size:0.75rem;"><?= e($dateDisp) ?></td>
+                    <td class="sd-u029"><?= number_format($elev, 0) ?> <span class="sd-u028">ม.</span></td>
+                    <td class="sd-u030"><?= e($dateDisp) ?></td>
                 </tr>
                 <?php endforeach; ?>
                 </tbody>
@@ -538,7 +525,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if (!empty($stravaSubmissions)): ?>
         <div class="sv-card">
             <p class="sv-card-title">ประวัติภารกิจ Strava ของฉัน</p>
-            <div style="overflow-x:auto;">
+            <div class="sd-u022">
             <table class="sv-table">
                 <thead>
                     <tr>
@@ -552,11 +539,6 @@ require_once __DIR__ . '/../includes/header.php';
                 <tbody>
                 <?php foreach ($stravaSubmissions as $s):
                     $sc = !empty($s['strava_condition']) ? (json_decode($s['strava_condition'], true) ?? []) : [];
-                    $statusColor = match($s['status']) {
-                        'auto_approved' => ['bg'=>'rgba(81,142,92,0.15)','color'=>'#7ec98a','border'=>'rgba(81,142,92,0.3)'],
-                        'rejected'      => ['bg'=>'rgba(210,89,42,0.12)','color'=>'#e07a55','border'=>'rgba(210,89,42,0.3)'],
-                        default         => ['bg'=>'rgba(218,185,55,0.10)','color'=>'#dab937','border'=>'rgba(218,185,55,0.25)'],
-                    };
                     $statusLabel = match($s['status']) {
                         'auto_approved' => 'ผ่าน',
                         'rejected'      => 'ไม่ผ่าน',
@@ -566,28 +548,26 @@ require_once __DIR__ . '/../includes/header.php';
                     $audit = !empty($s['photo_path']) ? (json_decode($s['photo_path'], true) ?? []) : [];
                 ?>
                 <tr>
-                    <td style="font-weight:600;"><?= e($s['title']) ?></td>
-                    <td style="font-size:0.75rem; color:#8a8e97;">
+                    <td class="sd-u031"><?= e($s['title']) ?></td>
+                    <td class="sd-u032">
                         <?php if ($sc): ?>
                         <?= e($sc['sport_type'] ?? '-') ?>
                         <?php if (!empty($sc['min_distance'])): ?>· ≥<?= number_format($sc['min_distance']/1000, 1) ?> กม.<?php endif; ?>
                         <?php if (!empty($sc['min_moving_time'])): ?>· ≥<?= round($sc['min_moving_time']/60) ?> นาที<?php endif; ?>
                         <?php else: ?> - <?php endif; ?>
                         <?php if ($s['status'] === 'auto_approved' && !empty($audit['name'])): ?>
-                        <br><span style="color:#FC4C02; font-size:0.7rem;"><?= e(mb_substr($audit['name'], 0, 40)) ?></span>
+                        <br><span class="sd-u033"><?= e(mb_substr($audit['name'], 0, 40)) ?></span>
                         <?php endif; ?>
                     </td>
                     <td>
-                        <span class="sv-ch-status"
-                              style="background:<?= $statusColor['bg'] ?>;color:<?= $statusColor['color'] ?>;
-                                     border:1px solid <?= $statusColor['border'] ?>;">
+                        <span class="sv-ch-status sv-ch-status-<?= e($s['status']) ?>">
                             <?= $statusLabel ?>
                         </span>
                     </td>
-                    <td style="font-weight:700; color:<?= (int)$s['token_awarded'] > 0 ? '#f8e769' : '#6b6e77' ?>;">
+                    <td class="sv-token-cell <?= (int)$s['token_awarded'] > 0 ? 'sv-token-cell-pos' : 'sv-token-cell-zero' ?>">
                         <?= (int)$s['token_awarded'] > 0 ? '+' . (int)$s['token_awarded'] : '-' ?>
                     </td>
-                    <td style="color:#6b6e77; font-size:0.75rem;">
+                    <td class="sd-u030">
                         <?= $s['submitted_at'] ? date('d/m/y H:i', strtotime((string)$s['submitted_at'])) : '-' ?>
                     </td>
                 </tr>
@@ -607,16 +587,27 @@ require_once __DIR__ . '/../includes/header.php';
 (function () {
     var trackFill = document.getElementById('ds-track-fill');
     var runner    = document.getElementById('ds-runner');
-    if (!trackFill || !runner) return;
-    var pct = parseFloat(trackFill.dataset.progress || '0');
-    pct = Math.min(pct, 100);
-    requestAnimationFrame(function () {
+    if (trackFill && runner) {
+        var pct = parseFloat(trackFill.dataset.progress || '0');
+        pct = Math.min(pct, 100);
         requestAnimationFrame(function () {
-            trackFill.style.width = pct + '%';
-            var runnerPct = Math.max(0, Math.min(pct, 96));
-            runner.style.left    = 'calc(' + runnerPct + '% - 12px)';
-            runner.style.opacity = '1';
+            requestAnimationFrame(function () {
+                trackFill.style.width = pct + '%';
+                var runnerPct = Math.max(0, Math.min(pct, 96));
+                runner.style.left    = 'calc(' + runnerPct + '% - 12px)';
+                runner.style.opacity = '1';
+            });
         });
+    }
+
+    document.querySelectorAll('.sv-bar-fill[data-width]').forEach(function (el) {
+        el.style.width = (el.dataset.width || '0') + '%';
+    });
+
+    document.querySelectorAll('.sv-heat-cell.sv-heat-cell-active[data-opacity]').forEach(function (el) {
+        var op = parseFloat(el.dataset.opacity || '0');
+        if (Number.isNaN(op)) op = 0;
+        el.style.background = 'rgba(252,76,2,' + op.toFixed(2) + ')';
     });
 })();
 </script>

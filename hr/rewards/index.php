@@ -218,7 +218,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <?php endif; ?>
                     </p>
                 </div>
-                <button onclick="document.getElementById('create-form').classList.toggle('open');
+                <button data-onclick="document.getElementById('create-form').classList.toggle('open');
                                  this.textContent = document.getElementById('create-form').classList.contains('open')
                                                     ? 'ปิด' : '+ เพิ่มรางวัลใหม่';"
                         class="ch-btn-start ar-create-toggle-btn">
@@ -273,7 +273,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="ar-create-grid ar-create-grid-layout">
                 <div>
                     <label class="ar-label">หมวดหมู่</label>
-                    <select name="category" id="ar-create-category" class="journal-input" onchange="arUpdateAutoIcon(this.value)">
+                    <select name="category" id="ar-create-category" class="journal-input" data-onchange="arUpdateAutoIcon(this.value)">
                         <?php foreach ($catMeta as $k => $m): ?>
                         <option value="<?= e($k) ?>"><?= e($m['label']) ?></option>
                         <?php endforeach; ?>
@@ -310,7 +310,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 <input type="text" name="coupon_code" id="create_coupon_code" maxlength="200"
                        placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
                        class="journal-input ar-coupon-input"
-                       oninput="arCreateToggleExpiry(this.value)">
+                       data-oninput="arCreateToggleExpiry(this.value)">
                 <p class="ar-coupon-note">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
 
                 <!-- Expiry — shown when coupon code is filled -->
@@ -327,7 +327,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="jp-actions-end jp-actions-end--sm">
                 <button type="button"
                         class="ar-form-btn ar-form-btn--cancel"
-                        onclick="document.getElementById('create-form').classList.remove('open');
+                        data-onclick="document.getElementById('create-form').classList.remove('open');
                                  document.querySelector('[onclick*=create-form]').textContent='+ เพิ่มรางวัลใหม่';">
                     ยกเลิก
                 </button>
@@ -371,17 +371,17 @@ require_once __DIR__ . '/../../includes/header.php';
                 'general' => ['color' => '#6b6e77', 'bg' => 'rgba(107,110,119,0.12)', 'border' => 'rgba(107,110,119,0.24)'],
             ];
             foreach ($rewards as $rw):
-                $cat  = $rw['category'];
-                $meta = $catMeta[$cat] ?? $catMeta['general'];
-                $glow = $glowMap[$cat] ?? $glowMap['general'];
-                $isOn = (bool)$rw['is_active'];
+                $cat      = $rw['category'];
+                $meta     = $catMeta[$cat] ?? $catMeta['general'];
+                $glow     = $glowMap[$cat] ?? $glowMap['general'];
+                $isOn     = (bool)$rw['is_active'];
+                $catTheme = 'ar-cat-theme--' . preg_replace('/[^a-z0-9_-]/i', '', (string)$cat);
             ?>
               <div class="ar-row ar-table-grid ar-row-grid <?= $isOn ? '' : 'ar-row-inactive' ?>">
 
                 <!-- Reward name + emoji -->
                 <div class="ar-reward-main">
-                      <span class="ar-reward-icon"
-                          style="color:<?= $glow['color'] ?>; background:<?= $glow['bg'] ?>; border-color:<?= $glow['border'] ?>;">
+                      <span class="ar-reward-icon <?= e($catTheme) ?>">
                         <?= rewardCategoryIconSvg((string)$cat) ?>
                     </span>
                     <div class="ar-reward-text-wrap">
@@ -397,8 +397,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Category -->
-                    <span class="ar-category-chip"
-                        style="background:<?= $glow['bg'] ?>; color:<?= $glow['color'] ?>; border-color:<?= $glow['border'] ?>;">
+                    <span class="ar-category-chip <?= e($catTheme) ?>">
                     <?= e($meta['label']) ?>
                 </span>
 
@@ -442,7 +441,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <label class="ac-toggle-switch" title="<?= $isOn ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด' ?>">
                             <input type="checkbox"
                                    <?= $isOn ? 'checked' : '' ?>
-                                   onchange="this.form.submit()">
+                                   data-onchange="this.form.submit()">
                             <span class="ac-toggle-track">
                                 <span class="ac-toggle-thumb"></span>
                             </span>
@@ -457,7 +456,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         แก้ไข
                     </a>
                     <form method="POST" action="" class="ar-inline-form-flex"
-                          onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
+                          data-onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="delete">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
@@ -544,3 +543,4 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

@@ -338,10 +338,11 @@ $roleMeta = [
             <?php else: ?>
 
             <?php foreach ($employees as $emp):
-                $isMe    = ((int)$emp['employee_id'] === $myId);
-                $isOn    = (bool)$emp['is_active'];
-                $rMeta   = $roleMeta[$emp['role']] ?? $roleMeta['employee'];
-                $balance = (int)$emp['balance'];
+                $isMe      = ((int)$emp['employee_id'] === $myId);
+                $isOn      = (bool)$emp['is_active'];
+                $rMeta     = $roleMeta[$emp['role']] ?? $roleMeta['employee'];
+                $balance   = (int)$emp['balance'];
+                $roleTheme = 'emp-role-theme--' . preg_replace('/[^a-z0-9_-]/i', '', (string)($emp['role'] ?? 'employee'));
             ?>
             <div class="emp-row <?= $isOn ? '' : 'emp-row-inactive' ?>">
 
@@ -351,7 +352,7 @@ $roleMeta = [
                     <img src="<?= uploadImgUrl('avatars', (string)$emp['avatar_url']) ?>"
                          alt="" loading="lazy"
                          class="emp-avatar emp-avatar-img"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         data-onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="emp-avatar emp-avatar-fallback emp-avatar-fallback--hidden">
                         <?= mb_substr($emp['full_name'], 0, 1) ?>
                     </div>
@@ -402,15 +403,13 @@ $roleMeta = [
                 <div>
                     <?php if ($isAdminOnly && !$isMe): ?>
                     <form method="POST" action=""
-                          onsubmit="return confirm('เปลี่ยน Role ของ <?= addslashes(e($emp['full_name'])) ?> ?')">
+                          data-onsubmit="return confirm('เปลี่ยน Role ของ <?= addslashes(e($emp['full_name'])) ?> ?')">
                         <?= csrfField() ?>
                         <input type="hidden" name="action"      value="change_role">
                         <input type="hidden" name="employee_id" value="<?= (int)$emp['employee_id'] ?>">
                         <input type="hidden" name="qs"          value="<?= e($qs) ?>">
-                        <select name="role" class="emp-role-select"
-                                onchange="this.form.submit()"
-                                style="background:<?= $rMeta['bg'] ?>; color:<?= $rMeta['color'] ?>;
-                                       border-color:<?= $rMeta['border'] ?>;">
+                        <select name="role" class="emp-role-select <?= e($roleTheme) ?>"
+                                data-onchange="this.form.submit()">
                             <?php foreach ($roleMeta as $rk => $rm): ?>
                             <option value="<?= $rk ?>" <?= $emp['role'] === $rk ? 'selected' : '' ?>>
                                 <?= $rm['label'] ?>
@@ -419,9 +418,7 @@ $roleMeta = [
                         </select>
                     </form>
                     <?php else: ?>
-                    <span class="emp-role-badge"
-                          style="background:<?= $rMeta['bg'] ?>; color:<?= $rMeta['color'] ?>;
-                                 border:1px solid <?= $rMeta['border'] ?>;">
+                    <span class="emp-role-badge <?= e($roleTheme) ?>">
                         <?= $rMeta['label'] ?>
                     </span>
                     <?php endif; ?>
@@ -442,7 +439,7 @@ $roleMeta = [
                 <div>
                     <?php if ($canManage && !$isMe): ?>
                     <form method="POST" action=""
-                          onsubmit="return confirm('<?= $isOn ? 'ปิดบัญชี' : 'เปิดบัญชี' ?> ของ <?= addslashes(e($emp['full_name'])) ?> ?')">
+                          data-onsubmit="return confirm('<?= $isOn ? 'ปิดบัญชี' : 'เปิดบัญชี' ?> ของ <?= addslashes(e($emp['full_name'])) ?> ?')">
                         <?= csrfField() ?>
                         <input type="hidden" name="action"      value="toggle_active">
                         <input type="hidden" name="employee_id" value="<?= (int)$emp['employee_id'] ?>">
@@ -450,11 +447,11 @@ $roleMeta = [
                         <button type="submit" class="emp-toggle <?= $isOn ? 'on' : '' ?>"
                                 title="<?= $isOn ? 'คลิกเพื่อปิดบัญชี' : 'คลิกเพื่อเปิดบัญชี' ?>"></button>
                     </form>
-                    <span class="emp-status-sub" style="color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
+                    <span class="emp-status-sub <?= $isOn ? 'emp-status-on' : 'emp-status-off' ?>">
                         <?= $isOn ? 'ใช้งาน' : 'ปิด' ?>
                     </span>
                     <?php else: ?>
-                    <span class="emp-status-dot" style="color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
+                    <span class="emp-status-dot <?= $isOn ? 'emp-status-on' : 'emp-status-off' ?>">
                         <?= $isOn ? '● ใช้งาน' : '○ ปิด' ?>
                     </span>
                     <?php endif; ?>
@@ -463,13 +460,13 @@ $roleMeta = [
                 <!-- Action buttons -->
                 <div class="emp-action-row">
                     <?php if ($canManage): ?>
-                    <button onclick="empOpenAdjust(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', <?= $balance ?>, '<?= e($qs) ?>')"
+                    <button data-onclick="empOpenAdjust(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', <?= $balance ?>, '<?= e($qs) ?>')"
                             class="emp-action-btn emp-action-btn--token">
                         Token
                     </button>
                     <?php endif; ?>
                     <?php if ($isAdminOnly && !$isMe): ?>
-                    <button onclick="empOpenPw(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', '<?= e($qs) ?>')"
+                    <button data-onclick="empOpenPw(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', '<?= e($qs) ?>')"
                             class="emp-action-btn emp-action-btn--pw">
                         Reset PW
                     </button>
@@ -490,7 +487,7 @@ $roleMeta = [
     <div class="jp-modal-content">
         <div class="jp-modal-header">
             <p id="emp-adjust-title" class="jp-modal-header-title"></p>
-            <button onclick="empCloseAdjust()" class="jp-modal-close" aria-label="ปิด">
+            <button data-onclick="empCloseAdjust()" class="jp-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -510,12 +507,12 @@ $roleMeta = [
                 <!-- Mode toggle -->
                 <div class="emp-adjust-mode-grid">
                     <button type="button" id="adj-btn-add"
-                            onclick="empSetMode('add')"
+                            data-onclick="empSetMode('add')"
                             class="emp-adjust-mode-btn emp-adjust-mode-btn--add">
                         + เพิ่ม Token
                     </button>
                     <button type="button" id="adj-btn-deduct"
-                            onclick="empSetMode('deduct')"
+                            data-onclick="empSetMode('deduct')"
                             class="emp-adjust-mode-btn emp-adjust-mode-btn--idle">
                         &minus; หัก Token
                     </button>
@@ -539,7 +536,7 @@ $roleMeta = [
                 </div>
             </div>
                 <div class="jp-modal-footer">
-                <button type="button" onclick="empCloseAdjust()"
+                <button type="button" data-onclick="empCloseAdjust()"
                         class="emp-modal-btn emp-modal-btn--cancel">
                     ยกเลิก
                 </button>
@@ -559,7 +556,7 @@ $roleMeta = [
     <div class="jp-modal-content">
         <div class="jp-modal-header">
             <p id="emp-pw-title" class="jp-modal-header-title"></p>
-            <button onclick="empClosePw()" class="jp-modal-close" aria-label="ปิด">
+            <button data-onclick="empClosePw()" class="jp-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -593,7 +590,7 @@ $roleMeta = [
                 </div>
             </div>
                 <div class="jp-modal-footer">
-                <button type="button" onclick="empClosePw()"
+                <button type="button" data-onclick="empClosePw()"
                         class="emp-modal-btn emp-modal-btn--cancel">
                     ยกเลิก
                 </button>
@@ -608,3 +605,4 @@ $roleMeta = [
 <?php endif; ?>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

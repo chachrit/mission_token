@@ -189,12 +189,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
                 </div>
                 <form method="POST" action="<?= BASE_URL ?>/pages/profile.php"
-                      enctype="multipart/form-data" id="avatar-upload-form" style="margin:0">
+                        enctype="multipart/form-data" id="avatar-upload-form" class="pf-form-reset">
                     <?= csrfField() ?>
                     <input type="hidden" name="_action" value="upload_avatar">
-                    <input type="file" name="avatar" id="avatar-file"
+                    <input class="pf-u001" type="file" name="avatar" id="avatar-file"
                            accept="image/jpeg,image/png,image/gif,image/webp"
-                           style="display:none"
+                          
                            data-submit-on-change="avatar-upload-form">
                     <label for="avatar-file" class="pf-avatar-upload-btn" title="เปลี่ยนรูปโปรไฟล์">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
@@ -206,7 +206,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </label>
                 </form>
                 <?php if (!empty($profile['avatar_url'])): ?>
-                <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" style="margin:0"
+                    <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" class="pf-form-reset"
                       data-confirm="ลบรูปโปรไฟล์?">
                     <?= csrfField() ?>
                     <input type="hidden" name="_action" value="delete_avatar">
@@ -238,15 +238,15 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="pf-stats-grid">
             <?php
             $stats = [
-                ['value' => formatTokens((int)$wallet['total_earned']), 'label' => 'Token สะสมทั้งหมด', 'color' => '#dab937'],
-                ['value' => formatTokens((int)$wallet['total_spent']),  'label' => 'Token ที่ใช้ไป',    'color' => '#d2592a'],
-                ['value' => (string)$completedCount,                    'label' => 'ภารกิจสำเร็จ',       'color' => '#4f8b98'],
-                ['value' => formatTokens($monthlyEarned),               'label' => 'Token เดือนนี้',     'color' => '#518e5c'],
+                ['value' => formatTokens((int)$wallet['total_earned']), 'label' => 'Token สะสมทั้งหมด', 'cls' => 'pf-stat-gold'],
+                ['value' => formatTokens((int)$wallet['total_spent']),  'label' => 'Token ที่ใช้ไป',    'cls' => 'pf-stat-orange'],
+                ['value' => (string)$completedCount,                    'label' => 'ภารกิจสำเร็จ',       'cls' => 'pf-stat-teal'],
+                ['value' => formatTokens($monthlyEarned),               'label' => 'Token เดือนนี้',     'cls' => 'pf-stat-green'],
             ];
             foreach ($stats as $s):
             ?>
             <div class="pf-stat-card">
-                <p class="pf-stat-value" style="color:<?= $s['color'] ?>;"><?= $s['value'] ?></p>
+                <p class="pf-stat-value <?= e($s['cls']) ?>"><?= $s['value'] ?></p>
                 <p class="pf-stat-label"><?= $s['label'] ?></p>
             </div>
             <?php endforeach; ?>
@@ -305,10 +305,10 @@ require_once __DIR__ . '/../includes/header.php';
                     ?>
                     <div class="pf-tenure-milestones">
                         <div class="pf-tenure-track">
-                            <div class="pf-tenure-fill" style="width:<?= $_fill ?>%;"></div>
+                            <div class="pf-tenure-fill" data-width="<?= $_fill ?>"></div>
                             <?php foreach ($_ms as $_m): ?>
                             <?php $_r = $_tyears >= $_m['y']; ?>
-                            <div class="pf-tenure-marker" style="left:<?= $_m['pct'] ?>%;">
+                            <div class="pf-tenure-marker" data-left="<?= $_m['pct'] ?>">
                                 <div class="pf-tenure-marker-dot <?= $_r ? 'reached' : '' ?>"></div>
                                 <div class="pf-tenure-marker-label <?= $_r ? 'reached' : '' ?>"><?= $_m['label'] ?></div>
                             </div>
@@ -420,51 +420,45 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <div class="pf-form-actions">
                             <button type="submit" class="btn-gold">บันทึกรหัสผ่าน</button>
-                            <button type="reset" class="btn-outline" style="border-color:rgba(255,255,255,0.15); color:#9ca3af;">ล้างฟอร์ม</button>
+                            <button type="reset" class="btn-outline pf-u002">ล้างฟอร์ม</button>
                         </div>
                     </form>
                 </div>
                 <!-- Strava Connect card -->
-                <div class="pf-card" style="border:1px solid <?= $stravaOk ? 'rgba(252,76,2,0.35)' : 'rgba(255,255,255,0.07)' ?>;">
-                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;">
+                <div class="pf-card <?= $stravaOk ? 'pf-card-strava-on' : 'pf-card-strava-off' ?>">
+                    <div class="pf-u003">
                         <!-- Strava logo SVG -->
                         <svg viewBox="0 0 24 24" width="26" height="26" fill="#FC4C02" xmlns="http://www.w3.org/2000/svg">
                             <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                         </svg>
-                        <p class="pf-card-label" style="margin:0;">เชื่อมต่อ Strava</p>
+                        <p class="pf-card-label pf-u004">เชื่อมต่อ Strava</p>
                         <?php if ($stravaOk): ?>
-                        <span style="margin-left:auto;font-size:0.68rem;font-weight:700;padding:2px 10px;
-                                     background:rgba(81,142,92,0.18);color:#518e5c;
-                                     border:1px solid rgba(81,142,92,0.35);border-radius:999px;">&#10003; เชื่อมต่อแล้ว</span>
+                        <span class="pf-u005">&#10003; เชื่อมต่อแล้ว</span>
                         <?php else: ?>
-                        <span style="margin-left:auto;font-size:0.68rem;font-weight:700;padding:2px 10px;
-                                     background:rgba(255,255,255,0.06);color:#9ca3af;
-                                     border:1px solid rgba(255,255,255,0.12);border-radius:999px;">ยังไม่เชื่อมต่อ</span>
+                        <span class="pf-u006">ยังไม่เชื่อมต่อ</span>
                         <?php endif; ?>
                     </div>
 
                     <?php if ($stravaOk): ?>
                     <!-- Connected status -->
-                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-bottom:1rem;">
-                        <div style="background:rgba(252,76,2,0.07);border:1px solid rgba(252,76,2,0.18);
-                                    border-radius:10px;padding:0.65rem 0.85rem;">
-                            <p style="font-size:0.65rem;color:#9ca3af;margin:0 0 2px;">Athlete ID</p>
-                            <p style="font-size:0.85rem;font-weight:700;color:#FC4C02;margin:0;font-family:monospace;">
+                    <div class="pf-u007">
+                        <div class="pf-u008">
+                            <p class="pf-u009">Athlete ID</p>
+                            <p class="pf-u010">
                                 <?= e((string)$stravaRow['strava_athlete_id']) ?>
                             </p>
                         </div>
-                        <div style="background:rgba(252,76,2,0.07);border:1px solid rgba(252,76,2,0.18);
-                                    border-radius:10px;padding:0.65rem 0.85rem;">
-                            <p style="font-size:0.65rem;color:#9ca3af;margin:0 0 2px;">สิทธิ์ที่อนุญาต</p>
-                            <p style="font-size:0.78rem;font-weight:600;color:#dab937;margin:0;">
+                        <div class="pf-u008">
+                            <p class="pf-u009">สิทธิ์ที่อนุญาต</p>
+                            <p class="pf-u011">
                                 <?= e($stravaRow['strava_scope'] ?? '-') ?>
                             </p>
                         </div>
                     </div>
                     <?php if (!empty($stravaRow['strava_token_expires_at'])): ?>
-                    <p style="font-size:0.7rem;color:#9ca3af;margin:0 0 1rem;">
+                    <p class="pf-u012">
                         Token หมดอายุ:
-                        <span style="color:#eeebe1;">
+                        <span class="pf-u013">
                         <?php
                         $exp = (int)$stravaRow['strava_token_expires_at'];
                         $diff = $exp - time();
@@ -480,26 +474,18 @@ require_once __DIR__ . '/../includes/header.php';
                           data-confirm="ยืนยันการยกเลิกเชื่อมต่อ Strava?">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="disconnect">
-                        <button type="submit" style="
-                            display:inline-flex;align-items:center;gap:6px;
-                            background:rgba(210,89,42,0.12);color:#d2592a;
-                            border:1px solid rgba(210,89,42,0.35);border-radius:8px;
-                            padding:7px 18px;font-size:0.82rem;font-weight:600;cursor:pointer;">
+                        <button class="pf-u014" type="submit">
                             ยกเลิกเชื่อมต่อ Strava
                         </button>
                     </form>
 
                     <?php else: ?>
                     <!-- Connect button -->
-                    <p style="font-size:0.82rem;color:#9ca3af;margin:0 0 1rem;line-height:1.6;">
+                    <p class="pf-u015">
                         เชื่อมต่อ Strava เพื่อทำภารกิจ Activity Tracking อัตโนมัติ<br>
-                        <span style="font-size:0.72rem;color:#6b6e77;">ต้องการสิทธิ์อ่าน activity เท่านั้น</span>
+                        <span class="pf-u016">ต้องการสิทธิ์อ่าน activity เท่านั้น</span>
                     </p>
-                    <a href="<?= e($stravaAuthUrl) ?>"
-                       style="display:inline-flex;align-items:center;gap:8px;
-                              background:#FC4C02;color:#fff;border-radius:8px;
-                              padding:8px 20px;font-size:0.85rem;font-weight:700;
-                              text-decoration:none;">
+                          <a href="<?= e($stravaAuthUrl) ?>" class="pf-strava-connect-btn">
                         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                         </svg>
@@ -516,5 +502,14 @@ require_once __DIR__ . '/../includes/header.php';
     </div><!-- /pf-inner -->
 
 </div><!-- /pf-profile-wrap -->
+
+<script>
+document.querySelectorAll('.pf-tenure-fill[data-width]').forEach(function (el) {
+    el.style.width = (el.dataset.width || '0') + '%';
+});
+document.querySelectorAll('.pf-tenure-marker[data-left]').forEach(function (el) {
+    el.style.left = (el.dataset.left || '0') + '%';
+});
+</script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

@@ -247,13 +247,13 @@ require_once __DIR__ . '/../includes/header.php';
                 $thumbGridClass = $photoCount === 1 ? 'asb-thumb-grid--1' : ($photoCount === 2 ? 'asb-thumb-grid--2' : 'asb-thumb-grid--3');
             ?>
             <div class="asb-thumb-strip <?= $thumbGridClass ?>"
-                 onclick="openLightbox('<?= $jsonUrls ?>', 0)">
+                 data-onclick="openLightbox('<?= $jsonUrls ?>', 0)">
                 <?php foreach ($photoFiles as $idx => $pf):
                     $pfUrl = uploadImgUrl('submissions', $pf);
                 ?>
                 <div class="asb-thumb-cell">
                     <img src="<?= $pfUrl ?>" alt="หลักฐาน" loading="lazy"
-                         onerror="this.style.display='none'">
+                         data-onerror="this.style.display='none'">
                     <?php if ($idx === 2 && $photoCount > 3): ?>
                     <div class="asb-thumb-more">+<?= $photoCount - 3 ?></div>
                     <?php endif; ?>
@@ -286,7 +286,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <img src="<?= uploadImgUrl('avatars', (string)$sub['avatar_url']) ?>"
                          alt="" loading="lazy"
                          class="asb-avatar-img"
-                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         data-onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                     <div class="asb-avatar-fallback is-hidden">
                         <?= mb_substr($sub['full_name'], 0, 1) ?>
                     </div>
@@ -331,18 +331,18 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="asb-action-row">
                     <!-- Approve -->
                     <button type="button"
-                            onclick="openConfirmModal('approve', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
+                            data-onclick="openConfirmModal('approve', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
                             class="asb-action-btn asb-action-btn--approve">
                         &#10003;&ensp;อนุมัติ
                     </button>
                     <!-- Reject -->
                     <button type="button"
-                            onclick="openConfirmModal('reject', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
+                            data-onclick="openConfirmModal('reject', <?= $sub['submission_id'] ?>, '<?= e(addslashes($sub['full_name'] ?? '')) ?>', '<?= e(addslashes($sub['challenge_title'] ?? '')) ?>', <?= (int)$sub['token_reward'] ?>, '<?= e($filter) ?>')"
                             class="asb-action-btn asb-action-btn--reject">
                         &#10007;&ensp;ปฏิเสธ
                     </button>
                 </div>
-                <button onclick="toggleNote(<?= $sub['submission_id'] ?>)"
+                <button data-onclick="toggleNote(<?= $sub['submission_id'] ?>)"
                         class="asb-note-toggle">
                     + เพิ่มหมายเหตุ
                 </button>
@@ -364,13 +364,13 @@ require_once __DIR__ . '/../includes/header.php';
 
 
 <!-- ── CONFIRM MODAL ───────────────────────────────────────── -->
-<div id="asb-confirm-modal" class="jp-modal asb-confirm-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
+<div id="asb-confirm-modal" class="jp-modal asb-confirm-modal" data-onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
     <div class="jp-modal-content asb-modal-box">
         <!-- Header -->
         <div id="cm-header" class="jp-modal-header asb-confirm-header">
             <div id="cm-icon" class="asb-confirm-icon"></div>
             <span id="cm-title" class="jp-modal-header-title asb-confirm-title"></span>
-            <button onclick="closeConfirmModal()" class="jp-modal-close asb-confirm-close" aria-label="ปิด">
+            <button data-onclick="closeConfirmModal()" class="jp-modal-close asb-confirm-close" aria-label="ปิด">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
@@ -380,10 +380,10 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="jp-modal-body asb-confirm-body">
             <p id="cm-body" class="asb-confirm-message"></p>
             <div class="jp-modal-footer asb-confirm-actions">
-                <button onclick="closeConfirmModal()" class="asb-confirm-cancel-btn">
+                <button data-onclick="closeConfirmModal()" class="asb-confirm-cancel-btn">
                     ยกเลิก
                 </button>
-                <button id="cm-confirm-btn" class="asb-confirm-submit-btn" onclick="submitConfirmModal()">
+                <button id="cm-confirm-btn" class="asb-confirm-submit-btn" data-onclick="submitConfirmModal()">
                 </button>
             </div>
         </div>
@@ -400,17 +400,17 @@ require_once __DIR__ . '/../includes/header.php';
 </form>
 
 <!-- ── LIGHTBOX ─────────────────────────────────────────────── -->
-<div id="asb-lightbox" class="asb-lightbox" onclick="lbBgClick(event)">
+<div id="asb-lightbox" class="asb-lightbox" data-onclick="lbBgClick(event)">
 
     <!-- Close -->
-    <button onclick="closeLightbox()" class="asb-lightbox-close"
+    <button data-onclick="closeLightbox()" class="asb-lightbox-close"
             title="ปิด (Esc)">&#x2715;</button>
 
     <!-- Counter -->
     <div id="lb-counter" class="asb-lightbox-counter"></div>
 
     <!-- Prev -->
-    <button id="lb-prev" onclick="lbNav(-1)" class="asb-lightbox-nav asb-lightbox-nav--prev">&#8249;</button>
+    <button id="lb-prev" data-onclick="lbNav(-1)" class="asb-lightbox-nav asb-lightbox-nav--prev">&#8249;</button>
 
     <!-- Image wrapper (fade) -->
     <div class="asb-lightbox-media">
@@ -418,7 +418,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- Next -->
-    <button id="lb-next" onclick="lbNav(1)" class="asb-lightbox-nav asb-lightbox-nav--next">&#8250;</button>
+    <button id="lb-next" data-onclick="lbNav(1)" class="asb-lightbox-nav asb-lightbox-nav--next">&#8250;</button>
 
     <!-- Dot strip -->
     <div id="lb-dots" class="asb-lightbox-dots"></div>
@@ -588,3 +588,4 @@ require_once __DIR__ . '/../includes/header.php';
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+

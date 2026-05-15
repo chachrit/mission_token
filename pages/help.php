@@ -1,13 +1,13 @@
-﻿<?php
+<?php
 /**
  * pages/help.php
- * User Manual â€” à¸„à¸¹à¹ˆà¸¡à¸·à¸­à¸à¸²à¸£à¹ƒà¸Šà¹‰à¸‡à¸²à¸™ Mission Token
+ * User Manual — คู่มือการใช้งาน Mission Token
  */
 
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
-$pageTitle  = 'à¸„à¸¹à¹ˆà¸¡à¸·à¸­à¸à¸²à¸£à¹ƒà¸Šà¹‰à¸‡à¸²à¸™';
+$pageTitle  = 'คู่มือการใช้งาน';
 $activePage = 'help';
 
 require_once __DIR__ . '/../includes/header.php';
@@ -21,20 +21,20 @@ require_once __DIR__ . '/../includes/header.php';
 
     <div class="hp-inner">
 
-        <!-- â”€â”€ Hero â”€â”€ -->
+        <!-- ── Hero ── -->
         <div class="hp-hero">
             <p class="hp-hero-eyebrow">MISSION TOKEN</p>
-            <h1 class="hp-hero-title">à¸„à¸¹à¹ˆà¸¡à¸·à¸­à¸à¸²à¸£à¹ƒà¸Šà¹‰à¸‡à¸²à¸™</h1>
-            <p class="hp-hero-sub">à¸§à¸´à¸˜à¸µà¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸£à¸°à¸šà¸šà¸ªà¸°à¸ªà¸¡ Token à¸ à¸²à¸¢à¹ƒà¸™à¸­à¸‡à¸„à¹Œà¸à¸£ JOURNAL</p>
+            <h1 class="hp-hero-title">คู่มือการใช้งาน</h1>
+            <p class="hp-hero-sub">วิธีใช้งานระบบสะสม Token ภายในองค์กร JOURNAL</p>
             <div class="hp-hero-stats">
-                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>8 à¸«à¸±à¸§à¸‚à¹‰à¸­</span>
-                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>3 à¸›à¸£à¸°à¹€à¸ à¸—à¸ à¸²à¸£à¸à¸´à¸ˆ</span>
-                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>FAQ & à¸„à¸³à¸•à¸­à¸š</span>
-                <span class="hp-hero-stat" style="border-color:rgba(79,139,152,0.25);color:#5fa8ba;"><span class="hp-hero-stat-dot" style="background:#5fa8ba;box-shadow:0 0 6px rgba(79,139,152,0.5);"></span>à¸„à¸¹à¹ˆà¸¡à¸·à¸­ HR</span>
+                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>8 หัวข้อ</span>
+                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>3 ประเภทภารกิจ</span>
+                <span class="hp-hero-stat"><span class="hp-hero-stat-dot"></span>FAQ & คำตอบ</span>
+                <span class="hp-hero-stat hp-hero-stat--hr"><span class="hp-hero-stat-dot hp-dot-hr"></span>คู่มือ HR</span>
             </div>
         </div>
 
-        <!-- â”€â”€ Tab switcher â”€â”€ -->
+        <!-- ── Tab switcher ── -->
         <div class="hp-tabs-wrap">
             <div class="hp-tabs-track" id="hp-tabs-track">
                 <div class="hp-tab-pill" id="hp-tab-pill"></div>
@@ -42,7 +42,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
-                    à¸ªà¸³à¸«à¸£à¸±à¸šà¸žà¸™à¸±à¸à¸‡à¸²à¸™
+                    สำหรับพนักงาน
                 </button>
                 <button class="hp-tab" data-action="switchTab" data-tab="hr" id="tab-hr">
                     <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -53,296 +53,296 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <!-- â”€â”€ Search â”€â”€ -->
+        <!-- ── Search ── -->
         <div class="hp-search-outer">
             <div class="hp-search-wrap">
-                <input type="text" class="hp-search-input" id="hp-search"
-                       placeholder="à¸„à¹‰à¸™à¸«à¸²à¹ƒà¸™à¸„à¸¹à¹ˆà¸¡à¸·à¸­ à¹€à¸Šà¹ˆà¸™ Token, Quiz, Strava..." oninput="searchHelp(this.value)">
+                  <input type="text" class="hp-search-input" id="hp-search"
+                      placeholder="ค้นหาในคู่มือ เช่น Token, Quiz, Strava...">
                 <svg class="hp-search-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
                 </svg>
             </div>
         </div>
 
-        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        <!-- ═══════════════════════════════════
              EMPLOYEE TAB
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        ═══════════════════════════════════ -->
         <div id="panel-employee">
         <div class="hp-layout">
 
             <!-- Sidebar -->
             <div class="hp-sidebar hidden md:block">
-                <p class="hp-sidebar-title">à¸«à¸±à¸§à¸‚à¹‰à¸­</p>
+                <p class="hp-sidebar-title">หัวข้อ</p>
                 <button class="hp-sidebar-link active" data-action="scrollToSection" data-section-id="emp-login">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">LGN</span> à¸à¸²à¸£à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š
+                    <span class="hp-sl-icon hp-fs-06">LGN</span> การเข้าสู่ระบบ
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-dashboard">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">DS</span> Dashboard
+                    <span class="hp-sl-icon hp-fs-06">DS</span> Dashboard
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-challenges">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">Q</span> à¸ à¸²à¸£à¸à¸´à¸ˆ
+                    <span class="hp-sl-icon hp-fs-06">Q</span> ภารกิจ
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-rewards">
-                    <span class="hp-sl-icon">R</span> à¸£à¹‰à¸²à¸™à¸£à¸²à¸‡à¸§à¸±à¸¥
+                    <span class="hp-sl-icon">R</span> ร้านรางวัล
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-history">
-                    <span class="hp-sl-icon">H</span> à¸›à¸£à¸°à¸§à¸±à¸•à¸´
+                    <span class="hp-sl-icon">H</span> ประวัติ
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-profile">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">P</span> à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ
+                    <span class="hp-sl-icon hp-fs-06">P</span> โปรไฟล์
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-strava">
-                    <span class="hp-sl-icon" style="font-size:0.65rem; color:#FC4C02; background:rgba(252,76,2,0.1);">STR</span> Strava
+                    <span class="hp-sl-icon hp-strava-icon-accent">STR</span> Strava
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="emp-faq">
-                    <span class="hp-sl-icon" style="font-size:0.65rem;">FAQ</span> FAQ
+                    <span class="hp-sl-icon hp-fs-065">FAQ</span> FAQ
                 </button>
             </div>
 
             <!-- Content -->
             <div>
 
-                <!-- à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š -->
-                <div class="hp-section open" id="emp-login" data-keywords="login à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™ portal">
+                <!-- เข้าสู่ระบบ -->
+                <div class="hp-section open" id="emp-login" data-keywords="login เข้าสู่ระบบ รหัสผ่าน portal">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">LGN</div>
-                        <span class="hp-section-title-text">à¸à¸²à¸£à¹€à¸‚à¹‰à¸²à¸ªà¸¹à¹ˆà¸£à¸°à¸šà¸š</span>
+                        <div class="hp-section-icon hp-fs-06">LGN</div>
+                        <span class="hp-section-title-text">การเข้าสู่ระบบ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">à¹ƒà¸Šà¹‰ <strong>à¸£à¸«à¸±à¸ªà¸žà¸™à¸±à¸à¸‡à¸²à¸™</strong> à¹à¸¥à¸° <strong>à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™</strong> à¹€à¸”à¸´à¸¡à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰à¸à¸±à¸š <strong>JOURNAL Web Portal</strong> à¹„à¸”à¹‰à¹€à¸¥à¸¢ â€” à¹„à¸¡à¹ˆà¸•à¹‰à¸­à¸‡à¸ªà¸¡à¸±à¸„à¸£à¹ƒà¸«à¸¡à¹ˆ</p>
-                        <p class="hp-text" style="margin-bottom:0.4rem;"><strong style="color:#eeebe1;">à¸¥à¸·à¸¡à¸«à¸£à¸·à¸­à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™?</strong></p>
+                        <p class="hp-intro">ใช้ <strong>รหัสพนักงาน</strong> และ <strong>รหัสผ่าน</strong> เดิมที่ใช้กับ <strong>JOURNAL Web Portal</strong> ได้เลย — ไม่ต้องสมัครใหม่</p>
+                        <p class="hp-text hp-mb-04"><strong class="hp-c-ivory">ลืมหรือต้องการเปลี่ยนรหัสผ่าน?</strong></p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸à¸”à¸—à¸µà¹ˆ <strong style="color:#eeebe1;">à¸Šà¸·à¹ˆà¸­à¸‚à¸­à¸‡à¸„à¸¸à¸“</strong> (à¸¡à¸¸à¸¡à¸šà¸™à¸‚à¸§à¸²) â†’ à¹€à¸¥à¸·à¸­à¸ <strong>"à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œà¸‚à¸­à¸‡à¸‰à¸±à¸™"</strong></span></li>
-                            <li><span class="hp-step-num">2</span><span>à¹€à¸¥à¸·à¹ˆà¸­à¸™à¸¥à¸‡à¸«à¸²à¸ªà¹ˆà¸§à¸™ <strong style="color:#eeebe1;">"à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™"</strong> à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¹€à¸à¹ˆà¸² + à¸£à¸«à¸±à¸ªà¹ƒà¸«à¸¡à¹ˆ (à¸­à¸¢à¹ˆà¸²à¸‡à¸™à¹‰à¸­à¸¢ 8 à¸•à¸±à¸§) â†’ à¸à¸” <strong>"à¸šà¸±à¸™à¸—à¸¶à¸"</strong></span></li>
+                            <li><span class="hp-step-num">1</span><span>กดที่ <strong class="hp-c-ivory">ชื่อของคุณ</strong> (มุมบนขวา) → เลือก <strong>"โปรไฟล์ของฉัน"</strong></span></li>
+                            <li><span class="hp-step-num">2</span><span>เลื่อนลงหาส่วน <strong class="hp-c-ivory">"เปลี่ยนรหัสผ่าน"</strong> กรอกรหัสเก่า + รหัสใหม่ (อย่างน้อย 8 ตัว) → กด <strong>"บันทึก"</strong></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--info">
-                            <span>Login à¹„à¸¡à¹ˆà¹„à¸”à¹‰à¹€à¸¥à¸¢? à¹ƒà¸«à¹‰ <strong>à¸•à¸´à¸”à¸•à¹ˆà¸­ HR à¸«à¸£à¸·à¸­ IT</strong> à¹€à¸žà¸·à¹ˆà¸­à¸‚à¸­ Reset à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™</span>
+                            <span>Login ไม่ได้เลย? ให้ <strong>ติดต่อ HR หรือ IT</strong> เพื่อขอ Reset รหัสผ่าน</span>
                         </div>
                         <div class="hp-tip hp-tip--warn">
-                            <span>à¸£à¸°à¸šà¸šà¸­à¸­à¸à¸ˆà¸²à¸à¸£à¸°à¸šà¸šà¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´à¸«à¸²à¸à¹„à¸¡à¹ˆà¸¡à¸µà¸à¸²à¸£à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸™à¸²à¸™ <strong>2 à¸Šà¸±à¹ˆà¸§à¹‚à¸¡à¸‡</strong></span>
+                            <span>ระบบออกจากระบบอัตโนมัติหากไม่มีการใช้งานนาน <strong>2 ชั่วโมง</strong></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Dashboard -->
-                <div class="hp-section" id="emp-dashboard" data-keywords="dashboard à¸«à¸™à¹‰à¸²à¹à¸£à¸ token streak à¸­à¸±à¸™à¸”à¸±à¸š leaderboard">
+                <div class="hp-section" id="emp-dashboard" data-keywords="dashboard หน้าแรก token streak อันดับ leaderboard">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">DS</div>
-                        <span class="hp-section-title-text">à¸«à¸™à¹‰à¸² Dashboard â€” à¸ à¸²à¸žà¸£à¸§à¸¡à¸‚à¸­à¸‡à¸„à¸¸à¸“</span>
+                        <div class="hp-section-icon hp-fs-06">DS</div>
+                        <span class="hp-section-title-text">หน้า Dashboard — ภาพรวมของคุณ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-text">à¸«à¸™à¹‰à¸²à¹à¸£à¸à¸«à¸¥à¸±à¸‡ Login à¹à¸ªà¸”à¸‡à¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”à¸‚à¸­à¸‡à¸„à¸¸à¸“à¹ƒà¸™à¸—à¸µà¹ˆà¹€à¸”à¸µà¸¢à¸§</p>
+                        <p class="hp-text">หน้าแรกหลัง Login แสดงข้อมูลทั้งหมดของคุณในที่เดียว</p>
                         <ol class="hp-steps">
                             <li>
-                                <span class="hp-step-num" style="background:rgba(218,185,55,0.15);">1</span>
-                                <span><strong style="color:#dab937;">à¸à¸£à¸°à¹€à¸›à¹‹à¸² Token</strong> â€” Token à¸„à¸‡à¹€à¸«à¸¥à¸·à¸­ (à¹ƒà¸Šà¹‰à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥à¹„à¸”à¹‰), Token à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”, Token à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰à¹„à¸›à¹à¸¥à¹‰à¸§</span>
+                                <span class="hp-step-num hp-bg-gold-soft">1</span>
+                                <span><strong class="hp-c-gold">กระเป๋า Token</strong> — Token คงเหลือ (ใช้แลกรางวัลได้), Token ที่ได้รับทั้งหมด, Token ที่ใช้ไปแล้ว</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">2</span>
-                                <span><strong style="color:#eeebe1;">à¸­à¸±à¸™à¸”à¸±à¸šà¸‚à¸­à¸‡à¸„à¸¸à¸“</strong> â€” à¸¥à¸³à¸”à¸±à¸šà¹ƒà¸™ Leaderboard à¸™à¸±à¸šà¸ˆà¸²à¸ Token à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸—à¸±à¹‰à¸‡à¸«à¸¡à¸” (à¹„à¸¡à¹ˆà¹ƒà¸Šà¹ˆà¸„à¸‡à¹€à¸«à¸¥à¸·à¸­)</span>
+                                <span><strong class="hp-c-ivory">อันดับของคุณ</strong> — ลำดับใน Leaderboard นับจาก Token ที่ได้รับทั้งหมด (ไม่ใช่คงเหลือ)</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">3</span>
-                                <span><strong style="color:#eeebe1;">Streak</strong> â€” à¸ˆà¸³à¸™à¸§à¸™à¸§à¸±à¸™à¸•à¸´à¸”à¸•à¹ˆà¸­à¸à¸±à¸™à¸—à¸µà¹ˆà¸—à¸³à¸ à¸²à¸£à¸à¸´à¸ˆà¸œà¹ˆà¸²à¸™à¹à¸¥à¹‰à¸§</span>
+                                <span><strong class="hp-c-ivory">Streak</strong> — จำนวนวันติดต่อกันที่ทำภารกิจผ่านแล้ว</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">4</span>
-                                <span><strong style="color:#eeebe1;">Token à¹€à¸”à¸·à¸­à¸™à¸™à¸µà¹‰</strong> â€” Token à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¹ƒà¸™à¹€à¸”à¸·à¸­à¸™à¸›à¸±à¸ˆà¸ˆà¸¸à¸šà¸±à¸™</span>
+                                <span><strong class="hp-c-ivory">Token เดือนนี้</strong> — Token ที่ได้รับในเดือนปัจจุบัน</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">5</span>
-                                <span><strong style="color:#eeebe1;">à¸ à¸²à¸£à¸à¸´à¸ˆà¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸­à¸¢à¸¹à¹ˆ</strong> â€” à¹à¸ªà¸”à¸‡à¸ à¸²à¸£à¸à¸´à¸ˆà¸—à¸µà¹ˆà¸—à¸³à¹„à¸”à¹‰à¸žà¸£à¹‰à¸­à¸¡ Token à¸£à¸²à¸‡à¸§à¸±à¸¥</span>
+                                <span><strong class="hp-c-ivory">ภารกิจที่เปิดอยู่</strong> — แสดงภารกิจที่ทำได้พร้อม Token รางวัล</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">6</span>
-                                <span><strong style="color:#eeebe1;">à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸¥à¹ˆà¸²à¸ªà¸¸à¸”</strong> â€” 6 à¸£à¸²à¸¢à¸à¸²à¸£à¸¥à¹ˆà¸²à¸ªà¸¸à¸”à¸—à¸µà¹ˆà¸„à¸¸à¸“à¸ªà¹ˆà¸‡à¸‡à¸²à¸™ à¸žà¸£à¹‰à¸­à¸¡à¸ªà¸–à¸²à¸™à¸°</span>
+                                <span><strong class="hp-c-ivory">กิจกรรมล่าสุด</strong> — 6 รายการล่าสุดที่คุณส่งงาน พร้อมสถานะ</span>
                             </li>
                         </ol>
                     </div>
                 </div>
 
-                <!-- à¸ à¸²à¸£à¸à¸´à¸ˆ -->
-                <div class="hp-section" id="emp-challenges" data-keywords="challenge à¸ à¸²à¸£à¸à¸´à¸ˆ quiz photo strava à¸à¸²à¸£à¹Œà¸” à¸žà¸¥à¸´à¸ token à¸£à¸²à¸‡à¸§à¸±à¸¥">
+                <!-- ภารกิจ -->
+                <div class="hp-section" id="emp-challenges" data-keywords="challenge ภารกิจ quiz photo strava การ์ด พลิก token รางวัล">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">Q</div>
-                        <span class="hp-section-title-text">à¸«à¸™à¹‰à¸²à¸ à¸²à¸£à¸à¸´à¸ˆ</span>
+                        <div class="hp-section-icon hp-fs-06">Q</div>
+                        <span class="hp-section-title-text">หน้าภารกิจ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">à¸«à¸™à¹‰à¸²à¸™à¸µà¹‰à¹à¸ªà¸”à¸‡à¸ à¸²à¸£à¸à¸´à¸ˆà¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”à¸—à¸µà¹ˆà¹€à¸›à¸´à¸”à¸­à¸¢à¸¹à¹ˆ à¹à¸šà¹ˆà¸‡à¹€à¸›à¹‡à¸™ <strong>"à¸ à¸²à¸£à¸à¸´à¸ˆà¸£à¸­à¸„à¸¸à¸“à¸­à¸¢à¸¹à¹ˆ"</strong> (à¸¢à¸±à¸‡à¸—à¸³à¹„à¸”à¹‰) à¹à¸¥à¸° <strong>"à¹€à¸ªà¸£à¹‡à¸ˆà¸ªà¸´à¹‰à¸™à¹à¸¥à¹‰à¸§"</strong></p>
+                        <p class="hp-intro">หน้านี้แสดงภารกิจทั้งหมดที่เปิดอยู่ แบ่งเป็น <strong>"ภารกิจรอคุณอยู่"</strong> (ยังทำได้) และ <strong>"เสร็จสิ้นแล้ว"</strong></p>
 
-                        <p class="hp-text" style="margin-bottom:0.5rem;"><strong style="color:#eeebe1;">à¸§à¸´à¸˜à¸µà¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸à¸²à¸£à¹Œà¸”:</strong></p>
+                        <p class="hp-text hp-mb-05"><strong class="hp-c-ivory">วิธีใช้งานการ์ด:</strong></p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¹€à¸¥à¸·à¹ˆà¸­à¸™à¸”à¸¹à¸à¸²à¸£à¹Œà¸”à¸ à¸²à¸£à¸à¸´à¸ˆ à¹à¸•à¹ˆà¸¥à¸°à¹ƒà¸šà¹à¸ªà¸”à¸‡à¸Šà¸·à¹ˆà¸­à¹à¸¥à¸° Token à¸£à¸²à¸‡à¸§à¸±à¸¥</span></li>
-                            <li><span class="hp-step-num">2</span><span><strong style="color:#eeebe1;">à¸§à¸²à¸‡à¹€à¸¡à¸²à¸ªà¹Œà¸šà¸™à¸à¸²à¸£à¹Œà¸”</strong> (à¸«à¸£à¸·à¸­à¹à¸•à¸°à¸šà¸™à¸¡à¸·à¸­à¸–à¸·à¸­) à¸à¸²à¸£à¹Œà¸”à¸ˆà¸° <strong style="color:#dab937;">à¸žà¸¥à¸´à¸à¹à¸ªà¸”à¸‡à¸£à¸²à¸¢à¸¥à¸°à¹€à¸­à¸µà¸¢à¸”</strong></span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸”à¹‰à¸²à¸™à¸«à¸¥à¸±à¸‡à¸à¸²à¸£à¹Œà¸”à¹à¸ªà¸”à¸‡à¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚, à¸§à¸±à¸™à¸ªà¸´à¹‰à¸™à¸ªà¸¸à¸” à¹à¸¥à¸°à¸›à¸¸à¹ˆà¸¡à¸—à¸³à¸ à¸²à¸£à¸à¸´à¸ˆ</span></li>
+                            <li><span class="hp-step-num">1</span><span>เลื่อนดูการ์ดภารกิจ แต่ละใบแสดงชื่อและ Token รางวัล</span></li>
+                            <li><span class="hp-step-num">2</span><span><strong class="hp-c-ivory">วางเมาส์บนการ์ด</strong> (หรือแตะบนมือถือ) การ์ดจะ <strong class="hp-c-gold">พลิกแสดงรายละเอียด</strong></span></li>
+                            <li><span class="hp-step-num">3</span><span>ด้านหลังการ์ดแสดงเงื่อนไข, วันสิ้นสุด และปุ่มทำภารกิจ</span></li>
                         </ol>
 
-                        <p class="hp-text" style="margin-top:1.25rem; margin-bottom:0.5rem;"><strong style="color:#eeebe1;">à¸ à¸²à¸£à¸à¸´à¸ˆà¸¡à¸µ 3 à¸›à¸£à¸°à¹€à¸ à¸—:</strong></p>
+                        <p class="hp-text hp-mt-125 hp-mb-05"><strong class="hp-c-ivory">ภารกิจมี 3 ประเภท:</strong></p>
                         <div class="hp-type-grid">
                             <div class="hp-type-box hp-type-box--quiz">
-                                <p class="hp-type-label">Quiz â€” à¸•à¸­à¸šà¸„à¸³à¸–à¸²à¸¡</p>
+                                <p class="hp-type-label">Quiz — ตอบคำถาม</p>
                                 <p class="hp-type-detail">
-                                    à¸•à¹‰à¸­à¸‡à¸•à¸­à¸šà¸–à¸¹à¸ <strong style="color:#eeebe1;">à¸—à¸¸à¸à¸‚à¹‰à¸­</strong> à¸ˆà¸¶à¸‡à¹„à¸”à¹‰ Token<br>
-                                    à¸—à¸³à¹„à¸”à¹‰ <strong style="color:#e07a55;">1 à¸„à¸£à¸±à¹‰à¸‡à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™</strong> à¹„à¸¡à¹ˆà¸¡à¸µà¹‚à¸­à¸à¸²à¸ªà¹à¸à¹‰à¹„à¸‚<br><br>
-                                    à¸à¸”à¸›à¸¸à¹ˆà¸¡ "à¹€à¸£à¸´à¹ˆà¸¡à¸—à¸³ Quiz" à¹à¸¥à¹‰à¸§à¸•à¸­à¸šà¸„à¸³à¸–à¸²à¸¡ â†’ à¸à¸” "à¸¢à¸·à¸™à¸¢à¸±à¸™à¸„à¸³à¸•à¸­à¸š"
+                                    ต้องตอบถูก <strong class="hp-c-ivory">ทุกข้อ</strong> จึงได้ Token<br>
+                                    ทำได้ <strong class="hp-c-warn">1 ครั้งเท่านั้น</strong> ไม่มีโอกาสแก้ไข<br><br>
+                                    กดปุ่ม "เริ่มทำ Quiz" แล้วตอบคำถาม → กด "ยืนยันคำตอบ"
                                 </p>
                             </div>
                             <div class="hp-type-box hp-type-box--photo">
-                                <p class="hp-type-label">Photo â€” à¸ªà¹ˆà¸‡à¸£à¸¹à¸›à¸«à¸¥à¸±à¸à¸à¸²à¸™</p>
+                                <p class="hp-type-label">Photo — ส่งรูปหลักฐาน</p>
                                 <p class="hp-type-detail">
-                                    HR à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸£à¸¹à¸›à¹à¸¥à¸°à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´ â†’ à¹„à¸”à¹‰ Token<br>
-                                    à¸–à¹‰à¸² HR à¹„à¸¡à¹ˆà¸œà¹ˆà¸²à¸™ <strong style="color:#7ec98a;">à¸ªà¹ˆà¸‡à¹ƒà¸«à¸¡à¹ˆà¹„à¸”à¹‰</strong><br><br>
-                                    à¹„à¸Ÿà¸¥à¹Œ: JPG/PNG/WebP à¸‚à¸™à¸²à¸”à¹„à¸¡à¹ˆà¹€à¸à¸´à¸™ 5MB
+                                    HR ตรวจสอบรูปและอนุมัติ → ได้ Token<br>
+                                    ถ้า HR ไม่ผ่าน <strong class="hp-c-green">ส่งใหม่ได้</strong><br><br>
+                                    ไฟล์: JPG/PNG/WebP ขนาดไม่เกิน 5MB
                                 </p>
                             </div>
                             <div class="hp-type-box hp-type-box--strava">
-                                <p class="hp-type-label" style="color:#FC4C02;">Strava â€” à¸­à¸­à¸à¸à¸³à¸¥à¸±à¸‡à¸à¸²à¸¢</p>
+                                <p class="hp-type-label hp-c-strava">Strava — ออกกำลังกาย</p>
                                 <p class="hp-type-detail">
-                                    à¸£à¸°à¸šà¸šà¸•à¸£à¸§à¸ˆà¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¹ƒà¸™ Strava à¸§à¹ˆà¸²à¸œà¹ˆà¸²à¸™à¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚à¹„à¸«à¸¡<br>
-                                    à¸–à¹‰à¸²à¹„à¸¡à¹ˆà¸žà¸š <strong style="color:#FC4C02;">à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆà¹„à¸”à¹‰</strong> à¸«à¸¥à¸±à¸‡à¸šà¸±à¸™à¸—à¸¶à¸à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¹€à¸žà¸´à¹ˆà¸¡<br><br>
-                                    à¸•à¹‰à¸­à¸‡à¹€à¸Šà¸·à¹ˆà¸­à¸¡à¸•à¹ˆà¸­ Strava à¸à¹ˆà¸­à¸™ (à¸—à¸³à¸„à¸£à¸±à¹‰à¸‡à¹€à¸”à¸µà¸¢à¸§)
+                                    ระบบตรวจกิจกรรมใน Strava ว่าผ่านเงื่อนไขไหม<br>
+                                    ถ้าไม่พบ <strong class="hp-c-strava">ลองใหม่ได้</strong> หลังบันทึกกิจกรรมเพิ่ม<br><br>
+                                    ต้องเชื่อมต่อ Strava ก่อน (ทำครั้งเดียว)
                                 </p>
                             </div>
                         </div>
                         <div class="hp-tip hp-tip--warn">
-                            <span>Quiz à¸—à¸³à¹„à¸”à¹‰ <strong>à¸„à¸£à¸±à¹‰à¸‡à¹€à¸”à¸µà¸¢à¸§</strong> à¸­à¹ˆà¸²à¸™à¸„à¸³à¸–à¸²à¸¡à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸à¹ˆà¸­à¸™à¸à¸”à¸¢à¸·à¸™à¸¢à¸±à¸™à¹€à¸ªà¸¡à¸­</span>
+                            <span>Quiz ทำได้ <strong>ครั้งเดียว</strong> อ่านคำถามให้ครบก่อนกดยืนยันเสมอ</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- à¸£à¹‰à¸²à¸™à¸£à¸²à¸‡à¸§à¸±à¸¥ -->
-                <div class="hp-section" id="emp-rewards" data-keywords="reward à¸£à¸²à¸‡à¸§à¸±à¸¥ à¹à¸¥à¸ token shop à¸„à¸¹à¸›à¸­à¸‡ stock">
+                <!-- ร้านรางวัล -->
+                <div class="hp-section" id="emp-rewards" data-keywords="reward รางวัล แลก token shop คูปอง stock">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon">à¸£à¸²à¸‡à¸§à¸±à¸¥</div>
-                        <span class="hp-section-title-text">à¸£à¹‰à¸²à¸™à¸£à¸²à¸‡à¸§à¸±à¸¥</span>
+                        <div class="hp-section-icon">รางวัล</div>
+                        <span class="hp-section-title-text">ร้านรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">à¸™à¸³ Token à¸—à¸µà¹ˆà¸ªà¸°à¸ªà¸¡à¹„à¸”à¹‰à¹„à¸›à¹à¸¥à¸à¹€à¸›à¹‡à¸™à¸£à¸²à¸‡à¸§à¸±à¸¥à¸•à¹ˆà¸²à¸‡à¹† à¸—à¸µà¹ˆà¸­à¸‡à¸„à¹Œà¸à¸£à¸ˆà¸±à¸”à¹„à¸§à¹‰à¹ƒà¸«à¹‰</p>
+                        <p class="hp-intro">นำ Token ที่สะสมได้ไปแลกเป็นรางวัลต่างๆ ที่องค์กรจัดไว้ให้</p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸”à¸¹à¸£à¸²à¸¢à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥ à¹à¸•à¹ˆà¸¥à¸°à¸£à¸²à¸¢à¸à¸²à¸£à¹à¸ªà¸”à¸‡à¸£à¸²à¸„à¸² Token</span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š <strong style="color:#dab937;">Token à¸„à¸‡à¹€à¸«à¸¥à¸·à¸­</strong> à¸—à¸µà¹ˆà¸¡à¸¸à¸¡à¸šà¸™à¸‚à¸§à¸²à¸§à¹ˆà¸²à¹€à¸žà¸µà¸¢à¸‡à¸žà¸­</span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸à¸”à¸›à¸¸à¹ˆà¸¡ <strong style="color:#dab937;">"à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥"</strong></span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸¢à¸·à¸™à¸¢à¸±à¸™à¸à¸²à¸£à¹à¸¥à¸ â€” Token à¸ˆà¸°à¸–à¸¹à¸à¸«à¸±à¸à¸—à¸±à¸™à¸—à¸µ</span></li>
-                            <li><span class="hp-step-num">5</span><span>à¸£à¸­ HR à¸ˆà¸±à¸”à¹€à¸•à¸£à¸µà¸¢à¸¡à¹à¸¥à¸°à¸ªà¹ˆà¸‡à¸¡à¸­à¸š à¸ªà¸–à¸²à¸™à¸°à¸ˆà¸°à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸ˆà¸²à¸ <em>"à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£"</em> à¹€à¸›à¹‡à¸™ <em>"à¸ªà¸³à¹€à¸£à¹‡à¸ˆ"</em></span></li>
+                            <li><span class="hp-step-num">1</span><span>ดูรายการรางวัล แต่ละรายการแสดงราคา Token</span></li>
+                            <li><span class="hp-step-num">2</span><span>ตรวจสอบ <strong class="hp-c-gold">Token คงเหลือ</strong> ที่มุมบนขวาว่าเพียงพอ</span></li>
+                            <li><span class="hp-step-num">3</span><span>กดปุ่ม <strong class="hp-c-gold">"แลกรางวัล"</strong></span></li>
+                            <li><span class="hp-step-num">4</span><span>ยืนยันการแลก — Token จะถูกหักทันที</span></li>
+                            <li><span class="hp-step-num">5</span><span>รอ HR จัดเตรียมและส่งมอบ สถานะจะเปลี่ยนจาก <em>"รอดำเนินการ"</em> เป็น <em>"สำเร็จ"</em></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--gold">
-                            <span>à¸£à¸²à¸‡à¸§à¸±à¸¥à¸šà¸²à¸‡à¸­à¸¢à¹ˆà¸²à¸‡à¸¡à¸µ <strong>à¸£à¸«à¸±à¸ªà¸„à¸¹à¸›à¸­à¸‡</strong> â€” à¸ˆà¸°à¸›à¸£à¸²à¸à¸à¹ƒà¸™à¸«à¸™à¹‰à¸²à¸›à¸£à¸°à¸§à¸±à¸•à¸´ à¸«à¸¥à¸±à¸‡ HR à¸¢à¸·à¸™à¸¢à¸±à¸™à¸à¸²à¸£à¸ªà¹ˆà¸‡à¸¡à¸­à¸šà¹à¸¥à¹‰à¸§à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™</span>
+                            <span>รางวัลบางอย่างมี <strong>รหัสคูปอง</strong> — จะปรากฏในหน้าประวัติ หลัง HR ยืนยันการส่งมอบแล้วเท่านั้น</span>
                         </div>
                         <div class="hp-tip hp-tip--info">
-                                                        <span>à¸£à¸²à¸‡à¸§à¸±à¸¥à¸—à¸µà¹ˆà¸¡à¸µà¸•à¸±à¸§à¹€à¸¥à¸‚à¸ªà¸•à¹‡à¸­à¸ â€” à¹€à¸¡à¸·à¹ˆà¸­à¸«à¸¡à¸”à¹à¸¥à¹‰à¸§à¸›à¸¸à¹ˆà¸¡à¹à¸¥à¸à¸ˆà¸°à¸›à¸´à¸”à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´</span>
+                                                        <span>รางวัลที่มีตัวเลขสต็อก — เมื่อหมดแล้วปุ่มแลกจะปิดอัตโนมัติ</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- à¸›à¸£à¸°à¸§à¸±à¸•à¸´ -->
-                <div class="hp-section" id="emp-history" data-keywords="history à¸›à¸£à¸°à¸§à¸±à¸•à¸´ transaction token à¸£à¸²à¸‡à¸§à¸±à¸¥ à¸„à¸¹à¸›à¸­à¸‡">
+                <!-- ประวัติ -->
+                <div class="hp-section" id="emp-history" data-keywords="history ประวัติ transaction token รางวัล คูปอง">
                     <div class="hp-section-header" data-action="toggleSection">
                         <div class="hp-section-icon">H</div>
-                        <span class="hp-section-title-text">à¸«à¸™à¹‰à¸²à¸›à¸£à¸°à¸§à¸±à¸•à¸´</span>
+                        <span class="hp-section-title-text">หน้าประวัติ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-text">à¸”à¸¹à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸—à¸¸à¸à¸­à¸¢à¹ˆà¸²à¸‡à¸—à¸µà¹ˆà¹€à¸à¸´à¸”à¸‚à¸¶à¹‰à¸™à¸à¸±à¸šà¸šà¸±à¸à¸Šà¸µ à¹à¸šà¹ˆà¸‡à¹€à¸›à¹‡à¸™ 2 à¹à¸—à¹‡à¸š</p>
+                        <p class="hp-text">ดูประวัติทุกอย่างที่เกิดขึ้นกับบัญชี แบ่งเป็น 2 แท็บ</p>
                         <ol class="hp-steps">
                             <li>
                                 <span class="hp-step-num">1</span>
-                                <span><strong style="color:#dab937;">à¹à¸—à¹‡à¸š Token</strong> â€” à¸£à¸²à¸¢à¸à¸²à¸£à¸£à¸±à¸š-à¸ˆà¹ˆà¸²à¸¢ Token à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”: à¹„à¸”à¹‰à¸ˆà¸²à¸ Quiz, Photo, Strava / à¸«à¸±à¸à¹€à¸¡à¸·à¹ˆà¸­à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥ / à¸›à¸£à¸±à¸šà¹‚à¸”à¸¢ HR</span>
+                                <span><strong class="hp-c-gold">แท็บ Token</strong> — รายการรับ-จ่าย Token ทั้งหมด: ได้จาก Quiz, Photo, Strava / หักเมื่อแลกรางวัล / ปรับโดย HR</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">2</span>
-                                <span><strong style="color:#eeebe1;">à¹à¸—à¹‡à¸š à¸£à¸²à¸‡à¸§à¸±à¸¥</strong> â€” à¸£à¸²à¸¢à¸à¸²à¸£à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥à¸žà¸£à¹‰à¸­à¸¡à¸ªà¸–à¸²à¸™à¸°: <em>à¸£à¸­à¸”à¸³à¹€à¸™à¸´à¸™à¸à¸²à¸£</em> / <em>à¸ªà¸³à¹€à¸£à¹‡à¸ˆ</em> / <em>à¸¢à¸à¹€à¸¥à¸´à¸</em><br>
-                                <span style="color:#FC4C02;">à¸£à¸«à¸±à¸ªà¸„à¸¹à¸›à¸­à¸‡à¸ˆà¸°à¸›à¸£à¸²à¸à¸à¸•à¸£à¸‡à¸™à¸µà¹‰à¹€à¸¡à¸·à¹ˆà¸­à¸£à¸²à¸‡à¸§à¸±à¸¥à¸ªà¸³à¹€à¸£à¹‡à¸ˆà¹à¸¥à¹‰à¸§</span></span>
+                                <span><strong class="hp-c-ivory">แท็บ รางวัล</strong> — รายการแลกรางวัลพร้อมสถานะ: <em>รอดำเนินการ</em> / <em>สำเร็จ</em> / <em>ยกเลิก</em><br>
+                                <span class="hp-c-strava">รหัสคูปองจะปรากฏตรงนี้เมื่อรางวัลสำเร็จแล้ว</span></span>
                             </li>
                         </ol>
                     </div>
                 </div>
 
-                <!-- à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ -->
-                <div class="hp-section" id="emp-profile" data-keywords="profile à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ à¸£à¸¹à¸› à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™ password à¸­à¸²à¸¢à¸¸à¸‡à¸²à¸™">
+                <!-- โปรไฟล์ -->
+                <div class="hp-section" id="emp-profile" data-keywords="profile โปรไฟล์ รูป รหัสผ่าน password อายุงาน">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">P</div>
-                        <span class="hp-section-title-text">à¸«à¸™à¹‰à¸²à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ</span>
+                        <div class="hp-section-icon hp-fs-06">P</div>
+                        <span class="hp-section-title-text">หน้าโปรไฟล์</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-text">à¹€à¸‚à¹‰à¸²à¹„à¸”à¹‰à¸ˆà¸²à¸ à¹€à¸¡à¸™à¸¹à¸Šà¸·à¹ˆà¸­à¸‚à¸­à¸‡à¸„à¸¸à¸“ (à¸¡à¸¸à¸¡à¸šà¸™à¸‚à¸§à¸²) â†’ "à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œà¸‚à¸­à¸‡à¸‰à¸±à¸™"</p>
+                        <p class="hp-text">เข้าได้จาก เมนูชื่อของคุณ (มุมบนขวา) → "โปรไฟล์ของฉัน"</p>
                         <ol class="hp-steps">
                             <li>
                                 <span class="hp-step-num">1</span>
-                                <span><strong style="color:#eeebe1;">à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸£à¸¹à¸›à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ</strong> â€” à¸à¸”à¸—à¸µà¹ˆà¸£à¸¹à¸› à¹€à¸¥à¸·à¸­à¸à¹„à¸Ÿà¸¥à¹Œà¸ à¸²à¸ž (JPG/PNG/WebP â‰¤ 2MB) à¹à¸¥à¹‰à¸§à¸à¸” "à¸­à¸±à¸›à¹‚à¸«à¸¥à¸”"</span>
+                                <span><strong class="hp-c-ivory">เปลี่ยนรูปโปรไฟล์</strong> — กดที่รูป เลือกไฟล์ภาพ (JPG/PNG/WebP ≤ 2MB) แล้วกด "อัปโหลด"</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">2</span>
-                                <span><strong style="color:#eeebe1;">à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™</strong> â€” à¸à¸£à¸­à¸à¸£à¸«à¸±à¸ªà¸›à¸±à¸ˆà¸ˆà¸¸à¸šà¸±à¸™ + à¸£à¸«à¸±à¸ªà¹ƒà¸«à¸¡à¹ˆ (à¸­à¸¢à¹ˆà¸²à¸‡à¸™à¹‰à¸­à¸¢ 8 à¸•à¸±à¸§) à¹à¸¥à¹‰à¸§à¸à¸” "à¸šà¸±à¸™à¸—à¸¶à¸"</span>
+                                <span><strong class="hp-c-ivory">เปลี่ยนรหัสผ่าน</strong> — กรอกรหัสปัจจุบัน + รหัสใหม่ (อย่างน้อย 8 ตัว) แล้วกด "บันทึก"</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">3</span>
-                                <span><strong style="color:#eeebe1;">à¸­à¸²à¸¢à¸¸à¸‡à¸²à¸™</strong> â€” à¹à¸ªà¸”à¸‡à¸£à¸°à¸¢à¸°à¹€à¸§à¸¥à¸²à¸—à¸µà¹ˆà¸—à¸³à¸‡à¸²à¸™à¹ƒà¸™à¸­à¸‡à¸„à¹Œà¸à¸£</span>
+                                <span><strong class="hp-c-ivory">อายุงาน</strong> — แสดงระยะเวลาที่ทำงานในองค์กร</span>
                             </li>
                         </ol>
                     </div>
                 </div>
 
                 <!-- Strava -->
-                <div class="hp-section" id="emp-strava" data-keywords="strava à¸§à¸´à¹ˆà¸‡ à¸›à¸±à¹ˆà¸™ à¹€à¸”à¸´à¸™ à¸à¸´à¸ˆà¸à¸£à¸£à¸¡ à¸­à¸­à¸à¸à¸³à¸¥à¸±à¸‡à¸à¸²à¸¢ à¹€à¸Šà¸·à¹ˆà¸­à¸¡à¸•à¹ˆà¸­">
+                <div class="hp-section" id="emp-strava" data-keywords="strava วิ่ง ปั่น เดิน กิจกรรม ออกกำลังกาย เชื่อมต่อ">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="background:rgba(252,76,2,0.1);">
+                        <div class="hp-section-icon" class="hp-bg-strava-soft">
                             <svg viewBox="0 0 24 24" width="18" height="18" fill="#FC4C02">
                                 <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                             </svg>
                         </div>
-                        <span class="hp-section-title-text">Strava â€” à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸­à¸­à¸à¸à¸³à¸¥à¸±à¸‡à¸à¸²à¸¢</span>
+                        <span class="hp-section-title-text">Strava — กิจกรรมออกกำลังกาย</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">Strava à¸„à¸·à¸­à¹à¸­à¸›à¸šà¸±à¸™à¸—à¸¶à¸à¸à¸²à¸£à¸­à¸­à¸à¸à¸³à¸¥à¸±à¸‡à¸à¸²à¸¢ à¸£à¸°à¸šà¸šà¹ƒà¸Šà¹‰ Strava à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸ªà¸³à¸«à¸£à¸±à¸šà¸ à¸²à¸£à¸à¸´à¸ˆà¸›à¸£à¸°à¹€à¸ à¸— Strava</p>
+                        <p class="hp-intro">Strava คือแอปบันทึกการออกกำลังกาย ระบบใช้ Strava ตรวจสอบกิจกรรมสำหรับภารกิจประเภท Strava</p>
 
-                        <p class="hp-text" style="margin-bottom:0.25rem;"><strong style="color:#eeebe1;">à¸‚à¸±à¹‰à¸™à¸•à¸­à¸™à¹€à¸Šà¸·à¹ˆà¸­à¸¡à¸•à¹ˆà¸­ (à¸—à¸³à¸„à¸£à¸±à¹‰à¸‡à¹à¸£à¸à¸„à¸£à¸±à¹‰à¸‡à¹€à¸”à¸µà¸¢à¸§):</strong></p>
+                        <p class="hp-text" class="hp-mb-025"><strong class="hp-c-ivory">ขั้นตอนเชื่อมต่อ (ทำครั้งแรกครั้งเดียว):</strong></p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¹„à¸›à¸—à¸µà¹ˆà¸«à¸™à¹‰à¸² <strong style="color:#eeebe1;">à¹‚à¸›à¸£à¹„à¸Ÿà¸¥à¹Œ</strong> â†’ à¹€à¸¥à¸·à¹ˆà¸­à¸™à¸¥à¸‡à¸¡à¸²à¸«à¸²à¸ªà¹ˆà¸§à¸™ Strava</span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸à¸”à¸›à¸¸à¹ˆà¸¡ <strong style="color:#FC4C02;">"à¹€à¸Šà¸·à¹ˆà¸­à¸¡à¸•à¹ˆà¸­ Strava"</strong></span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸£à¸°à¸šà¸šà¸ˆà¸°à¸žà¸²à¹„à¸› Strava.com à¹ƒà¸«à¹‰à¸à¸” <strong>"Authorize"</strong></span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸£à¸°à¸šà¸šà¸ˆà¸°à¸žà¸²à¸à¸¥à¸±à¸šà¸¡à¸²à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´ â€” à¹€à¸Šà¸·à¹ˆà¸­à¸¡à¸•à¹ˆà¸­à¸ªà¸³à¹€à¸£à¹‡à¸ˆ</span></li>
+                            <li><span class="hp-step-num">1</span><span>ไปที่หน้า <strong class="hp-c-ivory">โปรไฟล์</strong> → เลื่อนลงมาหาส่วน Strava</span></li>
+                            <li><span class="hp-step-num">2</span><span>กดปุ่ม <strong class="hp-c-strava">"เชื่อมต่อ Strava"</strong></span></li>
+                            <li><span class="hp-step-num">3</span><span>ระบบจะพาไป Strava.com ให้กด <strong>"Authorize"</strong></span></li>
+                            <li><span class="hp-step-num">4</span><span>ระบบจะพากลับมาอัตโนมัติ — เชื่อมต่อสำเร็จ</span></li>
                         </ol>
 
-                        <p class="hp-text" style="margin-bottom:0.25rem; margin-top:1rem;"><strong style="color:#eeebe1;">à¸§à¸´à¸˜à¸µà¸—à¸³à¸ à¸²à¸£à¸à¸´à¸ˆ Strava:</strong></p>
+                        <p class="hp-text" class="hp-mt-1 hp-mb-025"><strong class="hp-c-ivory">วิธีทำภารกิจ Strava:</strong></p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸šà¸±à¸™à¸—à¸¶à¸à¸à¸´à¸ˆà¸à¸£à¸£à¸¡ (à¸§à¸´à¹ˆà¸‡/à¸›à¸±à¹ˆà¸™) à¹ƒà¸«à¹‰à¸„à¸£à¸šà¸•à¸²à¸¡à¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚à¸à¹ˆà¸­à¸™</span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸à¸¥à¸±à¸šà¸¡à¸²à¸—à¸µà¹ˆà¸«à¸™à¹‰à¸²à¸ à¸²à¸£à¸à¸´à¸ˆ à¸à¸”à¸à¸²à¸£à¹Œà¸”à¹€à¸žà¸·à¹ˆà¸­à¸”à¸¹à¸”à¹‰à¸²à¸™à¸«à¸¥à¸±à¸‡</span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸à¸”à¸›à¸¸à¹ˆà¸¡ <strong style="color:#FC4C02;">"à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸šà¸à¸´à¸ˆà¸à¸£à¸£à¸¡ Strava"</strong></span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸£à¸­à¸›à¸£à¸°à¸¡à¸²à¸“ <strong style="color:#eeebe1;">15â€“30 à¸§à¸´à¸™à¸²à¸—à¸µ</strong> à¸«à¹‰à¸²à¸¡à¸›à¸´à¸”à¸«à¸™à¹‰à¸²à¸•à¹ˆà¸²à¸‡à¸£à¸°à¸«à¸§à¹ˆà¸²à¸‡à¸£à¸­</span></li>
-                            <li><span class="hp-step-num">5</span><span>à¸œà¹ˆà¸²à¸™ â†’ à¹„à¸”à¹‰ Token à¸—à¸±à¸™à¸—à¸µ | à¹„à¸¡à¹ˆà¸œà¹ˆà¸²à¸™ â†’ à¸—à¸³à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¹€à¸žà¸´à¹ˆà¸¡à¹à¸¥à¹‰à¸§à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆ</span></li>
+                            <li><span class="hp-step-num">1</span><span>บันทึกกิจกรรม (วิ่ง/ปั่น) ให้ครบตามเงื่อนไขก่อน</span></li>
+                            <li><span class="hp-step-num">2</span><span>กลับมาที่หน้าภารกิจ กดการ์ดเพื่อดูด้านหลัง</span></li>
+                            <li><span class="hp-step-num">3</span><span>กดปุ่ม <strong class="hp-c-strava">"ตรวจสอบกิจกรรม Strava"</strong></span></li>
+                            <li><span class="hp-step-num">4</span><span>รอประมาณ <strong class="hp-c-ivory">15–30 วินาที</strong> ห้ามปิดหน้าต่างระหว่างรอ</span></li>
+                            <li><span class="hp-step-num">5</span><span>ผ่าน → ได้ Token ทันที | ไม่ผ่าน → ทำกิจกรรมเพิ่มแล้วลองใหม่</span></li>
                         </ol>
 
                         <div class="hp-tip hp-tip--warn">
-                            <span>à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¹ƒà¸™ Strava à¸•à¹‰à¸­à¸‡à¸•à¸±à¹‰à¸‡à¹€à¸›à¹‡à¸™ <strong>"Everyone"</strong> à¸«à¸£à¸·à¸­ <strong>"Followers"</strong> (à¹„à¸¡à¹ˆà¹ƒà¸Šà¹ˆ Private) à¸£à¸°à¸šà¸šà¸ˆà¸¶à¸‡à¸ˆà¸°à¸¡à¸­à¸‡à¹€à¸«à¹‡à¸™</span>
+                            <span>กิจกรรมใน Strava ต้องตั้งเป็น <strong>"Everyone"</strong> หรือ <strong>"Followers"</strong> (ไม่ใช่ Private) ระบบจึงจะมองเห็น</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- FAQ à¸žà¸™à¸±à¸à¸‡à¸²à¸™ -->
-                <div class="hp-section" id="emp-faq" data-keywords="faq à¸„à¸³à¸–à¸²à¸¡ quiz à¸‹à¹‰à¸³ token à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸ strava à¹„à¸¡à¹ˆà¸žà¸š">
+                <!-- FAQ พนักงาน -->
+                <div class="hp-section" id="emp-faq" data-keywords="faq คำถาม quiz ซ้ำ token หมดอายุ strava ไม่พบ">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon">à¸Šà¹ˆà¸§à¸¢à¹€à¸«à¸¥à¸·à¸­</div>
-                        <span class="hp-section-title-text">à¸„à¸³à¸–à¸²à¸¡à¸—à¸µà¹ˆà¸žà¸šà¸šà¹ˆà¸­à¸¢</span>
+                        <div class="hp-section-icon">ช่วยเหลือ</div>
+                        <span class="hp-section-title-text">คำถามที่พบบ่อย</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -352,48 +352,48 @@ require_once __DIR__ . '/../includes/header.php';
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¸—à¸³ Quiz à¸•à¸­à¸šà¸œà¸´à¸” à¸ªà¸²à¸¡à¸²à¸£à¸–à¸¥à¸­à¸‡à¹ƒà¸«à¸¡à¹ˆà¹„à¸”à¹‰à¹„à¸«à¸¡?
+                                    ทำ Quiz ตอบผิด สามารถลองใหม่ได้ไหม?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¹„à¸¡à¹ˆà¹„à¸”à¹‰ Quiz à¸—à¸³à¹„à¸”à¹‰ <strong style="color:#e07a55;">1 à¸„à¸£à¸±à¹‰à¸‡à¸•à¹ˆà¸­à¸ à¸²à¸£à¸à¸´à¸ˆà¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™</strong> à¹à¸¡à¹‰à¸•à¸­à¸šà¸œà¸´à¸”à¸à¹‡à¹„à¸¡à¹ˆà¸¡à¸µà¹‚à¸­à¸à¸²à¸ªà¹à¸à¹‰à¹„à¸‚ à¸­à¹ˆà¸²à¸™à¸—à¸¸à¸à¸‚à¹‰à¸­à¸à¹ˆà¸­à¸™à¸à¸”à¸¢à¸·à¸™à¸¢à¸±à¸™</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ไม่ได้ Quiz ทำได้ <strong class="hp-c-warn">1 ครั้งต่อภารกิจเท่านั้น</strong> แม้ตอบผิดก็ไม่มีโอกาสแก้ไข อ่านทุกข้อก่อนกดยืนยัน</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¸ªà¹ˆà¸‡à¸£à¸¹à¸›à¸ à¸²à¸žà¹à¸¥à¹‰à¸§ HR à¹„à¸¡à¹ˆà¸œà¹ˆà¸²à¸™ à¸—à¸³à¸­à¸°à¹„à¸£à¹„à¸”à¹‰à¸šà¹‰à¸²à¸‡?
+                                    ส่งรูปภาพแล้ว HR ไม่ผ่าน ทำอะไรได้บ้าง?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¸ªà¹ˆà¸‡à¹ƒà¸«à¸¡à¹ˆà¹„à¸”à¹‰à¹€à¸¥à¸¢ à¸à¸¥à¸±à¸šà¹„à¸›à¸—à¸µà¹ˆà¸«à¸™à¹‰à¸²à¸ à¸²à¸£à¸à¸´à¸ˆ à¸à¸¥à¸±à¸šà¸à¸²à¸£à¹Œà¸” à¸ˆà¸°à¸¡à¸µà¸›à¸¸à¹ˆà¸¡ "à¸ªà¹ˆà¸‡à¸«à¸¥à¸±à¸à¸à¸²à¸™à¹ƒà¸«à¸¡à¹ˆ" à¸›à¸£à¸²à¸à¸à¸‚à¸¶à¹‰à¸™ à¹à¸à¹‰à¹„à¸‚à¸£à¸¹à¸›à¹à¸¥à¹‰à¸§à¸ªà¹ˆà¸‡à¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ส่งใหม่ได้เลย กลับไปที่หน้าภารกิจ กลับการ์ด จะมีปุ่ม "ส่งหลักฐานใหม่" ปรากฏขึ้น แก้ไขรูปแล้วส่งอีกครั้ง</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    Token à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥à¹„à¸›à¹à¸¥à¹‰à¸§à¸«à¸²à¸¢à¹„à¸›à¹€à¸¥à¸¢à¹„à¸«à¸¡?
+                                    Token ที่ใช้แลกรางวัลไปแล้วหายไปเลยไหม?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¹ƒà¸Šà¹ˆ Token à¸„à¸‡à¹€à¸«à¸¥à¸·à¸­à¸ˆà¸°à¸¥à¸”à¸¥à¸‡ à¹à¸•à¹ˆ <strong style="color:#7ec98a;">Token à¸—à¸µà¹ˆà¹„à¸”à¹‰à¸£à¸±à¸šà¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”à¸¢à¸±à¸‡à¸„à¸‡à¸™à¸±à¸š</strong> à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™ Leaderboard à¹„à¸¡à¹ˆà¸«à¸²à¸¢à¹„à¸›à¹„à¸«à¸™</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ใช่ Token คงเหลือจะลดลง แต่ <strong class="hp-c-green">Token ที่ได้รับทั้งหมดยังคงนับ</strong> อยู่ใน Leaderboard ไม่หายไปไหน</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    Token à¸¡à¸µà¸§à¸±à¸™à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸à¹„à¸«à¸¡?
+                                    Token มีวันหมดอายุไหม?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¸£à¸°à¸šà¸šà¸›à¸±à¸ˆà¸ˆà¸¸à¸šà¸±à¸™à¹„à¸¡à¹ˆà¸¡à¸µà¸§à¸±à¸™à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸ à¸ªà¸­à¸šà¸–à¸²à¸¡ HR à¹€à¸žà¸·à¹ˆà¸­à¸¢à¸·à¸™à¸¢à¸±à¸™à¸™à¹‚à¸¢à¸šà¸²à¸¢à¸‚à¸­à¸‡à¸­à¸‡à¸„à¹Œà¸à¸£</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ระบบปัจจุบันไม่มีวันหมดอายุ สอบถาม HR เพื่อยืนยันนโยบายขององค์กร</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    Strava à¸„à¹‰à¸²à¸‡à¸™à¸²à¸™ à¸«à¸£à¸·à¸­à¸šà¸­à¸à¹„à¸¡à¹ˆà¸žà¸šà¸à¸´à¸ˆà¸à¸£à¸£à¸¡ à¸—à¸³à¸­à¸¢à¹ˆà¸²à¸‡à¹„à¸£?
+                                    Strava ค้างนาน หรือบอกไม่พบกิจกรรม ทำอย่างไร?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
                                 <div class="hp-faq-a-wrap"><div class="hp-faq-a">
-                                    à¸„à¹‰à¸²à¸‡à¸™à¸²à¸™ (15â€“30 à¸§à¸´) à¹€à¸›à¹‡à¸™à¹€à¸£à¸·à¹ˆà¸­à¸‡à¸›à¸à¸•à¸´ à¸£à¸­à¹à¸¥à¸°à¸­à¸¢à¹ˆà¸²à¸›à¸´à¸”à¸«à¸™à¹‰à¸²<br><br>
-                                    à¸–à¹‰à¸²à¸šà¸­à¸à¹„à¸¡à¹ˆà¸žà¸šà¸à¸´à¸ˆà¸à¸£à¸£à¸¡ à¸•à¸£à¸§à¸ˆà¸ªà¸­à¸š:<br>
-                                    1. à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸•à¸±à¹‰à¸‡à¹€à¸›à¹‡à¸™ Private à¸­à¸¢à¸¹à¹ˆà¹„à¸«à¸¡ â†’ à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¹€à¸›à¹‡à¸™ Everyone/Followers<br>
-                                    2. à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™à¸Šà¹ˆà¸§à¸‡à¸§à¸±à¸™à¸—à¸µà¹ˆà¸ à¸²à¸£à¸à¸´à¸ˆà¹„à¸«à¸¡<br>
-                                    3. à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸´à¸ˆà¸à¸£à¸£à¸¡à¸•à¸£à¸‡à¸à¸±à¸šà¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚à¹„à¸«à¸¡ (à¹€à¸Šà¹ˆà¸™ à¸§à¸´à¹ˆà¸‡/à¸›à¸±à¹ˆà¸™)<br>
-                                    4. à¸£à¸°à¸¢à¸°à¸—à¸²à¸‡/à¹€à¸§à¸¥à¸²à¸„à¸£à¸šà¸•à¸²à¸¡à¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚à¹„à¸«à¸¡
+                                    ค้างนาน (15–30 วิ) เป็นเรื่องปกติ รอและอย่าปิดหน้า<br><br>
+                                    ถ้าบอกไม่พบกิจกรรม ตรวจสอบ:<br>
+                                    1. กิจกรรมตั้งเป็น Private อยู่ไหม → เปลี่ยนเป็น Everyone/Followers<br>
+                                    2. กิจกรรมอยู่ในช่วงวันที่ภารกิจไหม<br>
+                                    3. ประเภทกิจกรรมตรงกับเงื่อนไขไหม (เช่น วิ่ง/ปั่น)<br>
+                                    4. ระยะทาง/เวลาครบตามเงื่อนไขไหม
                                 </div></div>
                             </div>
 
@@ -406,162 +406,162 @@ require_once __DIR__ . '/../includes/header.php';
         </div><!-- /panel-employee -->
 
 
-        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+        <!-- ═══════════════════════════════════
              HR / ADMIN TAB
-        â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
-        <div id="panel-hr" style="display:none;">
+        ═══════════════════════════════════ -->
+        <div id="panel-hr" class="hp-hidden">
         <div class="hp-layout">
 
             <!-- Sidebar HR -->
             <div class="hp-sidebar hidden md:block">
-                <p class="hp-sidebar-title">à¸«à¸±à¸§à¸‚à¹‰à¸­</p>
+                <p class="hp-sidebar-title">หัวข้อ</p>
                 <button class="hp-sidebar-link active" data-action="scrollToSection" data-section-id="hr-challenges">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">Q</span> à¸ˆà¸±à¸”à¸à¸²à¸£à¸ à¸²à¸£à¸à¸´à¸ˆ
+                    <span class="hp-sl-icon hp-fs-06">Q</span> จัดการภารกิจ
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="hr-submissions">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">OK</span> à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´à¸‡à¸²à¸™
+                    <span class="hp-sl-icon hp-fs-06">OK</span> อนุมัติงาน
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="hr-rewards">
-                    <span class="hp-sl-icon">R</span> à¸ˆà¸±à¸”à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥
+                    <span class="hp-sl-icon">R</span> จัดการรางวัล
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="hr-redemptions">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">RQ</span> à¸„à¸³à¸‚à¸­à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥
+                    <span class="hp-sl-icon hp-fs-06">RQ</span> คำขอแลกรางวัล
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="hr-employees">
-                    <span class="hp-sl-icon" style="font-size:0.6rem;">EMP</span> à¸ˆà¸±à¸”à¸à¸²à¸£à¸žà¸™à¸±à¸à¸‡à¸²à¸™
+                    <span class="hp-sl-icon hp-fs-06">EMP</span> จัดการพนักงาน
                 </button>
                 <button class="hp-sidebar-link" data-action="scrollToSection" data-section-id="hr-faq">
-                    <span class="hp-sl-icon" style="font-size:0.65rem;">FAQ</span> FAQ
+                    <span class="hp-sl-icon hp-fs-065">FAQ</span> FAQ
                 </button>
             </div>
 
             <!-- Content HR -->
             <div>
 
-                <!-- à¸ˆà¸±à¸”à¸à¸²à¸£à¸ à¸²à¸£à¸à¸´à¸ˆ -->
-                <div class="hp-section open" id="hr-challenges" data-keywords="challenge à¸ à¸²à¸£à¸à¸´à¸ˆ à¸ªà¸£à¹‰à¸²à¸‡ quiz strava photo toggle à¸¥à¸š">
+                <!-- จัดการภารกิจ -->
+                <div class="hp-section open" id="hr-challenges" data-keywords="challenge ภารกิจ สร้าง quiz strava photo toggle ลบ">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">Q</div>
-                        <span class="hp-section-title-text">à¸ˆà¸±à¸”à¸à¸²à¸£à¸ à¸²à¸£à¸à¸´à¸ˆ</span>
+                        <div class="hp-section-icon hp-fs-06">Q</div>
+                        <span class="hp-section-title-text">จัดการภารกิจ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-text" style="margin-bottom:0.5rem;"><strong style="color:#eeebe1;">à¸ªà¸£à¹‰à¸²à¸‡à¸ à¸²à¸£à¸à¸´à¸ˆà¹ƒà¸«à¸¡à¹ˆ:</strong></p>
+                        <p class="hp-text hp-mb-05"><strong class="hp-c-ivory">สร้างภารกิจใหม่:</strong></p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸à¸”à¸›à¸¸à¹ˆà¸¡ <strong style="color:#dab937;">"+ à¹€à¸žà¸´à¹ˆà¸¡à¸ à¸²à¸£à¸à¸´à¸ˆ"</strong></span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸à¸£à¸­à¸ à¸Šà¸·à¹ˆà¸­, à¸£à¸²à¸¢à¸¥à¸°à¹€à¸­à¸µà¸¢à¸”, à¸›à¸£à¸°à¹€à¸ à¸— (Quiz/Photo/Strava), Token à¸£à¸²à¸‡à¸§à¸±à¸¥, à¸§à¸±à¸™à¹€à¸£à¸´à¹ˆà¸¡-à¸ªà¸´à¹‰à¸™à¸ªà¸¸à¸”</span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸à¸” <strong>"à¸šà¸±à¸™à¸—à¸¶à¸"</strong></span></li>
+                            <li><span class="hp-step-num">1</span><span>กดปุ่ม <strong class="hp-c-gold">"+ เพิ่มภารกิจ"</strong></span></li>
+                            <li><span class="hp-step-num">2</span><span>กรอก ชื่อ, รายละเอียด, ประเภท (Quiz/Photo/Strava), Token รางวัล, วันเริ่ม-สิ้นสุด</span></li>
+                            <li><span class="hp-step-num">3</span><span>กด <strong>"บันทึก"</strong></span></li>
                         </ol>
-                        <div class="hp-type-grid" style="margin-top:1rem;">
+                        <div class="hp-type-grid hp-mt-1">
                             <div class="hp-type-box hp-type-box--quiz">
                                 <p class="hp-type-label">Quiz</p>
-                                <p class="hp-type-detail">à¸«à¸¥à¸±à¸‡à¸šà¸±à¸™à¸—à¸¶à¸à¹à¸¥à¹‰à¸§ à¸à¸” "+ à¹€à¸žà¸´à¹ˆà¸¡à¸„à¸³à¸–à¸²à¸¡"<br>à¸à¸£à¸­à¸à¸„à¸³à¸–à¸²à¸¡ + à¸•à¸±à¸§à¹€à¸¥à¸·à¸­à¸ Aâ€“D + à¹€à¸‰à¸¥à¸¢<br>à¹€à¸žà¸´à¹ˆà¸¡à¹„à¸”à¹‰à¸«à¸¥à¸²à¸¢à¸‚à¹‰à¸­ â€” à¸•à¹‰à¸­à¸‡à¸–à¸¹à¸à¸—à¸¸à¸à¸‚à¹‰à¸­</p>
+                                <p class="hp-type-detail">หลังบันทึกแล้ว กด "+ เพิ่มคำถาม"<br>กรอกคำถาม + ตัวเลือก A–D + เฉลย<br>เพิ่มได้หลายข้อ — ต้องถูกทุกข้อ</p>
                             </div>
                             <div class="hp-type-box hp-type-box--strava">
-                                <p class="hp-type-label" style="color:#FC4C02;">Strava</p>
-                                <p class="hp-type-detail">à¸£à¸°à¸šà¸¸: à¸›à¸£à¸°à¹€à¸ à¸—à¸à¸´à¸ˆà¸à¸£à¸£à¸¡ (Run/Ride/Walk),<br>à¸£à¸°à¸¢à¸°à¸—à¸²à¸‡à¸‚à¸±à¹‰à¸™à¸•à¹ˆà¸³ (à¸à¸¡.), à¹€à¸§à¸¥à¸²à¸‚à¸±à¹‰à¸™à¸•à¹ˆà¸³ (à¸™à¸²à¸—à¸µ),<br>à¸„à¸§à¸²à¸¡à¸ªà¸¹à¸‡à¸‚à¸±à¹‰à¸™à¸•à¹ˆà¸³ (à¹€à¸¡à¸•à¸£) â€” à¹„à¸¡à¹ˆà¸šà¸±à¸‡à¸„à¸±à¸š</p>
+                                <p class="hp-type-label hp-c-strava">Strava</p>
+                                <p class="hp-type-detail">ระบุ: ประเภทกิจกรรม (Run/Ride/Walk),<br>ระยะทางขั้นต่ำ (กม.), เวลาขั้นต่ำ (นาที),<br>ความสูงขั้นต่ำ (เมตร) — ไม่บังคับ</p>
                             </div>
                         </div>
-                        <div class="hp-tip hp-tip--warn" style="margin-top:1rem;">
-                            <span>à¸à¸²à¸£ <strong>à¸¥à¸šà¸ à¸²à¸£à¸à¸´à¸ˆ</strong> à¸ˆà¸°à¸¥à¸šà¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸à¸²à¸£à¸ªà¹ˆà¸‡à¸‡à¸²à¸™à¹à¸¥à¸° Token à¸—à¸µà¹ˆà¹€à¸„à¸¢à¹ƒà¸«à¹‰à¹„à¸›à¸”à¹‰à¸§à¸¢ â€” à¸–à¸²à¸§à¸£ à¹„à¸¡à¹ˆà¸ªà¸²à¸¡à¸²à¸£à¸–à¸à¸¹à¹‰à¸„à¸·à¸™à¹„à¸”à¹‰ à¹ƒà¸Šà¹‰à¸›à¸¸à¹ˆà¸¡ Toggle à¸‹à¹ˆà¸­à¸™à¹à¸—à¸™à¸–à¹‰à¸²à¹„à¸¡à¹ˆà¹à¸™à¹ˆà¹ƒà¸ˆ</span>
+                        <div class="hp-tip hp-tip--warn hp-mt-1">
+                            <span>การ <strong>ลบภารกิจ</strong> จะลบประวัติการส่งงานและ Token ที่เคยให้ไปด้วย — ถาวร ไม่สามารถกู้คืนได้ ใช้ปุ่ม Toggle ซ่อนแทนถ้าไม่แน่ใจ</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´à¸‡à¸²à¸™ -->
-                <div class="hp-section" id="hr-submissions" data-keywords="submission à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´ à¸›à¸à¸´à¹€à¸ªà¸˜ à¸£à¸¹à¸› photo pending badge">
+                <!-- อนุมัติงาน -->
+                <div class="hp-section" id="hr-submissions" data-keywords="submission อนุมัติ ปฏิเสธ รูป photo pending badge">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">OK</div>
-                        <span class="hp-section-title-text">à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´à¸‡à¸²à¸™ (Photo Submission)</span>
+                        <div class="hp-section-icon hp-fs-06">OK</div>
+                        <span class="hp-section-title-text">อนุมัติงาน (Photo Submission)</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">à¸«à¸™à¹‰à¸²à¸™à¸µà¹‰à¹à¸ªà¸”à¸‡à¸£à¸¹à¸›à¸ à¸²à¸žà¸«à¸¥à¸±à¸à¸à¸²à¸™à¸—à¸µà¹ˆà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ªà¹ˆà¸‡à¸¡à¸² à¸£à¸­à¸à¸²à¸£à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´ à¸•à¸±à¸§à¹€à¸¥à¸‚à¸ªà¸µà¹à¸”à¸‡à¸šà¸™à¹€à¸¡à¸™à¸¹à¸„à¸·à¸­à¸ˆà¸³à¸™à¸§à¸™à¸—à¸µà¹ˆà¸£à¸­à¸­à¸¢à¸¹à¹ˆ</p>
+                        <p class="hp-intro">หน้านี้แสดงรูปภาพหลักฐานที่พนักงานส่งมา รอการอนุมัติ ตัวเลขสีแดงบนเมนูคือจำนวนที่รออยู่</p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸„à¸¥à¸´à¸à¸”à¸¹à¸£à¸¹à¸›à¸ à¸²à¸žà¸—à¸µà¹ˆà¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ªà¹ˆà¸‡</span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸žà¸´à¸ˆà¸²à¸£à¸“à¸²à¸§à¹ˆà¸²à¸–à¸¹à¸à¸•à¹‰à¸­à¸‡à¸•à¸²à¸¡à¹€à¸‡à¸·à¹ˆà¸­à¸™à¹„à¸‚à¸ à¸²à¸£à¸à¸´à¸ˆà¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ</span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸à¸£à¸­à¸à¸«à¸¡à¸²à¸¢à¹€à¸«à¸•à¸¸ (à¹„à¸¡à¹ˆà¸šà¸±à¸‡à¸„à¸±à¸š) à¹€à¸žà¸·à¹ˆà¸­à¹à¸ˆà¹‰à¸‡à¸žà¸™à¸±à¸à¸‡à¸²à¸™</span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸à¸” <strong style="color:#7ec98a;">"à¸­à¸™à¸¸à¸¡à¸±à¸•à¸´"</strong> â†’ à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸”à¹‰ Token à¸—à¸±à¸™à¸—à¸µ <br>à¸«à¸£à¸·à¸­ <strong style="color:#e07a55;">"à¸›à¸à¸´à¹€à¸ªà¸˜"</strong> â†’ à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ªà¹ˆà¸‡à¹ƒà¸«à¸¡à¹ˆà¹„à¸”à¹‰</span></li>
+                            <li><span class="hp-step-num">1</span><span>คลิกดูรูปภาพที่พนักงานส่ง</span></li>
+                            <li><span class="hp-step-num">2</span><span>พิจารณาว่าถูกต้องตามเงื่อนไขภารกิจหรือไม่</span></li>
+                            <li><span class="hp-step-num">3</span><span>กรอกหมายเหตุ (ไม่บังคับ) เพื่อแจ้งพนักงาน</span></li>
+                            <li><span class="hp-step-num">4</span><span>กด <strong class="hp-c-green">"อนุมัติ"</strong> → พนักงานได้ Token ทันที <br>หรือ <strong class="hp-c-warn">"ปฏิเสธ"</strong> → พนักงานส่งใหม่ได้</span></li>
                         </ol>
                     </div>
                 </div>
 
-                <!-- à¸ˆà¸±à¸”à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥ -->
-                <div class="hp-section" id="hr-rewards" data-keywords="reward à¸£à¸²à¸‡à¸§à¸±à¸¥ à¸ªà¸£à¹‰à¸²à¸‡ à¸„à¸¹à¸›à¸­à¸‡ stock toggle à¸¥à¸š">
+                <!-- จัดการรางวัล -->
+                <div class="hp-section" id="hr-rewards" data-keywords="reward รางวัล สร้าง คูปอง stock toggle ลบ">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon">à¸ˆà¸±à¸”à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥</div>
-                        <span class="hp-section-title-text">à¸ˆà¸±à¸”à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥</span>
+                        <div class="hp-section-icon">จัดการรางวัล</div>
+                        <span class="hp-section-title-text">จัดการรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸à¸” <strong style="color:#dab937;">"+ à¹€à¸žà¸´à¹ˆà¸¡à¸£à¸²à¸‡à¸§à¸±à¸¥"</strong></span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸à¸£à¸­à¸ à¸Šà¸·à¹ˆà¸­, à¸£à¸²à¸¢à¸¥à¸°à¹€à¸­à¸µà¸¢à¸”, à¹„à¸­à¸„à¸­à¸™, à¸«à¸¡à¸§à¸”à¸«à¸¡à¸¹à¹ˆ, à¸£à¸²à¸„à¸² Token, à¸ªà¸•à¹‡à¸­à¸ (à¸§à¹ˆà¸²à¸‡ = à¹„à¸¡à¹ˆà¸ˆà¸³à¸à¸±à¸”)</span></li>
-                            <li><span class="hp-step-num">3</span><span>(à¹„à¸¡à¹ˆà¸šà¸±à¸‡à¸„à¸±à¸š) à¸à¸£à¸­à¸ <strong style="color:#dab937;">à¸£à¸«à¸±à¸ªà¸„à¸¹à¸›à¸­à¸‡</strong> + à¸§à¸±à¸™à¸«à¸¡à¸”à¸­à¸²à¸¢à¸¸ â€” à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹€à¸«à¹‡à¸™à¹„à¸”à¹‰à¸«à¸¥à¸±à¸‡ HR à¸ªà¹ˆà¸‡à¸¡à¸­à¸šà¹à¸¥à¹‰à¸§à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™</span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸à¸” <strong>"à¸šà¸±à¸™à¸—à¸¶à¸"</strong></span></li>
+                            <li><span class="hp-step-num">1</span><span>กด <strong class="hp-c-gold">"+ เพิ่มรางวัล"</strong></span></li>
+                            <li><span class="hp-step-num">2</span><span>กรอก ชื่อ, รายละเอียด, ไอคอน, หมวดหมู่, ราคา Token, สต็อก (ว่าง = ไม่จำกัด)</span></li>
+                            <li><span class="hp-step-num">3</span><span>(ไม่บังคับ) กรอก <strong class="hp-c-gold">รหัสคูปอง</strong> + วันหมดอายุ — พนักงานเห็นได้หลัง HR ส่งมอบแล้วเท่านั้น</span></li>
+                            <li><span class="hp-step-num">4</span><span>กด <strong>"บันทึก"</strong></span></li>
                         </ol>
                         <div class="hp-tip hp-tip--gold">
-                            <span>à¹à¸™à¸°à¸™à¸³à¹ƒà¸«à¹‰à¹ƒà¸Šà¹‰à¸›à¸¸à¹ˆà¸¡ <strong>Toggle à¸›à¸´à¸”</strong> à¸£à¸²à¸‡à¸§à¸±à¸¥à¹à¸—à¸™à¸à¸²à¸£à¸¥à¸š à¹€à¸žà¸·à¹ˆà¸­à¹„à¸¡à¹ˆà¹ƒà¸«à¹‰à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸«à¸²à¸¢<br>à¸¥à¸šà¹„à¸”à¹‰à¹€à¸‰à¸žà¸²à¸°à¸£à¸²à¸‡à¸§à¸±à¸¥à¸—à¸µà¹ˆà¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¹ƒà¸„à¸£à¹à¸¥à¸à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™</span>
+                            <span>แนะนำให้ใช้ปุ่ม <strong>Toggle ปิด</strong> รางวัลแทนการลบ เพื่อไม่ให้ประวัติพนักงานหาย<br>ลบได้เฉพาะรางวัลที่ยังไม่มีใครแลกเท่านั้น</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- à¸„à¸³à¸‚à¸­à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥ -->
-                <div class="hp-section" id="hr-redemptions" data-keywords="redemption à¹à¸¥à¸ à¸ªà¹ˆà¸‡à¸¡à¸­à¸š à¸¢à¸à¹€à¸¥à¸´à¸ à¸„à¸·à¸™ token fulfill cancel">
+                <!-- คำขอแลกรางวัล -->
+                <div class="hp-section" id="hr-redemptions" data-keywords="redemption แลก ส่งมอบ ยกเลิก คืน token fulfill cancel">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">RQ</div>
-                        <span class="hp-section-title-text">à¸„à¸³à¸‚à¸­à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥</span>
+                        <div class="hp-section-icon hp-fs-06">RQ</div>
+                        <span class="hp-section-title-text">คำขอแลกรางวัล</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">à¹€à¸¡à¸·à¹ˆà¸­à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸à¸”à¹à¸¥à¸à¸£à¸²à¸‡à¸§à¸±à¸¥ Token à¸ˆà¸°à¸–à¸¹à¸à¸«à¸±à¸à¸—à¸±à¸™à¸—à¸µ à¹à¸•à¹ˆà¸•à¹‰à¸­à¸‡à¸£à¸­ HR à¸¢à¸·à¸™à¸¢à¸±à¸™à¸à¸²à¸£à¸ªà¹ˆà¸‡à¸¡à¸­à¸šà¸ˆà¸£à¸´à¸‡</p>
+                        <p class="hp-intro">เมื่อพนักงานกดแลกรางวัล Token จะถูกหักทันที แต่ต้องรอ HR ยืนยันการส่งมอบจริง</p>
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span>à¸”à¸¹à¸£à¸²à¸¢à¸à¸²à¸£à¸—à¸µà¹ˆà¸£à¸­à¸­à¸¢à¸¹à¹ˆ à¹à¸•à¹ˆà¸¥à¸°à¸£à¸²à¸¢à¸à¸²à¸£à¹à¸ªà¸”à¸‡à¸Šà¸·à¹ˆà¸­à¸žà¸™à¸±à¸à¸‡à¸²à¸™, à¸£à¸²à¸‡à¸§à¸±à¸¥, Token à¸—à¸µà¹ˆà¹ƒà¸Šà¹‰</span></li>
-                            <li><span class="hp-step-num">2</span><span>à¸ˆà¸±à¸”à¹€à¸•à¸£à¸µà¸¢à¸¡à¸£à¸²à¸‡à¸§à¸±à¸¥à¹ƒà¸«à¹‰à¸žà¸£à¹‰à¸­à¸¡</span></li>
-                            <li><span class="hp-step-num">3</span><span>à¸à¸” <strong style="color:#7ec98a;">"à¸ªà¹ˆà¸‡à¸¡à¸­à¸š"</strong> â†’ à¹ƒà¸ªà¹ˆà¸«à¸¡à¸²à¸¢à¹€à¸«à¸•à¸¸ à¹€à¸Šà¹ˆà¸™ "à¸ªà¹ˆà¸‡à¸—à¸²à¸‡à¸­à¸µà¹€à¸¡à¸¥à¹à¸¥à¹‰à¸§" â†’ à¸à¸” "à¸¢à¸·à¸™à¸¢à¸±à¸™"</span></li>
-                            <li><span class="hp-step-num">4</span><span>à¸ªà¸–à¸²à¸™à¸°à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¹€à¸›à¹‡à¸™ <strong style="color:#7ec98a;">"à¸ªà¸³à¹€à¸£à¹‡à¸ˆ"</strong> à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹€à¸«à¹‡à¸™à¸£à¸«à¸±à¸ªà¸„à¸¹à¸›à¸­à¸‡ (à¸–à¹‰à¸²à¸¡à¸µ)</span></li>
+                            <li><span class="hp-step-num">1</span><span>ดูรายการที่รออยู่ แต่ละรายการแสดงชื่อพนักงาน, รางวัล, Token ที่ใช้</span></li>
+                            <li><span class="hp-step-num">2</span><span>จัดเตรียมรางวัลให้พร้อม</span></li>
+                            <li><span class="hp-step-num">3</span><span>กด <strong class="hp-c-green">"ส่งมอบ"</strong> → ใส่หมายเหตุ เช่น "ส่งทางอีเมลแล้ว" → กด "ยืนยัน"</span></li>
+                            <li><span class="hp-step-num">4</span><span>สถานะเปลี่ยนเป็น <strong class="hp-c-green">"สำเร็จ"</strong> พนักงานเห็นรหัสคูปอง (ถ้ามี)</span></li>
                         </ol>
                         <div class="hp-tip hp-tip--info">
-                            <span>à¸à¸” <strong>"à¸¢à¸à¹€à¸¥à¸´à¸"</strong> â†’ Token à¸ˆà¸°à¸–à¸¹à¸ <strong>à¸„à¸·à¸™à¹ƒà¸«à¹‰à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´</strong></span>
+                            <span>กด <strong>"ยกเลิก"</strong> → Token จะถูก <strong>คืนให้พนักงานอัตโนมัติ</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- à¸ˆà¸±à¸”à¸à¸²à¸£à¸žà¸™à¸±à¸à¸‡à¸²à¸™ -->
-                <div class="hp-section" id="hr-employees" data-keywords="employee à¸žà¸™à¸±à¸à¸‡à¸²à¸™ token à¸›à¸£à¸±à¸š reset password role à¸šà¸±à¸à¸Šà¸µ à¸›à¸´à¸”">
+                <!-- จัดการพนักงาน -->
+                <div class="hp-section" id="hr-employees" data-keywords="employee พนักงาน token ปรับ reset password role บัญชี ปิด">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.6rem;">EMP</div>
-                        <span class="hp-section-title-text">à¸ˆà¸±à¸”à¸à¸²à¸£à¸žà¸™à¸±à¸à¸‡à¸²à¸™</span>
+                        <div class="hp-section-icon hp-fs-06">EMP</div>
+                        <span class="hp-section-title-text">จัดการพนักงาน</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </div>
                     <div class="hp-section-body">
                         <ol class="hp-steps">
-                            <li><span class="hp-step-num">1</span><span><strong style="color:#eeebe1;">à¸„à¹‰à¸™à¸«à¸²</strong> à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸”à¹‰à¸§à¸¢à¸Šà¸·à¹ˆà¸­à¸«à¸£à¸·à¸­à¸£à¸«à¸±à¸ª</span></li>
-                            <li><span class="hp-step-num">2</span><span><strong style="color:#eeebe1;">à¹€à¸›à¸´à¸”/à¸›à¸´à¸”à¸šà¸±à¸à¸Šà¸µ</strong> â€” à¸šà¸±à¸à¸Šà¸µà¸—à¸µà¹ˆà¸›à¸´à¸”à¸ˆà¸° Login à¹„à¸¡à¹ˆà¹„à¸”à¹‰</span></li>
-                            <li><span class="hp-step-num">3</span><span><strong style="color:#dab937;">à¸›à¸£à¸±à¸š Token</strong> â€” à¹€à¸žà¸´à¹ˆà¸¡à¸«à¸£à¸·à¸­à¸«à¸±à¸à¹‚à¸”à¸¢à¸•à¸£à¸‡ à¸žà¸£à¹‰à¸­à¸¡à¸£à¸°à¸šà¸¸à¹€à¸«à¸•à¸¸à¸œà¸¥ (à¸šà¸±à¸™à¸—à¸¶à¸à¹ƒà¸™à¸›à¸£à¸°à¸§à¸±à¸•à¸´)</span></li>
-                            <li><span class="hp-step-num">4</span><span><strong style="color:#eeebe1;">à¸£à¸µà¹€à¸‹à¹‡à¸•à¸£à¸«à¸±à¸ªà¸œà¹ˆà¸²à¸™</strong> à¹ƒà¸«à¹‰à¸žà¸™à¸±à¸à¸‡à¸²à¸™</span></li>
+                            <li><span class="hp-step-num">1</span><span><strong class="hp-c-ivory">ค้นหา</strong> พนักงานด้วยชื่อหรือรหัส</span></li>
+                            <li><span class="hp-step-num">2</span><span><strong class="hp-c-ivory">เปิด/ปิดบัญชี</strong> — บัญชีที่ปิดจะ Login ไม่ได้</span></li>
+                            <li><span class="hp-step-num">3</span><span><strong class="hp-c-gold">ปรับ Token</strong> — เพิ่มหรือหักโดยตรง พร้อมระบุเหตุผล (บันทึกในประวัติ)</span></li>
+                            <li><span class="hp-step-num">4</span><span><strong class="hp-c-ivory">รีเซ็ตรหัสผ่าน</strong> ให้พนักงาน</span></li>
                         </ol>
                         <div class="hp-tip hp-tip--warn">
-                            <span>à¹€à¸‰à¸žà¸²à¸° <strong>Admin</strong> à¹€à¸—à¹ˆà¸²à¸™à¸±à¹‰à¸™à¸—à¸µà¹ˆà¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™ Role à¸«à¸£à¸·à¸­à¸¥à¸šà¸šà¸±à¸à¸Šà¸µà¹„à¸”à¹‰ â€” à¹„à¸¡à¹ˆà¸ªà¸²à¸¡à¸²à¸£à¸–à¸à¸£à¸°à¸—à¸³à¸à¸±à¸šà¸šà¸±à¸à¸Šà¸µà¸•à¸±à¸§à¹€à¸­à¸‡à¹„à¸”à¹‰</span>
+                            <span>เฉพาะ <strong>Admin</strong> เท่านั้นที่เปลี่ยน Role หรือลบบัญชีได้ — ไม่สามารถกระทำกับบัญชีตัวเองได้</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- FAQ HR -->
-                <div class="hp-section" id="hr-faq" data-keywords="faq à¸„à¸³à¸–à¸²à¸¡ hr admin token à¸„à¸·à¸™ toggle à¸¥à¸š">
+                <div class="hp-section" id="hr-faq" data-keywords="faq คำถาม hr admin token คืน toggle ลบ">
                     <div class="hp-section-header" data-action="toggleSection">
-                        <div class="hp-section-icon" style="font-size:0.65rem;">FAQ</div>
-                        <span class="hp-section-title-text">à¸„à¸³à¸–à¸²à¸¡à¸—à¸µà¹ˆà¸žà¸šà¸šà¹ˆà¸­à¸¢</span>
+                        <div class="hp-section-icon hp-fs-065">FAQ</div>
+                        <span class="hp-section-title-text">คำถามที่พบบ่อย</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -571,34 +571,34 @@ require_once __DIR__ . '/../includes/header.php';
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¹„à¸”à¹‰ Token à¹„à¸›à¹à¸¥à¹‰à¸§ à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸–à¸­à¸™à¸„à¸·à¸™ à¸—à¸³à¹„à¸”à¹‰à¹„à¸«à¸¡?
+                                    พนักงานได้ Token ไปแล้ว ต้องการถอนคืน ทำได้ไหม?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¹„à¸”à¹‰ à¹„à¸›à¸—à¸µà¹ˆà¸«à¸™à¹‰à¸²à¸ˆà¸±à¸”à¸à¸²à¸£à¸žà¸™à¸±à¸à¸‡à¸²à¸™ â†’ à¸›à¸£à¸±à¸š Token â†’ à¹ƒà¸ªà¹ˆà¸ˆà¸³à¸™à¸§à¸™à¹€à¸›à¹‡à¸™à¸¥à¸š à¹€à¸Šà¹ˆà¸™ <strong>-50</strong> à¸žà¸£à¹‰à¸­à¸¡à¸£à¸°à¸šà¸¸à¹€à¸«à¸•à¸¸à¸œà¸¥ à¸£à¸°à¸šà¸šà¸ˆà¸°à¸šà¸±à¸™à¸—à¸¶à¸à¹ƒà¸™à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸žà¸™à¸±à¸à¸‡à¸²à¸™</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ได้ ไปที่หน้าจัดการพนักงาน → ปรับ Token → ใส่จำนวนเป็นลบ เช่น <strong>-50</strong> พร้อมระบุเหตุผล ระบบจะบันทึกในประวัติพนักงาน</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸‹à¹ˆà¸­à¸™à¸£à¸²à¸‡à¸§à¸±à¸¥à¸Šà¸±à¹ˆà¸§à¸„à¸£à¸²à¸§ à¹„à¸¡à¹ˆà¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¸š
+                                    ต้องการซ่อนรางวัลชั่วคราว ไม่ต้องการลบ
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¹ƒà¸Šà¹‰à¸›à¸¸à¹ˆà¸¡ <strong>Toggle</strong> à¹€à¸žà¸·à¹ˆà¸­à¸›à¸´à¸”à¸£à¸²à¸‡à¸§à¸±à¸¥ à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ˆà¸°à¹„à¸¡à¹ˆà¹€à¸«à¹‡à¸™à¹ƒà¸™à¸£à¹‰à¸²à¸™ à¹€à¸›à¸´à¸”à¸à¸¥à¸±à¸šà¹„à¸”à¹‰à¸—à¸¸à¸à¹€à¸¡à¸·à¹ˆà¸­à¹‚à¸”à¸¢à¸à¸” Toggle à¸­à¸µà¸à¸„à¸£à¸±à¹‰à¸‡</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ใช้ปุ่ม <strong>Toggle</strong> เพื่อปิดรางวัล พนักงานจะไม่เห็นในร้าน เปิดกลับได้ทุกเมื่อโดยกด Toggle อีกครั้ง</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¸ à¸²à¸£à¸à¸´à¸ˆà¸«à¸¡à¸”à¸§à¸±à¸™à¸ªà¸´à¹‰à¸™à¸ªà¸¸à¸”à¹à¸¥à¹‰à¸§ à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸¢à¸±à¸‡à¹€à¸«à¹‡à¸™à¸­à¸¢à¸¹à¹ˆà¹„à¸«à¸¡?
+                                    ภารกิจหมดวันสิ้นสุดแล้ว พนักงานยังเห็นอยู่ไหม?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¹„à¸¡à¹ˆ à¸£à¸°à¸šà¸šà¸‹à¹ˆà¸­à¸™à¸ à¸²à¸£à¸à¸´à¸ˆà¸—à¸µà¹ˆà¹€à¸¥à¸¢à¸§à¸±à¸™à¸ªà¸´à¹‰à¸™à¸ªà¸¸à¸”à¹ƒà¸«à¹‰à¸­à¸±à¸•à¹‚à¸™à¸¡à¸±à¸•à¸´ à¹à¸•à¹ˆà¸¢à¸±à¸‡à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™à¸«à¸™à¹‰à¸² HR à¸ªà¸²à¸¡à¸²à¸£à¸–à¹à¸à¹‰à¹„à¸‚à¸§à¸±à¸™à¸«à¸£à¸·à¸­à¸¥à¸šà¹„à¸”à¹‰</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ไม่ ระบบซ่อนภารกิจที่เลยวันสิ้นสุดให้อัตโนมัติ แต่ยังอยู่ในหน้า HR สามารถแก้ไขวันหรือลบได้</div></div>
                             </div>
 
                             <div class="hp-faq-item">
                                 <div class="hp-faq-q" data-action="toggleFaq">
-                                    à¹€à¸žà¸´à¹ˆà¸¡à¸ à¸²à¸£à¸à¸´à¸ˆ Quiz à¹à¸¥à¹‰à¸§à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸„à¸³à¸–à¸²à¸¡ à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸ˆà¸°à¹€à¸«à¹‡à¸™à¸­à¸°à¹„à¸£?
+                                    เพิ่มภารกิจ Quiz แล้วยังไม่มีคำถาม พนักงานจะเห็นอะไร?
                                     <svg class="hp-faq-q-icon" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </div>
-                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">à¸ à¸²à¸£à¸à¸´à¸ˆà¸ˆà¸°à¹à¸ªà¸”à¸‡à¹ƒà¸™à¸£à¸²à¸¢à¸à¸²à¸£ à¹à¸•à¹ˆà¹€à¸¡à¸·à¹ˆà¸­à¸žà¸™à¸±à¸à¸‡à¸²à¸™à¸à¸”à¸—à¸³à¸ˆà¸°à¸‚à¸¶à¹‰à¸™à¸§à¹ˆà¸² "à¸ à¸²à¸£à¸à¸´à¸ˆà¸™à¸µà¹‰à¸¢à¸±à¸‡à¹„à¸¡à¹ˆà¸¡à¸µà¸„à¸³à¸–à¸²à¸¡" à¸•à¹‰à¸­à¸‡à¹€à¸žà¸´à¹ˆà¸¡à¸„à¸³à¸–à¸²à¸¡à¸à¹ˆà¸­à¸™à¸ˆà¸¶à¸‡à¸ˆà¸°à¸—à¸³à¹„à¸”à¹‰</div></div>
+                                <div class="hp-faq-a-wrap"><div class="hp-faq-a">ภารกิจจะแสดงในรายการ แต่เมื่อพนักงานกดทำจะขึ้นว่า "ภารกิจนี้ยังไม่มีคำถาม" ต้องเพิ่มคำถามก่อนจึงจะทำได้</div></div>
                             </div>
 
                         </div>
@@ -610,14 +610,14 @@ require_once __DIR__ . '/../includes/header.php';
         </div><!-- /panel-hr -->
 
         <div class="hp-no-result" id="hp-no-result">
-            à¹„à¸¡à¹ˆà¸žà¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸—à¸µà¹ˆà¸„à¹‰à¸™à¸«à¸² à¸¥à¸­à¸‡à¹ƒà¸Šà¹‰à¸„à¸³à¸­à¸·à¹ˆà¸™
+            ไม่พบข้อมูลที่ค้นหา ลองใช้คำอื่น
         </div>
 
     </div><!-- /inner -->
 </div><!-- /wrap -->
 
 <script>
-// â”€â”€ Tab pill positioning â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Tab pill positioning ────────────────────────────────────
 function positionPill(activeBtn) {
     var pill = document.getElementById('hp-tab-pill');
     if (!pill || !activeBtn) return;
@@ -629,7 +629,7 @@ function positionPill(activeBtn) {
     pill.style.opacity = '1';
 }
 
-// â”€â”€ Tab switcher â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Tab switcher ─────────────────────────────────────────────
 function switchTab(tab, btn) {
     document.querySelectorAll('.hp-tab').forEach(function(b){ b.classList.remove('active'); });
     btn.classList.add('active');
@@ -641,7 +641,7 @@ function switchTab(tab, btn) {
     showAllSections();
 }
 
-// â”€â”€ Render token icons as SVG â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Render token icons as SVG ──────────────────────────────
 function hpIconSvg(key) {
     var map = {
         LGN: '<svg class="hp-icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>',
@@ -661,8 +661,8 @@ function hpIconSvg(key) {
 
 function hpNormalizeIconKey(raw) {
     var text = (raw || '').trim();
-    if (text === 'à¸Šà¹ˆà¸§à¸¢à¹€à¸«à¸¥à¸·à¸­') return 'FAQ';
-    if (text === 'à¸£à¸²à¸‡à¸§à¸±à¸¥' || text === 'à¸ˆà¸±à¸”à¸à¸²à¸£à¸£à¸²à¸‡à¸§à¸±à¸¥') return 'R';
+    if (text === 'ช่วยเหลือ') return 'FAQ';
+    if (text === 'รางวัล' || text === 'จัดการรางวัล') return 'R';
     return text.toUpperCase();
 }
 
@@ -692,19 +692,19 @@ window.addEventListener('resize', function() {
     if (activeTab) positionPill(activeTab);
 });
 
-// â”€â”€ Accordion toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Accordion toggle ─────────────────────────────────────────
 function toggleSection(header) {
     var section = header.closest('.hp-section');
     section.classList.toggle('open');
 }
 
-// â”€â”€ FAQ toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── FAQ toggle ───────────────────────────────────────────────
 function toggleFaq(qEl) {
     var item = qEl.closest('.hp-faq-item');
     item.classList.toggle('open');
 }
 
-// â”€â”€ Sidebar scroll â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Sidebar scroll ───────────────────────────────────────────
 function scrollToSection(id, btn) {
     var sidebar = btn.closest('.hp-sidebar');
     sidebar.querySelectorAll('.hp-sidebar-link').forEach(function(b){ b.classList.remove('active'); });
@@ -717,7 +717,7 @@ function scrollToSection(id, btn) {
     }, 60);
 }
 
-// â”€â”€ Search â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Search ───────────────────────────────────────────────────
 function searchHelp(q) {
     q = q.trim().toLowerCase();
     var hrPanel = document.getElementById('panel-hr');
@@ -737,6 +737,10 @@ function searchHelp(q) {
     noResult.style.display = found === 0 && q ? 'block' : 'none';
 }
 
+document.getElementById('hp-search')?.addEventListener('input', function (e) {
+    searchHelp(e.target.value || '');
+});
+
 function showAllSections() {
     document.querySelectorAll('.hp-section').forEach(function(s){ s.style.display = ''; });
     document.getElementById('hp-no-result').style.display = 'none';
@@ -744,5 +748,6 @@ function showAllSections() {
 </script>
 
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>
+
 
 

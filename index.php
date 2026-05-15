@@ -131,7 +131,7 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <!-- Scroll indicator -->
-        <div class="hero-scroll-indicator" id="hero-scroll-btn" role="button" tabindex="0" aria-label="เลื่อนลงเพื่ออ่านต่อ" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('hero-scroll-btn').click();}">        
+        <div class="hero-scroll-indicator" id="hero-scroll-btn" role="button" tabindex="0" aria-label="เลื่อนลงเพื่ออ่านต่อ" data-onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('hero-scroll-btn').click();}">        
             <span>SCROLL</span>
             <div class="hero-scroll-arrow"></div>
         </div>
@@ -189,12 +189,12 @@ require_once __DIR__ . '/includes/header.php';
     <!-- ── HOW IT WORKS (scrolled inside about-morph) ──────── -->
     <div class="guide-section">
         <div class="guide-inner">
-            <p class="quest-label" style="margin-bottom:2rem;letter-spacing:0.2em">วิธีใช้งาน</p>
+            <p class="quest-label hm-u001">วิธีใช้งาน</p>
 
             <!-- Tab switcher -->
-            <div class="guide-tabs" style="margin-bottom:2.5rem;">
-                <button type="button" class="guide-tab-btn active" id="tab-employee" onclick="switchGuideTab('employee')">พนักงาน</button>
-                <button type="button" class="guide-tab-btn" id="tab-hr" onclick="switchGuideTab('hr')">HR</button>
+            <div class="guide-tabs hm-u002">
+                <button type="button" class="guide-tab-btn active" id="tab-employee" data-onclick="switchGuideTab('employee')">พนักงาน</button>
+                <button type="button" class="guide-tab-btn" id="tab-hr" data-onclick="switchGuideTab('hr')">HR</button>
             </div>
 
             <!-- Employee flow -->
@@ -258,7 +258,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <!-- HR flow -->
-            <div id="guide-hr" class="guide-flow" style="display:none;">
+            <div id="guide-hr" class="guide-flow hm-u003">
 
                 <div class="guide-flow-step">
                     <div class="guide-flow-left">
@@ -331,3 +331,4 @@ require_once __DIR__ . '/includes/header.php';
 </div><!-- end .home-page-wrap -->
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
+

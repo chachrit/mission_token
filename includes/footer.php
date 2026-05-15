@@ -328,6 +328,53 @@
                     });
                 })();
 
+                // ── Inline handler migration bridge (data-on*) ──────────
+                (function () {
+                    function runDataHandler(el, code, event) {
+                        if (!code) return;
+                        try {
+                            var fn = new Function('event', code);
+                            return fn.call(el, event);
+                        } catch (err) {
+                            console.error('data-on* handler error:', err, code);
+                            return undefined;
+                        }
+                    }
+
+                    function bindDelegated(eventName, attrName, useCapture) {
+                        document.addEventListener(eventName, function (event) {
+                            var target = event.target;
+                            if (!target || typeof target.closest !== 'function') return;
+                            var selector = '[' + attrName + ']';
+                            var el = target.closest(selector);
+                            if (!el) return;
+                            var result = runDataHandler(el, el.getAttribute(attrName), event);
+                            if (eventName === 'submit' && result === false) {
+                                event.preventDefault();
+                            }
+                        }, !!useCapture);
+                    }
+
+                    bindDelegated('click', 'data-onclick');
+                    bindDelegated('change', 'data-onchange');
+                    bindDelegated('input', 'data-oninput');
+                    bindDelegated('keydown', 'data-onkeydown');
+                    bindDelegated('mousedown', 'data-onmousedown');
+                    bindDelegated('mousemove', 'data-onmousemove');
+                    bindDelegated('mouseup', 'data-onmouseup');
+                    bindDelegated('mouseleave', 'data-onmouseleave');
+                    bindDelegated('submit', 'data-onsubmit', true);
+
+                    // Error events do not bubble; use capture to intercept image/data load errors.
+                    document.addEventListener('error', function (event) {
+                        var el = event.target;
+                        if (!el || !el.getAttribute) return;
+                        var code = el.getAttribute('data-onerror');
+                        if (!code) return;
+                        runDataHandler(el, code, event);
+                    }, true);
+                })();
+
                 // ── Global toast (driven by $flash set in header.php) ──
         (function(){
             var t = document.getElementById('app-toast');

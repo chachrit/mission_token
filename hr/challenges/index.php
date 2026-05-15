@@ -179,13 +179,13 @@ require_once __DIR__ . '/../../includes/header.php';
                 $isUpcoming = $start !== false && $now < $start;
 
                 if ($isExpired) {
-                    $dateClr = '#d2592a';  // expired — orange
+                    $dateClass = 'ac-date-cell--expired';
                 } elseif (!$isActive) {
-                    $dateClr = '#8a8e97';  // inactive — grey
+                    $dateClass = 'ac-date-cell--inactive';
                 } elseif ($isUpcoming) {
-                    $dateClr = '#4f8b98';  // upcoming — teal
+                    $dateClass = 'ac-date-cell--upcoming';
                 } else {
-                    $dateClr = '#518e5c';  // live — green
+                    $dateClass = 'ac-date-cell--live';
                 }
 
                 $rowClass = 'ac-row';
@@ -230,7 +230,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Date range -->
-                <div class="ac-date-cell" style="color:<?= $dateClr ?>;">
+                <div class="ac-date-cell <?= $dateClass ?>">
                     <?= $sd ?> – <?= $ed ?>
                     <?php if ($isExpired): ?>
                     <span class="ac-expired-pill">หมดอายุ</span>
@@ -268,7 +268,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         แก้ไข
                     </a>
                       <form method="POST" class="ac-inline-form-flex"
-                          onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e(addslashes($ch['title'])) ?>&quot;?\nจะลบข้อมูลการส่งงานและประวัติทั้งหมดด้วย\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
+                          data-onsubmit="return confirm('ยืนยันลบภารกิจ &quot;<?= e(addslashes($ch['title'])) ?>&quot;?\nจะลบข้อมูลการส่งงานและประวัติทั้งหมดด้วย\nการกระทำนี้ไม่สามารถย้อนกลับได้')">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="delete">
                         <input type="hidden" name="challenge_id" value="<?= (int)$ch['challenge_id'] ?>">
@@ -313,3 +313,4 @@ require_once __DIR__ . '/../../includes/header.php';
 </div><!-- /ac-challenges-wrap -->
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>
+

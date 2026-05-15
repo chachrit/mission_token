@@ -189,28 +189,18 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mission Token — Database Seeder</title>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; background: #eeebe1; color: #091113; }
-        h1 { font-size: 1.5rem; font-weight: 600; border-bottom: 2px solid #dab937; padding-bottom: 12px; }
-        .log-item { padding: 8px 16px; margin: 6px 0; background: white; border-left: 4px solid #518e5c; border-radius: 4px; font-size: 0.9rem; }
-        .error-item { padding: 8px 16px; margin: 6px 0; background: #fff0ec; border-left: 4px solid #d2592a; border-radius: 4px; font-size: 0.9rem; }
-        .credentials { background: #091113; color: #eeebe1; padding: 20px; border-radius: 8px; margin-top: 20px; }
-        .credentials h2 { color: #dab937; font-size: 1rem; margin: 0 0 12px; }
-        .credentials code { color: #f8e769; }
-        .warning { background: #dab937; color: #091113; padding: 12px 16px; border-radius: 6px; margin-top: 16px; font-weight: 600; font-size: 0.875rem; }
-        .btn { display: inline-block; background: #091113; color: #eeebe1; padding: 10px 20px; border-radius: 6px; text-decoration: none; margin-top: 16px; font-size: 0.875rem; }
-    </style>
+    <link rel="stylesheet" href="../assets/css/style.css">
 </head>
-<body>
+<body class="sdq-page">
     <h1>Mission Token — Database Seeder</h1>
 
     <?php if (!empty($errors)): ?>
-        <h2 style="color:#d2592a;">Errors</h2>
+        <h2 class="sdq-u001">Errors</h2>
         <?php foreach ($errors as $err): ?>
             <div class="error-item"><?= htmlspecialchars($err) ?></div>
         <?php endforeach; ?>
     <?php else: ?>
-        <h2 style="color:#518e5c;">Completed Successfully</h2>
+        <h2 class="sdq-u002">Completed Successfully</h2>
         <?php foreach ($log as $item): ?>
             <div class="log-item"><?= htmlspecialchars($item) ?></div>
         <?php endforeach; ?>
