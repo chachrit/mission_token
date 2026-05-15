@@ -286,68 +286,53 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
             </div>
             <?php else: ?>
-            <div style="height:72px; background:rgba(255,255,255,0.03);
-                        display:flex; align-items:center; justify-content:center;
-                        font-size:0.75rem; color:#6b6e77;">
+            <div class="asb-thumb-empty">
                 ไม่มีไฟล์แนบ
             </div>
             <?php endif; ?>
 
             <!-- Info -->
-            <div style="padding:0.9rem 1rem 0.75rem; flex:1;">
-                <p style="font-size:0.60rem; font-weight:700; letter-spacing:0.10em;
-                          text-transform:uppercase; color:#4a4e57; margin:0 0 0.3rem;">ภารกิจ</p>
-                <p style="font-size:0.88rem; font-weight:600; color:#eeebe1; margin:0 0 0.75rem; line-height:1.4;">
+            <div class="asb-info">
+                <p class="asb-info-label">ภารกิจ</p>
+                <p class="asb-info-title">
                     <?= e($sub['challenge_title']) ?>
-                    <span style="font-size:0.73rem; font-weight:500; color:#dab937; margin-left:0.35rem;">
+                    <span class="asb-info-reward">
                         +<?= formatTokens((int)$sub['token_reward']) ?> Token
                     </span>
                 </p>
 
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+                <div class="asb-person-row">
                     <?php if (!empty($sub['avatar_url'])): ?>
                     <img src="<?= uploadImgUrl('avatars', (string)$sub['avatar_url']) ?>"
                          alt="" loading="lazy"
-                         style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
-                                object-fit:cover; border:1px solid rgba(218,185,55,0.25);"
+                         class="asb-avatar-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
-                                background:linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
-                                border:1px solid rgba(218,185,55,0.25);
-                                display:none; align-items:center; justify-content:center;
-                                font-size:0.85rem; font-weight:700; color:#dab937;">
+                    <div class="asb-avatar-fallback is-hidden">
                         <?= mb_substr($sub['full_name'], 0, 1) ?>
                     </div>
                     <?php else: ?>
-                    <div style="width:32px; height:32px; border-radius:50%; flex-shrink:0;
-                                background:linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
-                                border:1px solid rgba(218,185,55,0.25);
-                                display:flex; align-items:center; justify-content:center;
-                                font-size:0.85rem; font-weight:700; color:#dab937;">
+                    <div class="asb-avatar-fallback is-visible">
                         <?= mb_substr($sub['full_name'], 0, 1) ?>
                     </div>
                     <?php endif; ?>
-                    <div style="min-width:0;">
-                        <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div class="asb-person-meta">
+                        <p class="asb-person-name">
                             <?= e($sub['full_name']) ?>
                         </p>
-                        <p style="font-size:0.70rem; color:#4a4e57; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                        <p class="asb-person-sub">
                             <?= e($sub['position'] ?? '-') ?> · <?= e($sub['employee_code']) ?>
                         </p>
                     </div>
                 </div>
 
                 <?php if (!empty($sub['review_note'])): ?>
-                <p style="margin:0.75rem 0 0; font-size:0.72rem; color:#6b6e77; font-style:italic;
-                          padding-top:0.65rem; border-top:1px solid rgba(255,255,255,0.06);">
+                <p class="asb-review-note">
                     หมายเหตุ: <?= e($sub['review_note']) ?>
                 </p>
                 <?php endif; ?>
 
                 <?php if ($isApproved && $sub['token_awarded'] > 0): ?>
-                <p style="margin:0.6rem 0 0; font-size:0.75rem; font-weight:700; color:#7ec98a;">
+                <p class="asb-approved-note">
                     อนุมัติแล้ว +<?= formatTokens((int)$sub['token_awarded']) ?> Token
                 </p>
                 <?php endif; ?>

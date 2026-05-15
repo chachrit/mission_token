@@ -3318,6 +3318,121 @@ body:has(.asb-submissions-wrap) { background-color: var(--j-dark); }
 .asb-card.approved:hover     { border-color: rgba(81,142,92,0.45); }
 .asb-card.rejected:hover     { border-color: rgba(210,89,42,0.45); }
 
+.asb-thumb-empty {
+    height: 72px;
+    background: rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--j-slate);
+}
+
+.asb-info {
+    padding: 0.9rem 1rem 0.75rem;
+    flex: 1;
+}
+
+.asb-info-label {
+    font-size: 0.60rem;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #4a4e57;
+    margin: 0 0 0.3rem;
+}
+
+.asb-info-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--j-white);
+    margin: 0 0 0.75rem;
+    line-height: 1.4;
+}
+
+.asb-info-reward {
+    font-size: 0.73rem;
+    font-weight: 500;
+    color: var(--j-gold);
+    margin-left: 0.35rem;
+}
+
+.asb-person-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.asb-avatar-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+    border: 1px solid rgba(218,185,55,0.25);
+}
+
+.asb-avatar-fallback {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg,rgba(218,185,55,0.20),rgba(218,185,55,0.08));
+    border: 1px solid rgba(218,185,55,0.25);
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--j-gold);
+}
+
+.asb-avatar-fallback.is-hidden {
+    display: none;
+}
+
+.asb-avatar-fallback.is-visible {
+    display: flex;
+}
+
+.asb-person-meta {
+    min-width: 0;
+}
+
+.asb-person-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--j-white);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.asb-person-sub {
+    font-size: 0.70rem;
+    color: #4a4e57;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.asb-review-note {
+    margin: 0.75rem 0 0;
+    font-size: 0.72rem;
+    color: var(--j-slate);
+    font-style: italic;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.asb-approved-note {
+    margin: 0.6rem 0 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #7ec98a;
+}
+
 .asb-wrap .asb-note-input {
     width: 100%;
     background: rgba(255,255,255,0.06);
