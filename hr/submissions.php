@@ -413,50 +413,26 @@ require_once __DIR__ . '/../includes/header.php';
 
 
 <!-- ── CONFIRM MODAL ───────────────────────────────────────── -->
-<style>
-#asb-confirm-modal { z-index:10000; background:rgba(9,17,19,0.72); padding:1.5rem; }
-#asb-confirm-modal.show { display:flex; }
-.asb-modal-box {
-    max-width:380px;
-  animation:asb-modal-in 0.28s cubic-bezier(0.22,1,0.36,1);
-}
-@keyframes asb-modal-in {
-  from { opacity:0; transform:scale(0.88) translateY(24px); }
-  to   { opacity:1; transform:scale(1) translateY(0); }
-}
-</style>
-<div id="asb-confirm-modal" class="jp-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
-        <div class="jp-modal-content asb-modal-box">
+<div id="asb-confirm-modal" class="jp-modal asb-confirm-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
+    <div class="jp-modal-content asb-modal-box">
         <!-- Header -->
-                <div id="cm-header" class="jp-modal-header" style="padding:1rem 1.35rem; gap:0.7rem;">
-            <div id="cm-icon"
-                 style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
-                        display:flex;align-items:center;justify-content:center;"></div>
-                        <span id="cm-title" class="jp-modal-header-title" style="font-size:0.95rem;"></span>
-                        <button onclick="closeConfirmModal()" class="jp-modal-close" style="margin-left:auto; padding:4px; border-radius:6px; line-height:0;" aria-label="ปิด">
+        <div id="cm-header" class="jp-modal-header asb-confirm-header">
+            <div id="cm-icon" class="asb-confirm-icon"></div>
+            <span id="cm-title" class="jp-modal-header-title asb-confirm-title"></span>
+            <button onclick="closeConfirmModal()" class="jp-modal-close asb-confirm-close" aria-label="ปิด">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         <!-- Body -->
-                <div class="jp-modal-body" style="padding:1.35rem 1.5rem;">
-            <p id="cm-body" style="font-size:0.88rem; color:#9ca3af; line-height:1.7;
-                                    margin:0 0 1.35rem;"></p>
-                        <div class="jp-modal-footer" style="padding:0; border-top:none; gap:0.65rem;">
-                <button onclick="closeConfirmModal()"
-                        style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                               color:#eeebe1; transition:background 0.18s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+        <div class="jp-modal-body asb-confirm-body">
+            <p id="cm-body" class="asb-confirm-message"></p>
+            <div class="jp-modal-footer asb-confirm-actions">
+                <button onclick="closeConfirmModal()" class="asb-confirm-cancel-btn">
                     ยกเลิก
                 </button>
-                <button id="cm-confirm-btn" onclick="submitConfirmModal()"
-                        style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; font-weight:700;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               transition:background 0.18s;">
+                <button id="cm-confirm-btn" class="asb-confirm-submit-btn" onclick="submitConfirmModal()">
                 </button>
             </div>
         </div>
