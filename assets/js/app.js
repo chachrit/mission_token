@@ -458,6 +458,30 @@ function profileTogglePw(fieldId) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-submit-on-change]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            var formId = input.getAttribute('data-submit-on-change');
+            var form = formId ? document.getElementById(formId) : null;
+            if (form) form.submit();
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        var toggleBtn = e.target.closest('[data-toggle-pw]');
+        if (!toggleBtn) return;
+        e.preventDefault();
+        profileTogglePw(toggleBtn.getAttribute('data-toggle-pw'));
+    });
+
+    document.querySelectorAll('form[data-confirm]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            var msg = form.getAttribute('data-confirm');
+            if (msg && !confirm(msg)) {
+                e.preventDefault();
+            }
+        });
+    });
+
     var newPw  = document.getElementById('new_password');
     var confPw = document.getElementById('confirm_password');
     var hint   = document.getElementById('pw-match-hint');
@@ -466,14 +490,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function checkMatch() {
         if (!confPw.value) { hint.textContent = ''; return; }
         if (newPw.value === confPw.value) {
-            hint.textContent   = '✓ รหัสผ่านตรงกัน';
-            hint.style.color   = '#82b295';
+            hint.textContent = '✓ รหัสผ่านตรงกัน';
+            hint.style.color = '#82b295';
         } else {
-            hint.textContent   = '✗ รหัสผ่านไม่ตรงกัน';
-            hint.style.color   = '#d2592a';
+            hint.textContent = '✗ รหัสผ่านไม่ตรงกัน';
+            hint.style.color = '#d2592a';
         }
     }
-    newPw.addEventListener('input',  checkMatch);
+    newPw.addEventListener('input', checkMatch);
     confPw.addEventListener('input', checkMatch);
 });
 

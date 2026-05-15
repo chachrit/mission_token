@@ -195,7 +195,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <input type="file" name="avatar" id="avatar-file"
                            accept="image/jpeg,image/png,image/gif,image/webp"
                            style="display:none"
-                           onchange="document.getElementById('avatar-upload-form').submit()">
+                           data-submit-on-change="avatar-upload-form">
                     <label for="avatar-file" class="pf-avatar-upload-btn" title="เปลี่ยนรูปโปรไฟล์">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -207,7 +207,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </form>
                 <?php if (!empty($profile['avatar_url'])): ?>
                 <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" style="margin:0"
-                      onsubmit="return confirm('ลบรูปโปรไฟล์?')">
+                      data-confirm="ลบรูปโปรไฟล์?">
                     <?= csrfField() ?>
                     <input type="hidden" name="_action" value="delete_avatar">
                     <button type="submit" class="pf-avatar-delete-btn" title="ลบรูปโปรไฟล์">
@@ -363,7 +363,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <input type="password" id="current_password" name="current_password"
                                            autocomplete="current-password" class="pf-input" required>
                                     <button type="button" class="pf-eye-btn"
-                                            onclick="profileTogglePw('current_password')"
+                                            data-toggle-pw="current_password"
                                             aria-label="แสดง/ซ่อนรหัสผ่าน">
                                         <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -385,7 +385,7 @@ require_once __DIR__ . '/../includes/header.php';
                                            autocomplete="new-password" minlength="8"
                                            class="pf-input" required>
                                     <button type="button" class="pf-eye-btn"
-                                            onclick="profileTogglePw('new_password')"
+                                            data-toggle-pw="new_password"
                                             aria-label="แสดง/ซ่อนรหัสผ่าน">
                                         <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -403,7 +403,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <input type="password" id="confirm_password" name="confirm_password"
                                            autocomplete="new-password" class="pf-input" required>
                                     <button type="button" class="pf-eye-btn"
-                                            onclick="profileTogglePw('confirm_password')"
+                                            data-toggle-pw="confirm_password"
                                             aria-label="แสดง/ซ่อนรหัสผ่าน">
                                         <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -477,7 +477,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endif; ?>
                     <!-- Disconnect button -->
                     <form method="POST" action="<?= BASE_URL ?>/pages/strava_connect.php"
-                          onsubmit="return confirm('ยืนยันการยกเลิกเชื่อมต่อ Strava?');">
+                          data-confirm="ยืนยันการยกเลิกเชื่อมต่อ Strava?">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="disconnect">
                         <button type="submit" style="

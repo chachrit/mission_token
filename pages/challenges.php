@@ -437,7 +437,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- Flash: Photo Submitted — Pending Approval -->
     <?php elseif ($flash && $flash['type'] === 'pending'): ?>
-    <div id="ch-pending-overlay" class="ch-flash-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div id="ch-pending-overlay" class="ch-flash-overlay" data-overlay-close="self-hide">
         <div class="ch-pending-modal">
             <div class="ch-pending-modal-icon">
                 <svg width="28" height="28" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -453,7 +453,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- Flash: Error -->
     <?php elseif ($flash): ?>
-    <div id="ch-error-flash-overlay" class="ch-flash-overlay" onclick="if(event.target===this)this.style.display='none'">
+    <div id="ch-error-flash-overlay" class="ch-flash-overlay" data-overlay-close="self-hide">
         <div class="ch-flash-modal ch-flash-modal--error">
             <div class="ch-flash-modal-icon">
                 <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -463,8 +463,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <p class="ch-flash-modal-title">เกิดข้อผิดพลาด</p>
             <p class="ch-flash-modal-msg"><?= e($flash['message']) ?></p>
-            <button class="ch-flash-modal-btn"
-                    onclick="document.getElementById('ch-error-flash-overlay').style.display='none'">
+            <button class="ch-flash-modal-btn" data-action="close-error-overlay">
                 ตกลง
             </button>
         </div>
@@ -623,7 +622,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php if ($qi > 0): ?>
                             <button type="button"
                                     class="btn-outline text-sm px-4 py-2.5"
-                                    onclick="quizGoStep(<?= $qi - 1 ?>)">← ย้อนกลับ</button>
+                                    data-action="quiz-go-step" data-step="<?= $qi - 1 ?>">← ย้อนกลับ</button>
                             <?php else: ?>
                             <a href="<?= BASE_URL ?>/pages/challenges.php"
                                class="btn-outline text-sm px-4 py-2.5">ยกเลิก</a>
@@ -634,7 +633,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     id="next-<?= $qi ?>"
                                     class="btn-gold ml-auto text-sm px-5 py-2.5"
                                     disabled
-                                    onclick="quizGoStep(<?= $qi + 1 ?>)">ถัดไป →</button>
+                                    data-action="quiz-go-step" data-step="<?= $qi + 1 ?>">ถัดไป →</button>
                             <?php else: ?>
                             <button type="submit"
                                     id="quiz-submit-btn"
@@ -893,16 +892,13 @@ require_once __DIR__ . '/../includes/header.php';
                 <!-- ── BACK FACE ── -->
                  <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?><?= (!$isRejected && in_array($ch['type'], ['quiz', 'strava', 'photo'], true)) ? ' ch-card-clickable' : '' ?>"
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
-                     onclick="openQuizModal(<?= $cid ?>)"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openQuizModal(<?= $cid ?>);}"
+                     data-action="open-quiz-modal" data-cid="<?= $cid ?>"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
                      <?php elseif ($ch['type'] === 'strava'): ?>
-                     onclick="openStravaModal(<?= $cid ?>)"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStravaModal(<?= $cid ?>);}"
+                     data-action="open-strava-modal" data-cid="<?= $cid ?>"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
                      <?php elseif ($ch['type'] === 'photo'): ?>
-                     onclick="openPhotoModal(<?= $cid ?>)"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPhotoModal(<?= $cid ?>);}"
+                     data-action="open-photo-modal" data-cid="<?= $cid ?>"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
                      <?php endif; ?>>
                     <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?><?= $ch['type'] === 'strava' ? ' ch-quest-accent-bar--strava' : '' ?>"></div>
@@ -1093,27 +1089,11 @@ require_once __DIR__ . '/../includes/header.php';
     var _photoModalData = <?= json_encode($photoModalData, JSON_UNESCAPED_UNICODE) ?>;
     </script>
 
-    <style>
-    @keyframes _mFadeIn  { from{opacity:0} to{opacity:1} }
-    @keyframes _mFadeOut { from{opacity:1} to{opacity:0} }
-    @keyframes _mCardIn {
-        0%   { opacity:0; transform:perspective(700px) scale(0.82) translateY(32px) rotateX(16deg); }
-        100% { opacity:1; transform:perspective(700px) scale(1)    translateY(0)    rotateX(0deg);  }
-    }
-    @keyframes _mCardOut {
-        from { opacity:1; transform:scale(1)    translateY(0);  }
-        to   { opacity:0; transform:scale(0.84) translateY(24px); }
-    }
-    .modal-overlay-in  { animation:_mFadeIn  260ms ease                          forwards; }
-    .modal-overlay-out { animation:_mFadeOut 180ms ease                          forwards; }
-    .modal-card-in     { animation:_mCardIn  400ms cubic-bezier(0.22,1,0.36,1)   forwards; }
-    .modal-card-out    { animation:_mCardOut 170ms ease-in                       forwards; }
-    </style>
 
     <!-- ── Photo Upload Modal ── -->
     <div id="photo-modal"
          class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
-         onclick="if(event.target===this)closePhotoModal()">
+         data-overlay-close="photo-modal">
         <div id="photo-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
@@ -1125,7 +1105,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </svg>
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Photo Mission</span>
                 </div>
-                <button onclick="closePhotoModal()" class="ch-detail-modal-close">
+                <button data-action="close-photo-modal" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -1242,7 +1222,7 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Strava Detail Modal ── -->
     <div id="strava-modal"
          class="ch-detail-modal ch-detail-modal--strava ch-u-hidden"
-         onclick="if(event.target===this)closeStravaModal()">
+         data-overlay-close="strava-modal">
         <div id="strava-modal-card" class="ch-detail-modal-card ch-detail-modal-card--strava">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
@@ -1252,7 +1232,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </svg>
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--strava">Strava Mission</span>
                 </div>
-                <button onclick="closeStravaModal()" class="ch-detail-modal-close">
+                <button data-action="close-strava-modal" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -1299,7 +1279,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <input type="hidden" name="action" value="submit_strava">
                     <input type="hidden" name="challenge_id" id="sm-cid-input" value="">
                     <button type="button" id="sm-submit-btn"
-                            onclick="submitStravaForm('sm-strava-form',this)"
+                            data-action="submit-strava-form" data-form-id="sm-strava-form"
                             class="ch-detail-modal-submit ch-detail-modal-submit--strava">
                         ตรวจสอบกิจกรรม Strava
                     </button>
@@ -1403,14 +1383,14 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Quiz Detail Modal ── -->
     <div id="quiz-modal"
          class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
-         onclick="if(event.target===this)closeQuizModal()">
+         data-overlay-close="quiz-modal">
         <div id="quiz-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
                 <div class="ch-detail-modal-head-main">
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Quiz Mission</span>
                 </div>
-                <button onclick="closeQuizModal()" class="ch-detail-modal-close">
+                <button data-action="close-quiz-modal" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -1512,7 +1492,7 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── SECTION 2: ดำเนินการแล้ว ── -->
     <?php if ($questsDone): ?>
     <div>
-        <button onclick="toggleDoneSection()" class="ch-done-toggle-btn" id="done-section-btn">
+        <button data-action="toggle-done-section" class="ch-done-toggle-btn" id="done-section-btn">
             <div class="flex items-center gap-3">
                 <div class="ch-section-bar ch-section-bar--muted"></div>
                 <span class="ch-section-heading--muted">ภารกิจที่ดำเนินการแล้ว</span>
@@ -1599,6 +1579,92 @@ require_once __DIR__ . '/../includes/header.php';
 </div><!-- /max-w-7xl -->
 </div><!-- /ds-page-inner -->
 </div><!-- /ch-challenges-wrap -->
+
+<script>
+(function () {
+    function triggerCardAction(el) {
+        if (!el) return;
+        var cid = parseInt(el.getAttribute('data-cid') || '0', 10);
+        var action = el.getAttribute('data-action');
+        if (!cid || !action) return;
+        if (action === 'open-quiz-modal') openQuizModal(cid);
+        if (action === 'open-photo-modal') openPhotoModal(cid);
+        if (action === 'open-strava-modal') openStravaModal(cid);
+    }
+
+    document.addEventListener('click', function (e) {
+        var overlay = e.target.closest('[data-overlay-close]');
+        if (overlay && e.target === overlay) {
+            var overlayAction = overlay.getAttribute('data-overlay-close');
+            if (overlayAction === 'self-hide') overlay.style.display = 'none';
+            if (overlayAction === 'photo-modal') closePhotoModal();
+            if (overlayAction === 'strava-modal') closeStravaModal();
+            if (overlayAction === 'quiz-modal') closeQuizModal();
+            return;
+        }
+
+        var act = e.target.closest('[data-action]');
+        if (!act) return;
+        var action = act.getAttribute('data-action');
+
+        if (action === 'close-error-overlay') {
+            e.preventDefault();
+            var err = document.getElementById('ch-error-flash-overlay');
+            if (err) err.style.display = 'none';
+            return;
+        }
+
+        if (action === 'quiz-go-step') {
+            e.preventDefault();
+            quizGoStep(parseInt(act.getAttribute('data-step') || '0', 10));
+            return;
+        }
+
+        if (action === 'open-quiz-modal' || action === 'open-photo-modal' || action === 'open-strava-modal') {
+            e.preventDefault();
+            triggerCardAction(act);
+            return;
+        }
+
+        if (action === 'close-photo-modal') {
+            e.preventDefault();
+            closePhotoModal();
+            return;
+        }
+
+        if (action === 'close-strava-modal') {
+            e.preventDefault();
+            closeStravaModal();
+            return;
+        }
+
+        if (action === 'close-quiz-modal') {
+            e.preventDefault();
+            closeQuizModal();
+            return;
+        }
+
+        if (action === 'submit-strava-form') {
+            e.preventDefault();
+            submitStravaForm(act.getAttribute('data-form-id'), act);
+            return;
+        }
+
+        if (action === 'toggle-done-section') {
+            e.preventDefault();
+            toggleDoneSection();
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var cardTrigger = e.target.closest('[data-action="open-quiz-modal"], [data-action="open-photo-modal"], [data-action="open-strava-modal"]');
+        if (!cardTrigger) return;
+        e.preventDefault();
+        triggerCardAction(cardTrigger);
+    });
+}());
+</script>
 
 <script>
 // ── Touch flip: tap front → flip card, tap close button → unflip

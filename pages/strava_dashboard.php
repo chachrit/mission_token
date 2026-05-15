@@ -153,107 +153,6 @@ $activePage = 'strava_dashboard';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-body:has(.sv-wrap) { background: #091113; }
-
-.sv-wrap {
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-}
-.sv-inner {
-    position: relative; z-index: 1;
-    max-width: 1060px; margin: 0 auto;
-    padding: 2rem 1.25rem 5rem;
-}
-/* stat cards */
-.sv-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 0.85rem;
-    margin-bottom: 1.5rem;
-}
-.sv-stat {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 1.1rem 1.2rem;
-    transition: border-color 0.2s;
-}
-.sv-stat:hover { border-color: rgba(252,76,2,0.3); }
-.sv-stat-val {
-    font-size: 1.6rem; font-weight: 800;
-    color: #FC4C02; margin: 0 0 2px;
-    line-height: 1;
-}
-.sv-stat-unit { font-size: 0.78rem; font-weight: 600; color: #8a8e97; }
-.sv-stat-label { font-size: 0.68rem; color: #6b6e77; margin: 0.3rem 0 0; }
-
-/* section card */
-.sv-card {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 16px;
-    padding: 1.35rem 1.5rem;
-    margin-bottom: 1.25rem;
-}
-.sv-card-title {
-    font-size: 0.62rem; font-weight: 700;
-    letter-spacing: 0.14em; text-transform: uppercase;
-    color: rgba(252,76,2,0.65); margin: 0 0 1rem;
-}
-
-/* activity table */
-.sv-table { width: 100%; border-collapse: collapse; font-size: 0.80rem; }
-.sv-table th {
-    text-align: left; padding: 0.45rem 0.7rem;
-    background: rgba(255,255,255,0.03);
-    color: #6b6e77; font-weight: 600; font-size: 0.65rem;
-    letter-spacing: 0.06em; text-transform: uppercase;
-    border-bottom: 1px solid rgba(255,255,255,0.06);
-}
-.sv-table td {
-    padding: 0.55rem 0.7rem;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    color: #eeebe1; vertical-align: middle;
-}
-.sv-table tr:last-child td { border-bottom: none; }
-.sv-table tr:hover td { background: rgba(255,255,255,0.02); }
-
-/* type pill */
-.sv-type-pill {
-    display: inline-block; font-size: 0.65rem; font-weight: 700;
-    padding: 2px 9px; border-radius: 999px;
-    background: rgba(252,76,2,0.12); color: #FC4C02;
-    border: 1px solid rgba(252,76,2,0.25);
-}
-
-/* sport breakdown bars */
-.sv-bar-row { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.6rem; }
-.sv-bar-label { font-size: 0.78rem; color: #eeebe1; min-width: 110px; }
-.sv-bar-track {
-    flex: 1; height: 7px; background: rgba(255,255,255,0.07);
-    border-radius: 99px; overflow: hidden;
-}
-.sv-bar-fill { height: 100%; border-radius: 99px; background: #FC4C02; transition: width 0.6s; }
-.sv-bar-num { font-size: 0.72rem; color: #8a8e97; min-width: 55px; text-align: right; }
-
-/* period tabs */
-.sv-tabs { display: flex; gap: 0.4rem; margin-bottom: 1.5rem; }
-.sv-tab {
-    padding: 0.4rem 1rem; border-radius: 9px; font-size: 0.78rem; font-weight: 600;
-    text-decoration: none; border: 1px solid rgba(255,255,255,0.1); color: #6b6e77;
-    background: rgba(255,255,255,0.03); transition: all 0.15s;
-}
-.sv-tab:hover { border-color: rgba(252,76,2,0.4); color: #FC4C02; }
-.sv-tab--active { background: rgba(252,76,2,0.12); color: #FC4C02; border-color: rgba(252,76,2,0.4); }
-
-/* challenge badge */
-.sv-ch-status {
-    display: inline-block; font-size: 0.65rem; font-weight: 700;
-    padding: 2px 9px; border-radius: 999px;
-}
-</style>
 
 <div class="sv-wrap">
     <div class="ch-aurora-blob ch-aurora-blob--1" aria-hidden="true"></div>
@@ -610,9 +509,8 @@ body:has(.sv-wrap) { background: #091113; }
                 <tr>
                     <td style="font-weight:600; max-width:220px;">
                         <a href="<?= e($actUrl) ?>" target="_blank" rel="noopener"
-                           style="color:#eeebe1; text-decoration:none;"
-                           onmouseover="this.style.color='#FC4C02'"
-                           onmouseout="this.style.color='#eeebe1'">
+                           class="sv-activity-link"
+                           style="color:#eeebe1; text-decoration:none;">
                             <?= e($a['name'] ?? '-') ?>
                             <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor"
                                  stroke-width="2.5" style="opacity:0.4; margin-left:3px; vertical-align:middle;">

@@ -60,6 +60,10 @@
                 if (btn) btn.setAttribute('aria-expanded', open ? 'false' : 'true');
             }
         }
+        document.getElementById('user-menu-btn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleUserMenu();
+        });
         document.addEventListener('click', function(e) {
             const btn  = document.getElementById('user-menu-btn');
             const menu = document.getElementById('user-dropdown');
@@ -82,6 +86,10 @@
                 if (bell) bell.setAttribute('aria-expanded', open ? 'false' : 'true');
             }
         }
+        document.getElementById('notif-bell-btn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleNotifDropdown();
+        });
         document.addEventListener('click', function(e) {
             const btn   = document.getElementById('notif-bell-btn');
             const notif = document.getElementById('notif-dropdown');
@@ -207,6 +215,10 @@
         function toggleMobileMenu() {
             document.getElementById('mobile-menu').classList.toggle('hidden');
         }
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleMobileMenu();
+        });
 
         // ── Challenge highlight: unseen new / rejected ─────────────
         (function () {
@@ -234,6 +246,89 @@
         })();
 
         // ── Global toast (driven by $flash set in header.php) ──
+                // ── Help Page: Tab Switching ────────────────────────────
+                (function() {
+                    document.addEventListener('click', function(e) {
+                        if (!e.target) return;
+                        var tabBtn = e.target.closest('[data-action="switchTab"]');
+                        if (!tabBtn) return;
+                        var tabName = tabBtn.dataset.tab;
+                        if (!tabName) return;
+                
+                        var wrapper = tabBtn.closest('.hp-tabs-wrap');
+                        if (!wrapper) return;
+                
+                        // Update active tab button
+                        wrapper.querySelectorAll('[data-action="switchTab"]').forEach(function(btn) {
+                            btn.classList.remove('active');
+                        });
+                        tabBtn.classList.add('active');
+                
+                        // Show/hide tab content
+                        var inner = wrapper.nextElementSibling;
+                        if (!inner) return;
+                        inner.querySelectorAll('[data-tab-content]').forEach(function(content) {
+                            content.style.display = content.dataset.tabContent === tabName ? '' : 'none';
+                        });
+                    });
+                })();
+
+                // ── Help Page: Sidebar Navigation ────────────────────────
+                (function() {
+                    document.addEventListener('click', function(e) {
+                        if (!e.target) return;
+                        var link = e.target.closest('[data-action="scrollToSection"]');
+                        if (!link) return;
+                        var sectionId = link.dataset.sectionId;
+                        if (!sectionId) return;
+                
+                        // Update active sidebar link
+                        var sidebar = link.closest('.hp-sidebar');
+                        if (sidebar) {
+                            sidebar.querySelectorAll('[data-action="scrollToSection"]').forEach(function(l) {
+                                l.classList.remove('active');
+                            });
+                            link.classList.add('active');
+                        }
+                
+                        // Scroll to section
+                        var section = document.getElementById(sectionId);
+                        if (section) {
+                            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                    });
+                })();
+
+                // ── Help Page: Accordion Sections ────────────────────────
+                (function() {
+                    document.addEventListener('click', function(e) {
+                        if (!e.target) return;
+                        var header = e.target.closest('[data-action="toggleSection"]');
+                        if (!header) return;
+                
+                        var section = header.closest('.hp-section');
+                        if (!section) return;
+                
+                        var isOpen = section.classList.contains('open');
+                        section.classList.toggle('open');
+                    });
+                })();
+
+                // ── Help Page: FAQ Items ────────────────────────────────
+                (function() {
+                    document.addEventListener('click', function(e) {
+                        if (!e.target) return;
+                        var question = e.target.closest('[data-action="toggleFaq"]');
+                        if (!question) return;
+                
+                        var item = question.closest('.hp-faq-item');
+                        if (!item) return;
+                
+                        item.classList.toggle('open');
+                    });
+                })();
+
+                // ── Global toast (driven by $flash set in header.php) ──
         (function(){
             var t = document.getElementById('app-toast');
             if (!t) return;

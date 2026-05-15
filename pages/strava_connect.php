@@ -98,7 +98,7 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Disconnect button -->
             <form method="POST" action="<?= BASE_URL ?>/pages/strava_connect.php"
-                  onsubmit="return confirm('ยืนยันการยกเลิกเชื่อมต่อ Strava?');">
+                  data-confirm="ยืนยันการยกเลิกเชื่อมต่อ Strava?">
                 <?= csrfField() ?>
                 <input type="hidden" name="action" value="disconnect">
                 <button type="submit" style="
@@ -117,13 +117,12 @@ require_once __DIR__ . '/../includes/header.php';
                 ระบบจะเห็นเฉพาะ <strong style="color:#eeebe1;">กิจกรรมที่ตั้งค่าเป็น Everyone / Followers</strong> เท่านั้น
             </p>
             <a href="<?= e($authURL) ?>"
+               class="sc-connect-btn"
                style="display:inline-flex; align-items:center; gap:0.6rem;
                       background:#FC4C02; color:#fff; padding:0.7rem 1.4rem;
                       border-radius:10px; font-size:0.9rem; font-weight:600;
                       font-family:'Prompt',sans-serif; text-decoration:none;
-                      transition:background 0.2s;"
-               onmouseover="this.style.background='#e04400'"
-               onmouseout="this.style.background='#FC4C02'">
+                      transition:background 0.2s;">
                 <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
                 </svg>
@@ -161,9 +160,8 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Back link -->
     <div style="margin-top:1.25rem; text-align:center;">
         <a href="<?= BASE_URL ?>/pages/challenges.php"
-           style="font-size:0.82rem; color:#6b6e77; text-decoration:none;"
-           onmouseover="this.style.color='#9ca3af'"
-           onmouseout="this.style.color='#6b6e77'">
+           class="sc-back-link"
+           style="font-size:0.82rem; color:#6b6e77; text-decoration:none;">
             ← กลับไปหน้าภารกิจ
         </a>
     </div>
