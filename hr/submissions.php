@@ -133,7 +133,7 @@ $activePage = 'admin_submissions';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<div class="asb-submissions-wrap asb-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="asb-submissions-wrap asb-wrap asb-wrap-shell">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
@@ -158,16 +158,13 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <!-- Stats chips -->
             <div class="jp-chip-row">
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(218,185,55,0.10); color:#dab937; border:1px solid rgba(218,185,55,0.28);">
+                <span class="asb-stat-chip asb-stat-chip--pending">
                     รอตรวจ: <?= (int)($stats['pending_count'] ?? 0) ?>
                 </span>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(81,142,92,0.12); color:#7ec98a; border:1px solid rgba(81,142,92,0.28);">
+                <span class="asb-stat-chip asb-stat-chip--approved">
                     อนุมัติ: <?= (int)($stats['approved_count'] ?? 0) ?>
                 </span>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(210,89,42,0.10); color:#d2592a; border:1px solid rgba(210,89,42,0.25);">
+                <span class="asb-stat-chip asb-stat-chip--rejected">
                     ปฏิเสธ: <?= (int)($stats['rejected_count'] ?? 0) ?>
                 </span>
             </div>
@@ -179,8 +176,7 @@ require_once __DIR__ . '/../includes/header.php';
                class="asb-filter-tab <?= $filter !== 'all' ? 'active' : '' ?>">
                 รอตรวจสอบ
                 <?php if ((int)($stats['pending_count'] ?? 0) > 0): ?>
-                <span style="background:#d2592a; color:#fff; border-radius:999px;
-                             padding:0.05rem 0.45rem; font-size:0.65rem; font-weight:700;">
+                <span class="asb-pending-count">
                     <?= (int)$stats['pending_count'] ?>
                 </span>
                 <?php endif; ?>
@@ -206,20 +202,6 @@ require_once __DIR__ . '/../includes/header.php';
             $isRejected = $sub['status'] === 'rejected';
 
             $cardClass = $isPending ? 'pending' : ($isApproved ? 'approved' : 'rejected');
-
-            if ($isApproved) {
-                $barBg    = 'rgba(81,142,92,0.18)';
-                $barColor = '#7ec98a';
-                $barBorder= 'rgba(81,142,92,0.28)';
-            } elseif ($isRejected) {
-                $barBg    = 'rgba(210,89,42,0.14)';
-                $barColor = '#d2592a';
-                $barBorder= 'rgba(210,89,42,0.28)';
-            } else {
-                $barBg    = 'rgba(218,185,55,0.12)';
-                $barColor = '#dab937';
-                $barBorder= 'rgba(218,185,55,0.28)';
-            }
 
             $photoName = !empty($sub['photo_path']) ? basename($sub['photo_path']) : null;
             // Support both new JSON array format and legacy single filename
@@ -247,15 +229,13 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="asb-card <?= $cardClass ?>">
 
             <!-- Status bar -->
-            <div style="padding:0.55rem 1rem; display:flex; align-items:center; justify-content:space-between;
-                        background:<?= $barBg ?>; border-bottom:1px solid <?= $barBorder ?>;
-                        font-size:0.72rem; font-weight:700; color:<?= $barColor ?>;">
+            <div class="asb-status-bar asb-status-bar--<?= $cardClass ?>">
                 <span>
                     <?php if ($isPending): ?>รอตรวจสอบ
                     <?php elseif ($isApproved): ?>อนุมัติแล้ว
                     <?php else: ?>ปฏิเสธ<?php endif; ?>
                 </span>
-                <span style="font-weight:400; opacity:0.70; font-size:0.68rem;"><?= $submittedDate ?></span>
+                <span class="asb-status-date"><?= $submittedDate ?></span>
             </div>
 
             <!-- Photo preview (click = lightbox) -->
@@ -264,9 +244,9 @@ require_once __DIR__ . '/../includes/header.php';
                     fn($f) => uploadImgUrl('submissions', $f), $photoFiles
                 ), JSON_UNESCAPED_SLASHES), ENT_QUOTES);
                 $photoCount = count($photoFiles);
+                $thumbGridClass = $photoCount === 1 ? 'asb-thumb-grid--1' : ($photoCount === 2 ? 'asb-thumb-grid--2' : 'asb-thumb-grid--3');
             ?>
-            <div class="asb-thumb-strip"
-                 style="grid-template-columns:<?= $photoCount === 1 ? '1fr' : ($photoCount === 2 ? '1fr 1fr' : 'repeat(3,1fr)') ?>;"
+            <div class="asb-thumb-strip <?= $thumbGridClass ?>"
                  onclick="openLightbox('<?= $jsonUrls ?>', 0)">
                 <?php foreach ($photoFiles as $idx => $pf):
                     $pfUrl = uploadImgUrl('submissions', $pf);
@@ -411,7 +391,7 @@ require_once __DIR__ . '/../includes/header.php';
 </div>
 
 <!-- hidden form — submitted by modal JS -->
-<form id="asb-confirm-form" method="POST" action="<?= BASE_URL ?>/hr/submissions.php" style="display:none;">
+<form id="asb-confirm-form" method="POST" action="<?= BASE_URL ?>/hr/submissions.php" class="asb-hidden-form">
     <?= csrfField() ?>
     <input type="hidden" name="action" id="cf-action">
     <input type="hidden" name="submission_id" id="cf-sid">
@@ -566,8 +546,8 @@ require_once __DIR__ . '/../includes/header.php';
         document.getElementById('cm-title').textContent = isApprove ? 'ยืนยันการอนุมัติ' : 'ยืนยันการปฏิเสธ';
         document.getElementById('cm-body').innerHTML =
             (isApprove
-                ? 'อนุมัติงานของ <strong style="color:#eeebe1;">' + (empName || '–') + '</strong> และมอบรางวัล <strong style="color:#f8e769;">' + tokenReward.toLocaleString() + ' Token</strong> ใช่หรือไม่?'
-                : 'ปฏิเสธงานของ <strong style="color:#eeebe1;">' + (empName || '–') + '</strong> ใช่หรือไม่?');
+                ? 'อนุมัติงานของ <strong class="asb-confirm-highlight-name">' + (empName || '–') + '</strong> และมอบรางวัล <strong class="asb-confirm-highlight-token">' + tokenReward.toLocaleString() + ' Token</strong> ใช่หรือไม่?'
+                : 'ปฏิเสธงานของ <strong class="asb-confirm-highlight-name">' + (empName || '–') + '</strong> ใช่หรือไม่?');
 
         // Box border accent
         document.querySelector('.asb-modal-box').style.border = '1px solid ' + accentBdr;

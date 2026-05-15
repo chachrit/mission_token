@@ -3282,6 +3282,83 @@ body:has(.ar-redemptions-wrap) { background-color: var(--j-dark); }
    ══════════════════════════════════════════════════════════════ */
 body:has(.asb-submissions-wrap) { background-color: var(--j-dark); }
 
+.asb-wrap-shell {
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.asb-stat-chip {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.3rem 0.85rem;
+    border-radius: 999px;
+}
+
+.asb-stat-chip--pending {
+    background: rgba(218,185,55,0.10);
+    color: var(--j-gold);
+    border: 1px solid rgba(218,185,55,0.28);
+}
+
+.asb-stat-chip--approved {
+    background: rgba(81,142,92,0.12);
+    color: #7ec98a;
+    border: 1px solid rgba(81,142,92,0.28);
+}
+
+.asb-stat-chip--rejected {
+    background: rgba(210,89,42,0.10);
+    color: var(--j-orange);
+    border: 1px solid rgba(210,89,42,0.25);
+}
+
+.asb-pending-count {
+    background: var(--j-orange);
+    color: #fff;
+    border-radius: 999px;
+    padding: 0.05rem 0.45rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.asb-status-date {
+    font-weight: 400;
+    opacity: 0.70;
+    font-size: 0.68rem;
+}
+
+.asb-status-bar {
+    padding: 0.55rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.asb-status-bar--pending {
+    background: rgba(218,185,55,0.12);
+    color: var(--j-gold);
+    border-bottom: 1px solid rgba(218,185,55,0.28);
+}
+
+.asb-status-bar--approved {
+    background: rgba(81,142,92,0.18);
+    color: #7ec98a;
+    border-bottom: 1px solid rgba(81,142,92,0.28);
+}
+
+.asb-status-bar--rejected {
+    background: rgba(210,89,42,0.14);
+    color: var(--j-orange);
+    border-bottom: 1px solid rgba(210,89,42,0.28);
+}
+
+.asb-hidden-form {
+    display: none;
+}
+
 .asb-filter-tab {
     padding: 0.4rem 1.1rem;
     border-radius: 999px;
@@ -3575,6 +3652,14 @@ body:has(.asb-submissions-wrap) { background-color: var(--j-dark); }
     margin: 0 0 1.35rem;
 }
 
+.asb-confirm-highlight-name {
+    color: var(--j-white);
+}
+
+.asb-confirm-highlight-token {
+    color: var(--j-gold-l);
+}
+
 .asb-confirm-actions {
     padding: 0;
     border-top: none;
@@ -3758,6 +3843,10 @@ body:has(.asb-submissions-wrap) { background-color: var(--j-dark); }
     cursor: zoom-in;
     overflow: hidden;
 }
+
+.asb-thumb-grid--1 { grid-template-columns: 1fr; }
+.asb-thumb-grid--2 { grid-template-columns: 1fr 1fr; }
+.asb-thumb-grid--3 { grid-template-columns: repeat(3,1fr); }
 
 .asb-thumb-strip:hover .asb-thumb-overlay {
     opacity: 1;
