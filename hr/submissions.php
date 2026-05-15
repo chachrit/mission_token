@@ -414,14 +414,10 @@ require_once __DIR__ . '/../includes/header.php';
 
 <!-- ── CONFIRM MODAL ───────────────────────────────────────── -->
 <style>
-#asb-confirm-modal { display:none; position:fixed; inset:0; z-index:10000;
-  background:rgba(9,17,19,0.72); backdrop-filter:blur(6px);
-  align-items:center; justify-content:center; padding:1.5rem; }
-#asb-confirm-modal.open { display:flex; }
+#asb-confirm-modal { z-index:10000; background:rgba(9,17,19,0.72); padding:1.5rem; }
+#asb-confirm-modal.show { display:flex; }
 .asb-modal-box {
-  background:rgba(15,20,23,0.97); border-radius:22px; width:100%; max-width:380px;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
-  overflow:hidden; backdrop-filter:blur(20px);
+    max-width:380px;
   animation:asb-modal-in 0.28s cubic-bezier(0.22,1,0.36,1);
 }
 @keyframes asb-modal-in {
@@ -429,32 +425,25 @@ require_once __DIR__ . '/../includes/header.php';
   to   { opacity:1; transform:scale(1) translateY(0); }
 }
 </style>
-<div id="asb-confirm-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
-    <div class="asb-modal-box">
+<div id="asb-confirm-modal" class="jp-modal" onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
+        <div class="jp-modal-content asb-modal-box">
         <!-- Header -->
-        <div id="cm-header"
-             style="border-bottom:1px solid rgba(255,255,255,0.08);
-                    padding:1rem 1.35rem; display:flex; align-items:center; gap:0.7rem;">
+                <div id="cm-header" class="jp-modal-header" style="padding:1rem 1.35rem; gap:0.7rem;">
             <div id="cm-icon"
                  style="width:30px;height:30px;border-radius:50%;flex-shrink:0;
                         display:flex;align-items:center;justify-content:center;"></div>
-            <span id="cm-title" style="font-size:0.95rem; font-weight:700; color:#eeebe1;"></span>
-            <button onclick="closeConfirmModal()"
-                    style="margin-left:auto; background:none; border:none; cursor:pointer;
-                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
-                           transition:color 0.15s;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#4a4e57'" aria-label="ปิด">
+                        <span id="cm-title" class="jp-modal-header-title" style="font-size:0.95rem;"></span>
+                        <button onclick="closeConfirmModal()" class="jp-modal-close" style="margin-left:auto; padding:4px; border-radius:6px; line-height:0;" aria-label="ปิด">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         <!-- Body -->
-        <div style="padding:1.35rem 1.5rem;">
+                <div class="jp-modal-body" style="padding:1.35rem 1.5rem;">
             <p id="cm-body" style="font-size:0.88rem; color:#9ca3af; line-height:1.7;
                                     margin:0 0 1.35rem;"></p>
-            <div style="display:flex; gap:0.65rem;">
+                        <div class="jp-modal-footer" style="padding:0; border-top:none; gap:0.65rem;">
                 <button onclick="closeConfirmModal()"
                         style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
                                border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
@@ -709,12 +698,12 @@ require_once __DIR__ . '/../includes/header.php';
         btn.onmouseout  = function () { this.style.background = accentBg; };
 
         var modal = document.getElementById('asb-confirm-modal');
-        modal.classList.add('open');
+        modal.classList.add('show');
         document.body.style.overflow = 'hidden';
     };
 
     window.closeConfirmModal = function () {
-        document.getElementById('asb-confirm-modal').classList.remove('open');
+        document.getElementById('asb-confirm-modal').classList.remove('show');
         document.body.style.overflow = '';
     };
 
@@ -729,7 +718,7 @@ require_once __DIR__ . '/../includes/header.php';
     };
 
     document.addEventListener('keydown', function (e) {
-        if (!document.getElementById('asb-confirm-modal').classList.contains('open')) return;
+        if (!document.getElementById('asb-confirm-modal').classList.contains('show')) return;
         if (e.key === 'Escape') closeConfirmModal();
     });
 })();
