@@ -238,81 +238,18 @@ $activePage = 'admin_challenges';
 
 require_once __DIR__ . '/../../includes/header.php';
 ?>
-
-<style>
-/* ── Admin Challenge Edit  prefix: ace- ─────────────────── */
-.ace-label {
-    font-size: 0.72rem; font-weight: 700; color: #8a8e97;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    margin-bottom: 0.35rem; display: block;
-}
-.ace-edit-wrap .journal-input {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: #eeebe1;
-}
-.ace-edit-wrap .journal-input:focus {
-    border-color: rgba(218,185,55,0.45);
-    background: rgba(255,255,255,0.09);
-    outline: none;
-}
-.ace-edit-wrap .journal-input::placeholder { color: #3a3e43; }
-.ace-edit-wrap select.journal-input option  { background: #1a1e22; color: #eeebe1; }
-.ace-edit-wrap input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
-
-.ace-card {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 1.5rem;
-    backdrop-filter: blur(8px);
-}
-.ace-q-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 14px;
-    padding: 1.25rem;
-}
-.ace-q-card:hover { border-color: rgba(255,255,255,0.12); }
-.ace-section-title {
-    font-size: 0.60rem; font-weight: 700; letter-spacing: 0.30em;
-    text-transform: uppercase; color: rgba(218,185,55,0.55);
-}
-/* Responsive 2-col grids */
-.ace-grid-2 {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-.ace-grid-strava {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.85rem;
-}
-@media (max-width: 560px) {
-    .ace-grid-2 { grid-template-columns: 1fr; }
-    .ace-grid-strava { grid-template-columns: 1fr; }
-}
-</style>
-
-<div class="ace-edit-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="ace-edit-wrap ace-wrap-shell">
 
     <!-- Aurora blobs -->
     <div class="ch-aurora-blob ch-aurora-blob--1" aria-hidden="true"></div>
     <div class="ch-aurora-blob ch-aurora-blob--2" aria-hidden="true"></div>
 
-    <div style="position:relative; z-index:1; max-width:860px; margin:0 auto;
-                padding:2rem 1.25rem 5rem;">
+    <div class="ace-page-inner">
 
         <!-- Page header + back button -->
-        <div style="display:flex; align-items:flex-start; gap:1rem; margin-bottom:2rem;">
+        <div class="ace-head-row">
             <a href="<?= BASE_URL ?>/hr/challenges/index.php"
-               style="flex-shrink:0; margin-top:4px; width:34px; height:34px; border-radius:10px;
-                      background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
-                      color:#6b6e77; display:inline-flex; align-items:center; justify-content:center;
-                      text-decoration:none; transition:all 0.15s;"
-               onmouseover="this.style.background='rgba(255,255,255,0.10)'; this.style.color='#eeebe1';"
-               onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#6b6e77';"
+               class="ace-back-link"
                title="กลับไปรายการภารกิจ">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor" stroke-width="2.5"
@@ -321,11 +258,10 @@ require_once __DIR__ . '/../../includes/header.php';
                 </svg>
             </a>
             <div>
-                <p class="ace-section-title" style="margin-bottom:0.3rem;">
+                <p class="ace-section-title ace-head-kicker">
                     ADMIN — <?= $isEdit ? 'EDIT CHALLENGE' : 'NEW CHALLENGE' ?>
                 </p>
-                <h1 style="font-size:1.5rem; font-weight:800; color:#eeebe1;
-                           margin:0; letter-spacing:-0.01em;">
+                <h1 class="ace-head-title">
                     <?= $isEdit ? e($f['title']) : 'สร้างภารกิจใหม่' ?>
                 </h1>
             </div>
@@ -336,20 +272,19 @@ require_once __DIR__ . '/../../includes/header.php';
             <?= csrfField() ?>
             <input type="hidden" name="action" value="save_challenge">
 
-            <div class="ace-card" style="margin-bottom:1.5rem;">
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.35rem;">
-                    <div style="width:4px; height:18px; background:linear-gradient(180deg,#dab937,#c9a830);
-                                border-radius:999px; flex-shrink:0;"></div>
-                    <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">
+            <div class="ace-card ace-main-card">
+                <div class="ace-card-head-row">
+                    <div class="ace-card-head-bar"></div>
+                    <span class="ace-card-head-title">
                         <?= $isEdit ? 'แก้ไขข้อมูลภารกิจ' : 'ข้อมูลภารกิจ' ?>
                     </span>
                 </div>
 
-                <div style="display:flex; flex-direction:column; gap:1.1rem;">
+                <div class="ace-field-stack">
 
                     <!-- Title -->
                     <div>
-                        <label class="ace-label">ชื่อภารกิจ <span style="color:#d2592a;">*</span></label>
+                        <label class="ace-label">ชื่อภารกิจ <span class="ace-required">*</span></label>
                         <input type="text" name="title" value="<?= e($f['title']) ?>" required
                                class="journal-input" placeholder="เช่น ทำแบบทดสอบความรู้ด้านความปลอดภัย">
                     </div>
@@ -357,15 +292,14 @@ require_once __DIR__ . '/../../includes/header.php';
                     <!-- Description -->
                     <div>
                         <label class="ace-label">คำอธิบาย</label>
-                        <textarea name="description" rows="3" class="journal-input"
-                                  style="resize:vertical;"
+                        <textarea name="description" rows="3" class="journal-input ace-textarea"
                                   placeholder="อธิบายภารกิจโดยย่อ"><?= e($f['description']) ?></textarea>
                     </div>
 
                     <!-- Type + Token reward -->
                     <div class="ace-grid-2">
                         <div>
-                            <label class="ace-label">ประเภทภารกิจ <span style="color:#d2592a;">*</span></label>
+                            <label class="ace-label">ประเภทภารกิจ <span class="ace-required">*</span></label>
                             <select name="type" id="challenge-type" class="journal-input"
                                     onchange="handleTypeChange(this.value)">
                                 <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>Quiz (ตอบคำถาม)</option>
@@ -374,7 +308,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             </select>
                         </div>
                         <div>
-                            <label class="ace-label">Token รางวัล <span style="color:#d2592a;">*</span></label>
+                            <label class="ace-label">Token รางวัล <span class="ace-required">*</span></label>
                             <input type="number" name="token_reward" value="<?= (int)$f['token_reward'] ?>"
                                    min="1" max="9999" required class="journal-input">
                         </div>
@@ -383,23 +317,21 @@ require_once __DIR__ . '/../../includes/header.php';
                     <!-- Date range -->
                     <div class="ace-grid-2">
                         <div>
-                            <label class="ace-label">วันเริ่ม <span style="color:#d2592a;">*</span></label>
+                            <label class="ace-label">วันเริ่ม <span class="ace-required">*</span></label>
                             <input type="date" name="start_date" value="<?= e($f['start_date']) ?>"
                                    required class="journal-input">
                         </div>
                         <div>
-                            <label class="ace-label">วันสิ้นสุด <span style="color:#d2592a;">*</span></label>
+                            <label class="ace-label">วันสิ้นสุด <span class="ace-required">*</span></label>
                             <input type="date" name="end_date" value="<?= e($f['end_date']) ?>"
                                    required class="journal-input">
                         </div>
                     </div>
 
                     <!-- Strava condition (strava only) -->
-                    <div id="strava-condition-wrap" <?= $f['type'] !== 'strava' ? 'style="display:none;"' : '' ?>>
-                        <div style="background:rgba(252,76,2,0.06); border:1px solid rgba(252,76,2,0.2);
-                                    border-radius:12px; padding:1.1rem 1.25rem;">
-                            <p style="font-size:0.72rem; font-weight:700; color:rgba(252,76,2,0.8);
-                                      letter-spacing:0.08em; text-transform:uppercase; margin:0 0 0.9rem;">Strava Conditions</p>
+                    <div id="strava-condition-wrap" class="<?= $f['type'] !== 'strava' ? 'ace-hidden' : '' ?>">
+                        <div class="ace-strava-box">
+                            <p class="ace-strava-title">Strava Conditions</p>
                             <div class="ace-grid-strava">
                                 <div>
                                     <label class="ace-label">ประเภทกิจกรรม</label>
@@ -416,16 +348,16 @@ require_once __DIR__ . '/../../includes/header.php';
                                 </div>
                                 <div>
                                     <label class="ace-label">ระยะทางขั้นต่ำ <span id="dist-unit-label"><?= $scMinDist >= 1000 ? '(กิโลเมตร)' : '(เมตร)' ?></span> 0=ไม่กำหนด</label>
-                                    <div style="display:flex; gap:0.5rem;">
+                                    <div class="ace-dist-row">
                                         <input type="number" name="strava_min_distance" id="strava-dist-input"
                                                min="0"
                                                step="<?= $scMinDist >= 1000 ? '0.1' : '100' ?>"
                                                value="<?= $scMinDist >= 1000 ? rtrim(rtrim(number_format($scMinDist / 1000, 2, '.', ''), '0'), '.') : (int)$scMinDist ?>"
-                                               class="journal-input" style="flex:1;"
+                                               class="journal-input ace-dist-input"
                                                placeholder="0">
                                         <select name="strava_dist_unit" id="strava-dist-unit"
                                                 onchange="stravaDistUnitChange(this.value)"
-                                                class="journal-input" style="width:90px; flex-shrink:0;">
+                                                class="journal-input ace-dist-unit">
                                             <option value="m"  <?= $scMinDist < 1000 ? 'selected' : '' ?>>เมตร</option>
                                             <option value="km" <?= $scMinDist >= 1000 ? 'selected' : '' ?>>กิโลเมตร</option>
                                         </select>
@@ -446,22 +378,18 @@ require_once __DIR__ . '/../../includes/header.php';
                     </div>
 
                     <!-- Instructions (photo only) -->
-                    <div id="instructions-wrap" <?= $f['type'] !== 'photo' ? 'style="display:none;"' : '' ?>>
+                    <div id="instructions-wrap" class="<?= $f['type'] !== 'photo' ? 'ace-hidden' : '' ?>">
                         <label class="ace-label">คำแนะนำการส่งรูป</label>
-                        <textarea name="instructions" rows="3" class="journal-input"
-                                  style="resize:vertical;"
+                        <textarea name="instructions" rows="3" class="journal-input ace-textarea"
                                   placeholder="เช่น ถ่ายรูปพร้อมป้ายชื่อหน่วยงาน..."><?= e($f['instructions']) ?></textarea>
                     </div>
 
                     <!-- Active toggle -->
-                    <div style="display:flex; align-items:center; gap:0.65rem; padding:0.85rem 1rem;
-                                background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);
-                                border-radius:12px;">
+                    <div class="ace-active-row">
                         <input type="checkbox" name="is_active" id="is_active" value="1"
                                <?= $f['is_active'] ? 'checked' : '' ?>
-                               style="width:16px; height:16px; accent-color:#dab937; cursor:pointer;">
-                        <label for="is_active"
-                               style="font-size:0.85rem; font-weight:500; color:#eeebe1; cursor:pointer;">
+                               class="ace-active-cb">
+                        <label for="is_active" class="ace-active-label">
                             เปิดให้ใช้งาน
                         </label>
                     </div>
@@ -469,34 +397,20 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div><!-- /fields -->
 
                 <!-- Action row -->
-                <div style="margin-top:1.5rem; display:flex; align-items:center;
-                             justify-content:space-between; flex-wrap:wrap; gap:0.75rem;
-                             padding-top:1.25rem; border-top:1px solid rgba(255,255,255,0.07);">
-                    <div style="display:flex; gap:0.65rem;">
-                        <button type="submit" class="ch-btn-start"
-                                style="padding:0.55rem 1.35rem; font-size:0.85rem; border-radius:10px;">
+                <div class="ace-action-row">
+                    <div class="ace-action-main">
+                        <button type="submit" class="ch-btn-start ace-submit-btn">
                             <?= $isEdit ? 'บันทึกการแก้ไข' : 'สร้างภารกิจ' ?>
                         </button>
                         <a href="<?= BASE_URL ?>/hr/challenges/index.php"
-                           style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600;
-                                  border-radius:10px; text-decoration:none; font-family:'Prompt',sans-serif;
-                                  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
-                                  color:#6b6e77; transition:all 0.15s;"
-                           onmouseover="this.style.background='rgba(255,255,255,0.09)'; this.style.color='#eeebe1';"
-                           onmouseout="this.style.background='rgba(255,255,255,0.05)'; this.style.color='#6b6e77';">
+                           class="ace-cancel-link">
                             ยกเลิก
                         </a>
                     </div>
 
                     <?php if ($isEdit): ?>
                     <button type="button" onclick="confirmDeleteChallenge()"
-                            style="display:inline-flex; align-items:center; gap:0.4rem;
-                                   padding:0.50rem 1rem; font-size:0.78rem; font-weight:600;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.22);
-                                   color:#d2592a; transition:background 0.15s;"
-                            onmouseover="this.style.background='rgba(210,89,42,0.18)'"
-                            onmouseout="this.style.background='rgba(210,89,42,0.08)'">
+                            class="ace-delete-btn">
                         <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
                              stroke="currentColor" stroke-width="2"
                              stroke-linecap="round" stroke-linejoin="round">
@@ -531,28 +445,17 @@ require_once __DIR__ . '/../../includes/header.php';
         <?php if ($isEdit && $f['type'] === 'quiz'): ?>
         <div id="quiz-section">
 
-            <div style="display:flex; align-items:center; justify-content:space-between;
-                        gap:1rem; margin-bottom:1.25rem;">
-                <div style="display:flex; align-items:center; gap:0.55rem;">
-                    <div style="width:4px; height:18px; background:linear-gradient(180deg,#4f8b98,#3a6e7a);
-                                border-radius:999px;"></div>
-                    <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">คำถาม Quiz</span>
+            <div class="ace-quiz-head-row">
+                <div class="ace-quiz-head-left">
+                    <div class="ace-quiz-head-bar"></div>
+                    <span class="ace-quiz-head-title">คำถาม Quiz</span>
                     <?php if (!empty($quizQuestions)): ?>
-                    <span style="font-size:0.65rem; font-weight:700; background:rgba(79,139,152,0.15);
-                                 color:#4f8b98; border:1px solid rgba(79,139,152,0.28);
-                                 border-radius:999px; padding:0.12rem 0.5rem;">
+                    <span class="ace-quiz-count-pill">
                         <?= count($quizQuestions) ?> ข้อ
                     </span>
                     <?php endif; ?>
                 </div>
-                <button type="button" onclick="addQuestion()"
-                        style="padding:0.45rem 1rem; font-size:0.80rem; font-weight:600;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.14);
-                               color:#eeebe1; transition:background 0.15s; display:inline-flex;
-                               align-items:center; gap:0.35rem;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                <button type="button" onclick="addQuestion()" class="ace-add-q-btn">
                     <svg width="12" height="12" fill="none" viewBox="0 0 24 24"
                          stroke="currentColor" stroke-width="2.5"
                          stroke-linecap="round" stroke-linejoin="round">
@@ -565,36 +468,28 @@ require_once __DIR__ . '/../../includes/header.php';
 
             <!-- Existing questions -->
             <?php if (!empty($quizQuestions)): ?>
-            <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.5rem;"
-                 id="existing-questions">
+            <div class="ace-q-list" id="existing-questions">
                 <?php foreach ($quizQuestions as $qi => $q): ?>
                 <div class="ace-q-card">
                     <!-- Question header -->
-                    <div style="display:flex; align-items:flex-start; justify-content:space-between;
-                                gap:1rem; margin-bottom:1rem;">
-                        <div style="display:flex; align-items:center; gap:0.5rem;">
-                            <span style="font-size:0.62rem; font-weight:700; padding:0.18rem 0.55rem;
-                                         border-radius:999px; background:rgba(79,139,152,0.14);
-                                         color:#4f8b98; border:1px solid rgba(79,139,152,0.25);">
+                    <div class="ace-q-head-row">
+                        <div class="ace-q-head-left">
+                            <span class="ace-q-index-pill">
                                 Q<?= $qi + 1 ?>
                             </span>
-                            <p style="font-size:0.85rem; font-weight:600; color:#eeebe1; margin:0;">
+                            <p class="ace-q-title">
                                 <?= e($q['question_text']) ?>
                             </p>
                         </div>
                         <form method="POST"
                               action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>"
-                              style="flex-shrink:0;"
+                              class="ace-q-delete-form"
                               onsubmit="return confirm('ลบคำถามนี้?')">
                             <?= csrfField() ?>
                             <input type="hidden" name="action" value="delete_question">
                             <input type="hidden" name="challenge_id" value="<?= $challengeId ?>">
                             <input type="hidden" name="question_id" value="<?= (int)$q['question_id'] ?>">
-                            <button type="submit"
-                                    style="font-size:0.68rem; color:#d2592a; background:none; border:none;
-                                           cursor:pointer; font-family:'Prompt',sans-serif; padding:2px 4px;"
-                                    onmouseover="this.style.textDecoration='underline'"
-                                    onmouseout="this.style.textDecoration='none'">
+                            <button type="submit" class="ace-q-delete-btn">
                                 ลบ
                             </button>
                         </form>
@@ -614,31 +509,31 @@ require_once __DIR__ . '/../../includes/header.php';
                         <input type="hidden" name="is_active"    value="<?= $f['is_active'] ? 1 : 0 ?>">
                         <input type="hidden" name="q_id[0]"      value="<?= (int)$q['question_id'] ?>">
 
-                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                        <div class="ace-q-form-stack">
                             <div>
                                 <label class="ace-label">คำถาม</label>
                                 <input type="text" name="q_text[0]" value="<?= e($q['question_text']) ?>"
-                                       required class="journal-input" style="font-size:0.85rem;">
+                                       required class="journal-input ace-input-md">
                             </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
+                            <div class="ace-grid-2-sm">
                                 <?php foreach (['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'] as $key => $letter): ?>
                                 <div>
                                     <label class="ace-label">
                                         ตัวเลือก <?= $letter ?>
-                                        <?= in_array($letter, ['A','B']) ? '<span style="color:#d2592a;">*</span>' : '' ?>
+                                        <?= in_array($letter, ['A','B']) ? '<span class="ace-required">*</span>' : '' ?>
                                     </label>
                                     <input type="text" name="q_<?= $key ?>[0]"
                                            value="<?= e((string)($q['option_' . $key] ?? '')) ?>"
                                            <?= in_array($letter, ['A','B']) ? 'required' : '' ?>
-                                           class="journal-input" style="font-size:0.83rem;">
+                                           class="journal-input ace-input-sm">
                                 </div>
                                 <?php endforeach; ?>
                             </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
+                            <div class="ace-grid-2-sm">
                                 <div>
-                                    <label class="ace-label">คำตอบที่ถูก <span style="color:#d2592a;">*</span></label>
+                                    <label class="ace-label">คำตอบที่ถูก <span class="ace-required">*</span></label>
                                     <select name="q_correct[0]" required
-                                            class="journal-input" style="font-size:0.83rem;">
+                                            class="journal-input ace-input-sm">
                                         <?php foreach (['A','B','C','D'] as $letter): ?>
                                         <option value="<?= $letter ?>"
                                                 <?= strtoupper($q['correct_option']) === $letter ? 'selected' : '' ?>>
@@ -651,17 +546,11 @@ require_once __DIR__ . '/../../includes/header.php';
                                     <label class="ace-label">คำอธิบาย (ไม่บังคับ)</label>
                                     <input type="text" name="q_explain[0]"
                                            value="<?= e((string)($q['explanation'] ?? '')) ?>"
-                                           class="journal-input" style="font-size:0.83rem;">
+                                           class="journal-input ace-input-sm">
                                 </div>
                             </div>
                             <div>
-                                <button type="submit"
-                                        style="padding:0.40rem 1rem; font-size:0.78rem; font-weight:600;
-                                               border-radius:8px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                                               color:#eeebe1; transition:background 0.15s;"
-                                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                                <button type="submit" class="ace-q-save-btn">
                                     บันทึกคำถาม
                                 </button>
                             </div>
@@ -671,19 +560,19 @@ require_once __DIR__ . '/../../includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div style="padding:3.5rem; text-align:center; margin-bottom:1.5rem;">
-                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">
+            <div class="ace-q-empty-wrap">
+                <p class="ace-q-empty-note">
                     ยังไม่มีคำถาม — กด "เพิ่มคำถาม" เพื่อเริ่มต้น
                 </p>
             </div>
             <?php endif; ?>
 
             <!-- New question form -->
-            <div id="new-question-form" style="display:none;">
-                <div class="ace-card" style="border-color:rgba(218,185,55,0.20);">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:1.1rem;">
-                        <div style="width:4px; height:16px; background:#dab937; border-radius:999px;"></div>
-                        <span style="font-size:0.88rem; font-weight:700; color:#eeebe1;">เพิ่มคำถามใหม่</span>
+            <div id="new-question-form" class="ace-hidden">
+                <div class="ace-card ace-new-q-card">
+                    <div class="ace-new-q-head-row">
+                        <div class="ace-new-q-head-bar"></div>
+                        <span class="ace-new-q-head-title">เพิ่มคำถามใหม่</span>
                     </div>
                     <form method="POST" action="<?= BASE_URL ?>/hr/challenges/edit.php?id=<?= $challengeId ?>">
                         <?= csrfField() ?>
@@ -698,30 +587,30 @@ require_once __DIR__ . '/../../includes/header.php';
                         <input type="hidden" name="is_active"    value="<?= $f['is_active'] ? 1 : 0 ?>">
                         <input type="hidden" name="q_id[0]"      value="0">
 
-                        <div style="display:flex; flex-direction:column; gap:0.75rem;">
+                        <div class="ace-q-form-stack">
                             <div>
-                                <label class="ace-label">คำถาม <span style="color:#d2592a;">*</span></label>
+                                <label class="ace-label">คำถาม <span class="ace-required">*</span></label>
                                 <input type="text" name="q_text[0]" required class="journal-input"
-                                       placeholder="พิมพ์คำถาม..." style="font-size:0.85rem;">
+                                       placeholder="พิมพ์คำถาม..." class="ace-input-md">
                             </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
+                            <div class="ace-grid-2-sm">
                                 <?php foreach (['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'] as $key => $letter): ?>
                                 <div>
                                     <label class="ace-label">
                                         ตัวเลือก <?= $letter ?>
-                                        <?= in_array($letter, ['A','B']) ? '<span style="color:#d2592a;">*</span>' : '' ?>
+                                        <?= in_array($letter, ['A','B']) ? '<span class="ace-required">*</span>' : '' ?>
                                     </label>
                                     <input type="text" name="q_<?= $key ?>[0]"
                                            <?= in_array($letter, ['A','B']) ? 'required' : '' ?>
-                                           class="journal-input" style="font-size:0.83rem;"
+                                           class="journal-input ace-input-sm"
                                            placeholder="ตัวเลือก <?= $letter ?>">
                                 </div>
                                 <?php endforeach; ?>
                             </div>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
+                            <div class="ace-grid-2-sm">
                                 <div>
-                                    <label class="ace-label">คำตอบที่ถูก <span style="color:#d2592a;">*</span></label>
-                                    <select name="q_correct[0]" required class="journal-input" style="font-size:0.83rem;">
+                                    <label class="ace-label">คำตอบที่ถูก <span class="ace-required">*</span></label>
+                                    <select name="q_correct[0]" required class="journal-input ace-input-sm">
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                         <option value="C">C</option>
@@ -731,23 +620,15 @@ require_once __DIR__ . '/../../includes/header.php';
                                 <div>
                                     <label class="ace-label">คำอธิบาย (ไม่บังคับ)</label>
                                     <input type="text" name="q_explain[0]" class="journal-input"
-                                           style="font-size:0.83rem;"
+                                           class="ace-input-sm"
                                            placeholder="เฉลยหรืออธิบายเพิ่มเติม">
                                 </div>
                             </div>
-                            <div style="display:flex; gap:0.65rem; padding-top:0.5rem;
-                                        border-top:1px solid rgba(255,255,255,0.06);">
-                                <button type="submit" class="ch-btn-start"
-                                        style="padding:0.48rem 1.1rem; font-size:0.82rem; border-radius:9px;">
+                            <div class="ace-new-q-action-row">
+                                <button type="submit" class="ch-btn-start ace-new-q-submit-btn">
                                     บันทึกคำถาม
                                 </button>
-                                <button type="button" onclick="cancelAddQuestion()"
-                                        style="padding:0.45rem 1rem; font-size:0.80rem; font-weight:600;
-                                               border-radius:9px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                               background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12);
-                                               color:#6b6e77; transition:background 0.15s;"
-                                        onmouseover="this.style.background='rgba(255,255,255,0.09)'"
-                                        onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+                                <button type="button" onclick="cancelAddQuestion()" class="ace-new-q-cancel-btn">
                                     ยกเลิก
                                 </button>
                             </div>
@@ -797,16 +678,19 @@ document.addEventListener('DOMContentLoaded', function() {
 function handleTypeChange(type) {
     const instrWrap  = document.getElementById('instructions-wrap');
     const stravaWrap = document.getElementById('strava-condition-wrap');
-    if (instrWrap)  instrWrap.style.display  = type === 'photo'  ? '' : 'none';
-    if (stravaWrap) stravaWrap.style.display = type === 'strava' ? '' : 'none';
+    if (instrWrap)  instrWrap.classList.toggle('ace-hidden', type !== 'photo');
+    if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
 }
 function addQuestion() {
     const form = document.getElementById('new-question-form');
-    if (form) { form.style.display = ''; form.scrollIntoView({ behavior:'smooth', block:'start' }); }
+    if (form) {
+        form.classList.remove('ace-hidden');
+        form.scrollIntoView({ behavior:'smooth', block:'start' });
+    }
 }
 function cancelAddQuestion() {
     const form = document.getElementById('new-question-form');
-    if (form) form.style.display = 'none';
+    if (form) form.classList.add('ace-hidden');
 }
 </script>
 
