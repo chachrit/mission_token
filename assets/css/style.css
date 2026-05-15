@@ -3333,6 +3333,207 @@ body:has(.asb-submissions-wrap) { background-color: var(--j-dark); }
 .asb-wrap .asb-note-input:focus       { border-color: rgba(218,185,55,0.45); outline: none; background: rgba(255,255,255,0.09); }
 .asb-wrap .asb-note-input::placeholder { color: var(--j-slate); }
 
+.asb-lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0,0,0,0.92);
+    align-items: center;
+    justify-content: center;
+}
+
+.asb-lightbox.show {
+    display: flex;
+}
+
+.asb-lightbox-close {
+    position: absolute;
+    top: 1rem;
+    right: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--j-white);
+    font-size: 1.6rem;
+    line-height: 1;
+    padding: 0.25rem 0.5rem;
+    opacity: 0.65;
+    transition: opacity 0.15s;
+}
+
+.asb-lightbox-close:hover {
+    opacity: 1;
+}
+
+.asb-lightbox-counter {
+    position: absolute;
+    top: 1.1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.8rem;
+    color: rgba(238,235,225,0.5);
+    font-family: 'Prompt', sans-serif;
+    pointer-events: none;
+    letter-spacing: 0.04em;
+}
+
+.asb-lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--j-white);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    z-index: 1;
+}
+
+.asb-lightbox-nav:hover {
+    background: rgba(255,255,255,0.20);
+}
+
+.asb-lightbox-nav--prev {
+    left: 1rem;
+}
+
+.asb-lightbox-nav--next {
+    right: 1rem;
+}
+
+.asb-lightbox-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 90vw;
+    max-height: 88vh;
+}
+
+.asb-lightbox-image {
+    max-width: 90vw;
+    max-height: 88vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 8px 48px rgba(0,0,0,0.7);
+    transition: opacity 0.18s;
+    user-select: none;
+    display: block;
+}
+
+.asb-lightbox-dots {
+    position: absolute;
+    bottom: 1.3rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.asb-lightbox-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.15s;
+    background: rgba(255,255,255,0.28);
+    transform: scale(1);
+}
+
+.asb-lightbox-dot.is-active {
+    background: var(--j-gold);
+    transform: scale(1.35);
+}
+
+.asb-lightbox-download {
+    position: absolute;
+    bottom: 1.15rem;
+    right: 1.4rem;
+    font-size: 0.72rem;
+    color: rgba(218,185,55,0.65);
+    text-decoration: none;
+    font-family: 'Prompt', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s;
+}
+
+.asb-lightbox-download:hover {
+    color: var(--j-gold);
+}
+
+.asb-thumb-strip {
+    position: relative;
+    flex-shrink: 0;
+    height: 180px;
+    display: grid;
+    gap: 2px;
+    background: rgba(255,255,255,0.04);
+    cursor: zoom-in;
+    overflow: hidden;
+}
+
+.asb-thumb-strip:hover .asb-thumb-overlay {
+    opacity: 1;
+}
+
+.asb-thumb-cell {
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+}
+
+.asb-thumb-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.28s;
+    display: block;
+}
+
+.asb-thumb-strip:hover .asb-thumb-cell img {
+    transform: scale(1.05);
+}
+
+.asb-thumb-more {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(9,17,19,0.68);
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--j-white);
+    font-family: 'Prompt', sans-serif;
+}
+
+.asb-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background: rgba(9,17,19,0.52);
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    font-family: 'Prompt', sans-serif;
+}
+
 
 /* --------------------------------------------------------------
    Admin Employees Page  (prefix: emp-)
