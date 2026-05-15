@@ -477,7 +477,7 @@ require_once __DIR__ . '/../includes/header.php';
             <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
         </svg>
         <div class="ch-strava-spinner"></div>
-        <div style="text-align:center;">
+        <div class="ch-strava-loading-copy">
             <p class="ch-strava-loading-title">กำลังตรวจสอบกิจกรรม Strava</p>
             <p class="ch-strava-loading-sub" id="strava-loading-sub">กำลังดึงข้อมูลกิจกรรม อาจใช้เวลา 15–30 วินาที...</p>
         </div>
@@ -567,7 +567,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="quiz-progress-track">
                     <div class="quiz-progress-fill" id="quiz-progress"
-                         style="width:<?= round(100 / $totalQ) ?>%"></div>
+                        style="width:<?= round(100 / $totalQ) ?>%"></div>
                 </div>
             </div>
 
@@ -660,10 +660,9 @@ require_once __DIR__ . '/../includes/header.php';
     </div><!-- /max-w-2xl -->
 
     <!-- ── Processing Modal ── -->
-    <div id="quiz-processing-modal"
-         aria-live="assertive" role="status"
-         class="ch-processing-modal"
-         style="display:none;">
+        <div id="quiz-processing-modal"
+            aria-live="assertive" role="status"
+            class="ch-processing-modal ch-u-hidden">
         <div class="ch-processing-modal-inner">
             <div class="ch-qpm-spinner">
                 <div class="ch-qpm-orbit"></div>
@@ -798,15 +797,15 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="ch-board-progress-block">
                 <div class="flex items-center gap-3">
-                    <p class="text-xl font-bold" style="color:#dab937;">
-                        <?= $_done ?><span class="font-normal text-base" style="color:#9ca3a8;"> / <?= $_total ?> ภารกิจสำเร็จ</span>
+                    <p class="text-xl font-bold ch-board-progress-value">
+                        <?= $_done ?><span class="font-normal text-base ch-board-progress-total"> / <?= $_total ?> ภารกิจสำเร็จ</span>
                     </p>
                 </div>
                 <div class="ch-board-progress-track">
                     <div class="ch-board-progress-fill"
                          style="width:<?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>%;"></div>
                 </div>
-                <p class="text-xs font-semibold uppercase tracking-widest" style="color:#6b7278;">
+                <p class="text-xs font-semibold uppercase tracking-widest ch-board-progress-percent">
                     <?= $_total > 0 ? round($_done / $_total * 100) : 0 ?>% Complete
                 </p>
             </div>
@@ -838,7 +837,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Top: type badge + urgency (if near deadline) -->
                         <div class="ch-quest-top-row">
                             <?php if ($ch['type'] === 'strava'): ?>
-                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">Strava</span>
+                            <span class="ch-type-badge ch-type-badge--strava">Strava</span>
                             <?php elseif ($ch['type'] === 'quiz'): ?>
                             <span class="ch-type-badge">Quiz</span>
                             <?php else: ?>
@@ -852,7 +851,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 ถูกปฏิเสธ
                             </span>
                             <?php elseif ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
-                            <span style="font-size:0.65rem;font-weight:700;color:#d2592a;background:rgba(210,89,42,0.10);border:1px solid rgba(210,89,42,0.25);border-radius:6px;padding:0.18rem 0.55rem;">
+                            <span class="ch-urgency-badge">
                                 <?= $_daysLeft === 0 ? 'วันนี้!' : 'เหลือ ' . $_daysLeft . ' วัน' ?>
                             </span>
                             <?php endif; ?>
@@ -860,8 +859,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <!-- Token reward hero — the prize hook -->
                         <div class="ch-front-token-hero">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim"
-                                 style="width:36px;height:36px;object-fit:contain;">
+                               <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="token-coin-anim ch-token-coin-lg">
                             <span class="ch-front-token-amt">+<?= formatTokens((int)$ch['token_reward']) ?></span>
                             <span class="ch-front-token-lbl">Token Reward</span>
                         </div>
@@ -893,25 +891,21 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <!-- ── BACK FACE ── -->
-                <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?>"
+                 <div class="ch-flip-back ch-quest-card <?= $isRejected ? 'ch-quest-card--rejected' : '' ?><?= (!$isRejected && in_array($ch['type'], ['quiz', 'strava', 'photo'], true)) ? ' ch-card-clickable' : '' ?>"
                      <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
                      onclick="openQuizModal(<?= $cid ?>)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openQuizModal(<?= $cid ?>);}"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
-                     style="cursor:pointer;"
                      <?php elseif ($ch['type'] === 'strava'): ?>
                      onclick="openStravaModal(<?= $cid ?>)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openStravaModal(<?= $cid ?>);}"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
-                     style="cursor:pointer;"
                      <?php elseif ($ch['type'] === 'photo'): ?>
                      onclick="openPhotoModal(<?= $cid ?>)"
                      onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openPhotoModal(<?= $cid ?>);}"
                      tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>"
-                     style="cursor:pointer;"
                      <?php endif; ?>>
-                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?>"
-                         <?php if ($ch['type'] === 'strava'): ?>style="background:linear-gradient(90deg,#FC4C02,#e04400);"<?php endif; ?>></div>
+                    <div class="ch-quest-accent-bar <?= $isRejected ? 'ch-quest-accent-bar--rejected' : '' ?><?= $ch['type'] === 'strava' ? ' ch-quest-accent-bar--strava' : '' ?>"></div>
                     <div class="ch-flip-back-body">
                         <!-- Touch close button (pointer: coarse only — see style.css) -->
                         <button type="button" class="ch-flip-back-close" aria-label="ย้อนกลับ">
@@ -921,22 +915,22 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Header: type badge -->
                         <div class="ch-flip-back-header">
                             <?php if ($ch['type'] === 'strava'): ?>
-                            <span class="ch-type-badge" style="background:rgba(252,76,2,0.18);color:#FC4C02;border-color:rgba(252,76,2,0.35);">Strava</span>
+                            <span class="ch-type-badge ch-type-badge--strava">Strava</span>
                             <?php elseif ($ch['type'] === 'quiz'): ?>
                             <span class="ch-type-badge">Quiz</span>
                             <?php else: ?>
                             <span class="ch-type-badge">Photo</span>
                             <?php endif; ?>
                             <?php if (!$isRejected && $ch['type'] === 'quiz'): ?>
-                            <span style="font-size:0.63rem;color:rgba(218,185,55,0.55);font-weight:600;">กดการ์ดเพื่อดูรายละเอียด →</span>
+                            <span class="ch-click-hint">กดการ์ดเพื่อดูรายละเอียด →</span>
                             <?php elseif ($ch['type'] === 'strava'): ?>
-                            <span style="font-size:0.63rem;color:rgba(252,76,2,0.55);font-weight:600;">กดการ์ดเพื่อดูรายละเอียด →</span>
+                            <span class="ch-click-hint ch-click-hint--strava">กดการ์ดเพื่อดูรายละเอียด →</span>
                             <?php endif; ?>
                         </div>
 
                         <!-- Token reward -->
                         <div class="ch-flip-back-reward">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" style="width:18px;height:18px;object-fit:contain;filter:drop-shadow(0 0 4px rgba(218,185,55,0.6));">
+                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="ch-token-coin-sm">
                             +<?= formatTokens((int)$ch['token_reward']) ?> Token
                         </div>
 
@@ -959,8 +953,8 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Strava condition summary -->
                         <?php if ($ch['type'] === 'strava' && !empty($ch['_sc'])): ?>
                         <?php $sc = $ch['_sc']; ?>
-                        <div class="ch-flip-back-instructions" style="background:rgba(252,76,2,0.06);border-color:rgba(252,76,2,0.22);">
-                            <p class="ch-flip-back-instructions-label" style="color:rgba(252,76,2,0.8)">เงื่อนไขกิจกรรม</p>
+                        <div class="ch-flip-back-instructions ch-flip-back-instructions--strava">
+                            <p class="ch-flip-back-instructions-label ch-flip-back-instructions-label--strava">เงื่อนไขกิจกรรม</p>
                             <p class="ch-flip-back-instructions-text">
                                 <?= e($sc['sport_type'] ?? 'Run') ?>
                                 <?php if (!empty($sc['min_distance'])): ?> &bull; &ge;<?= number_format($sc['min_distance']/1000,1) ?>กม<?php endif; ?>
@@ -988,7 +982,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </svg>
                             <span>สิ้นสุด <?= $_ed ?></span>
                             <?php if ($_daysLeft !== null && $_daysLeft >= 0 && $_daysLeft <= 7): ?>
-                            <span style="color:#d2592a;font-weight:600;">&bull; เหลืออีก <?= $_daysLeft === 0 ? 'วันนี้!' : $_daysLeft . ' วัน' ?></span>
+                            <span class="ch-days-left-note">&bull; เหลืออีก <?= $_daysLeft === 0 ? 'วันนี้!' : $_daysLeft . ' วัน' ?></span>
                             <?php endif; ?>
                         </div>
                         <?php endif; ?>
@@ -1004,17 +998,17 @@ require_once __DIR__ . '/../includes/header.php';
                             </div>
                             <?php elseif ($ch['type'] === 'strava'): ?>
                             <?php if (!$stravaConnected): ?>
-                            <p style="font-size:0.73rem;color:#d2592a;margin:0;">ยังไม่ได้เชื่อมต่อ Strava</p>
+                            <p class="ch-action-hint ch-action-hint--danger">ยังไม่ได้เชื่อมต่อ Strava</p>
                             <?php elseif ($isRejected): ?>
-                            <p style="font-size:0.73rem;color:rgba(252,76,2,0.7);margin:0;">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
+                            <p class="ch-action-hint ch-action-hint--strava-warn">ไม่พบกิจกรรมที่ตรงเงื่อนไข &bull; ลองใหม่ได้</p>
                             <?php else: ?>
-                            <p style="font-size:0.73rem;color:rgba(252,76,2,0.5);margin:0;">กดการ์ดเพื่อเริ่มทำภารกิจ</p>
+                            <p class="ch-action-hint ch-action-hint--strava">กดการ์ดเพื่อเริ่มทำภารกิจ</p>
                             <?php endif; ?>
                             <?php elseif ($ch['type'] === 'photo'): ?>
                             <?php if ($isRejected): ?>
-                            <p style="font-size:0.72rem;color:#d2592a;margin:0;">งานก่อนหน้าถูกปฏิเสธ &bull; กดการ์ดเพื่อส่งใหม่</p>
+                            <p class="ch-action-hint ch-action-hint--danger">งานก่อนหน้าถูกปฏิเสธ &bull; กดการ์ดเพื่อส่งใหม่</p>
                             <?php else: ?>
-                            <p style="font-size:0.73rem;color:rgba(218,185,55,0.5);margin:0;">กดการ์ดเพื่อส่งหลักฐาน</p>
+                            <p class="ch-action-hint ch-action-hint--gold">กดการ์ดเพื่อส่งหลักฐาน</p>
                             <?php endif; ?>
                             <?php endif; ?>
                         </div>
@@ -1118,84 +1112,61 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- ── Photo Upload Modal ── -->
     <div id="photo-modal"
-         style="display:none; position:fixed; inset:0; z-index:1000;
-                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
-                align-items:center; justify-content:center; padding:1rem;"
+         class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
          onclick="if(event.target===this)closePhotoModal()">
-        <div id="photo-modal-card" style="background:#0f1416; border:1px solid rgba(218,185,55,0.22); border-radius:20px;
-                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
-                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(218,185,55,0.10);">
+        <div id="photo-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
             <!-- Modal header -->
-            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                        display:flex; align-items:center; justify-content:space-between;">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+            <div class="ch-detail-modal-head">
+                <div class="ch-detail-modal-head-main">
                     <svg width="18" height="18" fill="none" stroke="#dab937" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
-                    <span style="font-size:0.68rem; font-weight:700; color:rgba(218,185,55,0.9);
-                                 letter-spacing:0.08em; text-transform:uppercase;">Photo Mission</span>
+                    <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Photo Mission</span>
                 </div>
-                <button onclick="closePhotoModal()"
-                        style="width:28px; height:28px; border-radius:50%;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                               color:#6b6e77; cursor:pointer;
-                               display:flex; align-items:center; justify-content:center;
-                               font-family:'Prompt',sans-serif;">
+                <button onclick="closePhotoModal()" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
             </div>
             <!-- Modal body -->
-            <div style="padding:1.4rem;">
+            <div class="ch-detail-modal-body">
                 <!-- Token reward -->
-                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                <div class="ch-detail-modal-token-row">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
-                         style="width:34px; height:34px; object-fit:contain;
-                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                         class="ch-detail-modal-token-icon">
                     <div>
-                        <p id="pm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
-                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
-                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                        <p id="pm-token" class="ch-detail-modal-token-value"></p>
+                        <p class="ch-detail-modal-token-label">Token Reward</p>
                     </div>
                 </div>
                 <!-- Title -->
-                <h2 id="pm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
-                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <h2 id="pm-title" class="ch-detail-modal-title"></h2>
                 <!-- Description -->
-                <p id="pm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <p id="pm-desc" class="ch-detail-modal-desc"></p>
                 <!-- Instructions -->
                 <div id="pm-instructions"
-                     style="display:none; background:rgba(218,185,55,0.05);
-                            border:1px solid rgba(218,185,55,0.18); border-radius:10px;
-                            padding:0.7rem 1rem; margin-bottom:1rem;">
-                    <p style="font-size:0.63rem; font-weight:700; color:rgba(218,185,55,0.7);
-                               text-transform:uppercase; letter-spacing:0.08em; margin:0 0 0.35rem;">วิธีส่งหลักฐาน</p>
-                    <p id="pm-instructions-text" style="font-size:0.82rem; color:#cecdcd; margin:0; line-height:1.6;"></p>
+                     class="ch-detail-modal-box ch-detail-modal-box--gold ch-u-hidden">
+                    <p class="ch-detail-modal-box-label ch-detail-modal-box-label--gold">วิธีส่งหลักฐาน</p>
+                    <p id="pm-instructions-text" class="ch-detail-modal-box-text"></p>
                 </div>
                 <!-- End date -->
-                <p id="pm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <p id="pm-enddate" class="ch-detail-modal-enddate"></p>
                 <!-- Rejected message -->
-                <p id="pm-rejected-msg" style="display:none; font-size:0.8rem;
-                                                color:#d2592a; margin:0 0 0.75rem;"></p>
+                <p id="pm-rejected-msg" class="ch-detail-modal-rejected ch-u-hidden"></p>
                 <!-- Upload form -->
                 <form id="pm-photo-form" method="POST"
                       action="<?= BASE_URL ?>/pages/challenges.php"
                       enctype="multipart/form-data"
-                      style="display:flex; flex-direction:column; gap:0.65rem;">
+                      class="ch-detail-modal-form">
                     <div id="pm-csrf"></div>
                     <input type="hidden" name="action" value="submit_photo">
                     <input type="hidden" name="challenge_id" id="pm-cid-input" value="">
                     <input type="file" name="photos[]" accept="image/*" multiple required class="ch-file-input">
                     <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5 รูป &bull; แต่ละรูปไม่เกิน 20MB &bull; ได้รับ Token หลัง HR อนุมัติ</p>
-                    <button type="submit"
-                            style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem;
-                                   padding:0.65rem 1.25rem; border-radius:10px;
-                                   background:#dab937; color:#091113;
-                                   font-size:0.9rem; font-weight:700;
-                                   font-family:'Prompt',sans-serif; border:none; cursor:pointer;">
+                    <button type="submit" class="ch-detail-modal-submit ch-detail-modal-submit--gold">
                         ส่งหลักฐาน
                     </button>
                 </form>
@@ -1217,9 +1188,9 @@ require_once __DIR__ . '/../includes/header.php';
         var instrEl = document.getElementById('pm-instructions');
         if (d.instructions) {
             document.getElementById('pm-instructions-text').textContent = d.instructions;
-            instrEl.style.display = '';
+            instrEl.classList.remove('ch-u-hidden');
         } else {
-            instrEl.style.display = 'none';
+            instrEl.classList.add('ch-u-hidden');
         }
 
         var edEl = document.getElementById('pm-enddate');
@@ -1237,9 +1208,9 @@ require_once __DIR__ . '/../includes/header.php';
         var rejEl = document.getElementById('pm-rejected-msg');
         if (d.rejected) {
             rejEl.textContent = 'งานก่อนหน้าถูกปฏิเสธ — สามารถส่งใหม่ได้';
-            rejEl.style.display = '';
+            rejEl.classList.remove('ch-u-hidden');
         } else {
-            rejEl.style.display = 'none';
+            rejEl.classList.add('ch-u-hidden');
         }
 
         document.getElementById('pm-cid-input').value = cid;
@@ -1247,6 +1218,7 @@ require_once __DIR__ . '/../includes/header.php';
 
         var overlay = document.getElementById('photo-modal');
         var card    = document.getElementById('photo-modal-card');
+        overlay.classList.remove('ch-u-hidden');
         overlay.style.display = 'flex';
         overlay.classList.remove('modal-overlay-out');
         card.classList.remove('modal-card-out');
@@ -1260,99 +1232,75 @@ require_once __DIR__ . '/../includes/header.php';
         card.classList.remove('modal-card-in');
         overlay.classList.add('modal-overlay-out');
         card.classList.add('modal-card-out');
-        setTimeout(function () { overlay.style.display = 'none'; }, 180);
+        setTimeout(function () {
+            overlay.style.display = 'none';
+            overlay.classList.add('ch-u-hidden');
+        }, 180);
     }
     </script>
 
     <!-- ── Strava Detail Modal ── -->
     <div id="strava-modal"
-         style="display:none; position:fixed; inset:0; z-index:1000;
-                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
-                align-items:center; justify-content:center; padding:1rem;"
+         class="ch-detail-modal ch-detail-modal--strava ch-u-hidden"
          onclick="if(event.target===this)closeStravaModal()">
-        <div id="strava-modal-card" style="background:#0f1416; border:1px solid rgba(252,76,2,0.28); border-radius:20px;
-                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
-                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(252,76,2,0.12);">
+        <div id="strava-modal-card" class="ch-detail-modal-card ch-detail-modal-card--strava">
             <!-- Modal header -->
-            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                        display:flex; align-items:center; justify-content:space-between;">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
+            <div class="ch-detail-modal-head">
+                <div class="ch-detail-modal-head-main">
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="#FC4C02">
                         <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/>
                     </svg>
-                    <span style="font-size:0.68rem; font-weight:700; color:rgba(252,76,2,0.9);
-                                 letter-spacing:0.08em; text-transform:uppercase;">Strava Mission</span>
+                    <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--strava">Strava Mission</span>
                 </div>
-                <button onclick="closeStravaModal()"
-                        style="width:28px; height:28px; border-radius:50%;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                               color:#6b6e77; cursor:pointer; font-size:0.85rem;
-                               display:flex; align-items:center; justify-content:center;
-                               font-family:'Prompt',sans-serif;">
+                <button onclick="closeStravaModal()" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
             </div>
             <!-- Modal body -->
-            <div style="padding:1.4rem;">
+            <div class="ch-detail-modal-body">
                 <!-- Token reward -->
-                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                <div class="ch-detail-modal-token-row">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
-                         style="width:34px; height:34px; object-fit:contain;
-                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                         class="ch-detail-modal-token-icon">
                     <div>
-                        <p id="sm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
-                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
-                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                        <p id="sm-token" class="ch-detail-modal-token-value"></p>
+                        <p class="ch-detail-modal-token-label">Token Reward</p>
                     </div>
                 </div>
                 <!-- Title -->
-                <h2 id="sm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
-                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <h2 id="sm-title" class="ch-detail-modal-title"></h2>
                 <!-- Description -->
-                <p id="sm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <p id="sm-desc" class="ch-detail-modal-desc"></p>
                 <!-- Condition box -->
                 <div id="sm-condition"
-                     style="display:none; background:rgba(252,76,2,0.06);
-                            border:1px solid rgba(252,76,2,0.20); border-radius:10px;
-                            padding:0.7rem 1rem; margin-bottom:1rem;">
-                    <p style="font-size:0.63rem; font-weight:700; color:rgba(252,76,2,0.8);
-                               text-transform:uppercase; letter-spacing:0.08em; margin:0 0 0.35rem;">เงื่อนไขกิจกรรม</p>
-                    <p id="sm-condition-text" style="font-size:0.82rem; color:#cecdcd; margin:0; line-height:1.6;"></p>
+                     class="ch-detail-modal-box ch-detail-modal-box--strava ch-u-hidden">
+                    <p class="ch-detail-modal-box-label ch-detail-modal-box-label--strava">เงื่อนไขกิจกรรม</p>
+                    <p id="sm-condition-text" class="ch-detail-modal-box-text"></p>
                 </div>
                 <!-- End date -->
-                <p id="sm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <p id="sm-enddate" class="ch-detail-modal-enddate"></p>
                 <!-- Rejected message -->
-                <p id="sm-rejected-msg" style="display:none; font-size:0.8rem;
-                                                color:rgba(252,76,2,0.85); margin:0 0 0.75rem;"></p>
+                <p id="sm-rejected-msg" class="ch-detail-modal-rejected ch-detail-modal-rejected--strava ch-u-hidden"></p>
                 <!-- Action: connect Strava -->
-                <div id="sm-connect-area" style="display:none;">
-                    <p style="font-size:0.8rem; color:#d2592a; margin:0 0 0.7rem;">กรุณาเชื่อมต่อ Strava ก่อนทำภารกิจ</p>
+                <div id="sm-connect-area" class="ch-u-hidden">
+                    <p class="ch-detail-modal-connect-note">กรุณาเชื่อมต่อ Strava ก่อนทำภารกิจ</p>
                     <a href="<?= BASE_URL ?>/pages/strava_connect.php"
-                       style="display:inline-flex; align-items:center; gap:0.5rem;
-                              padding:0.65rem 1.25rem; border-radius:10px;
-                              background:rgba(252,76,2,0.80); color:#fff;
-                              font-size:0.85rem; font-weight:700;
-                              font-family:'Prompt',sans-serif; text-decoration:none;">
+                       class="ch-detail-modal-submit ch-detail-modal-submit--strava ch-detail-modal-submit-link">
                         เชื่อมต่อ Strava
                     </a>
                 </div>
                 <!-- Action: submit form -->
                 <form id="sm-strava-form" method="POST"
                       action="<?= BASE_URL ?>/pages/challenges.php"
-                      style="display:none;">
+                      class="ch-u-hidden">
                     <?= csrfField() ?>
                     <input type="hidden" name="action" value="submit_strava">
                     <input type="hidden" name="challenge_id" id="sm-cid-input" value="">
                     <button type="button" id="sm-submit-btn"
                             onclick="submitStravaForm('sm-strava-form',this)"
-                            style="display:inline-flex; align-items:center; gap:0.5rem;
-                                   padding:0.65rem 1.25rem; border-radius:10px;
-                                   background:rgba(252,76,2,0.80); color:#fff;
-                                   font-size:0.85rem; font-weight:700;
-                                   font-family:'Prompt',sans-serif;
-                                   cursor:pointer; border:none;">
+                            class="ch-detail-modal-submit ch-detail-modal-submit--strava">
                         ตรวจสอบกิจกรรม Strava
                     </button>
                 </form>
@@ -1382,9 +1330,9 @@ require_once __DIR__ . '/../includes/header.php';
             if (sc.min_moving_time) parts.push('\u2265' + Math.floor(sc.min_moving_time / 60) + ' \u0e19\u0e32\u0e17\u0e35');
             if (sc.min_elevation) parts.push('\u0e04\u0e27\u0e32\u0e21\u0e2a\u0e39\u0e07 \u2265' + sc.min_elevation + ' \u0e21.');
             scText.textContent = parts.join(' \u00b7 ');
-            scDiv.style.display = 'block';
+            scDiv.classList.remove('ch-u-hidden');
         } else {
-            scDiv.style.display = 'none';
+            scDiv.classList.add('ch-u-hidden');
         }
 
         // End date
@@ -1404,9 +1352,9 @@ require_once __DIR__ . '/../includes/header.php';
         var rejMsg = document.getElementById('sm-rejected-msg');
         if (d.rejected) {
             rejMsg.textContent = '\u0e44\u0e21\u0e48\u0e1e\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21\u0e17\u0e35\u0e48\u0e15\u0e23\u0e07\u0e40\u0e07\u0e37\u0e48\u0e2d\u0e19\u0e44\u0e02 \u2022 \u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48\u0e44\u0e14\u0e49';
-            rejMsg.style.display = 'block';
+            rejMsg.classList.remove('ch-u-hidden');
         } else {
-            rejMsg.style.display = 'none';
+            rejMsg.classList.add('ch-u-hidden');
         }
 
         // Action
@@ -1414,11 +1362,11 @@ require_once __DIR__ . '/../includes/header.php';
         var formEl     = document.getElementById('sm-strava-form');
         var submitBtn  = document.getElementById('sm-submit-btn');
         if (!_stravaConnected) {
-            connectEl.style.display = 'block';
-            formEl.style.display    = 'none';
+            connectEl.classList.remove('ch-u-hidden');
+            formEl.classList.add('ch-u-hidden');
         } else {
-            connectEl.style.display = 'none';
-            formEl.style.display    = 'block';
+            connectEl.classList.add('ch-u-hidden');
+            formEl.classList.remove('ch-u-hidden');
             document.getElementById('sm-cid-input').value = cid;
             submitBtn.innerHTML  = d.rejected ? '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e2d\u0e35\u0e01\u0e04\u0e23\u0e31\u0e49\u0e07' : '\u0e15\u0e23\u0e27\u0e08\u0e2a\u0e2d\u0e1a\u0e01\u0e34\u0e08\u0e01\u0e23\u0e23\u0e21 Strava';
             submitBtn.disabled   = false;
@@ -1427,6 +1375,7 @@ require_once __DIR__ . '/../includes/header.php';
         var modal = document.getElementById('strava-modal');
         var card  = document.getElementById('strava-modal-card');
         modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+        modal.classList.remove('ch-u-hidden');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         void card.offsetWidth; // force reflow
@@ -1442,6 +1391,7 @@ require_once __DIR__ . '/../includes/header.php';
         setTimeout(function() {
             modal.style.display = 'none';
             modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+            modal.classList.add('ch-u-hidden');
             document.body.style.overflow = '';
         }, 180);
     }
@@ -1452,78 +1402,56 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- ── Quiz Detail Modal ── -->
     <div id="quiz-modal"
-         style="display:none; position:fixed; inset:0; z-index:1000;
-                background:rgba(0,0,0,0.78); backdrop-filter:blur(6px);
-                align-items:center; justify-content:center; padding:1rem;"
+         class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
          onclick="if(event.target===this)closeQuizModal()">
-        <div id="quiz-modal-card" style="background:#0f1416; border:1px solid rgba(218,185,55,0.25); border-radius:20px;
-                    max-width:420px; width:100%; max-height:90vh; overflow-y:auto;
-                    box-shadow:0 24px 60px rgba(0,0,0,0.65), 0 0 0 1px rgba(218,185,55,0.10);">
+        <div id="quiz-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
             <!-- Modal header -->
-            <div style="padding:1.1rem 1.4rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                        display:flex; align-items:center; justify-content:space-between;">
-                <div style="display:flex; align-items:center; gap:0.6rem;">
-                    <span style="font-size:0.68rem; font-weight:700; color:rgba(218,185,55,0.9);
-                                 letter-spacing:0.08em; text-transform:uppercase;">Quiz Mission</span>
+            <div class="ch-detail-modal-head">
+                <div class="ch-detail-modal-head-main">
+                    <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Quiz Mission</span>
                 </div>
-                <button onclick="closeQuizModal()"
-                        style="width:28px; height:28px; border-radius:50%;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
-                               color:#6b6e77; cursor:pointer; font-size:0.85rem;
-                               display:flex; align-items:center; justify-content:center;
-                               font-family:'Prompt',sans-serif;">
+                <button onclick="closeQuizModal()" class="ch-detail-modal-close">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
             </div>
             <!-- Modal body -->
-            <div style="padding:1.4rem;">
+            <div class="ch-detail-modal-body">
                 <!-- Token reward -->
-                <div style="display:flex; align-items:center; gap:0.65rem; margin-bottom:1rem;">
+                <div class="ch-detail-modal-token-row">
                     <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"
-                         style="width:34px; height:34px; object-fit:contain;
-                                filter:drop-shadow(0 0 8px rgba(218,185,55,0.5));">
+                         class="ch-detail-modal-token-icon">
                     <div>
-                        <p id="qm-token" style="font-size:1.65rem; font-weight:800; color:#f8e769; margin:0; line-height:1;"></p>
-                        <p style="font-size:0.63rem; color:#6b6e77; margin:0;
-                                  text-transform:uppercase; letter-spacing:0.08em;">Token Reward</p>
+                        <p id="qm-token" class="ch-detail-modal-token-value"></p>
+                        <p class="ch-detail-modal-token-label">Token Reward</p>
                     </div>
                 </div>
                 <!-- Title -->
-                <h2 id="qm-title" style="font-size:1.05rem; font-weight:700; color:#eeebe1;
-                                         margin:0 0 0.45rem; line-height:1.35;"></h2>
+                <h2 id="qm-title" class="ch-detail-modal-title"></h2>
                 <!-- Description -->
-                <p id="qm-desc" style="font-size:0.82rem; color:#8a8e97; margin:0 0 1rem; line-height:1.65;"></p>
+                <p id="qm-desc" class="ch-detail-modal-desc"></p>
                 <!-- Quiz info box -->
-                <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.18);
-                            border-radius:10px; padding:0.7rem 1rem; margin-bottom:1rem;
-                            display:flex; align-items:center; gap:0.6rem;">
+                <div class="ch-detail-modal-box ch-detail-modal-box--gold ch-detail-modal-box-row">
                     <svg width="15" height="15" fill="none" stroke="#dab937" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <span id="qm-qcount" style="font-size:0.82rem; color:#cecdcd;"></span>
+                    <span id="qm-qcount" class="ch-detail-modal-box-text"></span>
                 </div>
                 <!-- End date -->
-                <p id="qm-enddate" style="font-size:0.75rem; color:#6b6e77; margin:0 0 1.25rem;"></p>
+                <p id="qm-enddate" class="ch-detail-modal-enddate"></p>
                 <!-- Warning note -->
-                <div style="display:flex; align-items:flex-start; gap:0.5rem; margin-bottom:1.25rem;
-                            padding:0.65rem 0.85rem; border-radius:8px;
-                            background:rgba(218,185,55,0.05); border:1px solid rgba(218,185,55,0.12);">
-                    <svg width="13" height="13" fill="none" stroke="#dab937" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:2px;">
+                <div class="ch-detail-modal-warning">
+                    <svg width="13" height="13" fill="none" stroke="#dab937" viewBox="0 0 24 24" class="ch-detail-modal-warning-icon">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                     </svg>
-                    <span style="font-size:0.75rem; color:rgba(218,185,55,0.65); line-height:1.5;">ตอบได้ 1 ครั้งเท่านั้น — ต้องตอบถูกทุกข้อจึงจะได้รับ Token</span>
+                    <span class="ch-detail-modal-warning-text">ตอบได้ 1 ครั้งเท่านั้น — ต้องตอบถูกทุกข้อจึงจะได้รับ Token</span>
                 </div>
                 <!-- Start button -->
                 <a id="qm-start-btn" href="#"
-                   style="display:inline-flex; align-items:center; gap:0.5rem;
-                          padding:0.65rem 1.4rem; border-radius:10px; width:100%; justify-content:center;
-                          background:linear-gradient(135deg,#dab937,#c9a830); color:#091113;
-                          font-size:0.92rem; font-weight:700;
-                          font-family:'Prompt',sans-serif; text-decoration:none;">
+                   class="ch-detail-modal-submit ch-detail-modal-submit--gold ch-detail-modal-submit-link ch-detail-modal-submit-block">
                     → เริ่มทำ Quiz
                 </a>
             </div>
@@ -1556,6 +1484,7 @@ require_once __DIR__ . '/../includes/header.php';
         var modal = document.getElementById('quiz-modal');
         var card  = document.getElementById('quiz-modal-card');
         modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+        modal.classList.remove('ch-u-hidden');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
         void card.offsetWidth; // force reflow
@@ -1571,6 +1500,7 @@ require_once __DIR__ . '/../includes/header.php';
         setTimeout(function() {
             modal.style.display = 'none';
             modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
+            modal.classList.add('ch-u-hidden');
             document.body.style.overflow = '';
         }, 180);
     }
@@ -1593,7 +1523,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
         </button>
-        <div id="done-section-grid" style="display:none;">
+        <div id="done-section-grid" class="ch-u-hidden">
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <?php foreach ($questsDone as $ch):
                 $cid        = (int)$ch['challenge_id'];
@@ -1618,15 +1548,14 @@ require_once __DIR__ . '/../includes/header.php';
                         <span class="ch-status-badge <?= $badgeClass ?>"><?= $badgeText ?></span>
                         <?php if ($isDone && !empty($ch['my_token_awarded']) && $ch['my_token_awarded'] > 0): ?>
                         <div class="ch-token-earned-chip">
-                            <img src="<?= BASE_URL ?>/assets/images/token.png" alt=""
-                                 style="width:16px;height:16px;object-fit:contain;filter:drop-shadow(0 0 3px rgba(81,142,92,0.55));">
+                               <img src="<?= BASE_URL ?>/assets/images/token.png" alt="" class="ch-token-earned-icon">
                             <span class="ch-token-earned-value">+<?= formatTokens($ch['my_token_awarded']) ?></span>
                         </div>
                         <?php endif; ?>
                     </div>
                     <h3 class="ch-done-title"><?= e($ch['title']) ?></h3>
                     <?php if (!empty($ch['end_date'])): ?>
-                    <p class="ch-pending-text" style="color:#9ca3af;">
+                    <p class="ch-pending-text ch-pending-text--muted">
                         สิ้นสุด <?= date('d/m/Y', strtotime((string)$ch['end_date'])) ?>
                     </p>
                     <?php endif; ?>
@@ -1647,8 +1576,14 @@ require_once __DIR__ . '/../includes/header.php';
     function toggleDoneSection() {
         var grid    = document.getElementById('done-section-grid');
         var chevron = document.getElementById('done-chevron');
-        var isOpen  = grid && grid.style.display !== 'none';
-        if (grid)    grid.style.display      = isOpen ? 'none' : 'block';
+        var isOpen  = grid && !grid.classList.contains('ch-u-hidden');
+        if (grid) {
+            if (isOpen) {
+                grid.classList.add('ch-u-hidden');
+            } else {
+                grid.classList.remove('ch-u-hidden');
+            }
+        }
         if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
     }
     </script>

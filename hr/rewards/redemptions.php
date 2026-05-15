@@ -221,7 +221,7 @@ $flash      = getFlash();
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<div class="ar-redemptions-wrap ard-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="ar-redemptions-wrap ard-wrap ard-wrap-shell">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
@@ -234,11 +234,9 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Page header -->
         <div class="jp-page-header jp-page-header-row">
             <div>
-                <div style="margin-bottom:0.5rem;">
+                <div class="ard-back-wrap">
                     <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
-                       style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
-                              letter-spacing:0.06em; text-transform:uppercase; transition:color 0.15s;"
-                       onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#4a4e57'">
+                       class="ard-back-link">
                         ← จัดการรางวัล
                     </a>
                 </div>
@@ -263,8 +261,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 foreach (['pending','fulfilled','cancelled'] as $s):
                     $ds = $dsDark[$s];
                 ?>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem;
-                             border-radius:999px; background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                <span class="ard-stat-chip"
+                      style="background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
                              border:1px solid <?= $ds['border'] ?>;">
                     <?= $statusMeta[$s]['label'] ?>: <?= $counts[$s] ?>
                 </span>
@@ -292,7 +290,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <a href="?status=<?= e($k) ?>"
                class="ard-filter-tab <?php echo $filterStatus === $k ? 'active' : ''; ?>">
                 <?= e($label) ?>
-                <span style="font-size:0.68rem; font-weight:700; opacity:0.65;">(<?= $counts[$k] ?? 0 ?>)</span>
+                <span class="ard-filter-count">(<?= $counts[$k] ?? 0 ?>)</span>
             </a>
             <?php endforeach; ?>
         </div>
@@ -300,7 +298,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Redemptions table -->
         <div class="ard-table-wrap jp-glass-card jp-glass-card--md">
 
-            <div class="jp-table-header ard-table-header" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;">
+            <div class="jp-table-header ard-table-header ard-table-header-grid">
                 <span>พนักงาน</span>
                 <span>รางวัล</span>
                 <span>Token</span>
@@ -319,16 +317,14 @@ require_once __DIR__ . '/../../includes/header.php';
                 $rdCat = (string)($rd['category'] ?? 'general');
                 $tone = $catTone[$rdCat] ?? $catTone['general'];
             ?>
-            <div class="ard-row"
-                 style="display:grid; grid-template-columns:2fr 1.5fr 1fr 1fr 1fr;
-                        gap:1rem; padding:0.9rem 1.25rem; align-items:center;">
+            <div class="ard-row ard-row-grid">
 
                 <!-- Employee -->
                 <div>
-                    <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;">
+                    <p class="ard-emp-name">
                         <?= e($rd['full_name']) ?>
                     </p>
-                    <p style="font-size:0.72rem; color:#6b6e77; margin:0.08rem 0 0;">
+                    <p class="ard-emp-meta">
                         <?= e($rd['employee_code']) ?>
                         <?php if (!empty($rd['department'])): ?>
                         · <?= e($rd['department']) ?>
@@ -337,22 +333,19 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Reward -->
-                <div style="display:flex; align-items:center; gap:0.5rem; min-width:0;">
-                    <span style="display:inline-flex; align-items:center; justify-content:center;
-                                 width:28px; height:28px; flex-shrink:0;
-                                 color:<?= $tone['icon_color'] ?>;
+                <div class="ard-reward-cell">
+                    <span class="ard-reward-icon"
+                          style="color:<?= $tone['icon_color'] ?>;
                                  background:<?= $tone['icon_bg'] ?>;
-                                 border:1px solid <?= $tone['icon_border'] ?>;
-                                 border-radius:999px;">
+                                 border:1px solid <?= $tone['icon_border'] ?>;">
                         <?= rewardCategoryIconSvg($rdCat) ?>
                     </span>
-                    <div style="min-width:0;">
-                        <p style="font-size:0.83rem; font-weight:500; color:#eeebe1; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div class="ard-reward-text-wrap">
+                        <p class="ard-reward-title">
                             <?= e($rd['reward_title']) ?>
                         </p>
                         <?php if (!empty($rd['admin_note'])): ?>
-                        <p style="font-size:0.68rem; color:#6b6e77; margin:0;">
+                        <p class="ard-reward-note">
                             <?= e($rd['admin_note']) ?>
                         </p>
                         <?php endif; ?>
@@ -360,67 +353,54 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Tokens spent -->
-                <div style="display:flex; align-items:center; gap:0.28rem;">
+                <div class="ard-token-cell">
                     <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="12" height="12" style="object-fit:contain; opacity:0.65;" alt="">
-                    <span style="font-size:0.9rem; font-weight:700; color:#dab937;">
+                         width="12" height="12" class="ard-token-icon" alt="">
+                    <span class="ard-token-value">
                         <?= (int)$rd['tokens_spent'] ?>
                     </span>
                 </div>
 
                 <!-- Date -->
                 <div>
-                    <span style="font-size:0.82rem; color:#eeebe1;">
+                    <span class="ard-date-main">
                         <?= e(formatThaiBuddhistDate((string)$rd['redeemed_at'])) ?>
                     </span>
                     <br>
-                    <span style="font-size:0.70rem; color:#6b6e77;">
+                    <span class="ard-date-sub">
                         <?= date('H:i', strtotime($rd['redeemed_at'])) ?>
                     </span>
                 </div>
 
                 <!-- Status + actions -->
-                <div style="display:flex; flex-direction:column; gap:0.4rem; align-items:flex-start;">
-                    <span style="font-size:0.65rem; font-weight:700; padding:0.22rem 0.68rem;
-                                 border-radius:999px; white-space:nowrap; letter-spacing:0.02em;
-                                 background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
+                <div class="ard-status-col">
+                    <span class="ard-status-badge"
+                          style="background:<?= $ds['bg'] ?>; color:<?= $ds['color'] ?>;
                                  border:1px solid <?= $ds['border'] ?>;">
                         <?= $sm['label'] ?>
                     </span>
 
                     <?php if ($rd['status'] === 'pending'): ?>
                     <?php if ($canManage): ?>
-                    <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+                    <div class="ard-action-row">
                         <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "fulfill",
                                                        <?= json_encode($rd['full_name']) ?>,
                                                        <?= json_encode($rd['reward_title']) ?>)'
-                                style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
-                                       background:rgba(81,142,92,0.15); color:#7ec98a;
-                                       border:1px solid rgba(81,142,92,0.30);
-                                       cursor:pointer; font-family:'Prompt',sans-serif; font-weight:600;
-                                       transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(81,142,92,0.25)'"
-                                onmouseout="this.style.background='rgba(81,142,92,0.15)'">
+                                class="ard-action-btn ard-action-btn--fulfill">
                             มอบรางวัลแล้ว
                         </button>
                         <button onclick='ardOpenAction(<?= (int)$rd['redemption_id'] ?>, "cancel",
                                                        <?= json_encode($rd['full_name']) ?>,
                                                        <?= json_encode($rd['reward_title']) ?>)'
-                                style="font-size:0.70rem; padding:0.22rem 0.6rem; border-radius:6px;
-                                       background:rgba(210,89,42,0.12); color:#d2592a;
-                                       border:1px solid rgba(210,89,42,0.28);
-                                       cursor:pointer; font-family:'Prompt',sans-serif; font-weight:600;
-                                       transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.22)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.12)'">
+                                class="ard-action-btn ard-action-btn--cancel">
                             ยกเลิก
                         </button>
                     </div>
                     <?php else: ?>
-                    <span style="font-size:0.68rem; color:#6b6e77; font-style:italic;">รอ HR ดำเนินการ</span>
+                    <span class="ard-pending-note">รอ HR ดำเนินการ</span>
                     <?php endif; ?>
                     <?php elseif ($rd['processed_at']): ?>
-                    <span style="font-size:0.68rem; color:#6b6e77;">
+                    <span class="ard-processed-at">
                         <?= date('d/m/y H:i', strtotime($rd['processed_at'])) ?>
                     </span>
                     <?php endif; ?>
@@ -437,15 +417,10 @@ require_once __DIR__ . '/../../includes/header.php';
 <!-- ACTION MODAL (HR + admin only) -->
 <div id="ard-action-modal">
     <div class="ard-modal-box">
-        <div style="background:linear-gradient(135deg,rgba(218,185,55,0.10),rgba(218,185,55,0.02));
-                    border-bottom:1px solid rgba(218,185,55,0.14);
-                    padding:1.15rem 1.5rem; display:flex; align-items:center; gap:0.75rem;">
-            <h2 id="ard-modal-title" style="font-size:0.97rem; font-weight:700; color:#eeebe1; margin:0;"></h2>
+        <div class="ard-modal-head">
+            <h2 id="ard-modal-title" class="ard-modal-title"></h2>
             <button onclick="ardCloseAction()"
-                    style="margin-left:auto; background:none; border:none; cursor:pointer;
-                           color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
-                           transition:color 0.15s;"
-                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#4a4e57'">
+                    class="ard-modal-close">
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12"/>
@@ -457,34 +432,25 @@ require_once __DIR__ . '/../../includes/header.php';
             <input type="hidden" id="ard-form-action"        name="action"        value="">
             <input type="hidden" id="ard-form-redemption-id" name="redemption_id" value="">
 
-            <div style="padding:1.4rem 1.65rem;">
-                <p id="ard-modal-desc"
-                   style="font-size:0.88rem; color:#c8c4b8; margin:0 0 1.25rem; line-height:1.65;"></p>
+            <div class="ard-modal-body">
+                <p id="ard-modal-desc" class="ard-modal-desc"></p>
 
-                <div style="margin-bottom:1.25rem;">
-                    <label style="font-size:0.68rem; font-weight:700; color:#4a4e57;
-                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        หมายเหตุ (ถึงพนักงาน) <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span>
+                <div class="ard-note-wrap">
+                    <label class="ard-note-label">
+                        หมายเหตุ (ถึงพนักงาน) <span class="ard-note-optional">(ไม่บังคับ)</span>
                     </label>
                     <textarea name="admin_note" id="ard-form-note" rows="3" maxlength="500"
                               placeholder="เช่น จะส่งให้ในวันศุกร์นี้ / วันลาใช้ได้ภายใน 3 เดือน"
-                              class="journal-input" style="resize:vertical;"></textarea>
+                              class="journal-input ard-note-textarea"></textarea>
                 </div>
 
-                <div style="display:flex; gap:0.65rem;">
+                <div class="ard-modal-actions">
                     <button type="button" onclick="ardCloseAction()"
-                            style="flex:1; padding:0.58rem 1rem; font-size:0.85rem; font-weight:600;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                                   color:#eeebe1; transition:background 0.15s; text-align:center;"
-                            onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                            onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                            class="ard-modal-btn ard-modal-btn--cancel">
                         ยกเลิก
                     </button>
                     <button type="submit" id="ard-modal-submit-btn"
-                            style="flex:1.5; padding:0.58rem 1rem; font-size:0.85rem; font-weight:700;
-                                   border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                                   border:none; color:#fff; transition:opacity 0.15s; text-align:center;">
+                            class="ard-modal-btn ard-modal-btn--submit">
                         ยืนยัน
                     </button>
                 </div>

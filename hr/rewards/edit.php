@@ -97,55 +97,18 @@ $activePage = 'admin_rewards';
 $flash      = getFlash();
 require_once __DIR__ . '/../../includes/header.php';
 ?>
-<style>
-/* ── Admin Reward Edit  prefix: are- ────────────────────── */
-.are-label { font-size: 0.70rem; font-weight: 700; color: #4a4e57;
-             letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; display: block; }
-
-.are-wrap .journal-input {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: #eeebe1;
-}
-.are-wrap .journal-input:focus {
-    border-color: rgba(218,185,55,0.45);
-    background: rgba(255,255,255,0.09);
-}
-.are-wrap .journal-input::placeholder { color: #3a3e43; }
-.are-wrap select.journal-input option { background: #1a1e22; color: #eeebe1; }
-
-.are-active-toggle {
-    width: 48px; height: 28px;
-    background: rgba(255,255,255,0.08); border-radius: 999px;
-    position: relative; cursor: pointer; display: inline-block; flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.14); transition: background 0.2s, border-color 0.2s;
-}
-.are-active-toggle.on  { background: rgba(81,142,92,0.40); border-color: rgba(81,142,92,0.60); }
-.are-active-toggle::after {
-    content: '';
-    position: absolute; top: 4px; left: 4px;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: rgba(255,255,255,0.45); transition: transform 0.2s;
-}
-.are-active-toggle.on::after { transform: translateX(20px); background: #7ec98a; }
-/* Responsive grids */
-.are-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 1.5rem; }
-@media (max-width: 560px) {
-    .are-grid-3 { grid-template-columns: 1fr; }
-}
-</style>
 <script>
 function arToggleExpiry(val) {
     var wrap = document.getElementById('coupon-expiry-wrap');
-    if (wrap) wrap.style.display = val.trim() !== '' ? 'block' : 'none';
+    if (wrap) wrap.classList.toggle('are-hidden', val.trim() === '');
 }
 function arToggleCoupon(cat) {
     var block = document.getElementById('coupon-block');
     if (!block) return;
     if (cat === 'voucher') {
-        block.style.display = 'block';
+        block.classList.remove('are-hidden');
     } else {
-        block.style.display = 'none';
+        block.classList.add('are-hidden');
         // clear values when hidden
         var inp = document.getElementById('coupon_code_input');
         if (inp) { inp.value = ''; arToggleExpiry(''); }
@@ -153,7 +116,7 @@ function arToggleCoupon(cat) {
 }
 </script>
 
-<div class="ar-rewards-wrap are-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="ar-rewards-wrap are-wrap are-wrap-shell">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
@@ -165,11 +128,9 @@ function arToggleCoupon(cat) {
 
         <!-- Breadcrumb + page header -->
         <div class="jp-page-header">
-            <div style="margin-bottom:0.6rem;">
+            <div class="are-breadcrumb-wrap">
                 <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
-                   style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
-                          letter-spacing:0.06em; text-transform:uppercase; transition:color 0.15s;"
-                   onmouseover="this.style.color='#dab937'" onmouseout="this.style.color='#4a4e57'">
+                   class="are-breadcrumb-link">
                     ← จัดการรางวัล
                 </a>
             </div>
@@ -180,7 +141,7 @@ function arToggleCoupon(cat) {
                 แก้ไขรางวัล
             </h1>
             <?php if ($reward): ?>
-            <p class="jp-subtitle" style="margin-top:0.3rem;">
+            <p class="jp-subtitle are-subtitle-tight">
                 R <?= e($reward['title']) ?>
             </p>
             <?php endif; ?>
@@ -199,8 +160,8 @@ function arToggleCoupon(cat) {
             <div class="jp-glass-card jp-glass-card--lg">
 
                 <!-- Title -->
-                <div style="margin-bottom:1.25rem;">
-                    <label class="are-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
+                <div class="are-field-block-lg">
+                    <label class="are-label">ชื่อรางวัล <span class="are-required">*</span></label>
                     <input type="text" name="title" required maxlength="200"
                            value="<?= e($reward['title']) ?>"
                            placeholder="ชื่อรางวัล"
@@ -208,11 +169,11 @@ function arToggleCoupon(cat) {
                 </div>
 
                 <!-- Description -->
-                <div style="margin-bottom:1.25rem;">
+                <div class="are-field-block-lg">
                     <label class="are-label">คำอธิบาย</label>
                     <textarea name="description" rows="3" maxlength="500"
                               placeholder="รายละเอียดรางวัล เงื่อนไขการใช้งาน ฯลฯ"
-                              class="journal-input" style="resize:vertical;"><?= e($reward['description'] ?? '') ?></textarea>
+                              class="journal-input are-textarea"><?= e($reward['description'] ?? '') ?></textarea>
                 </div>
 
                 <!-- Category + cost + stock -->
@@ -240,37 +201,34 @@ function arToggleCoupon(cat) {
                                value="<?= $reward['stock'] === null ? '' : (int)$reward['stock'] ?>"
                                placeholder="เว้นว่าง = ไม่จำกัด"
                                class="journal-input">
-                        <span style="font-size:0.68rem; color:#6b6e77; margin-top:0.25rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
+                        <span class="are-stock-hint">เว้นว่าง = ไม่จำกัด</span>
                     </div>
                 </div>
 
                 <!-- Coupon code -->
                 <?php $isCouponCat = ($reward['category'] === 'voucher'); ?>
-                <div id="coupon-block" style="display:<?= $isCouponCat ? 'block' : 'none' ?>; margin-bottom:1.25rem; padding:1rem 1.25rem;
-                            background:rgba(218,185,55,0.04); border-radius:12px;
-                            border:1px solid rgba(218,185,55,0.12);">
-                    <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem;">
-                        <span style="font-size:1rem; display:inline-flex; align-items:center;">
+                <div id="coupon-block" class="are-coupon-block<?= $isCouponCat ? '' : ' are-hidden' ?>">
+                    <div class="are-coupon-head-row">
+                        <span class="are-coupon-head-icon">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                                 <circle cx="8" cy="12" r="3" stroke-width="2"/>
                                 <path d="M11 12h10M18 12v3M15 12v2" stroke-width="2" stroke-linecap="round"/>
                             </svg>
                         </span>
                         <div>
-                            <p style="font-size:0.82rem; font-weight:700; color:#eeebe1; margin:0;">รหัสคูปอง / โค้ดส่วนลด</p>
-                            <p style="font-size:0.72rem; color:#6b6e77; margin:0;">
+                            <p class="are-coupon-title">รหัสคูปอง / โค้ดส่วนลด</p>
+                            <p class="are-coupon-subtitle">
                                 พนักงานจะเห็นโค้ดนี้เมื่อ HR ยืนยันมอบรางวัลแล้วเท่านั้น
                             </p>
                         </div>
                     </div>
-                    <label class="are-label">โค้ด <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span></label>
+                    <label class="are-label">โค้ด <span class="are-optional">(ไม่บังคับ)</span></label>
                     <input type="text" name="coupon_code" id="coupon_code_input" maxlength="200"
                            value="<?= e($reward['coupon_code'] ?? '') ?>"
                            placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
-                           class="journal-input"
-                           style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;"
+                           class="journal-input are-coupon-input"
                            oninput="arToggleExpiry(this.value)">
-                    <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">
+                    <p class="are-coupon-note">
                         เว้นว่างถ้ารางวัลนี้ไม่ใช้ระบบโค้ด
                     </p>
 
@@ -284,20 +242,16 @@ function arToggleCoupon(cat) {
                         }
                         $hasCoupon = !empty($reward['coupon_code']);
                     ?>
-                    <div id="coupon-expiry-wrap"
-                         style="margin-top:0.85rem; padding-top:0.85rem;
-                                border-top:1px solid rgba(218,185,55,0.10);
-                                display:<?= $hasCoupon ? 'block' : 'none' ?>">
+                    <div id="coupon-expiry-wrap" class="are-expiry-wrap<?= $hasCoupon ? '' : ' are-hidden' ?>">
                         <label class="are-label">
                             วันหมดอายุคูปอง
-                            <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ — เว้นว่างถ้าไม่มีวันหมดอายุ)</span>
+                            <span class="are-optional">(ไม่บังคับ — เว้นว่างถ้าไม่มีวันหมดอายุ)</span>
                         </label>
                         <input type="datetime-local" name="coupon_expires_at"
                                value="<?= e($expiresFormatted) ?>"
-                               class="journal-input"
-                               style="color-scheme:dark;">
+                               class="journal-input are-datetime-input">
                         <?php if ($expiresAt): ?>
-                        <p style="font-size:0.68rem; color:#dab937; margin-top:0.3rem;">
+                        <p class="are-expiry-note">
                             หมดอายุ: <?= (new DateTime((string)$expiresAt))->format('d/m/Y H:i') ?> น.
                         </p>
                         <?php endif; ?>
@@ -305,26 +259,25 @@ function arToggleCoupon(cat) {
                 </div>
 
                 <!-- Active toggle -->
-                <div style="display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem;
-                            background:rgba(255,255,255,0.02); border-radius:12px;
-                            border:1px solid rgba(255,255,255,0.06); margin-bottom:1.75rem;">
-                    <div style="flex:1;">
-                        <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0 0 0.18rem;">
+                <div class="are-active-row">
+                    <div class="are-active-copy">
+                        <p class="are-active-title">
                             สถานะรางวัล
                         </p>
-                        <p style="font-size:0.75rem; color:#6b6e77; margin:0;">
+                        <p class="are-active-desc">
                             เมื่อปิดรางวัล พนักงานจะไม่เห็นรางวัลนี้ในร้านค้า
                         </p>
                     </div>
-                    <label style="display:flex; align-items:center; gap:0.65rem; cursor:pointer; user-select:none;">
+                    <label class="are-active-label-wrap">
                         <input type="checkbox" name="is_active" id="is_active_cb"
                                <?= $reward['is_active'] ? 'checked' : '' ?>
-                               style="display:none;"
+                               class="are-hidden-input"
                                onchange="var t=document.getElementById('active-toggle');
                                          var lb=document.getElementById('active-label');
                                          t.classList.toggle('on', this.checked);
                                          lb.textContent = this.checked ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
-                                         lb.style.color  = this.checked ? '#7ec98a'    : '#3a3e43';">
+                                         lb.classList.toggle('are-active-label--on', this.checked);
+                                         lb.classList.toggle('are-active-label--off', !this.checked);">
                         <span id="active-toggle"
                               class="are-active-toggle <?= $reward['is_active'] ? 'on' : '' ?>"
                               onclick="var cb=document.getElementById('is_active_cb');
@@ -332,8 +285,7 @@ function arToggleCoupon(cat) {
                                        cb.dispatchEvent(new Event('change'));">
                         </span>
                         <span id="active-label"
-                              style="font-size:0.85rem; font-weight:600;
-                                     color:<?= $reward['is_active'] ? '#7ec98a' : '#3a3e43' ?>;">
+                              class="are-active-label <?= $reward['is_active'] ? 'are-active-label--on' : 'are-active-label--off' ?>">
                             <?= $reward['is_active'] ? 'เปิดใช้งาน' : 'ปิดการใช้งาน' ?>
                         </span>
                     </label>
@@ -342,17 +294,10 @@ function arToggleCoupon(cat) {
                 <!-- Actions -->
                 <div class="jp-actions-end">
                     <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
-                       style="display:inline-flex; align-items:center; padding:0.6rem 1.25rem;
-                              font-size:0.85rem; font-weight:600; border-radius:10px;
-                              font-family:'Prompt',sans-serif; text-decoration:none; transition:background 0.15s;
-                              background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                              color:#eeebe1;"
-                       onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                       onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                       class="are-cancel-link">
                         ยกเลิก
                     </a>
-                    <button type="submit" class="ch-btn-start"
-                            style="padding:0.6rem 1.5rem; font-size:0.85rem; border-radius:10px;">
+                    <button type="submit" class="ch-btn-start are-submit-btn">
                         บันทึกการแก้ไข
                     </button>
                 </div>

@@ -188,97 +188,7 @@ $flash      = getFlash();
 require_once __DIR__ . '/../../includes/header.php';
 ?>
 
-<style>
-/* ── Admin Rewards  prefix: ar- ─────────────────────────── */
-.ar-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.12s; }
-.ar-row:last-child { border-bottom: none; }
-.ar-row:hover { background: rgba(218,185,55,0.03); }
-
-/* Toggle switch (shared with challenges page) */
-.ac-toggle-switch {
-    display: inline-flex;
-    align-items: center;
-    cursor: pointer;
-}
-.ac-toggle-switch input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-.ac-toggle-track {
-    position: relative;
-    display: inline-block;
-    width: 36px;
-    height: 20px;
-    background: rgba(107,110,119,0.25);
-    border: 1px solid rgba(107,110,119,0.35);
-    border-radius: 999px;
-    transition: background 0.2s, border-color 0.2s;
-}
-.ac-toggle-thumb {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 14px;
-    height: 14px;
-    background: #6b6e77;
-    border-radius: 50%;
-    transition: transform 0.2s, background 0.2s;
-}
-.ac-toggle-switch input:checked + .ac-toggle-track {
-    background: rgba(81,142,92,0.30);
-    border-color: rgba(81,142,92,0.55);
-}
-.ac-toggle-switch input:checked + .ac-toggle-track .ac-toggle-thumb {
-    transform: translateX(16px);
-    background: #7ec98a;
-}
-.ac-toggle-switch:hover .ac-toggle-track {
-    border-color: rgba(218,185,55,0.45);
-}
-
-#create-form {
-    display: none;
-    background: rgba(255,255,255,0.025); border: 1px solid rgba(218,185,55,0.18);
-    border-radius: 16px; padding: 1.5rem; margin-bottom: 1.75rem;
-    backdrop-filter: blur(12px);
-}
-#create-form.open { display: block; }
-
-.ar-label { font-size: 0.70rem; font-weight: 700; color: #4a4e57;
-            letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.35rem; display: block; }
-
-.ar-wrap .journal-input {
-    background: rgba(255,255,255,0.06);
-    border-color: rgba(255,255,255,0.12);
-    color: #eeebe1;
-}
-.ar-wrap .journal-input:focus {
-    border-color: rgba(218,185,55,0.45);
-    background: rgba(255,255,255,0.09);
-}
-.ar-wrap .journal-input::placeholder { color: #3a3e43; }
-.ar-wrap select.journal-input option { background: #1a1e22; color: #eeebe1; }
-
-/* ── Responsive ─────────────────────────────────────────── */
-.ar-table-wrap { overflow: hidden; }
-
-@media (max-width: 900px) {
-    .ar-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .ar-table-header, .ar-row { min-width: 640px; }
-}
-
-@media (max-width: 640px) {
-    .ar-page-header-row { flex-direction: column; align-items: flex-start; }
-    .ar-page-header-row > button {
-        width: 100%; box-sizing: border-box;
-    }
-    .ar-create-grid { grid-template-columns: 1fr !important; }
-}
-</style>
-
-<div class="ar-rewards-wrap ar-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="ar-rewards-wrap ar-wrap ar-wrap-shell">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
@@ -291,7 +201,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- Page header -->
         <div class="jp-page-header">
             <!-- Row 1: title + create button -->
-            <div class="ar-page-header-row" style="margin-bottom:0.75rem;">
+            <div class="ar-page-header-row ar-page-header-row-gap">
                 <div>
                     <p class="jp-kicker">
                         ⬡ &nbsp;ADMIN — REWARD CATALOGUE
@@ -302,9 +212,7 @@ require_once __DIR__ . '/../../includes/header.php';
                     <p class="jp-subtitle">
                         เพิ่ม แก้ไข และจัดการสต็อกรางวัลในร้านค้า Token
                         <?php if (!empty($rewards)): ?>
-                        <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
-                                     background:rgba(255,255,255,0.07); border-radius:999px;
-                                     padding:0.12rem 0.5rem; color:#8a8e97;">
+                        <span class="ar-total-chip">
                             <?= count($rewards) ?> รายการ
                         </span>
                         <?php endif; ?>
@@ -313,23 +221,19 @@ require_once __DIR__ . '/../../includes/header.php';
                 <button onclick="document.getElementById('create-form').classList.toggle('open');
                                  this.textContent = document.getElementById('create-form').classList.contains('open')
                                                     ? 'ปิด' : '+ เพิ่มรางวัลใหม่';"
-                        class="ch-btn-start" style="padding:0.55rem 1.1rem; font-size:0.82rem; border-radius:10px; flex-shrink:0;">
+                        class="ch-btn-start ar-create-toggle-btn">
                     + เพิ่มรางวัลใหม่
                 </button>
             </div>
             <!-- Row 2: category filter pills -->
-            <div style="display:flex; gap:0.35rem; flex-wrap:wrap;">
+            <div class="ar-cat-filter-row">
                 <?php
                 $catFilters = ['' => 'ทั้งหมด'] + array_map(fn($m) => $m['label'], $catMeta);
                 foreach ($catFilters as $val => $label):
                     $isActiveCat = ($catFilter === $val);
                 ?>
-                <a href="<?= BASE_URL ?>/hr/rewards/index.php<?= $val ? '?cat=' . $val : '' ?>"
-                   style="font-size:0.72rem; font-weight:700; padding:0.28rem 0.75rem;
-                          border-radius:999px; text-decoration:none; transition:all 0.15s;
-                          background:<?= $isActiveCat ? 'rgba(218,185,55,0.18)' : 'rgba(255,255,255,0.05)' ?>;
-                          border:1px solid <?= $isActiveCat ? 'rgba(218,185,55,0.40)' : 'rgba(255,255,255,0.10)' ?>;
-                          color:<?= $isActiveCat ? '#dab937' : '#6b6e77' ?>">
+                     <a href="<?= BASE_URL ?>/hr/rewards/index.php<?= $val ? '?cat=' . $val : '' ?>"
+                         class="ar-cat-pill<?= $isActiveCat ? ' active' : '' ?>">
                     <?= $label ?>
                 </a>
                 <?php endforeach; ?>
@@ -347,26 +251,26 @@ require_once __DIR__ . '/../../includes/header.php';
             <?php echo csrfField(); ?>
             <input type="hidden" name="action" value="create">
 
-            <div style="display:flex; align-items:center; gap:0.55rem; margin-bottom:1.25rem;">
-                <div style="width:4px; height:20px; background:linear-gradient(180deg,#dab937,#c9a830); border-radius:999px;"></div>
-                <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">เพิ่มรางวัลใหม่</span>
+            <div class="ar-create-head-row">
+                <div class="ar-create-head-bar"></div>
+                <span class="ar-create-head-title">เพิ่มรางวัลใหม่</span>
             </div>
 
-            <div style="margin-bottom:1rem;">
-                <label class="ar-label">ชื่อรางวัล <span style="color:#d2592a;">*</span></label>
+            <div class="ar-field-block">
+                <label class="ar-label">ชื่อรางวัล <span class="ar-required">*</span></label>
                 <input type="text" name="title" required maxlength="200"
                        placeholder="เช่น คูปองกาแฟ, วันลาพิเศษ..."
                        class="journal-input">
             </div>
 
-            <div style="margin-bottom:1rem;">
+            <div class="ar-field-block">
                 <label class="ar-label">คำอธิบาย</label>
                 <textarea name="description" rows="2" maxlength="500"
                           placeholder="รายละเอียดรางวัล เงื่อนไขการใช้งาน ฯลฯ"
-                          class="journal-input" style="resize:vertical;"></textarea>
+                          class="journal-input ar-textarea"></textarea>
             </div>
 
-            <div class="ar-create-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.25rem;">
+            <div class="ar-create-grid ar-create-grid-layout">
                 <div>
                     <label class="ar-label">หมวดหมู่</label>
                     <select name="category" id="ar-create-category" class="journal-input" onchange="arUpdateAutoIcon(this.value)">
@@ -374,9 +278,9 @@ require_once __DIR__ . '/../../includes/header.php';
                         <option value="<?= e($k) ?>"><?= e($m['label']) ?></option>
                         <?php endforeach; ?>
                     </select>
-                    <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.28rem; color:#8a8e97;">
-                        <span id="ar-auto-icon-preview" style="display:inline-flex; align-items:center;"><?= rewardCategoryIconSvg('voucher') ?></span>
-                        <span id="ar-auto-icon-hint" style="font-size:0.68rem;">ไอคอนตามหมวดหมู่: คูปอง</span>
+                    <div class="ar-auto-icon-row">
+                        <span id="ar-auto-icon-preview" class="ar-auto-icon-preview"><?= rewardCategoryIconSvg('voucher') ?></span>
+                        <span id="ar-auto-icon-hint" class="ar-auto-icon-hint">ไอคอนตามหมวดหมู่: คูปอง</span>
                     </div>
                 </div>
                 <div>
@@ -388,56 +292,46 @@ require_once __DIR__ . '/../../includes/header.php';
                     <label class="ar-label">จำนวนสต็อก</label>
                     <input type="number" name="stock" min="0" placeholder="เว้นว่าง = ไม่จำกัด"
                            class="journal-input">
-                    <span style="font-size:0.68rem; color:#6b6e77; margin-top:0.2rem; display:block;">เว้นว่าง = ไม่จำกัด</span>
+                    <span class="ar-stock-hint">เว้นว่าง = ไม่จำกัด</span>
                 </div>
             </div>
 
-            <div id="create-coupon-wrap" style="margin-bottom:1.25rem; padding:1rem 1.25rem;
-                        background:rgba(218,185,55,0.04); border-radius:12px;
-                        border:1px solid rgba(218,185,55,0.12); display:none;">
-                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem;">
-                    <span style="font-size:0.95rem; display:inline-flex; align-items:center;">
+            <div id="create-coupon-wrap" class="ar-coupon-wrap">
+                <div class="ar-coupon-head-row">
+                    <span class="ar-coupon-head-icon">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <circle cx="8" cy="12" r="3" stroke-width="2"/>
                             <path d="M11 12h10M18 12v3M15 12v2" stroke-width="2" stroke-linecap="round"/>
                         </svg>
                     </span>
-                    <label class="ar-label" style="margin:0;">รหัสคูปอง / โค้ดส่วนลด</label>
-                    <span style="font-size:0.70rem; color:#6b6e77;">(ไม่บังคับ)</span>
+                    <label class="ar-label ar-label-inline">รหัสคูปอง / โค้ดส่วนลด</label>
+                    <span class="ar-optional-note">(ไม่บังคับ)</span>
                 </div>
                 <input type="text" name="coupon_code" id="create_coupon_code" maxlength="200"
                        placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
-                       class="journal-input"
-                       style="font-family:monospace, 'Prompt'; letter-spacing:0.05em;"
+                       class="journal-input ar-coupon-input"
                        oninput="arCreateToggleExpiry(this.value)">
-                <p style="font-size:0.68rem; color:#6b6e77; margin-top:0.3rem;">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
+                <p class="ar-coupon-note">พนักงานจะเห็นโค้ดนี้หลัง HR ยืนยันมอบรางวัลแล้วเท่านั้น</p>
 
                 <!-- Expiry — shown when coupon code is filled -->
-                <div id="create-expiry-wrap" style="margin-top:0.85rem; padding-top:0.85rem;
-                     border-top:1px solid rgba(218,185,55,0.10); display:none;">
+                <div id="create-expiry-wrap" class="ar-expiry-wrap">
                     <label class="ar-label">
                         วันหมดอายุคูปอง
-                        <span style="font-weight:400; color:#6b6e77; text-transform:none;">(ไม่บังคับ)</span>
+                        <span class="ar-optional-note ar-optional-note--inline">(ไม่บังคับ)</span>
                     </label>
                     <input type="datetime-local" name="coupon_expires_at"
-                           class="journal-input" style="color-scheme:dark;">
+                           class="journal-input ar-datetime-input">
                 </div>
             </div>
 
             <div class="jp-actions-end jp-actions-end--sm">
                 <button type="button"
-                        style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600;
-                               border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
-                               color:#eeebe1; transition:background 0.15s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'"
+                        class="ar-form-btn ar-form-btn--cancel"
                         onclick="document.getElementById('create-form').classList.remove('open');
                                  document.querySelector('[onclick*=create-form]').textContent='+ เพิ่มรางวัลใหม่';">
                     ยกเลิก
                 </button>
-                <button type="submit" class="ch-btn-start"
-                        style="padding:0.55rem 1.25rem; font-size:0.85rem; border-radius:10px;">
+                <button type="submit" class="ch-btn-start ar-form-btn ar-form-btn--submit">
                     บันทึกรางวัล
                 </button>
             </div>
@@ -446,19 +340,19 @@ require_once __DIR__ . '/../../includes/header.php';
         <!-- REWARDS TABLE -->
         <div class="ar-table-wrap jp-glass-card jp-glass-card--md">
 
-            <div class="jp-table-header ar-table-header" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;">
+            <div class="jp-table-header ar-table-header ar-table-grid">
                 <span>รางวัล</span>
                 <span>หมวด</span>
                 <span>ราคา</span>
                 <span>สต็อก</span>
                 <span>แลกแล้ว</span>
-                <span style="text-align:center;">สถานะ</span>
-                <span style="text-align:right;">จัดการ</span>
+                <span class="ar-cell-center">สถานะ</span>
+                <span class="ar-cell-right">จัดการ</span>
             </div>
 
             <?php if (empty($rewards)): ?>
             <div class="jp-empty-state">
-                <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20; display:inline-flex; align-items:center;">
+                <p class="ar-empty-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M3 8h18" stroke-width="2"/>
                         <path d="M4 8l8 6 8-6" stroke-width="2"/>
@@ -482,28 +376,20 @@ require_once __DIR__ . '/../../includes/header.php';
                 $glow = $glowMap[$cat] ?? $glowMap['general'];
                 $isOn = (bool)$rw['is_active'];
             ?>
-            <div class="ar-row"
-                 style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
-                        gap:1rem; padding:0.9rem 1.25rem; align-items:center;
-                        <?= $isOn ? '' : 'opacity:0.45;' ?>">
+              <div class="ar-row ar-table-grid ar-row-grid <?= $isOn ? '' : 'ar-row-inactive' ?>">
 
                 <!-- Reward name + emoji -->
-                <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
-                    <span style="display:inline-flex; align-items:center; justify-content:center;
-                                 width:30px; height:30px; flex-shrink:0; border-radius:999px; line-height:1;
-                                 color:<?= $glow['color'] ?>;
-                                 background:<?= $glow['bg'] ?>;
-                                 border:1px solid <?= $glow['border'] ?>;">
+                <div class="ar-reward-main">
+                      <span class="ar-reward-icon"
+                          style="color:<?= $glow['color'] ?>; background:<?= $glow['bg'] ?>; border-color:<?= $glow['border'] ?>;">
                         <?= rewardCategoryIconSvg((string)$cat) ?>
                     </span>
-                    <div style="min-width:0;">
-                        <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div class="ar-reward-text-wrap">
+                        <p class="ar-reward-title">
                             <?= e($rw['title']) ?>
                         </p>
                         <?php if (!empty($rw['description'])): ?>
-                        <p style="font-size:0.70rem; color:#6b6e77; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:240px;">
+                        <p class="ar-reward-desc">
                             <?= e($rw['description']) ?>
                         </p>
                         <?php endif; ?>
@@ -511,47 +397,45 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Category -->
-                <span style="font-size:0.65rem; font-weight:700; padding:0.2rem 0.6rem;
-                             border-radius:999px; white-space:nowrap;
-                             background:<?= $glow['bg'] ?>; color:<?= $glow['color'] ?>;
-                             border:1px solid <?= $glow['border'] ?>;">
+                    <span class="ar-category-chip"
+                        style="background:<?= $glow['bg'] ?>; color:<?= $glow['color'] ?>; border-color:<?= $glow['border'] ?>;">
                     <?= e($meta['label']) ?>
                 </span>
 
                 <!-- Cost -->
-                <div style="display:flex; align-items:center; gap:0.28rem;">
+                <div class="ar-token-cell">
                     <img src="<?php echo BASE_URL; ?>/assets/images/token.png"
-                         width="13" height="13" style="object-fit:contain; opacity:0.70;" alt="">
-                    <span style="font-size:0.9rem; font-weight:700; color:#f8e769;">
+                         width="13" height="13" class="ar-token-icon" alt="">
+                    <span class="ar-token-value">
                         <?= (int)$rw['token_cost'] ?>
                     </span>
                 </div>
 
                 <!-- Stock (read-only) -->
                 <div>
-                    <span style="font-size:0.9rem; font-weight:600; color:#eeebe1;">
+                    <span class="ar-stock-value">
                         <?= $rw['stock'] === null ? '∞' : (int)$rw['stock'] ?>
                     </span>
-                    <span style="font-size:0.68rem; color:#6b6e77; display:block;">
+                    <span class="ar-stock-note">
                         <?= $rw['stock'] === null ? 'ไม่จำกัด' : 'คงเหลือ' ?>
                     </span>
                 </div>
 
                 <!-- Total redeemed + pending -->
                 <div>
-                    <span style="font-size:0.9rem; font-weight:600; color:#eeebe1;">
+                    <span class="ar-redeemed-value">
                         <?= (int)$rw['total_redeemed'] ?>
                     </span>
                     <?php if ((int)$rw['pending_count'] > 0): ?>
-                    <span style="font-size:0.68rem; color:#fbbf24; margin-left:3px;">
+                    <span class="ar-redeemed-pending">
                         (<?= (int)$rw['pending_count'] ?> รอ)
                     </span>
                     <?php endif; ?>
                 </div>
 
                 <!-- Toggle active -->
-                <div style="text-align:center;">
-                    <form method="POST" action="" style="display:inline;">
+                <div class="ar-cell-center">
+                    <form method="POST" action="" class="ar-inline-form">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="toggle">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
@@ -567,31 +451,18 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
 
                 <!-- Edit + Delete -->
-                <div style="display:flex; align-items:center; justify-content:flex-end; gap:0.5rem;">
+                <div class="ar-actions-row">
                     <a href="<?php echo BASE_URL; ?>/hr/rewards/edit.php?id=<?= (int)$rw['reward_id'] ?>"
-                       style="display:inline-flex; align-items:center; justify-content:center;
-                              height:30px; box-sizing:border-box;
-                              font-size:0.73rem; font-weight:600; padding:0 0.75rem;
-                              border-radius:8px; text-decoration:none; transition:background 0.15s;
-                              background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.20);
-                              color:#dab937; white-space:nowrap;"
-                       onmouseover="this.style.background='rgba(218,185,55,0.16)'"
-                       onmouseout="this.style.background='rgba(218,185,55,0.08)'">
+                       class="ar-action-btn ar-action-btn--edit">
                         แก้ไข
                     </a>
-                    <form method="POST" action="" style="display:inline-flex; margin:0;"
+                    <form method="POST" action="" class="ar-inline-form-flex"
                           onsubmit="return confirm('ลบรางวัล &quot;<?= addslashes(e($rw['title'])) ?>&quot; ?\nรางวัลที่มีประวัติการแลกจะไม่สามารถลบได้')">
                         <?php echo csrfField(); ?>
                         <input type="hidden" name="action"    value="delete">
                         <input type="hidden" name="reward_id" value="<?= (int)$rw['reward_id'] ?>">
                         <button type="submit"
-                                style="width:30px; height:30px; box-sizing:border-box;
-                                       border-radius:8px; cursor:pointer; margin:0;
-                                       background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
-                                       color:#d2592a; display:inline-flex; align-items:center;
-                                       justify-content:center; transition:background 0.15s;"
-                                onmouseover="this.style.background='rgba(210,89,42,0.18)'"
-                                onmouseout="this.style.background='rgba(210,89,42,0.08)'"
+                            class="ar-action-btn ar-action-btn--delete"
                                 title="ลบรางวัล">
                             <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor" stroke-width="2"

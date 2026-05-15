@@ -232,7 +232,7 @@ $roleMeta = [
 ];
 ?>
 
-<div class="emp-employees-wrap emp-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
+<div class="emp-employees-wrap emp-wrap emp-wrap-base">
 
     <!-- Aurora blobs -->
     <div class="jp-aurora-layer" aria-hidden="true">
@@ -257,28 +257,23 @@ $roleMeta = [
             </div>
             <!-- Stats chips -->
             <div class="jp-chip-row">
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(218,185,55,0.10); color:#f8e769; border:1px solid rgba(218,185,55,0.25);">
+                <span class="emp-stat-chip emp-stat-chip--total">
                     ทั้งหมด: <?= (int)($statsRow['total'] ?? 0) ?>
                 </span>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(81,142,92,0.12); color:#7ec98a; border:1px solid rgba(81,142,92,0.28);">
+                <span class="emp-stat-chip emp-stat-chip--active">
                     ใช้งาน: <?= (int)($statsRow['active_count'] ?? 0) ?>
                 </span>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(98,48,122,0.18); color:#c49de0; border:1px solid rgba(98,48,122,0.35);">
+                <span class="emp-stat-chip emp-stat-chip--admin">
                     Admin: <?= (int)($statsRow['admin_count'] ?? 0) ?>
                 </span>
-                <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
-                             background:rgba(79,139,152,0.15); color:#7ab8c4; border:1px solid rgba(79,139,152,0.32);">
+                <span class="emp-stat-chip emp-stat-chip--hr">
                     HR: <?= (int)($statsRow['hr_count'] ?? 0) ?>
                 </span>
             </div>
         </div>
 
         <!-- Search + Filter -->
-        <form method="GET" action=""
-              style="display:flex; flex-wrap:wrap; gap:0.65rem; margin-bottom:1.75rem; align-items:center;">
+          <form method="GET" action="" class="emp-filter-form">
             <input type="text" name="q" value="<?= e($search) ?>"
                    placeholder="ค้นหาชื่อ, รหัส, แผนก, ตำแหน่ง…"
                    class="emp-search-input emp-search-input--main">
@@ -302,26 +297,15 @@ $roleMeta = [
                 <option value="active"   <?= $statusFilter === 'active'   ? 'selected' : '' ?>>ใช้งานอยู่</option>
                 <option value="inactive" <?= $statusFilter === 'inactive' ? 'selected' : '' ?>>ปิดบัญชี</option>
             </select>
-            <button type="submit"
-                    style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
-                           cursor:pointer; font-family:'Prompt',sans-serif; border:none;
-                           background:rgba(218,185,55,0.15); color:#f8e769;
-                           border:1px solid rgba(218,185,55,0.30); transition:background 0.15s;"
-                    onmouseover="this.style.background='rgba(218,185,55,0.25)'"
-                    onmouseout="this.style.background='rgba(218,185,55,0.15)'">
+            <button type="submit" class="emp-filter-btn emp-filter-btn--search">
                 ค้นหา
             </button>
             <?php if ($search || $roleFilter || $deptFilter || $statusFilter): ?>
             <a href="<?= BASE_URL ?>/hr/employees.php"
-               style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
-                      font-family:'Prompt',sans-serif; text-decoration:none;
-                      background:rgba(255,255,255,0.05); color:#6b6e77;
-                      border:1px solid rgba(255,255,255,0.10); transition:all 0.15s;"
-               onmouseover="this.style.color='#eeebe1'"
-               onmouseout="this.style.color='#6b6e77'">
+               class="emp-filter-btn emp-filter-btn--reset">
                 ล้างการค้นหา
             </a>
-            <span style="font-size:0.75rem; color:#8a8e97; padding:0.3rem 0;">
+            <span class="emp-filter-result">
                 พบ <?= count($employees) ?> รายการ
             </span>
             <?php endif; ?>
@@ -342,14 +326,14 @@ $roleMeta = [
             </div>
 
             <?php if (empty($employees)): ?>
-            <div style="padding:4rem 2rem; text-align:center;">
-                <p style="font-size:2rem; opacity:0.15; margin-bottom:0.6rem; display:inline-flex; align-items:center;">
+            <div class="emp-empty-state">
+                <p class="emp-empty-state-icon">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <circle cx="12" cy="8" r="3.5" stroke-width="2"/>
                         <path d="M5 20a7 7 0 0 1 14 0" stroke-width="2"/>
                     </svg>
                 </p>
-                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ไม่พบพนักงานที่ตรงกับเงื่อนไข</p>
+                <p class="emp-empty-state-text">ไม่พบพนักงานที่ตรงกับเงื่อนไข</p>
             </div>
             <?php else: ?>
 
@@ -362,51 +346,39 @@ $roleMeta = [
             <div class="emp-row <?= $isOn ? '' : 'emp-row-inactive' ?>">
 
                 <!-- Avatar + Name -->
-                <div style="display:flex; align-items:center; gap:0.65rem; min-width:0;">
+                <div class="emp-person-cell">
                     <?php if (!empty($emp['avatar_url'])): ?>
                     <img src="<?= uploadImgUrl('avatars', (string)$emp['avatar_url']) ?>"
                          alt="" loading="lazy"
-                         style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
-                                object-fit:cover; border:1px solid rgba(218,185,55,0.28);"
+                         class="emp-avatar emp-avatar-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
-                                background:linear-gradient(135deg,rgba(218,185,55,0.22),rgba(218,185,55,0.08));
-                                border:1px solid rgba(218,185,55,0.28);
-                                display:none; align-items:center; justify-content:center;
-                                font-size:0.9rem; font-weight:700; color:#dab937;">
+                    <div class="emp-avatar emp-avatar-fallback emp-avatar-fallback--hidden">
                         <?= mb_substr($emp['full_name'], 0, 1) ?>
                     </div>
                     <?php else: ?>
-                    <div style="width:36px; height:36px; border-radius:50%; flex-shrink:0;
-                                background:linear-gradient(135deg,rgba(218,185,55,0.22),rgba(218,185,55,0.08));
-                                border:1px solid rgba(218,185,55,0.28);
-                                display:flex; align-items:center; justify-content:center;
-                                font-size:0.9rem; font-weight:700; color:#dab937;">
+                    <div class="emp-avatar emp-avatar-fallback">
                         <?= mb_substr($emp['full_name'], 0, 1) ?>
                     </div>
                     <?php endif; ?>
-                    <div style="min-width:0;">
-                        <p style="font-size:0.87rem; font-weight:600; color:#eeebe1; margin:0;
-                                   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <div class="emp-person-meta">
+                        <p class="emp-person-name">
                             <?= e($emp['full_name']) ?>
                             <?php if ($isMe): ?>
-                            <span style="font-size:0.60rem; color:#6b6e77; margin-left:4px;">(คุณ)</span>
+                            <span class="emp-person-me">(คุณ)</span>
                             <?php endif; ?>
                         </p>
-                        <p style="font-size:0.68rem; color:#8a8e97; margin:0; font-family:monospace,sans-serif;">
+                        <p class="emp-person-code">
                             <?= e($emp['employee_code']) ?>
                         </p>
                     </div>
                 </div>
 
                 <!-- Position / Dept -->
-                <div style="min-width:0;">
-                    <p style="font-size:0.80rem; color:#eeebe1; margin:0;
-                               white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                <div class="emp-job-col">
+                    <p class="emp-job-title">
                         <?= e($emp['position'] ?? '—') ?>
                     </p>
-                    <p style="font-size:0.68rem; color:#8a8e97; margin:0;
-                               white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                    <p class="emp-job-dept">
                         <?= e($emp['department'] ?? '—') ?>
                     </p>
                 </div>
@@ -415,14 +387,14 @@ $roleMeta = [
                 <?php $_et = getWorkTenure($emp['start_date'] ?? null); ?>
                 <div>
                     <?php if ($_et): ?>
-                    <p style="font-size:0.78rem; font-weight:600; color:#dab937; margin:0; white-space:nowrap;">
+                    <p class="emp-tenure-text">
                         <?= e($_et['text']) ?>
                     </p>
-                    <p style="font-size:0.60rem; color:#6b6e77; margin:0;">
+                    <p class="emp-tenure-days">
                         <?= number_format($_et['total_days']) ?> วัน
                     </p>
                     <?php else: ?>
-                    <p style="font-size:0.72rem; color:#6b6e77; margin:0;">—</p>
+                    <p class="emp-tenure-empty">—</p>
                     <?php endif; ?>
                 </div>
 
@@ -457,10 +429,10 @@ $roleMeta = [
 
                 <!-- Token balance -->
                 <div>
-                    <div style="display:flex; align-items:center; gap:0.3rem;">
+                    <div class="emp-token-chip">
                         <img src="<?= BASE_URL ?>/assets/images/token.png"
-                             width="13" height="13" style="object-fit:contain; opacity:0.65;" alt="">
-                        <span style="font-size:0.9rem; font-weight:700; color:#f8e769;">
+                             width="13" height="13" class="emp-token-chip-icon" alt="">
+                        <span class="emp-token-chip-value">
                             <?= formatTokens($balance) ?>
                         </span>
                     </div>
@@ -478,40 +450,27 @@ $roleMeta = [
                         <button type="submit" class="emp-toggle <?= $isOn ? 'on' : '' ?>"
                                 title="<?= $isOn ? 'คลิกเพื่อปิดบัญชี' : 'คลิกเพื่อเปิดบัญชี' ?>"></button>
                     </form>
-                    <span style="font-size:0.63rem; color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>; display:block; margin-top:2px;">
+                    <span class="emp-status-sub" style="color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
                         <?= $isOn ? 'ใช้งาน' : 'ปิด' ?>
                     </span>
                     <?php else: ?>
-                    <span style="font-size:0.75rem; font-weight:600;
-                                 color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
+                    <span class="emp-status-dot" style="color:<?= $isOn ? '#7ec98a' : '#3a3e43' ?>;">
                         <?= $isOn ? '● ใช้งาน' : '○ ปิด' ?>
                     </span>
                     <?php endif; ?>
                 </div>
 
                 <!-- Action buttons -->
-                <div style="display:flex; align-items:center; gap:0.4rem; flex-wrap:wrap;">
+                <div class="emp-action-row">
                     <?php if ($canManage): ?>
                     <button onclick="empOpenAdjust(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', <?= $balance ?>, '<?= e($qs) ?>')"
-                            style="font-size:0.68rem; padding:0.22rem 0.55rem; border-radius:6px;
-                                   background:rgba(218,185,55,0.10); color:#dab937;
-                                   border:1px solid rgba(218,185,55,0.25);
-                                   font-family:'Prompt',sans-serif; font-weight:600;
-                                   cursor:pointer; white-space:nowrap; transition:background 0.15s;"
-                            onmouseover="this.style.background='rgba(218,185,55,0.22)'"
-                            onmouseout="this.style.background='rgba(218,185,55,0.10)'">
+                            class="emp-action-btn emp-action-btn--token">
                         Token
                     </button>
                     <?php endif; ?>
                     <?php if ($isAdminOnly && !$isMe): ?>
                     <button onclick="empOpenPw(<?= (int)$emp['employee_id'] ?>, '<?= addslashes(e($emp['full_name'])) ?>', '<?= e($qs) ?>')"
-                            style="font-size:0.68rem; padding:0.22rem 0.55rem; border-radius:6px;
-                                   background:rgba(255,255,255,0.05); color:#6b6e77;
-                                   border:1px solid rgba(255,255,255,0.12);
-                                   font-family:'Prompt',sans-serif; font-weight:600;
-                                   cursor:pointer; white-space:nowrap; transition:all 0.15s;"
-                            onmouseover="this.style.color='#eeebe1'; this.style.borderColor='rgba(255,255,255,0.25)'"
-                            onmouseout="this.style.color='#6b6e77'; this.style.borderColor='rgba(255,255,255,0.12)'">
+                            class="emp-action-btn emp-action-btn--pw">
                         Reset PW
                     </button>
                     <?php endif; ?>
@@ -544,41 +503,34 @@ $roleMeta = [
             <input type="hidden" name="qs"          id="emp-adjust-qs">
             <input type="hidden" name="amount"       id="emp-adjust-amount-final">
             <div class="jp-modal-body">
-                <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.14);
-                            border-radius:12px; padding:0.75rem 1rem; font-size:0.78rem; color:#8a8e97;">
-                    Token ปัจจุบัน: <span id="emp-adjust-balance" style="font-weight:700; color:#f8e769;"></span>
+                <div class="emp-adjust-balance-box">
+                    Token ปัจจุบัน: <span id="emp-adjust-balance" class="emp-adjust-balance-value"></span>
                 </div>
 
                 <!-- Mode toggle -->
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem;">
+                <div class="emp-adjust-mode-grid">
                     <button type="button" id="adj-btn-add"
                             onclick="empSetMode('add')"
-                            style="padding:0.55rem; border-radius:10px; font-size:0.82rem; font-weight:700;
-                                   font-family:'Prompt',sans-serif; cursor:pointer; transition:all 0.15s;
-                                   background:rgba(81,142,92,0.25); border:1px solid rgba(81,142,92,0.50); color:#7ec98a;">
+                            class="emp-adjust-mode-btn emp-adjust-mode-btn--add">
                         + เพิ่ม Token
                     </button>
                     <button type="button" id="adj-btn-deduct"
                             onclick="empSetMode('deduct')"
-                            style="padding:0.55rem; border-radius:10px; font-size:0.82rem; font-weight:700;
-                                   font-family:'Prompt',sans-serif; cursor:pointer; transition:all 0.15s;
-                                   background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.10); color:#6b6e77;">
+                            class="emp-adjust-mode-btn emp-adjust-mode-btn--idle">
                         &minus; หัก Token
                     </button>
                 </div>
 
                 <div>
-                    <label id="adj-amount-label" style="font-size:0.70rem; font-weight:700; color:#8a8e97;
-                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        จำนวน Token ที่จะเพิ่ม <span style="color:#d2592a;">*</span>
+                    <label id="adj-amount-label" class="emp-modal-label">
+                        จำนวน Token ที่จะเพิ่ม <span class="emp-required-mark">*</span>
                     </label>
                     <input type="number" id="emp-adjust-amount" min="1"
                            placeholder="ระบุจำนวนเป็นบวกเสมอ"
                            class="jp-input" required>
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
-                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
+                    <label class="emp-modal-label">
                         หมายเหตุ
                     </label>
                     <input type="text" name="note" maxlength="200"
@@ -588,21 +540,11 @@ $roleMeta = [
             </div>
                 <div class="jp-modal-footer">
                 <button type="button" onclick="empCloseAdjust()"
-                        style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
-                               cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); color:#eeebe1;
-                               border:1px solid rgba(255,255,255,0.12); transition:background 0.15s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                        class="emp-modal-btn emp-modal-btn--cancel">
                     ยกเลิก
                 </button>
                 <button type="submit" id="emp-adjust-submit-btn"
-                        style="padding:0.5rem 1.1rem; font-size:0.82rem; font-weight:700; border-radius:10px;
-                               cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(81,142,92,0.25); color:#7ec98a;
-                               border:1px solid rgba(81,142,92,0.50); transition:all 0.15s;"
-                        onmouseover="this.style.opacity='0.85'"
-                        onmouseout="this.style.opacity='1'">
+                        class="emp-modal-btn emp-modal-btn--submit-add">
                     เพิ่ม Token
                 </button>
             </div>
@@ -629,47 +571,34 @@ $roleMeta = [
             <input type="hidden" name="employee_id" id="emp-pw-emp-id">
             <input type="hidden" name="qs"          id="emp-pw-qs">
             <div class="jp-modal-body">
-                <div style="background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
-                            border-radius:10px; padding:0.65rem 1rem; font-size:0.75rem; color:#d2592a;">
+                <div class="emp-pw-warning-box">
                     รหัสผ่านใหม่จะมีผลทันที พนักงานจะต้อง login ด้วยรหัสผ่านใหม่นี้
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
-                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        รหัสผ่านใหม่ <span style="color:#d2592a;">*</span>
+                    <label class="emp-modal-label">
+                        รหัสผ่านใหม่ <span class="emp-required-mark">*</span>
                     </label>
                     <input type="password" name="new_password" id="emp-pw-new"
                            placeholder="อย่างน้อย 6 ตัวอักษร"
                            minlength="6" required class="jp-input">
                 </div>
                 <div>
-                    <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
-                                  letter-spacing:0.08em; text-transform:uppercase; margin-bottom:0.35rem; display:block;">
-                        ยืนยันรหัสผ่าน <span style="color:#d2592a;">*</span>
+                    <label class="emp-modal-label">
+                        ยืนยันรหัสผ่าน <span class="emp-required-mark">*</span>
                     </label>
                     <input type="password" name="confirm_password" id="emp-pw-confirm"
                            placeholder="กรอกรหัสผ่านซ้ำ"
                            minlength="6" required class="jp-input">
-                    <p id="emp-pw-match-hint" style="font-size:0.68rem; margin-top:0.3rem;"></p>
+                    <p id="emp-pw-match-hint" class="emp-pw-match-hint"></p>
                 </div>
             </div>
                 <div class="jp-modal-footer">
                 <button type="button" onclick="empClosePw()"
-                        style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
-                               cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(255,255,255,0.06); color:#eeebe1;
-                               border:1px solid rgba(255,255,255,0.12); transition:background 0.15s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                        class="emp-modal-btn emp-modal-btn--cancel">
                     ยกเลิก
                 </button>
                 <button type="submit" id="emp-pw-submit-btn"
-                        style="padding:0.5rem 1.1rem; font-size:0.82rem; font-weight:700; border-radius:10px;
-                               cursor:pointer; font-family:'Prompt',sans-serif;
-                               background:rgba(210,89,42,0.15); color:#d2592a;
-                               border:1px solid rgba(210,89,42,0.35); transition:background 0.15s;"
-                        onmouseover="this.style.background='rgba(210,89,42,0.28)'"
-                        onmouseout="this.style.background='rgba(210,89,42,0.15)'">
+                        class="emp-modal-btn emp-modal-btn--submit-pw">
                     Reset รหัสผ่าน
                 </button>
             </div>
