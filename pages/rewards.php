@@ -292,194 +292,6 @@ $activePage = 'rewards';
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
-<style>
-/* ─────────────────────────────────────────────────────────────
-   REWARDS PAGE  "The Exchange"  prefix: rw-
-───────────────────────────────────────────────────────────── */
-
-@keyframes rw-aurora-drift {
-    0%   { transform: translate(0,0) scale(1); }
-    50%  { transform: translate(2%,3%) scale(1.04); }
-    100% { transform: translate(-2%,-2%) scale(0.97); }
-}
-
-/* ── Category filter pills ── */
-.rw-cat-pill {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    padding: 0.36rem 0.92rem; border-radius: 999px;
-    font-size: 0.75rem; font-weight: 600; letter-spacing: 0.02em;
-    border: 1px solid rgba(255,255,255,0.10);
-    background: transparent; color: #6b6e77;
-    cursor: pointer; transition: all 0.18s;
-    font-family: 'Prompt', sans-serif; white-space: nowrap;
-}
-.rw-cat-pill:hover  { border-color: rgba(218,185,55,0.35); color: #d8d4cb; background: rgba(218,185,55,0.05); }
-.rw-cat-pill.active { background: rgba(218,185,55,0.14); border-color: rgba(218,185,55,0.42); color: #f0c940; }
-
-/* ── Reward card ── */
-.rw-reward-card {
-    position: relative;
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 18px;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    overflow: hidden;
-    transition: transform 0.22s cubic-bezier(0.22,1,0.36,1),
-                box-shadow 0.22s ease, border-color 0.22s ease;
-}
-.rw-reward-card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(218,185,55,0.38);
-    box-shadow: 0 0 0 1px rgba(218,185,55,0.10),
-                0 18px 48px rgba(9,17,19,0.55),
-                0 0 28px rgba(218,185,55,0.06);
-}
-.rw-reward-card.rw-no-balance { opacity: 0.42; }
-.rw-reward-card.rw-hidden { display: none !important; }
-
-/* ── Card banner (colored hero area per category) ── */
-.rw-banner {
-    position: relative; height: 88px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; overflow: hidden;
-}
-.rw-banner::after {
-    content: ''; position: absolute;
-    bottom: 0; left: 0; right: 0; height: 28px;
-    background: linear-gradient(to bottom, transparent, rgba(9,17,19,0.5));
-    z-index: 0;
-}
-/* Glow orb behind icon */
-.rw-banner::before {
-    content: ''; position: absolute;
-    top: 50%; left: 50%; transform: translate(-50%,-50%);
-    width: 72px; height: 72px; border-radius: 50%;
-    opacity: 0.38; filter: blur(18px);
-}
-.rw-banner-voucher        { background: linear-gradient(150deg, #0e1e55, #080f30); }
-.rw-banner-voucher::before{ background: #3d5fd9; }
-.rw-banner-leave          { background: linear-gradient(150deg, #0a2618, #060f0d); }
-.rw-banner-leave::before  { background: #4a9e62; }
-.rw-banner-merch          { background: linear-gradient(150deg, #1c0f38, #100820); }
-.rw-banner-merch::before  { background: #9844d4; }
-.rw-banner-perk           { background: linear-gradient(150deg, #221900, #120e00); }
-.rw-banner-perk::before   { background: #c9a830; }
-.rw-banner-general        { background: linear-gradient(150deg, #141618, #0c0f11); }
-.rw-banner-general::before{ background: #6b7280; }
-
-/* Icon wrapper inside banner */
-.rw-banner-icon {
-    position: relative; z-index: 1;
-    width: 48px; height: 48px; border-radius: 13px;
-    display: flex; align-items: center; justify-content: center;
-    transition: transform 0.22s cubic-bezier(0.22,1,0.36,1);
-}
-.rw-reward-card:hover .rw-banner-icon { transform: scale(1.10); }
-
-/* Category tag on banner (top-right) */
-.rw-banner-tag {
-    position: absolute; top: 10px; right: 11px; z-index: 1;
-    font-size: 0.58rem; font-weight: 700;
-    letter-spacing: 0.09em; text-transform: uppercase;
-    border-radius: 5px; padding: 0.17rem 0.46rem;
-}
-
-/* ── Card body ── */
-.rw-card-body {
-    padding: 0.95rem 1.15rem 0.7rem;
-    flex: 1; display: flex; flex-direction: column; gap: 0.35rem;
-}
-.rw-card-title { font-size: 0.93rem; font-weight: 700; color: #eeebe1; margin: 0; line-height: 1.35; }
-.rw-card-desc  { font-size: 0.76rem; color: #5a5e67; line-height: 1.55; margin: 0;
-                 display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* ── Card footer ── */
-.rw-card-foot {
-    padding: 0.78rem 1.15rem 1rem;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex; align-items: center; justify-content: space-between; gap: 0.65rem;
-}
-.rw-cost-wrap { display: flex; flex-direction: column; gap: 0.1rem; }
-.rw-cost-row  { display: flex; align-items: center; gap: 0.3rem; }
-.rw-cost-amt  { font-size: 1.12rem; font-weight: 800; color: #f8e769; letter-spacing: -0.02em; }
-.rw-cost-lbl  { font-size: 0.63rem; color: #3a3e43; font-weight: 500; }
-.rw-stock-txt { font-size: 0.62rem; line-height: 1; }
-
-/* Redeem button */
-.rw-redeem-btn {
-    padding: 0.44rem 0.95rem; font-size: 0.79rem; font-weight: 700;
-    border-radius: 9px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
-    font-family: 'Prompt', sans-serif;
-    background: rgba(218,185,55,0.14); color: #f0c940;
-    border: 1px solid rgba(218,185,55,0.32);
-    transition: background 0.17s, border-color 0.17s;
-}
-.rw-redeem-btn:hover { background: rgba(218,185,55,0.27); border-color: rgba(218,185,55,0.52); }
-
-/* Lock / can't afford state */
-.rw-lock-badge {
-    display: flex; align-items: center; gap: 0.32rem; flex-shrink: 0;
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
-    border-radius: 8px; padding: 0.38rem 0.7rem;
-}
-.rw-lock-name { font-size: 0.69rem; font-weight: 600; color: #3a3e43; line-height: 1.25; }
-.rw-lock-need { font-size: 0.61rem; color: #4a4e57; font-weight: 500; display: block; }
-
-/* ── Modal backdrop ── */
-#redeem-modal {
-    display: none;
-    position: fixed; inset: 0; z-index: 9000;
-    background: rgba(9,17,19,0.72);
-    backdrop-filter: blur(6px);
-    align-items: center;
-    justify-content: center;
-    padding: 1.5rem;
-}
-#redeem-modal.open { display: flex; }
-
-.rw-modal-box {
-    background: rgba(15,20,23,0.97);
-    border: 1px solid rgba(218,185,55,0.20);
-    border-radius: 22px;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.04),
-                0 32px 80px rgba(9,17,19,0.80);
-    overflow: hidden;
-    animation: rw-modal-in 0.28s cubic-bezier(0.22,1,0.36,1);
-    backdrop-filter: blur(20px);
-}
-@keyframes rw-modal-in {
-    from { opacity:0; transform: scale(0.88) translateY(24px); }
-    to   { opacity:1; transform: scale(1) translateY(0); }
-}
-
-/* ── History table rows ──────────────────────────────────── */
-.rw-hist-row { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
-.rw-hist-row:last-child { border-bottom: none; }
-.rw-hist-row:hover { background: rgba(218,185,55,0.04); }
-
-/* ── Success animation ───────────────────────────────────── */
-@keyframes pop-in {
-    0%   { transform: scale(0.5); opacity: 0; }
-    70%  { transform: scale(1.15); }
-    100% { transform: scale(1);   opacity: 1; }
-}
-.success-pop { animation: pop-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
-
-/* ── Stats bar divider: hide on narrow mobile ── */
-@media (max-width: 560px) { .rw-stat-div { display: none; } }
-
-/* ── Low-stock pulse ─────────────────────────────────────── */
-@keyframes rw-stock-pulse { 0%,100%{opacity:1} 50%{opacity:0.42} }
-.rw-stock-low { animation: rw-stock-pulse 1.4s ease-in-out infinite; }
-@keyframes pop-in { 0%{transform:scale(.5);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
-.success-pop { animation: pop-in 0.4s cubic-bezier(0.22,1,0.36,1) both; }
-@media (max-width: 560px) { .rw-stat-div { display: none; } }
-</style>
-
 <div class="rw-rewards-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
@@ -559,13 +371,12 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <?php if ($myPending > 0): ?>
                 <div class="rw-stat-div" style="width:1px; height:38px; background:rgba(255,255,255,0.07); flex-shrink:0;"></div>
-                <button onclick="openPendingList()"
+                <button data-action="open-pending-list"
                         style="display:flex; align-items:center; gap:0.5rem;
                                background:rgba(245,158,11,0.10); border:1px solid rgba(245,158,11,0.22);
                                border-radius:999px; padding:0.35rem 0.9rem; cursor:pointer;
                                font-family:'Prompt',sans-serif; transition:background 0.18s, border-color 0.18s;"
-                        onmouseover="this.style.background='rgba(245,158,11,0.18)'; this.style.borderColor='rgba(245,158,11,0.42)'"
-                        onmouseout="this.style.background='rgba(245,158,11,0.10)'; this.style.borderColor='rgba(245,158,11,0.22)'">
+                    class="rw-btn-pending-open">
                     <span style="width:7px;height:7px;border-radius:50%;background:#f59e0b;
                                   flex-shrink:0; animation:coin-bounce 1.5s ease-in-out infinite;"></span>
                     <span style="font-size:0.78rem; font-weight:600; color:#fbbf24;">
@@ -594,12 +405,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <span style="font-size:0.66rem; font-weight:700; color:#091113; background:#dab937;
                              border-radius:999px; padding:0.14rem 0.52rem;"><?= count($rewards) ?></span>
             </div>
-            <button class="rw-cat-pill active" data-cat="all" onclick="filterCat(this,'all')">ทั้งหมด</button>
+            <button class="rw-cat-pill active" data-cat="all" data-action="filter-cat">ทั้งหมด</button>
             <?php foreach ($activeCategories as $cat):
                 $meta  = $catMeta[$cat] ?? $catMeta['general'];
                 $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
             ?>
-            <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" onclick="filterCat(this,'<?= e($cat) ?>')">
+            <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" data-action="filter-cat">
                 <?= e($meta['label']) ?> <span style="opacity:0.5; font-size:0.68rem;">(<?= $count ?>)</span>
             </button>
             <?php endforeach; ?>
@@ -688,7 +499,10 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <?php if ($canAfford): ?>
                     <button class="rw-redeem-btn"
-                            onclick='openRedeem(<?= (int)$rw['reward_id'] ?>, <?= json_encode($rw['title']) ?>, <?= $cost ?>)'>
+                            data-action="open-redeem"
+                            data-reward-id="<?= (int)$rw['reward_id'] ?>"
+                            data-reward-title="<?= e($rw['title']) ?>"
+                            data-reward-cost="<?= $cost ?>">
                         แลกเลย
                     </button>
                     <?php else: ?>
@@ -744,8 +558,8 @@ require_once __DIR__ . '/../includes/header.php';
                     $rdCat = (string)($rd['category'] ?? 'general');
                     $tone  = $catTone[$rdCat] ?? $catTone['general'];
                 ?>
-                <div class="rw-hist-row" onclick="openRdDetail(<?= (int)$rd['redemption_id'] ?>)"
-                     onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRdDetail(<?= (int)$rd['redemption_id'] ?>);}"
+                 <div class="rw-hist-row rw-hist-detail-trigger"
+                     data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
                      tabindex="0" role="button" aria-label="ดูรายละเอียด: <?= e($rd['reward_title']) ?>"
                      style="display:flex; flex-direction:column; padding:0.85rem 1.25rem;
                             gap:0.65rem; cursor:pointer;">
@@ -791,14 +605,16 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?= $sm['label'] ?>
                             </span>
                             <?php if ($rd['status'] === 'pending'): ?>
-                            <button onclick="event.stopPropagation(); rwCancelRedemption(<?= (int)$rd['redemption_id'] ?>, <?= json_encode(e($rd['reward_title'])) ?>, <?= (int)$rd['tokens_spent'] ?>)"
+                                <button data-action="cancel-redemption"
+                                    data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
+                                    data-reward-title="<?= e($rd['reward_title']) ?>"
+                                    data-cost="<?= (int)$rd['tokens_spent'] ?>"
                                     style="display:inline-flex; align-items:center; gap:0.3rem;
                                            background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.28);
                                            border-radius:7px; padding:0.20rem 0.55rem; cursor:pointer;
                                            font-size:0.64rem; font-weight:600; color:rgba(210,89,42,0.75);
                                            font-family:'Prompt',sans-serif; transition:background 0.15s; white-space:nowrap;"
-                                    onmouseover="this.style.background='rgba(210,89,42,0.16)'; this.style.borderColor='rgba(210,89,42,0.50)'; this.style.color='#d2592a'"
-                                    onmouseout="this.style.background='rgba(210,89,42,0.08)'; this.style.borderColor='rgba(210,89,42,0.28)'; this.style.color='rgba(210,89,42,0.75)'"
+                                    class="rw-btn-cancel-redemption"
                                     title="ยกเลิกการแลกรางวัลนี้">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="10" height="10">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -813,7 +629,8 @@ require_once __DIR__ . '/../includes/header.php';
                     <div style="border-top:1px dashed rgba(218,185,55,0.18); padding-top:0.6rem; margin-top:0.1rem;
                                 display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
                         <!-- toggle button (left) -->
-                        <button onclick="event.stopPropagation(); rwToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
+                        <button data-action="toggle-coupon-inline"
+                            data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
                                 style="display:inline-flex; align-items:center; gap:0.38rem;
                                        background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
                                        border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
@@ -821,8 +638,7 @@ require_once __DIR__ . '/../includes/header.php';
                                        letter-spacing:0.06em; text-transform:uppercase;
                                        font-family:'Prompt',sans-serif;
                                        transition:background 0.15s, border-color 0.15s;"
-                                onmouseover="this.style.background='rgba(218,185,55,0.14)'; this.style.borderColor='rgba(218,185,55,0.40)'"
-                                onmouseout="this.style.background='rgba(218,185,55,0.08)'; this.style.borderColor='rgba(218,185,55,0.25)'"
+                            class="rw-btn-toggle-coupon"
                                 title="แสดง/ซ่อนรหัสคูปอง">
                             <svg id="coupon-eye-<?= (int)$rd['redemption_id'] ?>"
                                  fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -851,7 +667,9 @@ require_once __DIR__ . '/../includes/header.php';
                                     <?= e($rd['coupon_code']) ?>
                                 </span>
                             </div>
-                            <button onclick="rwCopyCoupon('<?= e(addslashes($rd['coupon_code'])) ?>',<?= (int)$rd['redemption_id'] ?>)"
+                                <button data-action="copy-coupon-inline"
+                                    data-redemption-id="<?= (int)$rd['redemption_id'] ?>"
+                                    data-code="<?= e((string)$rd['coupon_code']) ?>"
                                     id="coupon-copy-<?= (int)$rd['redemption_id'] ?>"
                                     style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
                                            background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
@@ -859,8 +677,7 @@ require_once __DIR__ . '/../includes/header.php';
                                            font-size:0.68rem; font-weight:600; font-family:'Prompt',sans-serif;
                                            padding:0.22rem 0.55rem; line-height:1.4;
                                            transition:background 0.15s; white-space:nowrap;"
-                                    onmouseover="this.style.background='rgba(218,185,55,0.22)'"
-                                    onmouseout="this.style.background='rgba(218,185,55,0.12)'"
+                                    class="rw-btn-copy-coupon"
                                     title="คัดลอก">
                                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -883,8 +700,7 @@ require_once __DIR__ . '/../includes/header.php';
 <!-- ══════════════════════════════════════════════════════════
      REDEEM CONFIRM MODAL
 ══════════════════════════════════════════════════════════ -->
-<div id="redeem-modal" role="dialog" aria-modal="true"
-     onclick="if(event.target===this && !_redeemBusy) closeRedeem();">
+<div id="redeem-modal" role="dialog" aria-modal="true" data-action-overlay="close-redeem">
     <div class="rw-modal-box">
 
         <!-- Header -->
@@ -898,12 +714,11 @@ require_once __DIR__ . '/../includes/header.php';
                      width="14" height="14" style="object-fit:contain;" alt="">
             </div>
             <span style="font-size:0.95rem; font-weight:700; color:#eeebe1;">ยืนยันการแลกรางวัล</span>
-            <button onclick="closeRedeem()"
+                <button data-action="close-redeem"
                     style="margin-left:auto; background:none; border:none; cursor:pointer;
                            color:#4a4e57; padding:4px; border-radius:6px; line-height:0;
                            transition:color 0.15s;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#4a4e57'" aria-label="ปิด">
+                    class="rw-btn-modal-close" aria-label="ปิด">
                 <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                           d="M6 18L18 6M6 6l12 12"/>
@@ -924,24 +739,22 @@ require_once __DIR__ . '/../includes/header.php';
 
             <!-- Buttons -->
             <div style="display:flex; gap:0.65rem;">
-                <button onclick="closeRedeem()"
+                <button data-action="close-redeem"
                         id="modal-cancel-btn"
                         style="flex:1; padding:0.62rem 1rem; font-size:0.85rem; font-weight:600;
                                border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
                                background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
                                color:#eeebe1; transition:background 0.18s;"
-                        onmouseover="this.style.background='rgba(255,255,255,0.10)'"
-                        onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                    class="rw-btn-modal-cancel">
                     ยกเลิก
                 </button>
-                <button onclick="submitRedeem()"
+                <button data-action="submit-redeem"
                         id="modal-confirm-btn"
                         style="flex:1.5; padding:0.62rem 1rem; font-size:0.85rem; font-weight:700;
                                border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
                                background:rgba(218,185,55,0.18); color:#f8e769;
                                border:1px solid rgba(218,185,55,0.35); transition:background 0.18s;"
-                        onmouseover="this.style.background='rgba(218,185,55,0.30)'"
-                        onmouseout="this.style.background='rgba(218,185,55,0.18)'">
+                    class="rw-btn-modal-confirm">
                     ยืนยันแลกรางวัล
                 </button>
             </div>
@@ -1062,7 +875,7 @@ require_once __DIR__ . '/../includes/header.php';
                 if (navBal) navBal.textContent = newBal.toLocaleString('th-TH');
 
                 document.querySelectorAll('.rw-reward-card').forEach(function (card) {
-                    var anyBtn = card.querySelector('button[onclick*="openRedeem(' + _currentRewardId + ',"]');
+                    var anyBtn = card.querySelector('button[data-action="open-redeem"][data-reward-id="' + _currentRewardId + '"]');
                     if (anyBtn) { anyBtn.disabled = true; anyBtn.textContent = 'แลกแล้ว'; }
                 });
 
@@ -1093,6 +906,100 @@ require_once __DIR__ . '/../includes/header.php';
     /* Escape key closes modal */
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') window.closeRedeem();
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.target.matches('[data-action-overlay="close-redeem"]')) {
+            if (!window._redeemBusy) window.closeRedeem();
+            return;
+        }
+
+        var filterBtn = e.target.closest('[data-action="filter-cat"]');
+        if (filterBtn) {
+            e.preventDefault();
+            window.filterCat(filterBtn, filterBtn.dataset.cat || 'all');
+            return;
+        }
+
+        var openRedeemBtn = e.target.closest('[data-action="open-redeem"]');
+        if (openRedeemBtn) {
+            e.preventDefault();
+            window.openRedeem(
+                parseInt(openRedeemBtn.dataset.rewardId, 10) || 0,
+                openRedeemBtn.dataset.rewardTitle || '',
+                parseInt(openRedeemBtn.dataset.rewardCost, 10) || 0
+            );
+            return;
+        }
+
+        var cancelBtn = e.target.closest('[data-action="cancel-redemption"]');
+        if (cancelBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.rwCancelRedemption(
+                parseInt(cancelBtn.dataset.redemptionId, 10) || 0,
+                cancelBtn.dataset.rewardTitle || '',
+                parseInt(cancelBtn.dataset.cost, 10) || 0
+            );
+            return;
+        }
+
+        var toggleInlineCouponBtn = e.target.closest('[data-action="toggle-coupon-inline"]');
+        if (toggleInlineCouponBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.rwToggleCoupon(
+                parseInt(toggleInlineCouponBtn.dataset.redemptionId, 10) || 0,
+                toggleInlineCouponBtn
+            );
+            return;
+        }
+
+        var copyInlineCouponBtn = e.target.closest('[data-action="copy-coupon-inline"]');
+        if (copyInlineCouponBtn) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.rwCopyCoupon(
+                copyInlineCouponBtn.dataset.code || '',
+                parseInt(copyInlineCouponBtn.dataset.redemptionId, 10) || 0
+            );
+            return;
+        }
+
+        var closeRedeemBtn = e.target.closest('[data-action="close-redeem"]');
+        if (closeRedeemBtn) {
+            e.preventDefault();
+            window.closeRedeem();
+            return;
+        }
+
+        var submitRedeemBtn = e.target.closest('[data-action="submit-redeem"]');
+        if (submitRedeemBtn) {
+            e.preventDefault();
+            window.submitRedeem();
+            return;
+        }
+
+        var pendingBtn = e.target.closest('[data-action="open-pending-list"]');
+        if (pendingBtn) {
+            e.preventDefault();
+            window.openPendingList();
+            return;
+        }
+
+        var row = e.target.closest('.rw-hist-detail-trigger');
+        if (row) {
+            e.preventDefault();
+            window.openRdDetail(parseInt(row.dataset.redemptionId, 10) || 0);
+        }
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        var row = e.target.closest('.rw-hist-detail-trigger');
+        if (!row) return;
+        e.preventDefault();
+        window.openRdDetail(parseInt(row.dataset.redemptionId, 10) || 0);
     });
 
     /* Toast notification — reuse global #app-toast from footer.php */
@@ -1209,26 +1116,11 @@ foreach ($myRedemptions as $_rd) {
 ?>
 <script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>;</script>
 
-<style>
-@keyframes _rdCardIn {
-    from { opacity:0; transform:perspective(700px) scale(0.88) translateY(28px); }
-    to   { opacity:1; transform:perspective(700px) scale(1)    translateY(0); }
-}
-@keyframes _rdCardOut { from{opacity:1;transform:scale(1) translateY(0)} to{opacity:0;transform:scale(0.86) translateY(22px)} }
-@keyframes _rdFadeIn  { from{opacity:0} to{opacity:1} }
-@keyframes _rdFadeOut { from{opacity:1} to{opacity:0} }
-.rd-ov-in    { animation:_rdFadeIn  230ms ease                             forwards; }
-.rd-ov-out   { animation:_rdFadeOut 155ms ease                             forwards; }
-.rd-card-in  { animation:_rdCardIn  420ms cubic-bezier(0.22,1,0.36,1)  forwards; }
-.rd-card-out { animation:_rdCardOut 155ms ease-in                          forwards; }
-</style>
-
 <!-- ── Redemption Detail Modal ── -->
-<div id="rd-detail-modal"
+<div id="rd-detail-modal" data-action-overlay="close-rd-detail"
      style="display:none; position:fixed; inset:0; z-index:9500;
             background:rgba(0,0,0,0.80); backdrop-filter:blur(7px);
-            align-items:center; justify-content:center; padding:1rem;"
-     onclick="if(event.target===this)closeRdDetail()">
+         align-items:center; justify-content:center; padding:1rem;">
 
     <div id="rd-detail-card"
          style="background:#0f1416; border:1px solid rgba(255,255,255,0.10); border-radius:20px;
@@ -1243,13 +1135,12 @@ foreach ($myRedemptions as $_rd) {
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85);">รายละเอียดคำขอแลกรางวัล</span>
             </div>
-            <button onclick="closeRdDetail()"
+                <button data-action="close-rd-detail"
                     style="width:28px; height:28px; border-radius:50%;
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                            color:#6b6e77; cursor:pointer; display:flex; align-items:center;
                            justify-content:center; transition:color 0.15s; flex-shrink:0;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'" aria-label="ปิด">
+                    class="rw-btn-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -1308,7 +1199,7 @@ foreach ($myRedemptions as $_rd) {
 
             <!-- Coupon reveal (fulfilled + has coupon) -->
             <div id="rdd-coupon-section" style="display:none;">
-                <button onclick="rdToggleCoupon()"
+                <button data-action="rd-toggle-coupon"
                         style="display:inline-flex; align-items:center; gap:0.4rem; width:100%;
                                justify-content:center; background:rgba(218,185,55,0.08);
                                border:1px solid rgba(218,185,55,0.25); border-radius:10px;
@@ -1327,7 +1218,7 @@ foreach ($myRedemptions as $_rd) {
                            style="font-size:1.15rem; font-weight:800; color:#f8e769;
                                   letter-spacing:0.12em; font-family:monospace,'Prompt';
                                   user-select:all; word-break:break-all; margin:0; flex:1;"></p>
-                        <button onclick="rdCopyCoupon()"
+                        <button data-action="rd-copy-coupon"
                                 id="rdd-coupon-copy"
                                 style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
                                        background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.25);
@@ -1344,7 +1235,7 @@ foreach ($myRedemptions as $_rd) {
                     <p style="font-size:0.68rem; color:#6b6e77; text-align:center; margin:0 0 0.6rem;">
                         Token จะถูกคืนให้ทันที หลังยืนยันยกเลิก
                     </p>
-                    <button id="rdd-cancel-btn" onclick="rdDoCancel()"
+                        <button id="rdd-cancel-btn" data-action="rd-do-cancel"
                             style="display:flex; align-items:center; justify-content:center; gap:0.5rem;
                                    width:100%; padding:0.6rem 1rem; border-radius:11px; cursor:pointer;
                                    background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.30);
@@ -1530,14 +1421,59 @@ function rdDoCancel() {
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { closeRdDetail(); closePendingList(); }
 });
+
+document.addEventListener('click', function(e) {
+    if (e.target.matches('[data-action-overlay="close-rd-detail"]')) {
+        closeRdDetail();
+        return;
+    }
+
+    if (e.target.matches('[data-action-overlay="close-pending-list"]')) {
+        closePendingList();
+        return;
+    }
+
+    var closeDetailBtn = e.target.closest('[data-action="close-rd-detail"]');
+    if (closeDetailBtn) {
+        e.preventDefault();
+        closeRdDetail();
+        return;
+    }
+
+    var rdToggleCouponBtn = e.target.closest('[data-action="rd-toggle-coupon"]');
+    if (rdToggleCouponBtn) {
+        e.preventDefault();
+        rdToggleCoupon();
+        return;
+    }
+
+    var rdCopyCouponBtn = e.target.closest('[data-action="rd-copy-coupon"]');
+    if (rdCopyCouponBtn) {
+        e.preventDefault();
+        rdCopyCoupon();
+        return;
+    }
+
+    var rdDoCancelBtn = e.target.closest('[data-action="rd-do-cancel"]');
+    if (rdDoCancelBtn) {
+        e.preventDefault();
+        rdDoCancel();
+        return;
+    }
+
+    var closePendingBtn = e.target.closest('[data-action="close-pending-list"]');
+    if (closePendingBtn) {
+        e.preventDefault();
+        closePendingList();
+    }
+});
 </script>
 
 <!-- ── Pending List Modal ── -->
-<div id="rd-pending-modal"
+<div id="rd-pending-modal" data-action-overlay="close-pending-list"
      style="display:none; position:fixed; inset:0; z-index:9600;
             background:rgba(0,0,0,0.82); backdrop-filter:blur(7px);
-            align-items:center; justify-content:center; padding:1rem;"
-     onclick="if(event.target===this)closePendingList()">
+         align-items:center; justify-content:center; padding:1rem;">
     <div id="rd-pending-card"
          style="background:#0f1416; border:1px solid rgba(245,158,11,0.22); border-radius:20px;
                 max-width:420px; width:100%; max-height:82vh; overflow-y:auto;
@@ -1555,13 +1491,12 @@ document.addEventListener('keydown', function(e) {
                       style="font-size:0.62rem; font-weight:700; color:#091113;
                              background:#f59e0b; border-radius:999px; padding:0.10rem 0.48rem;"></span>
             </div>
-            <button onclick="closePendingList()"
+                <button data-action="close-pending-list"
                     style="width:28px; height:28px; border-radius:50%;
                            background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.10);
                            color:#6b6e77; cursor:pointer; display:flex; align-items:center;
                            justify-content:center; transition:color 0.15s; flex-shrink:0;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'" aria-label="ปิด">
+                    class="rw-btn-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
