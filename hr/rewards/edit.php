@@ -114,6 +114,50 @@ function arToggleCoupon(cat) {
         if (inp) { inp.value = ''; arToggleExpiry(''); }
     }
 }
+function arUpdateActiveLabel(checked) {
+    var lb = document.getElementById('active-label');
+    if (!lb) return;
+    lb.textContent = checked ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
+    lb.classList.toggle('are-active-label--on', checked);
+    lb.classList.toggle('are-active-label--off', !checked);
+}
+function arToggleActiveState(checked) {
+    var t = document.getElementById('active-toggle');
+    if (!t) return;
+    t.classList.toggle('on', checked);
+    arUpdateActiveLabel(checked);
+}
+// Initialize event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    var catSelect = document.getElementById('category-select');
+    if (catSelect) {
+        catSelect.addEventListener('change', function() {
+            arToggleCoupon(this.value);
+        });
+    }
+    var couponInput = document.getElementById('coupon_code_input');
+    if (couponInput) {
+        couponInput.addEventListener('input', function() {
+            arToggleExpiry(this.value);
+        });
+    }
+    var checkboxCb = document.getElementById('is_active_cb');
+    if (checkboxCb) {
+        checkboxCb.addEventListener('change', function() {
+            arToggleActiveState(this.checked);
+        });
+    }
+    var toggleBtn = document.getElementById('active-toggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            var cb = document.getElementById('is_active_cb');
+            if (cb) {
+                cb.checked = !cb.checked;
+                cb.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+});
 </script>
 
 <div class="ar-rewards-wrap are-wrap are-wrap-shell">
@@ -180,7 +224,7 @@ function arToggleCoupon(cat) {
                 <div class="are-grid-3">
                     <div>
                         <label class="are-label">หมวดหมู่</label>
-                        <select name="category" id="category-select" class="journal-input" onchange="arToggleCoupon(this.value)">
+                        <select name="category" id="category-select" class="journal-input">
                             <?php foreach ($catMeta as $k => $m): ?>
                             <option value="<?= e($k) ?>"
                                     <?= ($reward['category'] === $k) ? 'selected' : '' ?>>
@@ -226,8 +270,7 @@ function arToggleCoupon(cat) {
                     <input type="text" name="coupon_code" id="coupon_code_input" maxlength="200"
                            value="<?= e($reward['coupon_code'] ?? '') ?>"
                            placeholder="เช่น COFFEE2026, LEAVE-MAY, DISCOUNT50"
-                           class="journal-input are-coupon-input"
-                           oninput="arToggleExpiry(this.value)">
+                           class="journal-input are-coupon-input">
                     <p class="are-coupon-note">
                         เว้นว่างถ้ารางวัลนี้ไม่ใช้ระบบโค้ด
                     </p>
@@ -271,18 +314,9 @@ function arToggleCoupon(cat) {
                     <label class="are-active-label-wrap">
                         <input type="checkbox" name="is_active" id="is_active_cb"
                                <?= $reward['is_active'] ? 'checked' : '' ?>
-                               class="are-hidden-input"
-                               onchange="var t=document.getElementById('active-toggle');
-                                         var lb=document.getElementById('active-label');
-                                         t.classList.toggle('on', this.checked);
-                                         lb.textContent = this.checked ? 'เปิดใช้งาน' : 'ปิดการใช้งาน';
-                                         lb.classList.toggle('are-active-label--on', this.checked);
-                                         lb.classList.toggle('are-active-label--off', !this.checked);">
+                               class="are-hidden-input">
                         <span id="active-toggle"
-                              class="are-active-toggle <?= $reward['is_active'] ? 'on' : '' ?>"
-                              onclick="var cb=document.getElementById('is_active_cb');
-                                       cb.checked=!cb.checked;
-                                       cb.dispatchEvent(new Event('change'));">
+                              class="are-active-toggle <?= $reward['is_active'] ? 'on' : '' ?>">
                         </span>
                         <span id="active-label"
                               class="are-active-label <?= $reward['is_active'] ? 'are-active-label--on' : 'are-active-label--off' ?>">
