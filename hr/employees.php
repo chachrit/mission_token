@@ -527,19 +527,11 @@ $roleMeta = [
 
 <!-- ══ Modal: Adjust Token ══════════════════════════════════ -->
 <?php if ($canManage): ?>
-<div id="emp-adjust-modal" style="display:none; position:fixed; inset:0; z-index:9000;
-     background:rgba(0,0,0,0.72); display:none; align-items:center; justify-content:center; padding:1rem;">
-    <div style="background:rgba(15,20,23,0.97); border:1px solid rgba(218,185,55,0.18);
-                border-radius:20px; width:100%; max-width:420px; overflow:hidden;
-                box-shadow:0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
-                backdrop-filter:blur(20px);">
-        <div style="padding:1.25rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                    display:flex; align-items:center; justify-content:space-between;">
-            <p id="emp-adjust-title" style="font-size:0.92rem; font-weight:700; color:#eeebe1; margin:0;"></p>
-            <button onclick="empCloseAdjust()"
-                    style="background:none; border:none; color:#6b6e77; cursor:pointer; font-size:1.1rem; line-height:1;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'">
+<div id="emp-adjust-modal" class="jp-modal">
+    <div class="jp-modal-content">
+        <div class="jp-modal-header">
+            <p id="emp-adjust-title" class="jp-modal-header-title"></p>
+            <button onclick="empCloseAdjust()" class="jp-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -551,7 +543,7 @@ $roleMeta = [
             <input type="hidden" name="employee_id" id="emp-adjust-emp-id">
             <input type="hidden" name="qs"          id="emp-adjust-qs">
             <input type="hidden" name="amount"       id="emp-adjust-amount-final">
-            <div style="padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem;">
+            <div class="jp-modal-body">
                 <div style="background:rgba(218,185,55,0.06); border:1px solid rgba(218,185,55,0.14);
                             border-radius:12px; padding:0.75rem 1rem; font-size:0.78rem; color:#8a8e97;">
                     Token ปัจจุบัน: <span id="emp-adjust-balance" style="font-weight:700; color:#f8e769;"></span>
@@ -582,7 +574,7 @@ $roleMeta = [
                     </label>
                     <input type="number" id="emp-adjust-amount" min="1"
                            placeholder="ระบุจำนวนเป็นบวกเสมอ"
-                           class="emp-modal-input" required>
+                           class="jp-input" required>
                 </div>
                 <div>
                     <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
@@ -591,10 +583,10 @@ $roleMeta = [
                     </label>
                     <input type="text" name="note" maxlength="200"
                            placeholder="เช่น โบนัสประจำเดือน, ปรับปรุงยอด…"
-                           class="emp-modal-input">
+                           class="jp-input">
                 </div>
             </div>
-                <div class="jp-actions-end jp-actions-end--sm" style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);">
+                <div class="jp-modal-footer">
                 <button type="button" onclick="empCloseAdjust()"
                         style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
                                cursor:pointer; font-family:'Prompt',sans-serif;
@@ -621,19 +613,11 @@ $roleMeta = [
 
 <!-- ══ Modal: Reset Password (admin only) ═══════════════════ -->
 <?php if ($isAdminOnly): ?>
-<div id="emp-pw-modal" style="display:none; position:fixed; inset:0; z-index:9000;
-     background:rgba(0,0,0,0.72); display:none; align-items:center; justify-content:center; padding:1rem;">
-    <div style="background:rgba(15,20,23,0.97); border:1px solid rgba(210,89,42,0.22);
-                border-radius:20px; width:100%; max-width:420px; overflow:hidden;
-                box-shadow:0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
-                backdrop-filter:blur(20px);">
-        <div style="padding:1.25rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);
-                    display:flex; align-items:center; justify-content:space-between;">
-            <p id="emp-pw-title" style="font-size:0.92rem; font-weight:700; color:#eeebe1; margin:0;"></p>
-            <button onclick="empClosePw()"
-                    style="background:none; border:none; color:#6b6e77; cursor:pointer; font-size:1.1rem; line-height:1;"
-                    onmouseover="this.style.color='#eeebe1'"
-                    onmouseout="this.style.color='#6b6e77'">
+<div id="emp-pw-modal" class="jp-modal">
+    <div class="jp-modal-content">
+        <div class="jp-modal-header">
+            <p id="emp-pw-title" class="jp-modal-header-title"></p>
+            <button onclick="empClosePw()" class="jp-modal-close" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -644,7 +628,7 @@ $roleMeta = [
             <input type="hidden" name="action"      value="reset_password">
             <input type="hidden" name="employee_id" id="emp-pw-emp-id">
             <input type="hidden" name="qs"          id="emp-pw-qs">
-            <div style="padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:1rem;">
+            <div class="jp-modal-body">
                 <div style="background:rgba(210,89,42,0.08); border:1px solid rgba(210,89,42,0.20);
                             border-radius:10px; padding:0.65rem 1rem; font-size:0.75rem; color:#d2592a;">
                     รหัสผ่านใหม่จะมีผลทันที พนักงานจะต้อง login ด้วยรหัสผ่านใหม่นี้
@@ -656,7 +640,7 @@ $roleMeta = [
                     </label>
                     <input type="password" name="new_password" id="emp-pw-new"
                            placeholder="อย่างน้อย 6 ตัวอักษร"
-                           minlength="6" required class="emp-modal-input">
+                           minlength="6" required class="jp-input">
                 </div>
                 <div>
                     <label style="font-size:0.70rem; font-weight:700; color:#8a8e97;
@@ -665,11 +649,11 @@ $roleMeta = [
                     </label>
                     <input type="password" name="confirm_password" id="emp-pw-confirm"
                            placeholder="กรอกรหัสผ่านซ้ำ"
-                           minlength="6" required class="emp-modal-input">
+                           minlength="6" required class="jp-input">
                     <p id="emp-pw-match-hint" style="font-size:0.68rem; margin-top:0.3rem;"></p>
                 </div>
             </div>
-                <div class="jp-actions-end jp-actions-end--sm" style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);">
+                <div class="jp-modal-footer">
                 <button type="button" onclick="empClosePw()"
                         style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
                                cursor:pointer; font-family:'Prompt',sans-serif;

@@ -1941,6 +1941,125 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     color: rgba(255,255,255,0.85);
 }
 
+.jp-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 9000;
+    background: rgba(0,0,0,0.72);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.jp-modal.show {
+    display: flex;
+}
+
+.jp-modal-content {
+    background: rgba(15,20,23,0.97);
+    border: 1px solid rgba(218,185,55,0.18);
+    border-radius: 20px;
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px rgba(9,17,19,0.80);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.jp-modal-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.jp-modal-header-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--j-white);
+    margin: 0;
+}
+
+.jp-modal-close {
+    background: none;
+    border: none;
+    color: var(--j-slate);
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: color 0.15s;
+}
+
+.jp-modal-close:hover {
+    color: var(--j-white);
+}
+
+.jp-modal-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.jp-modal-footer {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.jp-input,
+.jp-input-textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.06);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+    font-family: 'Prompt', sans-serif;
+    color: var(--j-white);
+    transition: border-color 0.15s;
+}
+
+.jp-input:focus,
+.jp-input-textarea:focus {
+    outline: none;
+    border-color: rgba(218,185,55,0.45);
+    background: rgba(255,255,255,0.09);
+}
+
+.jp-input::placeholder,
+.jp-input-textarea::placeholder {
+    color: var(--j-slate);
+}
+
+.jp-input-textarea {
+    resize: vertical;
+}
+
+.jp-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.jp-form-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--j-white);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+}
+
+.jp-form-label .required {
+    color: var(--j-orange);
+}
+
 /* ── Aurora Blobs ── */
 @keyframes ch-aurora-drift {
     0%,100% { transform: translate(0,0) scale(1); }
