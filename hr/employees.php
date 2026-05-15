@@ -235,37 +235,28 @@ $roleMeta = [
 <div class="emp-employees-wrap emp-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
-    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
-        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
-                    top:-120px; right:-120px; filter:blur(70px);
-                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
-        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
-                    bottom:-100px; left:-80px; filter:blur(80px);
-                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+    <div class="jp-aurora-layer" aria-hidden="true">
+        <div class="jp-aurora-blob jp-aurora-blob--gold"></div>
+        <div class="jp-aurora-blob jp-aurora-blob--teal"></div>
     </div>
 
-    <div style="position:relative; z-index:1; max-width:90rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+    <div class="jp-page-inner jp-page-inner--wide">
 
         <!-- Page header -->
-        <div style="display:flex; align-items:flex-start; justify-content:space-between;
-                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
-                    padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="jp-page-header jp-page-header-row">
             <div>
-                <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
-                          text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                <p class="jp-kicker">
                     ADMIN — EMPLOYEES
                 </p>
-                <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                <h1 class="jp-title">
                     จัดการพนักงาน
                 </h1>
-                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                <p class="jp-subtitle">
                     ดู แก้ไขสิทธิ์ และจัดการ Token ของพนักงานทุกคน
                 </p>
             </div>
             <!-- Stats chips -->
-            <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+            <div class="jp-chip-row">
                 <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
                              background:rgba(218,185,55,0.10); color:#f8e769; border:1px solid rgba(218,185,55,0.25);">
                     ทั้งหมด: <?= (int)($statsRow['total'] ?? 0) ?>
@@ -337,11 +328,10 @@ $roleMeta = [
         </form>
 
         <!-- Employee Table -->
-        <div class="emp-table-outer" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; backdrop-filter:blur(8px);">
+        <div class="emp-table-outer jp-glass-card jp-glass-card--md">
 
             <!-- Table header -->
-            <div class="emp-table-header">
+            <div class="jp-table-header emp-table-header">
                 <span>พนักงาน</span>
                 <span>ตำแหน่ง / แผนก</span>
                 <span>อายุงาน</span>
@@ -604,8 +594,7 @@ $roleMeta = [
                            class="emp-modal-input">
                 </div>
             </div>
-            <div style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);
-                        display:flex; gap:0.65rem; justify-content:flex-end;">
+                <div class="jp-actions-end jp-actions-end--sm" style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);">
                 <button type="button" onclick="empCloseAdjust()"
                         style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
                                cursor:pointer; font-family:'Prompt',sans-serif;
@@ -680,8 +669,7 @@ $roleMeta = [
                     <p id="emp-pw-match-hint" style="font-size:0.68rem; margin-top:0.3rem;"></p>
                 </div>
             </div>
-            <div style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);
-                        display:flex; gap:0.65rem; justify-content:flex-end;">
+                <div class="jp-actions-end jp-actions-end--sm" style="padding:1rem 1.5rem; border-top:1px solid rgba(255,255,255,0.07);">
                 <button type="button" onclick="empClosePw()"
                         style="padding:0.5rem 1rem; font-size:0.82rem; font-weight:600; border-radius:10px;
                                cursor:pointer; font-family:'Prompt',sans-serif;

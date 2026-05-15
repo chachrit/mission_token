@@ -281,32 +281,25 @@ require_once __DIR__ . '/../../includes/header.php';
 <div class="ar-rewards-wrap ar-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
-    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
-        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
-                    top:-120px; right:-120px; filter:blur(70px);
-                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
-        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
-                    bottom:-100px; left:-80px; filter:blur(80px);
-                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+    <div class="jp-aurora-layer" aria-hidden="true">
+        <div class="jp-aurora-blob jp-aurora-blob--gold"></div>
+        <div class="jp-aurora-blob jp-aurora-blob--teal"></div>
     </div>
 
-    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+    <div class="jp-page-inner">
 
         <!-- Page header -->
-        <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="jp-page-header">
             <!-- Row 1: title + create button -->
-            <div class="ar-page-header-row" style="display:flex; align-items:flex-start; justify-content:space-between; gap:1rem; margin-bottom:0.75rem;">
+            <div class="ar-page-header-row" style="margin-bottom:0.75rem;">
                 <div>
-                    <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
-                              text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                    <p class="jp-kicker">
                         ⬡ &nbsp;ADMIN — REWARD CATALOGUE
                     </p>
-                    <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                    <h1 class="jp-title">
                         จัดการรางวัล
                     </h1>
-                    <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                    <p class="jp-subtitle">
                         เพิ่ม แก้ไข และจัดการสต็อกรางวัลในร้านค้า Token
                         <?php if (!empty($rewards)): ?>
                         <span style="margin-left:0.4rem; font-size:0.68rem; font-weight:700;
@@ -344,8 +337,7 @@ require_once __DIR__ . '/../../includes/header.php';
         </div>
 
         <?php if ($dataError): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
-                    background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;">
+        <div class="jp-alert-error">
             <?= e($dataError) ?>
         </div>
         <?php endif; ?>
@@ -432,7 +424,7 @@ require_once __DIR__ . '/../../includes/header.php';
                 </div>
             </div>
 
-            <div style="display:flex; gap:0.65rem; justify-content:flex-end;">
+            <div class="jp-actions-end jp-actions-end--sm">
                 <button type="button"
                         style="padding:0.55rem 1.1rem; font-size:0.82rem; font-weight:600;
                                border-radius:10px; cursor:pointer; font-family:'Prompt',sans-serif;
@@ -452,15 +444,9 @@ require_once __DIR__ . '/../../includes/header.php';
         </form>
 
         <!-- REWARDS TABLE -->
-        <div class="ar-table-wrap" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                    border-radius:16px; backdrop-filter:blur(8px);">
+        <div class="ar-table-wrap jp-glass-card jp-glass-card--md">
 
-            <div class="ar-table-header" style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;
-                        gap:1rem; padding:0.7rem 1.25rem;
-                        background:rgba(255,255,255,0.03);
-                        border-bottom:1px solid rgba(255,255,255,0.07);
-                        font-size:0.62rem; font-weight:700; letter-spacing:0.10em;
-                        text-transform:uppercase; color: white;">
+            <div class="jp-table-header ar-table-header" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 80px 120px;">
                 <span>รางวัล</span>
                 <span>หมวด</span>
                 <span>ราคา</span>
@@ -471,7 +457,7 @@ require_once __DIR__ . '/../../includes/header.php';
             </div>
 
             <?php if (empty($rewards)): ?>
-            <div style="padding:3.5rem; text-align:center;">
+            <div class="jp-empty-state">
                 <p style="font-size:2rem; margin-bottom:0.5rem; opacity:0.20; display:inline-flex; align-items:center;">
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M3 8h18" stroke-width="2"/>
@@ -479,7 +465,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         <rect x="3" y="8" width="18" height="12" rx="2" stroke-width="2"/>
                     </svg>
                 </p>
-                <p style="font-size:0.88rem; color:#6b6e77; margin:0;">ยังไม่มีรางวัล กด "เพิ่มรางวัลใหม่" เพื่อเริ่มต้น</p>
+                <p class="jp-empty-note">ยังไม่มีรางวัล กด "เพิ่มรางวัลใหม่" เพื่อเริ่มต้น</p>
             </div>
             <?php else: ?>
             <?php

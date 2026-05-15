@@ -483,7 +483,7 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="rw-rewards-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
-    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
+    <div class="jp-aurora-layer" aria-hidden="true">
         <div style="position:absolute; width:700px; height:700px; border-radius:50%;
                     background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
                     top:-150px; right:-150px; filter:blur(70px);
@@ -498,7 +498,7 @@ require_once __DIR__ . '/../includes/header.php';
                     animation:rw-aurora-drift 16s ease-in-out infinite alternate;"></div>
     </div>
 
-    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:0 1.5rem 5rem;">
+    <div class="jp-page-inner jp-page-inner--flush-top">
 
         <!-- ══ HEADER ══ -->
         <div style="padding:2.75rem 0 2.25rem;">
@@ -580,9 +580,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div><!-- /header -->
 
         <?php if ($dataError): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px;
-                    border:1px solid rgba(210,89,42,0.28); background:rgba(210,89,42,0.08);
-                    padding:0.9rem 1.2rem; font-size:0.85rem; color:#d2592a;">
+        <div class="jp-alert-error jp-alert-error--soft">
             <?= e($dataError) ?>
         </div>
         <?php endif; ?>
@@ -723,8 +721,7 @@ require_once __DIR__ . '/../includes/header.php';
                              border-radius:999px; padding:0.14rem 0.52rem;"><?= count($myRedemptions) ?></span>
             </div>
 
-            <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                        border-radius:16px; overflow:hidden; backdrop-filter:blur(8px);">
+            <div class="jp-glass-card jp-glass-card--md" style="overflow:hidden;">
                 <!-- Table header -->
                 <div style="display:grid; grid-template-columns:1fr auto auto auto;
                              gap:1rem; padding:0.65rem 1.25rem;

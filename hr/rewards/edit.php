@@ -156,21 +156,15 @@ function arToggleCoupon(cat) {
 <div class="ar-rewards-wrap are-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
-    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
-        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
-                    top:-120px; right:-120px; filter:blur(70px);
-                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
-        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
-                    bottom:-100px; left:-80px; filter:blur(80px);
-                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+    <div class="jp-aurora-layer" aria-hidden="true">
+        <div class="jp-aurora-blob jp-aurora-blob--gold"></div>
+        <div class="jp-aurora-blob jp-aurora-blob--teal"></div>
     </div>
 
-    <div style="position:relative; z-index:1; max-width:52rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+    <div class="jp-page-inner jp-page-inner--narrow">
 
         <!-- Breadcrumb + page header -->
-        <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="jp-page-header">
             <div style="margin-bottom:0.6rem;">
                 <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
                    style="font-size:0.72rem; font-weight:600; color:#4a4e57; text-decoration:none;
@@ -179,23 +173,21 @@ function arToggleCoupon(cat) {
                     ← จัดการรางวัล
                 </a>
             </div>
-            <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
-                      text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+            <p class="jp-kicker">
                 ADMIN — EDIT REWARD
             </p>
-            <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0; letter-spacing:-0.02em;">
+            <h1 class="jp-title jp-title--tight">
                 แก้ไขรางวัล
             </h1>
             <?php if ($reward): ?>
-            <p style="font-size:0.82rem; color:#6b6e77; margin:0.3rem 0 0;">
+            <p class="jp-subtitle" style="margin-top:0.3rem;">
                 R <?= e($reward['title']) ?>
             </p>
             <?php endif; ?>
         </div>
 
         <?php if ($dataError): ?>
-        <div style="margin-bottom:1.5rem; border-radius:12px; padding:0.85rem 1.1rem; font-size:0.85rem;
-                    background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a;">
+        <div class="jp-alert-error">
             <?= e($dataError) ?>
         </div>
         <?php else: ?>
@@ -204,8 +196,7 @@ function arToggleCoupon(cat) {
         <form method="POST" action="">
             <?php echo csrfField(); ?>
 
-            <div style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);
-                        border-radius:20px; padding:2rem; backdrop-filter:blur(12px);">
+            <div class="jp-glass-card jp-glass-card--lg">
 
                 <!-- Title -->
                 <div style="margin-bottom:1.25rem;">
@@ -349,7 +340,7 @@ function arToggleCoupon(cat) {
                 </div>
 
                 <!-- Actions -->
-                <div style="display:flex; gap:0.75rem; justify-content:flex-end;">
+                <div class="jp-actions-end">
                     <a href="<?php echo BASE_URL; ?>/hr/rewards/index.php"
                        style="display:inline-flex; align-items:center; padding:0.6rem 1.25rem;
                               font-size:0.85rem; font-weight:600; border-radius:10px;

@@ -136,37 +136,28 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="asb-submissions-wrap asb-wrap" style="min-height:100vh; position:relative; overflow-x:hidden;">
 
     <!-- Aurora blobs -->
-    <div style="position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;" aria-hidden="true">
-        <div style="position:absolute; width:600px; height:600px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(218,185,55,0.07) 0%,transparent 65%);
-                    top:-120px; right:-120px; filter:blur(70px);
-                    animation:ch-aurora-drift 20s ease-in-out infinite alternate;"></div>
-        <div style="position:absolute; width:500px; height:500px; border-radius:50%;
-                    background:radial-gradient(circle,rgba(79,139,152,0.05) 0%,transparent 65%);
-                    bottom:-100px; left:-80px; filter:blur(80px);
-                    animation:ch-aurora-drift 24s ease-in-out infinite alternate-reverse;"></div>
+    <div class="jp-aurora-layer" aria-hidden="true">
+        <div class="jp-aurora-blob jp-aurora-blob--gold"></div>
+        <div class="jp-aurora-blob jp-aurora-blob--teal"></div>
     </div>
 
-    <div style="position:relative; z-index:1; max-width:80rem; margin:0 auto; padding:2.5rem 1.5rem 5rem;">
+    <div class="jp-page-inner">
 
         <!-- Page header -->
-        <div style="display:flex; align-items:flex-start; justify-content:space-between;
-                    flex-wrap:wrap; gap:1rem; margin-bottom:2rem;
-                    padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.07);">
+        <div class="jp-page-header jp-page-header-row">
             <div>
-                <p style="font-size:0.55rem; font-weight:700; letter-spacing:0.40em;
-                          text-transform:uppercase; color:rgba(218,185,55,0.60); margin:0 0 0.5rem;">
+                <p class="jp-kicker">
                     ADMIN — SUBMISSIONS
                 </p>
-                <h1 style="font-size:1.75rem; font-weight:800; color:#eeebe1; margin:0 0 0.25rem; letter-spacing:-0.02em;">
+                <h1 class="jp-title">
                     อนุมัติงานที่ส่ง
                 </h1>
-                <p style="font-size:0.82rem; color:#6b6e77; margin:0;">
+                <p class="jp-subtitle">
                     ตรวจสอบหลักฐานรูปภาพจากพนักงานและให้คะแนน Token
                 </p>
             </div>
             <!-- Stats chips -->
-            <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+            <div class="jp-chip-row">
                 <span style="font-size:0.75rem; font-weight:700; padding:0.3rem 0.85rem; border-radius:999px;
                              background:rgba(218,185,55,0.10); color:#dab937; border:1px solid rgba(218,185,55,0.28);">
                     รอตรวจ: <?= (int)($stats['pending_count'] ?? 0) ?>
@@ -183,7 +174,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <!-- Filter tabs -->
-        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1.75rem;">
+        <div class="jp-filter-row jp-filter-row--lg">
             <a href="<?= BASE_URL ?>/hr/submissions.php"
                class="asb-filter-tab <?= $filter !== 'all' ? 'active' : '' ?>">
                 รอตรวจสอบ
@@ -201,9 +192,8 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <?php if (empty($submissions)): ?>
-        <div style="border-radius:16px; padding:5rem 2rem; text-align:center;
-                    background:rgba(255,255,255,0.02); border:1px dashed rgba(255,255,255,0.08);">
-            <p style="font-size:0.88rem; color:#6b6e77; margin:0;">
+        <div class="jp-empty-state jp-empty-state--dashed">
+            <p class="jp-empty-note">
                 <?= $filter === 'all' ? 'ยังไม่มีการส่งงานในระบบ' : 'ไม่มีงานรอตรวจสอบในขณะนี้' ?>
             </p>
         </div>
