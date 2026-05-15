@@ -13,6 +13,9 @@ Thumbs.db
 .vscode/
 *.swp
 
+# Local Python virtual environment (dev-only)
+.venv/
+
 # Database credentials — never commit, manage per-environment
 config/database.php
 
