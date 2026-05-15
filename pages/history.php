@@ -118,12 +118,9 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- Page header -->
         <div style="margin-bottom:2rem; padding-bottom:1.5rem; border-bottom:1px solid rgba(255,255,255,0.05);">
-            <a href="<?= BASE_URL ?>/pages/dashboard.php"
-               style="color:#6b6e77; font-size:0.78rem; text-decoration:none;
-                      display:inline-flex; align-items:center; gap:0.3rem;
-                      transition:color 0.15s;"
-               onmouseover="this.style.color='#dab937'"
-               onmouseout="this.style.color='#6b6e77'">&#8592; หน้าแรก</a>
+            <a href="<?= BASE_URL ?>/pages/dashboard.php" class="hy-back-link">
+            &#8592; หน้าแรก
+        </a>
             <div style="margin-top:0.85rem; display:flex; align-items:flex-end;
                         justify-content:space-between; flex-wrap:wrap; gap:1rem;">
                 <div>
@@ -426,15 +423,7 @@ require_once __DIR__ . '/../includes/header.php';
                             display:flex; align-items:center; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;">
                     <!-- toggle button -->
                     <button onclick="event.stopPropagation(); hyToggleCoupon(<?= (int)$rd['redemption_id'] ?>, this)"
-                            style="display:inline-flex; align-items:center; gap:0.38rem;
-                                   background:rgba(218,185,55,0.08); border:1px solid rgba(218,185,55,0.25);
-                                   border-radius:8px; padding:0.3rem 0.7rem; cursor:pointer;
-                                   font-size:0.7rem; font-weight:700; color:rgba(218,185,55,0.75);
-                                   letter-spacing:0.06em; text-transform:uppercase;
-                                   font-family:'Prompt',sans-serif;
-                                   transition:background 0.15s, border-color 0.15s;"
-                            onmouseover="this.style.background='rgba(218,185,55,0.14)'; this.style.borderColor='rgba(218,185,55,0.40)'"
-                            onmouseout="this.style.background='rgba(218,185,55,0.08)'; this.style.borderColor='rgba(218,185,55,0.25)'"
+                            class="hy-coupon-toggle-btn"
                             title="แสดง/ซ่อนรหัสคูปอง">
                         <svg id="hy-coupon-eye-<?= (int)$rd['redemption_id'] ?>"
                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
@@ -465,15 +454,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <button onclick="event.stopPropagation(); hycopyCoupon('<?= e(addslashes($rd['coupon_code'])) ?>',<?= (int)$rd['redemption_id'] ?>)"
                                 id="hy-coupon-copy-<?= (int)$rd['redemption_id'] ?>"
-                                style="display:inline-flex; align-items:center; gap:0.25rem; flex-shrink:0;
-                                       background:rgba(218,185,55,0.12); border:1px solid rgba(218,185,55,0.22);
-                                       border-radius:6px; color:#dab937; cursor:pointer;
-                                       font-size:0.68rem; font-weight:600;
-                                       font-family:'Prompt',sans-serif;
-                                       padding:0.22rem 0.6rem; line-height:1.4;
-                                       transition:background 0.15s; white-space:nowrap;"
-                                onmouseover="this.style.background='rgba(218,185,55,0.22)'"
-                                onmouseout="this.style.background='rgba(218,185,55,0.12)'"
+                                class="hy-coupon-copy-btn"
                                 title="คัดลอก">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -502,90 +483,6 @@ require_once __DIR__ . '/../includes/header.php';
 
     </div><!-- /inner -->
 </div><!-- /hy-history-wrap -->
-
-<style>
-.hy-tab {
-    font-family: 'Prompt', sans-serif;
-    font-size: 0.80rem;
-    font-weight: 600;
-    padding: 0.45rem 1rem;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s, border-color 0.15s;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.10);
-    color: #6b6e77;
-}
-.hy-tab:hover {
-    background: rgba(255,255,255,0.08);
-    color: #eeebe1;
-}
-.hy-tab--active {
-    background: rgba(218,185,55,0.10);
-    border-color: rgba(218,185,55,0.28);
-    color: #dab937;
-}
-.hy-tab-badge {
-    font-size: 0.62rem;
-    font-weight: 700;
-    background: rgba(255,255,255,0.07);
-    border-radius: 999px;
-    padding: 0.10rem 0.42rem;
-}
-.hy-table-wrap {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    overflow: hidden;
-    backdrop-filter: blur(8px);
-}
-.hy-table-head {
-    display: grid;
-    gap: 1rem;
-    padding: 0.65rem 1.25rem;
-    background: rgba(255,255,255,0.03);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-    font-size: 0.62rem;
-    font-weight: 700;
-    letter-spacing: 0.10em;
-    text-transform: uppercase;
-    color: #6b6e77;
-}
-.hy-empty-state {
-    background: rgba(255,255,255,0.025);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 16px;
-    padding: 3.5rem;
-    text-align: center;
-    backdrop-filter: blur(8px);
-}
-.hy-tx-row, .hy-rd-row {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.hy-tx-row:last-child, .hy-rd-row:last-child {
-    border-bottom: none;
-}
-.hy-tx-row:hover, .hy-rd-row:hover {
-    background: rgba(255,255,255,0.025);
-}
-/* ── Responsive ── */
-.hy-wallet-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem; margin-bottom:2.25rem; }
-@media (max-width: 640px) {
-    .hy-wallet-grid { grid-template-columns:1fr; }
-}
-@media (max-width: 560px) {
-    #panel-token .hy-table-head,
-    #panel-token .hy-tx-row { grid-template-columns:1fr auto !important; }
-    #panel-token .hy-table-head span:nth-child(3),
-    #panel-token .hy-tx-row > :nth-child(3) { display:none; }
-    #panel-quest .hy-table-head,
-    #panel-quest .hy-tx-row { grid-template-columns:1fr auto !important; }
-    #panel-quest .hy-table-head span:nth-child(2),
-    #panel-quest .hy-table-head span:nth-child(3),
-    #panel-quest .hy-tx-row > :nth-child(2),
-    #panel-quest .hy-tx-row > :nth-child(3) { display:none; }
-}
-</style>
 
 <script>
 const ALL_PANELS = ['token','quest','reward'];
@@ -749,9 +646,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85)">รายการ Token</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('tx')"
-                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
-                    aria-label="ปิด">
+            <button class="hy-modal-x" onclick="closeHyModal('tx')" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -799,9 +694,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(79,139,152,0.90);">ภารกิจ</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('quest')"
-                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
-                    aria-label="ปิด">
+            <button class="hy-modal-x" onclick="closeHyModal('quest')" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -854,9 +747,7 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
                 <span style="font-size:0.68rem; font-weight:700; letter-spacing:0.08em;
                              text-transform:uppercase; color:rgba(218,185,55,0.85);">การแลกรางวัล</span>
             </div>
-            <button class="hy-modal-x" onclick="closeHyModal('rd')"
-                    onmouseover="this.style.color='#eeebe1'" onmouseout="this.style.color='#6b6e77'"
-                    aria-label="ปิด">
+            <button class="hy-modal-x" onclick="closeHyModal('rd')" aria-label="ปิด">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                     <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
