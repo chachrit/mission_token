@@ -7,6 +7,10 @@
 (function () {
     'use strict';
 
+    var _photoModalLastFocus = null;
+    var _stravaModalLastFocus = null;
+    var _quizModalLastFocus = null;
+
     /* ── Progress bar hydration (runs in both quiz view and list view) ─── */
     var quizProgressEl = document.getElementById('quiz-progress');
     if (quizProgressEl) {
@@ -139,6 +143,8 @@
         var d = _photoModalData[cid];
         if (!d) return;
 
+        _photoModalLastFocus = document.activeElement;
+
         document.getElementById('pm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
         document.getElementById('pm-title').textContent = d.title;
 
@@ -181,10 +187,16 @@
         var card    = document.getElementById('photo-modal-card');
         overlay.classList.remove('ch-u-hidden');
         overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
         overlay.classList.remove('modal-overlay-out');
         card.classList.remove('modal-card-out');
         overlay.classList.add('modal-overlay-in');
         card.classList.add('modal-card-in');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+            var firstFocus = card.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocus) firstFocus.focus();
+        }, 0);
     }
 
     function closePhotoModal() {
@@ -198,6 +210,11 @@
         setTimeout(function () {
             overlay.style.display = 'none';
             overlay.classList.add('ch-u-hidden');
+            overlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            if (_photoModalLastFocus && typeof _photoModalLastFocus.focus === 'function') {
+                _photoModalLastFocus.focus();
+            }
         }, 180);
     }
 
@@ -207,6 +224,8 @@
         var _stravaConnected = window._stravaConnected || false;
         var d = _stravaModalData[cid];
         if (!d) return;
+
+        _stravaModalLastFocus = document.activeElement;
 
         document.getElementById('sm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
         document.getElementById('sm-title').textContent = d.title;
@@ -270,10 +289,15 @@
         modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
         modal.classList.remove('ch-u-hidden');
         modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         void card.offsetWidth;
         modal.classList.add('modal-overlay-in');
         card.classList.add('modal-card-in');
+        setTimeout(function () {
+            var firstFocus = card.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocus) firstFocus.focus();
+        }, 0);
     }
 
     function closeStravaModal() {
@@ -286,7 +310,11 @@
             modal.style.display = 'none';
             modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
             modal.classList.add('ch-u-hidden');
+            modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_stravaModalLastFocus && typeof _stravaModalLastFocus.focus === 'function') {
+                _stravaModalLastFocus.focus();
+            }
         }, 180);
     }
 
@@ -299,6 +327,7 @@
             window.location.href = baseUrl + '/pages/challenges.php?id=' + cid;
             return;
         }
+        _quizModalLastFocus = document.activeElement;
         document.getElementById('qm-token').textContent = '+' + d.token.toLocaleString() + ' Token';
         document.getElementById('qm-title').textContent = d.title;
         var descEl = document.getElementById('qm-desc');
@@ -326,10 +355,15 @@
         modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
         modal.classList.remove('ch-u-hidden');
         modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         void card.offsetWidth;
         modal.classList.add('modal-overlay-in');
         card.classList.add('modal-card-in');
+        setTimeout(function () {
+            var firstFocus = card.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (firstFocus) firstFocus.focus();
+        }, 0);
     }
 
     function closeQuizModal() {
@@ -342,7 +376,11 @@
             modal.style.display = 'none';
             modal.classList.remove('modal-overlay-out'); card.classList.remove('modal-card-out');
             modal.classList.add('ch-u-hidden');
+            modal.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_quizModalLastFocus && typeof _quizModalLastFocus.focus === 'function') {
+                _quizModalLastFocus.focus();
+            }
         }, 180);
     }
 
@@ -449,6 +487,17 @@
 
         document.addEventListener('keydown', function (e) {
             if (e.key !== 'Enter' && e.key !== ' ') return;
+            var scene = e.target.closest('.ch-quest-flip-scene');
+            if (scene && !e.target.closest('a,button,input,label,select,textarea')) {
+                var type = scene.getAttribute('data-type');
+                var cid  = parseInt(scene.getAttribute('data-cid') || '0', 10);
+                if (!cid) return;
+                e.preventDefault();
+                if (type === 'quiz')   openQuizModal(cid);
+                if (type === 'photo')  openPhotoModal(cid);
+                if (type === 'strava') openStravaModal(cid);
+                return;
+            }
             var cardTrigger = e.target.closest('[data-action="open-quiz-modal"], [data-action="open-photo-modal"], [data-action="open-strava-modal"]');
             if (!cardTrigger) return;
             e.preventDefault();

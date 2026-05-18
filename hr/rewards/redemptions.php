@@ -411,8 +411,8 @@ require_once __DIR__ . '/../../includes/header.php';
 
 <?php if ($canManage): ?>
 <!-- ACTION MODAL (HR + admin only) -->
-<div id="ard-action-modal">
-    <div class="ard-modal-box">
+<div id="ard-action-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="ard-modal-box" tabindex="-1">
         <div class="ard-modal-head">
             <h2 id="ard-modal-title" class="ard-modal-title"></h2>
             <button data-onclick="ardCloseAction()"

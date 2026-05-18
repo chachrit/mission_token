@@ -222,14 +222,23 @@ function updateNavBalance(newBalance) {
 // Loading Spinner (for form submit buttons)
 // ============================================================
 
-function setButtonLoading(btn, loading = true) {
+function setButtonLoading(btn, loading = true, loadingText = 'กำลังดำเนินการ...') {
+    if (!btn) return;
     if (loading) {
-        btn.dataset.origText = btn.innerHTML;
-        btn.innerHTML        = '<svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/></svg> กำลังดำเนินการ...';
-        btn.disabled         = true;
+        if (!btn.dataset.origHtml) btn.dataset.origHtml = btn.innerHTML;
+        if (!btn.dataset.origAriaLabel && btn.getAttribute('aria-label')) {
+            btn.dataset.origAriaLabel = btn.getAttribute('aria-label');
+        }
+        btn.innerHTML = '<span class="btn-loading"><svg class="btn-spinner" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="32" stroke-dashoffset="12"/></svg><span>' + loadingText + '</span></span>';
+        btn.disabled = true;
+        btn.setAttribute('aria-busy', 'true');
     } else {
-        btn.innerHTML = btn.dataset.origText || btn.innerHTML;
-        btn.disabled  = false;
+        btn.innerHTML = btn.dataset.origHtml || btn.innerHTML;
+        if (btn.dataset.origAriaLabel) {
+            btn.setAttribute('aria-label', btn.dataset.origAriaLabel);
+        }
+        btn.disabled = false;
+        btn.removeAttribute('aria-busy');
     }
 }
 
@@ -398,16 +407,38 @@ document.addEventListener('DOMContentLoaded', function () {
     var loginBtn  = document.getElementById('login-btn');
     if (loginForm && loginBtn) {
         loginForm.addEventListener('submit', function () {
-            loginBtn.disabled    = true;
-            loginBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+            setButtonLoading(loginBtn, true, 'กำลังเข้าสู่ระบบ...');
         });
     }
+
+    var errorAlert = document.getElementById('error-alert');
+    if (errorAlert) {
+        errorAlert.setAttribute('tabindex', '-1');
+        errorAlert.focus({ preventScroll: true });
+    }
+
+    document.querySelectorAll('[data-avatar-pick]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var inputId = btn.getAttribute('data-avatar-pick');
+            var input = inputId ? document.getElementById(inputId) : null;
+            if (input) input.click();
+        });
+        btn.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                btn.click();
+            }
+        });
+    });
 });
 
 // ============================================================
 // Admin Redemptions — action modal (fulfill / cancel)
 // ============================================================
+var _ardLastFocus = null;
+
 function ardOpenAction(id, action, empName, rewardTitle) {
+    _ardLastFocus = document.activeElement;
     document.getElementById('ard-form-action').value        = action;
     document.getElementById('ard-form-redemption-id').value = id;
     document.getElementById('ard-form-note').value          = '';
@@ -428,14 +459,24 @@ function ardOpenAction(id, action, empName, rewardTitle) {
         btn.textContent      = '✕ ยืนยันยกเลิก';
         btn.style.background = '#d2592a';
     }
-
-    document.getElementById('ard-action-modal').classList.add('open');
+    var modal = document.getElementById('ard-action-modal');
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    setTimeout(function () {
+        var submitBtn = document.getElementById('ard-modal-submit-btn');
+        if (submitBtn) submitBtn.focus();
+    }, 0);
 }
 
 function ardCloseAction() {
-    document.getElementById('ard-action-modal').classList.remove('open');
+    var modal = document.getElementById('ard-action-modal');
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_ardLastFocus && typeof _ardLastFocus.focus === 'function') {
+        _ardLastFocus.focus();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -526,6 +567,8 @@ function confirmReject(id) {
 
 /* -- Admin Employees (emp-) ---------------------------------- */
 var _empAdjustMode = 'add'; // 'add' | 'deduct'
+var _empAdjustLastFocus = null;
+var _empPwLastFocus = null;
 
 function empSetMode(mode) {
     _empAdjustMode = mode;
@@ -561,6 +604,7 @@ function empSetMode(mode) {
 }
 
 function empOpenAdjust(empId, name, balance, qs) {
+    _empAdjustLastFocus = document.activeElement;
     document.getElementById('emp-adjust-emp-id').value = empId;
     document.getElementById('emp-adjust-qs').value     = qs;
     document.getElementById('emp-adjust-title').textContent = 'จัดการ Token: ' + name;
@@ -569,15 +613,22 @@ function empOpenAdjust(empId, name, balance, qs) {
     empSetMode('add'); // always default to add
     var modal = document.getElementById('emp-adjust-modal');
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     setTimeout(function() { document.getElementById('emp-adjust-amount').focus(); }, 80);
 }
 function empCloseAdjust() {
-    document.getElementById('emp-adjust-modal').style.display = 'none';
+    var modal = document.getElementById('emp-adjust-modal');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_empAdjustLastFocus && typeof _empAdjustLastFocus.focus === 'function') {
+        _empAdjustLastFocus.focus();
+    }
 }
 
 function empOpenPw(empId, name, qs) {
+    _empPwLastFocus = document.activeElement;
     document.getElementById('emp-pw-emp-id').value = empId;
     document.getElementById('emp-pw-qs').value     = qs;
     document.getElementById('emp-pw-title').textContent = 'Reset รหัสผ่าน: ' + name;
@@ -586,12 +637,18 @@ function empOpenPw(empId, name, qs) {
     document.getElementById('emp-pw-match-hint').textContent = '';
     var modal = document.getElementById('emp-pw-modal');
     modal.style.display = 'flex';
+    modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
     setTimeout(function() { document.getElementById('emp-pw-new').focus(); }, 80);
 }
 function empClosePw() {
-    document.getElementById('emp-pw-modal').style.display = 'none';
+    var modal = document.getElementById('emp-pw-modal');
+    modal.style.display = 'none';
+    modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_empPwLastFocus && typeof _empPwLastFocus.focus === 'function') {
+        _empPwLastFocus.focus();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {

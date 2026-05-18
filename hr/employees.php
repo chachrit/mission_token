@@ -483,8 +483,8 @@ $roleMeta = [
 
 <!-- ══ Modal: Adjust Token ══════════════════════════════════ -->
 <?php if ($canManage): ?>
-<div id="emp-adjust-modal" class="jp-modal">
-    <div class="jp-modal-content">
+<div id="emp-adjust-modal" class="jp-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="jp-modal-content" tabindex="-1">
         <div class="jp-modal-header">
             <p id="emp-adjust-title" class="jp-modal-header-title"></p>
             <button data-onclick="empCloseAdjust()" class="jp-modal-close" aria-label="ปิด">
@@ -552,8 +552,8 @@ $roleMeta = [
 
 <!-- ══ Modal: Reset Password (admin only) ═══════════════════ -->
 <?php if ($isAdminOnly): ?>
-<div id="emp-pw-modal" class="jp-modal">
-    <div class="jp-modal-content">
+<div id="emp-pw-modal" class="jp-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="jp-modal-content" tabindex="-1">
         <div class="jp-modal-header">
             <p id="emp-pw-title" class="jp-modal-header-title"></p>
             <button data-onclick="empClosePw()" class="jp-modal-close" aria-label="ปิด">

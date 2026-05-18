@@ -618,8 +618,8 @@ require_once __DIR__ . '/../../includes/header.php';
                         <div class="ace-q-form-stack">
                             <div>
                                 <label class="ace-label">คำถาม <span class="ace-required">*</span></label>
-                                <input type="text" name="q_text[0]" required class="journal-input"
-                                       placeholder="พิมพ์คำถาม..." class="ace-input-md">
+                                    <input type="text" name="q_text[0]" required class="journal-input ace-input-md"
+                                        placeholder="พิมพ์คำถาม...">
                             </div>
                             <div class="ace-grid-2-sm">
                                 <?php foreach (['a' => 'A', 'b' => 'B', 'c' => 'C', 'd' => 'D'] as $key => $letter): ?>
@@ -647,9 +647,8 @@ require_once __DIR__ . '/../../includes/header.php';
                                 </div>
                                 <div>
                                     <label class="ace-label">คำอธิบาย (ไม่บังคับ)</label>
-                                    <input type="text" name="q_explain[0]" class="journal-input"
-                                           class="ace-input-sm"
-                                           placeholder="เฉลยหรืออธิบายเพิ่มเติม">
+                                    <input type="text" name="q_explain[0]" class="journal-input ace-input-sm"
+                                               placeholder="เฉลยหรืออธิบายเพิ่มเติม">
                                 </div>
                             </div>
                             <div class="ace-new-q-action-row">
@@ -672,6 +671,8 @@ require_once __DIR__ . '/../../includes/header.php';
 </div><!-- /ace-edit-wrap -->
 
 <script>
+var _aceNewQuestionLastFocus = null;
+
 function stravaDistUnitChange(unit) {
     const input = document.getElementById('strava-dist-input');
     const label = document.getElementById('dist-unit-label');
@@ -719,15 +720,23 @@ function handleTypeChange(type) {
     }
 }
 function addQuestion() {
+    _aceNewQuestionLastFocus = document.activeElement;
     const form = document.getElementById('new-question-form');
     if (form) {
         form.classList.remove('ace-hidden');
         form.scrollIntoView({ behavior:'smooth', block:'start' });
+        setTimeout(function () {
+            var firstInput = form.querySelector('input, select, textarea, button');
+            if (firstInput) firstInput.focus();
+        }, 0);
     }
 }
 function cancelAddQuestion() {
     const form = document.getElementById('new-question-form');
     if (form) form.classList.add('ace-hidden');
+    if (_aceNewQuestionLastFocus && typeof _aceNewQuestionLastFocus.focus === 'function') {
+        _aceNewQuestionLastFocus.focus();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function () {

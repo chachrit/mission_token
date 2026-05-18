@@ -192,25 +192,25 @@ require_once __DIR__ . '/../includes/header.php';
                         enctype="multipart/form-data" id="avatar-upload-form" class="pf-form-reset">
                     <?= csrfField() ?>
                     <input type="hidden" name="_action" value="upload_avatar">
-                    <input class="pf-u001" type="file" name="avatar" id="avatar-file"
+                    <input class="pf-avatar-file-input" type="file" name="avatar" id="avatar-file"
                            accept="image/jpeg,image/png,image/gif,image/webp"
                           
                            data-submit-on-change="avatar-upload-form">
-                    <label for="avatar-file" class="pf-avatar-upload-btn" title="เปลี่ยนรูปโปรไฟล์">
+                    <button type="button" class="pf-avatar-upload-btn" title="เปลี่ยนรูปโปรไฟล์" aria-label="เปลี่ยนรูปโปรไฟล์" data-avatar-pick="avatar-file">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="14" height="14">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                    </label>
+                    </button>
                 </form>
                 <?php if (!empty($profile['avatar_url'])): ?>
                     <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" class="pf-form-reset"
                       data-confirm="ลบรูปโปรไฟล์?">
                     <?= csrfField() ?>
                     <input type="hidden" name="_action" value="delete_avatar">
-                    <button type="submit" class="pf-avatar-delete-btn" title="ลบรูปโปรไฟล์">
+                    <button type="submit" class="pf-avatar-delete-btn" title="ลบรูปโปรไฟล์" aria-label="ลบรูปโปรไฟล์">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                                   d="M6 18L18 6M6 6l12 12"/>

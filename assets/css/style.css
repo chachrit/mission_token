@@ -48,9 +48,15 @@ body {
 }
 
 :focus-visible {
-    outline: 2px solid var(--j-gold);
+    outline: 3px solid var(--j-gold);
     outline-offset: 3px;
-    border-radius: 4px;
+    box-shadow: 0 0 0 4px rgba(9,17,19,0.65);
+    border-radius: 6px;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+    cursor: not-allowed;
 }
 /* Login page — dark full-screen centered */
 body.layout-login {
@@ -262,7 +268,29 @@ body.layout-login {
     transform: translateY(-1px);
 }
 .btn-login:active  { transform: scale(0.98); }
-.btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-login:disabled {
+    opacity: 0.78;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.btn-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+}
+
+.btn-spinner {
+    width: 1rem;
+    height: 1rem;
+    animation: btn-spin 0.8s linear infinite;
+}
+
+@keyframes btn-spin {
+    to { transform: rotate(360deg); }
+}
 
 /* ---------------------------------------------------------------
    Password toggle
@@ -1641,6 +1669,65 @@ body:has(.ds-dashboard-wrap) {
     font-size: 0.85rem; color: var(--j-slate);
 }
 
+.ds-empty-state--stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ds-empty-state-title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--j-white);
+}
+
+.ds-empty-state-text {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--j-slate);
+    max-width: 34ch;
+}
+
+.ds-empty-state-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 0.35rem;
+}
+
+.ds-empty-state-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 0.95rem;
+    border-radius: 999px;
+    background: rgba(218,185,55,0.14);
+    border: 1px solid rgba(218,185,55,0.28);
+    color: var(--j-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.ds-empty-state-btn:hover {
+    background: rgba(218,185,55,0.22);
+    transform: translateY(-1px);
+}
+
+.ds-empty-state-btn--ghost {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.10);
+    color: var(--j-white);
+}
+
+.ds-empty-state-btn--ghost:hover {
+    background: rgba(255,255,255,0.06);
+}
+
 /* ── Bottom Grid ── */
 #dash-bottom-grid {
     display: grid;
@@ -2716,8 +2803,8 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     position: absolute;
     bottom: -6px;
     right: -6px;
-    width: 26px;
-    height: 26px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: var(--j-gold);
     color: var(--j-dark);
@@ -2734,8 +2821,8 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     position: absolute;
     top: -6px;
     right: -6px;
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background: var(--j-orange);
     color: #fff;
@@ -2750,6 +2837,17 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     padding: 0;
 }
 .pf-avatar-delete-btn:hover { background: #e06040; transform: scale(1.1); }
+.pf-avatar-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 .pf-hero-info {
     flex: 1;
     min-width: 0;
@@ -2837,6 +2935,14 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 @media (max-width: 700px) {
     .pf-grid-2col { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+    .pf-avatar-upload-btn,
+    .pf-avatar-delete-btn {
+        width: 36px;
+        height: 36px;
+    }
 }
 .pf-col { display: flex; flex-direction: column; gap: 1rem; }
 
@@ -3166,6 +3272,14 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     padding: 1.1rem 1.25rem; display: flex; flex-direction: column; gap: 0.65rem;
     position: absolute; inset: 0; overflow-y: auto; box-sizing: border-box;
 }
+
+.ch-card-touch-hint {
+    display: none;
+    margin: 0;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: rgba(218,185,55,0.62);
+}
 .ch-flip-back-header { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .ch-flip-back-reward {
     display: flex; align-items: center; gap: 0.5rem;
@@ -3246,6 +3360,31 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 .ch-action-hint--strava-warn { color: rgba(252,76,2,0.7); }
 .ch-action-hint--strava { color: rgba(252,76,2,0.5); }
 .ch-action-hint--gold { color: rgba(218,185,55,0.5); }
+
+@media (pointer: coarse) {
+    .ch-card-touch-hint {
+        display: block;
+    }
+}
+
+@media (max-width: 760px) {
+    .ch-flip-back-body {
+        position: relative;
+        inset: auto;
+        min-height: 100%;
+        overflow: visible;
+    }
+
+    .ch-quest-flip-scene {
+        min-height: 0;
+    }
+
+    .ch-flip-card,
+    .ch-flip-front,
+    .ch-flip-back.ch-quest-card {
+        min-height: 320px;
+    }
+}
 
 .ch-token-earned-icon {
     width: 16px;
@@ -5908,6 +6047,33 @@ body:has(.hy-history-wrap) { background-color: var(--j-dark); }
     margin-left: 0.3rem;
 }
 
+.rw-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rw-empty-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    background: rgba(218,185,55,0.14);
+    border: 1px solid rgba(218,185,55,0.32);
+    color: var(--j-gold);
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.15s, transform 0.15s;
+}
+
+.rw-empty-cta:hover {
+    background: rgba(218,185,55,0.22);
+    transform: translateY(-1px);
+}
+
 .hy-tab-icon {
     display: inline-flex;
     opacity: 0.75;
@@ -6721,6 +6887,20 @@ body.hy-modal-open { overflow: hidden; }
     #panel-quest .hy-tx-row > :nth-child(3) { display: none; }
 }
 
+@media (max-width: 520px) {
+    .hy-tabs-container,
+    .hy-filter-container {
+        gap: 0.35rem;
+    }
+
+    .hy-tab,
+    .hy-filter-btn,
+    .rw-cat-pill {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 /* --------------------------------------------------------------
    Rewards Page (prefix: rw-/rd-)
    -------------------------------------------------------------- */
@@ -7202,12 +7382,14 @@ body {
 .nav-active {
     color: var(--j-gold) !important;
     border-bottom: 2px solid var(--j-gold);
+    background: rgba(218,185,55,0.08);
 }
 
 :focus-visible {
-    outline: 2px solid var(--j-gold);
+    outline: 3px solid var(--j-gold);
     outline-offset: 3px;
-    border-radius: 4px;
+    box-shadow: 0 0 0 4px rgba(9,17,19,0.65);
+    border-radius: 6px;
 }
 a:focus:not(:focus-visible),
 button:focus:not(:focus-visible) {
@@ -7347,6 +7529,17 @@ button:focus:not(:focus-visible) {
     transition: color 0.15s, background 0.15s;
 }
 .nav-notif-btn:hover { color: var(--j-white); background: #1a1f20; }
+.nav-notif-btn:focus-visible,
+.nav-user-menu-btn:focus-visible,
+.nav-mobile-menu-btn:focus-visible,
+.nav-link-hover:focus-visible,
+.nav-dd-link:focus-visible,
+.nav-notif-item:focus-visible,
+.nav-notif-footer-link:focus-visible {
+    outline: 3px solid var(--j-gold);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(9,17,19,0.65);
+}
 .nav-notif-badge {
     position: absolute;
     top: -5px;

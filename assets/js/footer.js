@@ -14,6 +14,10 @@ function toggleUserMenu() {
     if (menu) {
         const open = menu.classList.toggle('hidden');
         if (btn) btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (!open) {
+            const firstLink = menu.querySelector('a,button');
+            if (firstLink) firstLink.focus();
+        }
     }
 }
 
@@ -42,6 +46,10 @@ function toggleNotifDropdown() {
     if (notif) {
         const open = notif.classList.toggle('hidden');
         if (bell) bell.setAttribute('aria-expanded', open ? 'false' : 'true');
+        if (!open) {
+            const firstItem = notif.querySelector('.nav-notif-item, .nav-notif-footer-link');
+            if (firstItem) firstItem.focus();
+        }
     }
 }
 
@@ -209,12 +217,50 @@ document.addEventListener('click', function (e) {
 
 // Mobile menu
 function toggleMobileMenu() {
-    document.getElementById('mobile-menu').classList.toggle('hidden');
+    const menu = document.getElementById('mobile-menu');
+    const btn = document.getElementById('mobile-menu-btn');
+    if (!menu) return;
+    const open = menu.classList.toggle('hidden');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    if (!open) {
+        const firstLink = menu.querySelector('a,button');
+        if (firstLink) firstLink.focus();
+    }
 }
 
 document.getElementById('mobile-menu-btn')?.addEventListener('click', function (e) {
     e.preventDefault();
     toggleMobileMenu();
+});
+
+document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+
+    const userMenu = document.getElementById('user-dropdown');
+    const userBtn = document.getElementById('user-menu-btn');
+    if (userMenu && userBtn && !userMenu.classList.contains('hidden')) {
+        userMenu.classList.add('hidden');
+        userBtn.setAttribute('aria-expanded', 'false');
+        userBtn.focus();
+        return;
+    }
+
+    const notif = document.getElementById('notif-dropdown');
+    const notifBtn = document.getElementById('notif-bell-btn');
+    if (notif && notifBtn && !notif.classList.contains('hidden')) {
+        notif.classList.add('hidden');
+        notifBtn.setAttribute('aria-expanded', 'false');
+        notifBtn.focus();
+        return;
+    }
+
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    if (mobileMenu && mobileBtn && !mobileMenu.classList.contains('hidden')) {
+        mobileMenu.classList.add('hidden');
+        mobileBtn.setAttribute('aria-expanded', 'false');
+        mobileBtn.focus();
+    }
 });
 
 // Challenge highlight: unseen new/rejected cards
@@ -379,6 +425,13 @@ document.getElementById('mobile-menu-btn')?.addEventListener('click', function (
 (function () {
     var t = document.getElementById('app-toast');
     if (!t) return;
+    if (!t.className.trim()) {
+        t.setAttribute('aria-hidden', 'true');
+        return;
+    }
+    t.setAttribute('role', 'status');
+    t.setAttribute('aria-live', 'polite');
+    t.setAttribute('aria-atomic', 'true');
     requestAnimationFrame(function () {
         requestAnimationFrame(function () {
             t.classList.add('show');

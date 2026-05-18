@@ -149,7 +149,7 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="hy-error-message"><?= e($dataError) ?></div>
         <?php endif; ?>
 
-        <div class="hy-tabs-container">
+        <div class="hy-tabs-container" role="tablist" aria-label="มุมมองประวัติ">
             <?php
             $tabs = [
                 'token' => [
@@ -170,14 +170,14 @@ require_once __DIR__ . '/../includes/header.php';
             ];
             foreach ($tabs as $key => $t):
             ?>
-            <button id="tab-<?= $key ?>" class="hy-tab <?= $key === 'token' ? 'hy-tab--active' : '' ?>" type="button" data-hy-tab="<?= $key ?>">
+            <button id="tab-<?= $key ?>" class="hy-tab <?= $key === 'token' ? 'hy-tab--active' : '' ?>" type="button" data-hy-tab="<?= $key ?>" role="tab" aria-selected="<?= $key === 'token' ? 'true' : 'false' ?>" aria-controls="panel-<?= $key ?>" tabindex="<?= $key === 'token' ? '0' : '-1' ?>">
                 <span class="hy-tab-content"><span class="hy-tab-icon"><?= $t['svg'] ?></span><?= $t['label'] ?></span>
                 <span class="hy-tab-badge"><?= $t['count'] ?></span>
             </button>
             <?php endforeach; ?>
         </div>
 
-        <div id="panel-token">
+        <div id="panel-token" role="tabpanel" aria-labelledby="tab-token">
         <?php if (empty($txAll)): ?>
         <div class="hy-empty-state">
             <p class="hy-empty-icon">
@@ -192,13 +192,13 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <?php else: ?>
         <div class="hy-filter-container">
-            <button class="hy-filter-btn hy-tab--active hy-tx-filter-btn" data-filter="all" type="button">
+            <button class="hy-filter-btn hy-tab--active hy-tx-filter-btn" data-filter="all" type="button" aria-pressed="true">
                 ทั้งหมด <span class="hy-tab-badge" id="hy-filter-count"><?= count($txAll) ?></span>
             </button>
-            <button class="hy-filter-btn hy-tx-filter-btn" data-filter="earn" type="button">
+            <button class="hy-filter-btn hy-tx-filter-btn" data-filter="earn" type="button" aria-pressed="false">
                 <span class="hy-filter-color-positive">+</span> รับ Token
             </button>
-            <button class="hy-filter-btn hy-tx-filter-btn" data-filter="spend" type="button">
+            <button class="hy-filter-btn hy-tx-filter-btn" data-filter="spend" type="button" aria-pressed="false">
                 <span class="hy-filter-color-negative">&minus;</span> ใช้ Token
             </button>
         </div>
@@ -236,7 +236,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
         </div>
 
-        <div id="panel-quest" class="hy-hidden">
+        <div id="panel-quest" class="hy-hidden" role="tabpanel" aria-labelledby="tab-quest" hidden>
         <?php if (empty($quizHistory)): ?>
         <div class="hy-empty-state hy-empty-state--compact">
             <p class="hy-empty-text">ยังไม่มีประวัติการทำภารกิจ</p>
@@ -280,7 +280,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
         </div>
 
-        <div id="panel-reward" class="hy-hidden">
+        <div id="panel-reward" class="hy-hidden" role="tabpanel" aria-labelledby="tab-reward" hidden>
         <?php if (empty($redemptions)): ?>
         <div class="hy-empty-state hy-empty-state--compact">
             <p class="hy-empty-text">ยังไม่มีประวัติการแลกรางวัล</p>
@@ -322,7 +322,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <?php if ($rd['status'] === 'fulfilled' && !empty($rd['coupon_code'])): ?>
                 <div class="hy-coupon-section">
-                    <button class="hy-coupon-toggle-btn" title="แสดง/ซ่อนรหัสคูปอง" type="button" data-hy-coupon-id="<?= (int)$rd['redemption_id'] ?>">
+                    <button class="hy-coupon-toggle-btn" title="แสดง/ซ่อนรหัสคูปอง" type="button" data-hy-coupon-id="<?= (int)$rd['redemption_id'] ?>" aria-expanded="false" aria-controls="hy-coupon-box-<?= (int)$rd['redemption_id'] ?>">
                         <svg id="hy-coupon-eye-<?= (int)$rd['redemption_id'] ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="12" height="12">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -335,7 +335,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <span class="hy-coupon-meta">อนุมัติโดย: <?= e($rd['processed_by_name'] ?? '—') ?></span>
                             <span class="hy-coupon-code"><?= e($rd['coupon_code']) ?></span>
                         </div>
-                        <button id="hy-coupon-copy-<?= (int)$rd['redemption_id'] ?>" class="hy-coupon-copy-btn" title="คัดลอก" type="button" data-hy-copy-coupon="<?= e($rd['coupon_code']) ?>" data-hy-copy-id="<?= (int)$rd['redemption_id'] ?>">
+                        <button id="hy-coupon-copy-<?= (int)$rd['redemption_id'] ?>" class="hy-coupon-copy-btn" title="คัดลอก" type="button" data-hy-copy-coupon="<?= e($rd['coupon_code']) ?>" data-hy-copy-id="<?= (int)$rd['redemption_id'] ?>" aria-label="คัดลอกรหัสคูปอง">
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
                             </svg>
@@ -370,8 +370,15 @@ function switchTab(tab) {
     ALL_PANELS.forEach(function(p) {
         var panel = document.getElementById('panel-' + p);
         var tabEl = document.getElementById('tab-' + p);
-        if (panel) panel.classList.toggle('hy-hidden', p !== tab);
-        if (tabEl) tabEl.classList.toggle('hy-tab--active', p === tab);
+        if (panel) {
+            panel.classList.toggle('hy-hidden', p !== tab);
+            panel.hidden = p !== tab;
+        }
+        if (tabEl) {
+            tabEl.classList.toggle('hy-tab--active', p === tab);
+            tabEl.setAttribute('aria-selected', p === tab ? 'true' : 'false');
+            tabEl.tabIndex = p === tab ? 0 : -1;
+        }
     });
 }
 
@@ -386,23 +393,53 @@ function filterTokens(dir) {
     var cEl = document.getElementById('hy-filter-count');
     if (cEl) cEl.textContent = count;
     document.querySelectorAll('.hy-tx-filter-btn').forEach(function(btn) {
-        btn.classList.toggle('hy-tab--active', btn.dataset.filter === dir);
+        var active = btn.dataset.filter === dir;
+        btn.classList.toggle('hy-tab--active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
     });
 }
 
-window.hyToggleCoupon = function (id) {
+document.addEventListener('keydown', function (event) {
+    var tabBtn = event.target.closest('[data-hy-tab]');
+    if (!tabBtn) return;
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+
+    event.preventDefault();
+    var idx = ALL_PANELS.indexOf(tabBtn.dataset.hyTab);
+    if (idx < 0) return;
+    var nextIdx = event.key === 'ArrowRight'
+        ? (idx + 1) % ALL_PANELS.length
+        : (idx - 1 + ALL_PANELS.length) % ALL_PANELS.length;
+    var nextTab = document.getElementById('tab-' + ALL_PANELS[nextIdx]);
+    if (nextTab) nextTab.click();
+});
+
+function hyToggleCoupon(id) {
     var box = document.getElementById('hy-coupon-box-' + id);
     var label = document.getElementById('hy-coupon-lbl-' + id);
     var eye = document.getElementById('hy-coupon-eye-' + id);
+    var toggle = document.querySelector('[data-hy-coupon-id="' + id + '"]');
     if (!box) return;
     var visible = box.classList.toggle('visible');
     if (label) label.textContent = visible ? 'ซ่อนรหัสคูปอง' : 'แสดงรหัสคูปอง';
+    if (toggle) toggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
     if (eye) {
         eye.innerHTML = visible
             ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>'
             : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>';
     }
-};
+}
+
+window.hyToggleCoupon = hyToggleCoupon;
+
+function hyRdToggleCoupon() {
+    var box = document.getElementById('hyrd-coupon-box');
+    var lbl = document.getElementById('hyrd-coupon-lbl');
+    var toggle = document.querySelector('[data-hy-rd-coupon-toggle]');
+    var visible = box.classList.toggle('visible');
+    lbl.textContent = visible ? 'ซ่อนรหัสคูปอง' : 'แสดงรหัสคูปอง';
+    if (toggle) toggle.setAttribute('aria-expanded', visible ? 'true' : 'false');
+}
 
 window.hycopyCoupon = function (code, id) {
     navigator.clipboard.writeText(code).then(function () {
@@ -474,8 +511,8 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
 <!-- ── Modal: Token Transaction ── -->
-<div id="hy-tx-modal" class="hy-modal-ov" data-hy-modal="tx">
-    <div id="hy-tx-card" class="hy-modal-card hy-modal-card--token">
+<div id="hy-tx-modal" class="hy-modal-ov" data-hy-modal="tx" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="hy-tx-card" class="hy-modal-card hy-modal-card--token" tabindex="-1">
         <div class="hy-modal-hdr">
             <div class="hy-modal-hdr-content">
                 <span class="hy-modal-hdr-icon">&#9672;</span>
@@ -514,8 +551,8 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
 </div>
 
 <!-- ── Modal: Quest Submission ── -->
-<div id="hy-quest-modal" class="hy-modal-ov" data-hy-modal="quest">
-    <div id="hy-quest-card" class="hy-modal-card hy-modal-card--quest">
+<div id="hy-quest-modal" class="hy-modal-ov" data-hy-modal="quest" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="hy-quest-card" class="hy-modal-card hy-modal-card--quest" tabindex="-1">
         <div class="hy-modal-hdr">
             <div class="hy-modal-hdr-content">
                 <span class="hy-modal-hdr-icon">&#9678;</span>
@@ -558,8 +595,8 @@ var _hyRdData    = <?= json_encode($hyRdData,    JSON_UNESCAPED_UNICODE) ?>;
 </div>
 
 <!-- ── Modal: Reward Redemption ── -->
-<div id="hy-rd-modal" class="hy-modal-ov" data-hy-modal="rd">
-    <div id="hy-rd-card" class="hy-modal-card hy-modal-card--reward">
+<div id="hy-rd-modal" class="hy-modal-ov" data-hy-modal="rd" role="dialog" aria-modal="true" aria-hidden="true">
+    <div id="hy-rd-card" class="hy-modal-card hy-modal-card--reward" tabindex="-1">
         <div class="hy-modal-hdr">
             <div class="hy-modal-hdr-content">
                 <span class="hy-modal-hdr-icon">&#10022;</span>
@@ -620,6 +657,7 @@ var _hyModalIds = {
     quest: ['hy-quest-modal', 'hy-quest-card'],
     rd:    ['hy-rd-modal',    'hy-rd-card']
 };
+var _hyLastFocus = null;
 
 function _hyOpen(type) {
     var ids = _hyModalIds[type];
@@ -627,11 +665,19 @@ function _hyOpen(type) {
     var ov = document.getElementById(ids[0]);
     var card = document.getElementById(ids[1]);
     if (!ov || !card) return;
+    _hyLastFocus = document.activeElement;
     ov.classList.remove('hy-ov-out');
     card.classList.remove('hy-ci-out');
     ov.classList.add('visible', 'hy-ov-in');
     card.classList.add('hy-ci-in');
+    ov.setAttribute('aria-hidden', 'false');
     document.body.classList.add('hy-modal-open');
+    var firstFocus = card.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (firstFocus) {
+        setTimeout(function() { firstFocus.focus(); }, 0);
+    } else {
+        setTimeout(function() { card.focus(); }, 0);
+    }
 }
 
 function closeHyModal(type) {
@@ -644,11 +690,15 @@ function closeHyModal(type) {
     card.classList.remove('hy-ci-in');
     ov.classList.add('hy-ov-out');
     card.classList.add('hy-ci-out');
+    ov.setAttribute('aria-hidden', 'true');
     setTimeout(function() {
         ov.classList.remove('visible', 'hy-ov-out');
         card.classList.remove('hy-ci-out');
         if (!document.querySelector('.hy-modal-ov.visible')) {
             document.body.classList.remove('hy-modal-open');
+        }
+        if (_hyLastFocus && typeof _hyLastFocus.focus === 'function') {
+            _hyLastFocus.focus();
         }
     }, 160);
 }

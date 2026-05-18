@@ -218,9 +218,8 @@ require_once __DIR__ . '/../../includes/header.php';
                         <?php endif; ?>
                     </p>
                 </div>
-                <button data-onclick="document.getElementById('create-form').classList.toggle('open');
-                                 this.textContent = document.getElementById('create-form').classList.contains('open')
-                                                    ? 'ปิด' : '+ เพิ่มรางวัลใหม่';"
+                <button id="ar-create-toggle-btn" type="button" aria-expanded="false" aria-controls="create-form"
+                        data-onclick="arToggleCreateForm()"
                         class="ch-btn-start ar-create-toggle-btn">
                     + เพิ่มรางวัลใหม่
                 </button>
@@ -247,7 +246,7 @@ require_once __DIR__ . '/../../includes/header.php';
         <?php endif; ?>
 
         <!-- CREATE FORM -->
-        <form id="create-form" method="POST" action="">
+        <form id="create-form" method="POST" action="" aria-hidden="true">
             <?php echo csrfField(); ?>
             <input type="hidden" name="action" value="create">
 
@@ -327,8 +326,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <div class="jp-actions-end jp-actions-end--sm">
                 <button type="button"
                         class="ar-form-btn ar-form-btn--cancel"
-                        data-onclick="document.getElementById('create-form').classList.remove('open');
-                                 document.querySelector('[onclick*=create-form]').textContent='+ เพิ่มรางวัลใหม่';">
+                    data-onclick="arCloseCreateForm()">
                     ยกเลิก
                 </button>
                 <button type="submit" class="ch-btn-start ar-form-btn ar-form-btn--submit">
@@ -481,6 +479,8 @@ require_once __DIR__ . '/../../includes/header.php';
 </div><!-- /ar-rewards-wrap -->
 
 <script>
+var _arCreateLastFocus = null;
+
 function arCategoryIconCode(category) {
     var map = {
         voucher: 'V',
@@ -526,6 +526,36 @@ function arUpdateAutoIcon(category) {
             var codeInput = document.getElementById('create_coupon_code');
             if (codeInput) { codeInput.value = ''; arCreateToggleExpiry(''); }
         }
+    }
+}
+
+function arToggleCreateForm() {
+    var form = document.getElementById('create-form');
+    var btn = document.getElementById('ar-create-toggle-btn');
+    if (!form || !btn) return;
+    var open = form.classList.toggle('open');
+    form.setAttribute('aria-hidden', open ? 'false' : 'true');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.textContent = open ? 'ปิด' : '+ เพิ่มรางวัลใหม่';
+    if (open) {
+        _arCreateLastFocus = document.activeElement;
+        setTimeout(function () {
+            var firstInput = form.querySelector('input, select, textarea, button');
+            if (firstInput) firstInput.focus();
+        }, 0);
+    }
+}
+
+function arCloseCreateForm() {
+    var form = document.getElementById('create-form');
+    var btn = document.getElementById('ar-create-toggle-btn');
+    if (!form || !btn) return;
+    form.classList.remove('open');
+    form.setAttribute('aria-hidden', 'true');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.textContent = '+ เพิ่มรางวัลใหม่';
+    if (_arCreateLastFocus && typeof _arCreateLastFocus.focus === 'function') {
+        _arCreateLastFocus.focus();
     }
 }
 

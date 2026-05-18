@@ -725,7 +725,7 @@ require_once __DIR__ . '/../includes/header.php';
             $_ed        = $ch['end_date'] ? date('d/m/Y', strtotime((string)$ch['end_date'])) : null;
             $_daysLeft  = $ch['end_date'] ? (int)(new DateTime('today'))->diff(new DateTime(date('Y-m-d', strtotime((string)$ch['end_date']))))->days * ((new DateTime('today') <= new DateTime(date('Y-m-d', strtotime((string)$ch['end_date'])))) ? 1 : -1) : null;
         ?>
-        <div class="ch-quest-flip-scene" data-cid="<?= $cid ?>" data-type="<?= e($ch['type']) ?>" data-sid="<?= (int)$ch['my_sub_id'] ?>"<?= $isRejected ? ' data-rejected' : '' ?>>
+        <div class="ch-quest-flip-scene" data-cid="<?= $cid ?>" data-type="<?= e($ch['type']) ?>" data-sid="<?= (int)$ch['my_sub_id'] ?>"<?= $isRejected ? ' data-rejected' : '' ?> tabindex="0" role="button" aria-label="ดูรายละเอียดภารกิจ: <?= e($ch['title']) ?>">
             <div class="ch-flip-card" id="flip-<?= $cid ?>">
 
                 <!-- ── FRONT FACE ── -->
@@ -765,6 +765,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <!-- Title + mystery (classified) lines -->
                         <div>
                             <h3 class="ch-quest-title"><?= e($ch['title']) ?></h3>
+                            <p class="ch-card-touch-hint">แตะการ์ดเพื่อดูรายละเอียด</p>
                             <div class="ch-mystery-lines">
                                 <div class="ch-mystery-line ch-mystery-line--long"></div>
                                 <div class="ch-mystery-line ch-mystery-line--medium"></div>
@@ -992,8 +993,9 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Photo Upload Modal ── -->
     <div id="photo-modal"
          class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
+         role="dialog" aria-modal="true" aria-hidden="true"
          data-overlay-close="photo-modal">
-        <div id="photo-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
+        <div id="photo-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold" tabindex="-1">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
                 <div class="ch-detail-modal-head-main">
@@ -1004,7 +1006,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </svg>
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Photo Mission</span>
                 </div>
-                <button data-action="close-photo-modal" class="ch-detail-modal-close">
+                <button type="button" data-action="close-photo-modal" class="ch-detail-modal-close" aria-label="ปิด">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -1055,8 +1057,9 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Strava Detail Modal ── -->
     <div id="strava-modal"
          class="ch-detail-modal ch-detail-modal--strava ch-u-hidden"
+         role="dialog" aria-modal="true" aria-hidden="true"
          data-overlay-close="strava-modal">
-        <div id="strava-modal-card" class="ch-detail-modal-card ch-detail-modal-card--strava">
+        <div id="strava-modal-card" class="ch-detail-modal-card ch-detail-modal-card--strava" tabindex="-1">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
                 <div class="ch-detail-modal-head-main">
@@ -1065,7 +1068,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </svg>
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--strava">Strava Mission</span>
                 </div>
-                <button data-action="close-strava-modal" class="ch-detail-modal-close">
+                <button type="button" data-action="close-strava-modal" class="ch-detail-modal-close" aria-label="ปิด">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -1123,14 +1126,15 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- ── Quiz Detail Modal ── -->
     <div id="quiz-modal"
          class="ch-detail-modal ch-detail-modal--gold ch-u-hidden"
+         role="dialog" aria-modal="true" aria-hidden="true"
          data-overlay-close="quiz-modal">
-        <div id="quiz-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold">
+        <div id="quiz-modal-card" class="ch-detail-modal-card ch-detail-modal-card--gold" tabindex="-1">
             <!-- Modal header -->
             <div class="ch-detail-modal-head">
                 <div class="ch-detail-modal-head-main">
                     <span class="ch-detail-modal-head-tag ch-detail-modal-head-tag--gold">Quiz Mission</span>
                 </div>
-                <button data-action="close-quiz-modal" class="ch-detail-modal-close">
+                <button type="button" data-action="close-quiz-modal" class="ch-detail-modal-close" aria-label="ปิด">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M18 6L6 18M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>

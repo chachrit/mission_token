@@ -35,12 +35,17 @@
     var _currentCost     = 0;
     var _redeemBusy      = false;
     window._redeemBusy   = false;
+    var _redeemLastFocus = null;
+    var _rdDetailLastFocus = null;
+    var _pendingLastFocus = null;
 
     window.filterCat = function (btn, cat) {
         document.querySelectorAll('.rw-cat-pill').forEach(function (p) {
             p.classList.remove('active');
+            p.setAttribute('aria-pressed', 'false');
         });
         btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
         document.querySelectorAll('.rw-reward-card').forEach(function (card) {
             var show = (cat === 'all' || card.dataset.category === cat);
             card.classList.toggle('rw-hidden', !show);
@@ -48,6 +53,7 @@
     };
 
     window.openRedeem = function (id, title, cost) {
+        _redeemLastFocus = document.activeElement;
         _currentRewardId = id;
         _currentCost     = cost;
 
@@ -67,14 +73,25 @@
         confirmBtn.disabled    = false;
         confirmBtn.textContent = 'ยืนยันแลกรางวัล';
 
-        document.getElementById('redeem-modal').classList.add('open');
+        var redeemModal = document.getElementById('redeem-modal');
+        redeemModal.classList.add('open');
+        redeemModal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+            var focusBtn = document.getElementById('modal-confirm-btn');
+            if (focusBtn) focusBtn.focus();
+        }, 0);
     };
 
     window.closeRedeem = function () {
         if (_redeemBusy) return;
-        document.getElementById('redeem-modal').classList.remove('open');
+        var redeemModal = document.getElementById('redeem-modal');
+        redeemModal.classList.remove('open');
+        redeemModal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        if (_redeemLastFocus && typeof _redeemLastFocus.focus === 'function') {
+            _redeemLastFocus.focus();
+        }
     };
 
     window.submitRedeem = function () {
@@ -492,12 +509,17 @@
 
         var overlay = document.getElementById('rd-detail-modal');
         var card    = document.getElementById('rd-detail-card');
+        _rdDetailLastFocus = document.activeElement;
         overlay.classList.remove('rd-ov-out');  card.classList.remove('rd-card-out');
         overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         void card.offsetWidth;
         overlay.classList.add('rd-ov-in');
         card.classList.add('rd-card-in');
+        setTimeout(function () {
+            card.focus();
+        }, 0);
     }
     window.openRdDetail = openRdDetail;
 
@@ -510,7 +532,11 @@
         setTimeout(function () {
             overlay.style.display = 'none';
             overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
+            overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_rdDetailLastFocus && typeof _rdDetailLastFocus.focus === 'function') {
+                _rdDetailLastFocus.focus();
+            }
         }, 160);
     }
     window.closeRdDetail = closeRdDetail;
@@ -574,6 +600,7 @@
     /* ── Pending list modal ─────────────────────────────────────────────── */
 
     function openPendingList() {
+        _pendingLastFocus = document.activeElement;
         var _rdData = window._rdData || {};
         var pending = Object.entries(_rdData).filter(function (e) { return e[1].status === 'pending'; });
         var body    = document.getElementById('pending-list-body');
@@ -624,10 +651,12 @@
         var card    = document.getElementById('rd-pending-card');
         overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
         overlay.style.display = 'flex';
+        overlay.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         void card.offsetWidth;
         overlay.classList.add('rd-ov-in');
         card.classList.add('rd-card-in');
+        setTimeout(function () { card.focus(); }, 0);
     }
     window.openPendingList = openPendingList;
 
@@ -640,7 +669,11 @@
         setTimeout(function () {
             overlay.style.display = 'none';
             overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
+            overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_pendingLastFocus && typeof _pendingLastFocus.focus === 'function') {
+                _pendingLastFocus.focus();
+            }
         }, 160);
     }
     window.closePendingList = closePendingList;

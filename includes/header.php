@@ -280,7 +280,8 @@ $notifCount = count($allNotifs);
                         $isActive = ($currentActive === $key);
                     ?>
                     <a href="<?php echo $link['href']; ?>"
-                              class="nav-link-hover relative flex items-center gap-1.5 px-4 py-5 text-sm font-medium transition-colors <?php echo $isActive ? 'nav-active' : 'nav-link-default'; ?>">
+                              class="nav-link-hover relative flex items-center gap-1.5 px-4 py-5 text-sm font-medium transition-colors <?php echo $isActive ? 'nav-active' : 'nav-link-default'; ?>"
+                              <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
                         <?php echo $link['label']; ?>
                         <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
                         <span class="ml-1 px-1.5 py-0.5 text-xs rounded-full font-bold nh-u005"
@@ -391,6 +392,7 @@ $notifCount = count($allNotifs);
                     <div class="relative">
                         <button id="user-menu-btn"
                             class="nav-user-menu-btn flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors nh-u010"
+                                aria-label="เมนูผู้ใช้: <?php echo e($_SESSION['full_name'] ?? ''); ?>"
                                 aria-expanded="false"
                                 aria-controls="user-dropdown"
                            >
@@ -487,7 +489,10 @@ $notifCount = count($allNotifs);
                     </div>
 
                     <!-- Mobile Hamburger -->
-                        <button id="mobile-menu-btn" class="nav-mobile-menu-btn md:hidden p-2 rounded-lg nh-u010"
+                                <button id="mobile-menu-btn" class="nav-mobile-menu-btn md:hidden p-2 rounded-lg nh-u010"
+                                    aria-label="เปิดเมนูหลัก"
+                                    aria-expanded="false"
+                                    aria-controls="mobile-menu"
                            >
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -502,7 +507,8 @@ $notifCount = count($allNotifs);
             <div class="px-4 py-3 space-y-1">
                 <?php foreach ($navLinks as $key => $link): ?>
                 <a href="<?php echo $link['href']; ?>"
-                   class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?php echo ($currentActive === $key) ? 'nav-link-active bg-[#1a1f20]' : 'nav-link-default'; ?>">
+                         class="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors <?php echo ($currentActive === $key) ? 'nav-link-active bg-[#1a1f20]' : 'nav-link-default'; ?>"
+                         <?php echo ($currentActive === $key) ? 'aria-current="page"' : ''; ?>>
                     <?php echo $link['label']; ?>
                     <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>
                     <span class="px-1.5 py-0.5 text-xs rounded-full font-bold nh-u005"><?php echo $link['badge']; ?></span>

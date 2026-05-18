@@ -36,7 +36,7 @@
         }
     ?>
     <!-- #app-toast is always present so JS can trigger it dynamically -->
-    <div id="app-toast" class="<?php echo $toastClass; ?>">
+    <div id="app-toast" class="<?php echo $toastClass; ?>" role="status" aria-live="polite" aria-atomic="true" <?php echo empty($toastMsg) ? 'aria-hidden="true"' : ''; ?>>
         <?php echo $toastIcon; ?>
         <?php if ($toastMsg): ?><span><?php echo $toastMsg; ?></span><?php endif; ?>
     </div>

@@ -326,7 +326,14 @@ require_once __DIR__ . '/../includes/header.php';
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div class="ds-empty-state">ไม่มีภารกิจเปิดรับในช่วงเวลานี้</div>
+            <div class="ds-empty-state ds-empty-state--stack">
+                <p class="ds-empty-state-title">ไม่มีภารกิจเปิดรับในช่วงเวลานี้</p>
+                <p class="ds-empty-state-text">ลองกลับมาดูใหม่ หรือไปเช็คประวัติภารกิจที่ผ่านมา</p>
+                <div class="ds-empty-state-actions">
+                    <a href="<?= BASE_URL ?>/pages/history.php" class="ds-empty-state-btn">ดูประวัติ</a>
+                    <a href="<?= BASE_URL ?>/pages/rewards.php" class="ds-empty-state-btn ds-empty-state-btn--ghost">ไปที่ร้านรางวัล</a>
+                </div>
+            </div>
             <?php endif; ?>
         </section>
 
@@ -380,7 +387,11 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
                 </div>
                 <?php else: ?>
-                <div class="ds-empty-state">ยังไม่มีประวัติการส่งงาน</div>
+                <div class="ds-empty-state ds-empty-state--stack">
+                    <p class="ds-empty-state-title">ยังไม่มีประวัติการส่งงาน</p>
+                    <p class="ds-empty-state-text">เริ่มจากภารกิจแรกเพื่อปลดล็อกกิจกรรมล่าสุดของคุณ</p>
+                    <a href="<?= BASE_URL ?>/pages/challenges.php" class="ds-empty-state-btn">ไปดูภารกิจ</a>
+                </div>
                 <?php endif; ?>
             </section>
 
@@ -441,7 +452,10 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <?php endif; ?>
                     <?php else: ?>
-                    <div class="ds-lb-empty">ยังไม่มีข้อมูล</div>
+                    <div class="ds-lb-empty ds-empty-state--stack">
+                        <p class="ds-empty-state-title">ยังไม่มีข้อมูลอันดับ</p>
+                        <p class="ds-empty-state-text">สะสม Token ครั้งแรกแล้วอันดับจะเริ่มแสดงที่นี่</p>
+                    </div>
                     <?php endif; ?>
                 </div>
             </section>

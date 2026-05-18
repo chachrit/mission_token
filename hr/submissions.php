@@ -366,8 +366,8 @@ require_once __DIR__ . '/../includes/header.php';
 
 
 <!-- ── CONFIRM MODAL ───────────────────────────────────────── -->
-<div id="asb-confirm-modal" class="jp-modal asb-confirm-modal" data-onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true">
-    <div class="jp-modal-content asb-modal-box">
+<div id="asb-confirm-modal" class="jp-modal asb-confirm-modal" data-onclick="if(event.target===this)closeConfirmModal()" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="jp-modal-content asb-modal-box" tabindex="-1">
         <!-- Header -->
         <div id="cm-header" class="jp-modal-header asb-confirm-header">
             <div id="cm-icon" class="asb-confirm-icon"></div>
@@ -402,7 +402,7 @@ require_once __DIR__ . '/../includes/header.php';
 </form>
 
 <!-- ── LIGHTBOX ─────────────────────────────────────────────── -->
-<div id="asb-lightbox" class="asb-lightbox" data-onclick="lbBgClick(event)">
+<div id="asb-lightbox" class="asb-lightbox" data-onclick="lbBgClick(event)" aria-hidden="true">
 
     <!-- Close -->
     <button data-onclick="closeLightbox()" class="asb-lightbox-close"
@@ -440,18 +440,31 @@ require_once __DIR__ . '/../includes/header.php';
 (function () {
     var _lbUrls = [];
     var _lbIdx  = 0;
+    var _lbLastFocus = null;
 
     window.openLightbox = function (urlsJson, startIdx) {
+        _lbLastFocus = document.activeElement;
         _lbUrls = typeof urlsJson === 'string' ? JSON.parse(urlsJson) : urlsJson;
         _lbIdx  = startIdx || 0;
-        document.getElementById('asb-lightbox').classList.add('show');
+        var lightbox = document.getElementById('asb-lightbox');
+        lightbox.classList.add('show');
+        lightbox.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
         _lbRender();
+        setTimeout(function () {
+            var closeBtn = document.querySelector('.asb-lightbox-close');
+            if (closeBtn) closeBtn.focus();
+        }, 0);
     };
 
     window.closeLightbox = function () {
-        document.getElementById('asb-lightbox').classList.remove('show');
+        var lightbox = document.getElementById('asb-lightbox');
+        lightbox.classList.remove('show');
+        lightbox.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        if (_lbLastFocus && typeof _lbLastFocus.focus === 'function') {
+            _lbLastFocus.focus();
+        }
     };
 
     window.lbNav = function (dir) {
@@ -564,11 +577,18 @@ require_once __DIR__ . '/../includes/header.php';
 
         var modal = document.getElementById('asb-confirm-modal');
         modal.classList.add('show');
+        modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+            var confirmBtn = document.getElementById('cm-confirm-btn');
+            if (confirmBtn) confirmBtn.focus();
+        }, 0);
     };
 
     window.closeConfirmModal = function () {
-        document.getElementById('asb-confirm-modal').classList.remove('show');
+        var modal = document.getElementById('asb-confirm-modal');
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
     };
 

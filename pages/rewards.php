@@ -380,12 +380,12 @@ require_once __DIR__ . '/../includes/header.php';
                 <span class="rw-u025">สินค้า</span>
                 <span class="rw-u026"><?= count($rewards) ?></span>
             </div>
-            <button class="rw-cat-pill active" data-cat="all" data-action="filter-cat">ทั้งหมด</button>
+            <button class="rw-cat-pill active" data-cat="all" data-action="filter-cat" aria-pressed="true">ทั้งหมด</button>
             <?php foreach ($activeCategories as $cat):
                 $meta  = $catMeta[$cat] ?? $catMeta['general'];
                 $count = count(array_filter($rewards, fn($r) => $r['category'] === $cat));
             ?>
-            <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" data-action="filter-cat">
+            <button class="rw-cat-pill" data-cat="<?= e($cat) ?>" data-action="filter-cat" aria-pressed="false">
                 <?= e($meta['label']) ?> <span class="rw-u027">(<?= $count ?>)</span>
             </button>
             <?php endforeach; ?>
@@ -393,9 +393,10 @@ require_once __DIR__ . '/../includes/header.php';
 
         <!-- ══ REWARDS GRID ══ -->
         <?php if (empty($rewards)): ?>
-        <div class="rw-u028">
+        <div class="rw-u028 rw-empty-state">
             <p class="rw-u029">Vault ว่างอยู่ในขณะนี้</p>
-            <p class="rw-u030">ติดตามรางวัลใหม่ได้เร็วๆ นี้</p>
+            <p class="rw-u030">สะสม Token เพิ่มก่อน แล้วกลับมาดูรางวัลใหม่อีกครั้ง</p>
+            <a href="<?= BASE_URL ?>/pages/challenges.php" class="rw-empty-cta">ไปทำภารกิจต่อ</a>
         </div>
         <?php else: ?>
         <div class="rw-u031" id="rewards-grid"
@@ -632,8 +633,8 @@ require_once __DIR__ . '/../includes/header.php';
 <!-- ══════════════════════════════════════════════════════════
      REDEEM CONFIRM MODAL
 ══════════════════════════════════════════════════════════ -->
-<div id="redeem-modal" role="dialog" aria-modal="true" data-action-overlay="close-redeem">
-    <div class="rw-modal-box">
+<div id="redeem-modal" role="dialog" aria-modal="true" aria-hidden="true" data-action-overlay="close-redeem">
+    <div class="rw-modal-box" tabindex="-1">
 
         <!-- Header -->
         <div class="rw-u052">
@@ -705,10 +706,10 @@ foreach ($myRedemptions as $_rd) {
 <script>var _rdData = <?= json_encode($rdDetailData, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) ?>;</script>
 
 <!-- ── Redemption Detail Modal ── -->
-<div class="rw-u061" id="rd-detail-modal" data-action-overlay="close-rd-detail"
+<div class="rw-u061" id="rd-detail-modal" role="dialog" aria-modal="true" aria-hidden="true" data-action-overlay="close-rd-detail"
     >
 
-    <div class="rw-u062" id="rd-detail-card"
+    <div class="rw-u062" id="rd-detail-card" tabindex="-1"
         >
 
         <!-- Header -->
@@ -798,9 +799,9 @@ foreach ($myRedemptions as $_rd) {
 
 
 <!-- ── Pending List Modal ── -->
-<div class="rw-u096" id="rd-pending-modal" data-action-overlay="close-pending-list"
+<div class="rw-u096" id="rd-pending-modal" role="dialog" aria-modal="true" aria-hidden="true" data-action-overlay="close-pending-list"
     >
-    <div class="rw-u097" id="rd-pending-card"
+    <div class="rw-u097" id="rd-pending-card" tabindex="-1"
         >
         <!-- Header -->
         <div class="rw-u098">
