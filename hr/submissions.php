@@ -97,7 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // ── GET: load submissions ────────────────────────────────────
 $filter      = (string)($_GET['filter'] ?? 'pending');
-$filterWhere = $filter === 'all' ? '' : "WHERE cs.status = 'pending'";
+$filterWhere = $filter === 'all'
+    ? "WHERE NOT (cs.submission_type = 'quiz' AND cs.status = 'auto_approved')"
+    : "WHERE cs.status = 'pending'";
 
 $pdo = getDB();
 $submissions = $pdo->query("

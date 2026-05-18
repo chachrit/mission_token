@@ -167,18 +167,27 @@ function uploadImgUrl(string $type, string $filename): string
 /**
  * Check if employee has an active submission for a challenge.
  * Allows retry when latest/only submission is rejected.
+ *
+ * When $submissionType is provided, only submissions of that type are considered.
  */
-function hasSubmittedChallenge(int $employeeId, int $challengeId): bool
+function hasSubmittedChallenge(int $employeeId, int $challengeId, ?string $submissionType = null): bool
 {
     $pdo  = getDB();
-    $stmt = $pdo->prepare("
+    $sql = "
         SELECT COUNT(*) AS cnt
         FROM challenge_submissions
         WHERE employee_id  = ?
           AND challenge_id = ?
           AND status IN ('pending', 'approved', 'auto_approved')
-    ");
-    $stmt->execute([$employeeId, $challengeId]);
+    ";
+    $params = [$employeeId, $challengeId];
+    if ($submissionType !== null && $submissionType !== '') {
+        $sql .= " AND submission_type = ?";
+        $params[] = $submissionType;
+    }
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($params);
     $row = $stmt->fetch();
     return (int)$row['cnt'] > 0;
 }

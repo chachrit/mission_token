@@ -95,6 +95,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
     }
 
+    if ($type === 'quiz') {
+        $qTexts = $_POST['q_text'] ?? [];
+        $qA     = $_POST['q_a']    ?? [];
+        $qB     = $_POST['q_b']    ?? [];
+
+        $hasAtLeastOneQuestion = false;
+        foreach ($qTexts as $i => $qTextRaw) {
+            $qText = trim((string)$qTextRaw);
+            if ($qText === '') {
+                continue;
+            }
+
+            $a = trim((string)($qA[$i] ?? ''));
+            $b = trim((string)($qB[$i] ?? ''));
+            if ($a === '' || $b === '') {
+                setFlash('error', 'คำถามแบบ Quiz ต้องมีตัวเลือก A และ B อย่างน้อย 1 ข้อ');
+                redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
+            }
+
+            $hasAtLeastOneQuestion = true;
+        }
+
+        if (!$hasAtLeastOneQuestion) {
+            setFlash('error', 'กรุณาเพิ่มคำถาม Quiz อย่างน้อย 1 ข้อ');
+            redirect(BASE_URL . '/hr/challenges/edit.php' . ($isEdit ? '?id=' . $challengeId : ''));
+        }
+    }
+
     try {
         if ($isEdit) {
             $pdo->prepare("
@@ -442,8 +470,8 @@ require_once __DIR__ . '/../../includes/header.php';
         <?php endif; ?>
 
         <!-- ── QUIZ QUESTIONS ──────────────────────────────── -->
-        <?php if ($isEdit && $f['type'] === 'quiz'): ?>
-        <div id="quiz-section">
+        <?php if (!$isEdit || $f['type'] === 'quiz'): ?>
+        <div id="quiz-section" class="<?= $f['type'] !== 'quiz' ? 'ace-hidden' : '' ?>">
 
             <div class="ace-quiz-head-row">
                 <div class="ace-quiz-head-left">
@@ -678,8 +706,17 @@ document.addEventListener('DOMContentLoaded', function() {
 function handleTypeChange(type) {
     const instrWrap  = document.getElementById('instructions-wrap');
     const stravaWrap = document.getElementById('strava-condition-wrap');
+    const quizWrap   = document.getElementById('quiz-section');
+    const quizNewForm = document.getElementById('new-question-form');
+    const isCreateMode = <?= $isEdit ? 'false' : 'true' ?>;
     if (instrWrap)  instrWrap.classList.toggle('ace-hidden', type !== 'photo');
     if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
+    if (quizWrap)   quizWrap.classList.toggle('ace-hidden', type !== 'quiz');
+
+    // In create mode, open quiz input form immediately when quiz type is selected.
+    if (isCreateMode && quizNewForm) {
+        quizNewForm.classList.toggle('ace-hidden', type !== 'quiz');
+    }
 }
 function addQuestion() {
     const form = document.getElementById('new-question-form');
@@ -692,6 +729,13 @@ function cancelAddQuestion() {
     const form = document.getElementById('new-question-form');
     if (form) form.classList.add('ace-hidden');
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    const typeSelect = document.getElementById('challenge-type');
+    if (typeSelect) {
+        handleTypeChange(typeSelect.value);
+    }
+});
 </script>
 
 <?php require_once __DIR__ . '/../../includes/footer.php'; ?>

@@ -28,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(BASE_URL . '/pages/challenges.php');
     }
 
-    // Block double-submission (non-rejected)
-    if (hasSubmittedChallenge($employeeId, $challengeId)) {
+    // Block double-submission (non-rejected) for the current challenge type only.
+    // This prevents stale submissions from an old type (e.g. photo -> quiz) from blocking new attempts.
+    if (hasSubmittedChallenge($employeeId, $challengeId, (string)$challenge['type'])) {
         setFlash('error', 'คุณส่งภารกิจนี้ไปแล้ว ไม่สามารถส่งซ้ำได้');
         redirect(BASE_URL . '/pages/challenges.php');
     }
@@ -39,9 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // ── QUIZ submission ──────────────────────────────────────
     if ($action === 'submit_quiz') {
         // Quiz allows only ONE attempt ever — block even rejected submissions
-        $chkStmt = $pdo->prepare("
+        $chkStmt = $pdo->prepare(" 
             SELECT COUNT(*) AS cnt FROM challenge_submissions
             WHERE employee_id = ? AND challenge_id = ?
+              AND submission_type = 'quiz'
         ");
         $chkStmt->execute([$employeeId, $challengeId]);
         if ((int)$chkStmt->fetch()['cnt'] > 0) {
@@ -271,13 +273,15 @@ try {
         $placeholders = implode(',', array_fill(0, count($chalIds), '?'));
 
         // Latest submission per challenge in one query
-        $subBatch = $pdo->prepare("
+                $subBatch = $pdo->prepare(" 
             WITH ranked AS (
-                SELECT challenge_id, submission_id, status, token_awarded, submitted_at,
-                       ROW_NUMBER() OVER (PARTITION BY challenge_id ORDER BY submitted_at DESC) AS rn
-                FROM   challenge_submissions
-                WHERE  employee_id = ?
-                  AND  challenge_id IN ($placeholders)
+                                  SELECT cs.challenge_id, cs.submission_id, cs.status, cs.token_awarded, cs.submitted_at,
+                                      ROW_NUMBER() OVER (PARTITION BY cs.challenge_id ORDER BY cs.submitted_at DESC) AS rn
+                                FROM   challenge_submissions cs
+                                JOIN   challenges c ON c.challenge_id = cs.challenge_id
+                                WHERE  cs.employee_id = ?
+                                    AND  cs.challenge_id IN ($placeholders)
+                                    AND  cs.submission_type = c.type
             )
             SELECT challenge_id, submission_id, status, token_awarded, submitted_at FROM ranked WHERE rn = 1
         ");
