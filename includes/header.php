@@ -1,17 +1,4 @@
 <?php
-/**
- * includes/header.php
- * Shared HTML head + sticky navigation bar.
- *
- * Variables consumed (set before include):
- *   $pageTitle  string  � shown in <title> tag
- *   $activePage string  � nav key for active highlight
- *                         ('dashboard' | 'challenges' | 'history' | 'leaderboard'
- *                          | 'admin_dashboard' | 'admin_challenges' | 'admin_submissions' | 'admin_employees')
- *
- * Requires: config/app.php, includes/functions.php already required by auth_check.
- */
-
 require_once __DIR__ . '/../config/app.php';
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -179,8 +166,9 @@ $notifCount = count($allNotifs);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo e($pageTitle ?? APP_NAME); ?> � JOURNAL</title>
+    <title><?php echo e($pageTitle ?? APP_NAME); ?> JOURNAL</title>
     <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
+    <meta name="base-url" content="<?php echo BASE_URL; ?>">
 
     <!-- Tailwind CSS Play CDN (v3) � config MUST come before CDN script -->
     <script>

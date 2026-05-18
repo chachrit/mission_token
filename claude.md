@@ -165,8 +165,8 @@ mission_token/
 | `getActivityStreak($id)` | นับวัน streak (approved submissions) |
 | `getRecentSubmissions($id, $limit)` | ประวัติ submissions ล่าสุด |
 | `getLeaderboard($limit)` | top earners ตาม total_earned |
-| `getHomeOverviewStats()` | stats หน้า index (active_employees, team_earned, ฯลฯ) |
-| `getRecentTeamActivity($limit)` | activity feed หน้า index |
+| `getHomeOverviewStats()` | stats หน้า index (active_employees, total_balance, total_earned, ฯลฯ) |
+| `getRecentActivityFeed($limit)` | activity feed หน้า index |
 | `getWeeklyTokenTrend()` | token earned + submissions count 7 วัน (UNION ALL CTE) |
 | `getEmployeeProfile($id)` | ข้อมูลโปรไฟล์เต็ม |
 | `getWorkTenure($startDate)` | คำนวณอายุงาน (years/months/days) |
@@ -339,8 +339,8 @@ body:has(.ace-edit-wrap)       { background-color: #091113; }
 - **ไม่มีระบบทีม** — individual only ทุกอย่าง
   - ห้าม implement team challenge, team leaderboard, team reward
   - `department` column มีไว้แสดง info เฉยๆ ไม่ใช้ group/score
-- `getHomeOverviewStats()` ยังมี `team_balance`, `team_earned` อยู่ (legacy — ยังไม่ได้ clean)
-- `getRecentTeamActivity()` ชื่อ function มี "Team" แต่ไม่ได้ group by team จริงๆ
+- Overview หน้า home ใช้ชื่อ field ปัจจุบัน `total_balance` และ `total_earned`
+- Activity feed หน้า home ใช้ `getRecentActivityFeed()`
 
 ---
 

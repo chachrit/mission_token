@@ -11,8 +11,8 @@ initSession();
 
 $overview = [
     'active_employees' => 0,
-    'team_balance' => 0,
-    'team_earned' => 0,
+    'total_balance' => 0,
+    'total_earned' => 0,
     'active_challenges' => 0,
     'pending_reviews' => 0,
     'submissions_today' => 0,
@@ -27,7 +27,7 @@ try {
     $overview = getHomeOverviewStats();
     $activeChallenges = getActiveChallenges();
     $leaderboard = getLeaderboard(5);
-    $recentActivity = getRecentTeamActivity(6);
+    $recentActivity = getRecentActivityFeed(6);
     $weeklyTrend = getWeeklyTokenTrend();
 } catch (Throwable $e) {
     error_log('[MissionToken] homepage load error: ' . $e->getMessage());
@@ -97,7 +97,7 @@ require_once __DIR__ . '/includes/header.php';
             </h1>
             <p class="mt-6 text-base leading-8 text-j-slate max-w-md mx-auto">
                 สะสม Token จากภารกิจ พิชิตทุก challenge<br class="hidden sm:block">
-                และเฝ้าดูยอดสะสมของทีมเติบโตขึ้นทุกวัน
+                และเฝ้าดูยอดสะสมของพนักงานเติบโตขึ้นทุกวัน
             </p>
 
             <!-- Stat row -->
@@ -150,7 +150,7 @@ require_once __DIR__ . '/includes/header.php';
             <h2 class="about-title">Mission Token คืออะไร?</h2>
             <p class="about-desc">
                 ระบบสะสมคะแนนสำหรับพนักงาน JOURNAL — ทำภารกิจที่ได้รับมอบหมาย รับ Token เป็นรางวัล<br class="hidden md:block">
-                และแข่งขันกับเพื่อนร่วมทีมบน Leaderboard
+                และติดตามอันดับของพนักงานบน Leaderboard
             </p>
 
             <!-- 3 pillars -->
@@ -174,7 +174,7 @@ require_once __DIR__ . '/includes/header.php';
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" /></svg>
                     </div>
                     <h3 class="about-pillar-title">Leaderboard</h3>
-                    <p class="about-pillar-desc">ยอด Token สะสมรวมจะถูกจัดอันดับ เปรียบเทียบกับเพื่อนร่วมทีมแบบ Real-time</p>
+                    <p class="about-pillar-desc">ยอด Token สะสมรวมจะถูกจัดอันดับ เปรียบเทียบกับพนักงานคนอื่นแบบ Real-time</p>
                 </div>
             </div>
 

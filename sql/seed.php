@@ -161,20 +161,20 @@ try {
     seedLog($log, 'Quiz questions: 3 ข้อ');
 
     // ============================================================
-    // 4. Sample Challenge 2 — Photo Upload (Admin Approve)
+    // 4. Sample Challenge 2 — Photo Upload (HR/Admin Approve)
     // ============================================================
     $stmt = $pdo->prepare("
-        IF NOT EXISTS (SELECT 1 FROM challenges WHERE title = N'บันทึกกิจกรรมทีม')
+        IF NOT EXISTS (SELECT 1 FROM challenges WHERE title = N'บันทึกกิจกรรมภายใน')
         INSERT INTO challenges (title, description, type, instructions, token_reward, start_date, end_date, created_by)
         VALUES (?, ?, 'photo', ?, 30, ?, ?, ?)
     ");
     $stmt->execute([
-        'บันทึกกิจกรรมทีม',
-        'ถ่ายรูปกิจกรรมที่คุณทำร่วมกับเพื่อนร่วมงาน แล้วส่งเพื่อรับ 30 Token!',
-        "1. ถ่ายรูปขณะทำกิจกรรมกับทีม (อย่างน้อย 2 คนขึ้นไป)\n2. รูปต้องเห็นหน้าชัดเจน\n3. รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 5MB\n4. ทีม Admin จะตรวจสอบและอนุมัติภายใน 1 วันทำการ",
+        'บันทึกกิจกรรมภายใน',
+        'ถ่ายรูปกิจกรรมที่คุณทำภายในองค์กร แล้วส่งเพื่อรับ 30 Token!',
+        "1. ถ่ายรูปขณะทำกิจกรรมภายในองค์กร\n2. รูปต้องเห็นหน้าชัดเจน\n3. รองรับไฟล์ JPG, PNG ขนาดไม่เกิน 5MB\n4. HR/Admin จะตรวจสอบและอนุมัติภายใน 1 วันทำการ",
         $today, $nextMonth, $adminId
     ]);
-    seedLog($log, 'Challenge (Photo): บันทึกกิจกรรมทีม');
+    seedLog($log, 'Challenge (Photo): บันทึกกิจกรรมภายใน');
 
     $pdo->commit();
 
