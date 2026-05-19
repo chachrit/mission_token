@@ -56,10 +56,17 @@
         });
         btn.classList.add('active');
         btn.setAttribute('aria-pressed', 'true');
+        var visibleCount = 0;
         document.querySelectorAll('.rw-reward-card').forEach(function (card) {
             var show = (cat === 'all' || card.dataset.category === cat);
             card.classList.toggle('rw-hidden', !show);
+            if (show) visibleCount += 1;
         });
+
+        var emptyState = document.getElementById('rewards-filter-empty');
+        if (emptyState) {
+            emptyState.classList.toggle('rw-filter-empty--show', visibleCount === 0);
+        }
     };
 
     window.openRedeem = function (id, title, cost) {
@@ -409,6 +416,12 @@
             closePendingList();
         }
     });
+
+    /* Initialize filter state on first load */
+    var defaultFilter = document.querySelector('.rw-cat-pill.active[data-action="filter-cat"]');
+    if (defaultFilter) {
+        window.filterCat(defaultFilter, defaultFilter.dataset.cat || 'all');
+    }
 
     document.addEventListener('keydown', function (e) {
         if (e.key !== 'Enter' && e.key !== ' ') return;

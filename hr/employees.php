@@ -246,7 +246,7 @@ $roleMeta = [
         <div class="jp-page-header jp-page-header-row">
             <div>
                 <p class="jp-kicker">
-                    ADMIN — EMPLOYEES
+                    ADMIN: EMPLOYEES
                 </p>
                 <h1 class="jp-title">
                     จัดการพนักงาน

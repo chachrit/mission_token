@@ -496,6 +496,10 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <?php endforeach; ?>
         </div>
+        <div id="rewards-filter-empty" class="rw-filter-empty rw-empty-state" aria-live="polite">
+            <p class="rw-u029">ไม่พบรางวัลในหมวดนี้</p>
+            <p class="rw-u030">ลองเลือกหมวดอื่น หรือเลือก "ทั้งหมด" เพื่อดูรางวัลทั้งหมด</p>
+        </div>
         <?php endif; ?>
 
         <!-- ══ HISTORY ══ -->

@@ -344,6 +344,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var aboutSlide = document.getElementById('about');
     var aboutTitle = document.getElementById('about-title');
     var backBtn    = document.getElementById('about-back-btn');
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var intelCards = document.querySelectorAll('.home-intel-card-reveal');
 
     if (!scrollBtn || !aboutSlide) return;
 
@@ -352,6 +354,11 @@ document.addEventListener('DOMContentLoaded', function () {
     var wheelResetTimer = null;
     var WHEEL_THRESHOLD = 300; // accumulated px before triggering
 
+    function settleHeroScrollIndicator() {
+        scrollBtn.style.animation = 'none';
+        scrollBtn.style.opacity = '0.72';
+    }
+
     function openAbout() {
         if (isOpen) return;
         isOpen = true;
@@ -359,6 +366,7 @@ document.addEventListener('DOMContentLoaded', function () {
         aboutSlide.classList.add('slide-open');
         aboutSlide.setAttribute('aria-hidden', 'false');
         scrollBtn.setAttribute('aria-expanded', 'true');
+        settleHeroScrollIndicator();
         document.body.classList.add('about-open');
         if (backBtn) backBtn.classList.add('btn-visible');
         if (aboutTitle) {
@@ -383,7 +391,10 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Click on scroll indicator
-    scrollBtn.addEventListener('click', openAbout);
+    scrollBtn.addEventListener('click', function () {
+        settleHeroScrollIndicator();
+        openAbout();
+    });
 
     // Mouse wheel: accumulate delta — only trigger after sustained scrolling
     window.addEventListener('wheel', function (e) {
@@ -400,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Open: accumulate downward scroll
         if (e.deltaY > 0) {
+            settleHeroScrollIndicator();
             wheelAccum += e.deltaY;
             // Reset accumulation if user pauses
             clearTimeout(wheelResetTimer);
@@ -434,6 +446,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // ── Guide section: clip-path circle expand (mirrors about-morph open) ──
     var guideSection = document.querySelector('.guide-section');
     if (guideSection && aboutSlide) {
+        if (prefersReducedMotion) {
+            guideSection.classList.add('in-view');
+        }
         var sectionObserver = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -445,9 +460,35 @@ document.addEventListener('DOMContentLoaded', function () {
         sectionObserver.observe(guideSection);
     }
 
+    if (intelCards.length) {
+        if (prefersReducedMotion) {
+            intelCards.forEach(function (card) {
+                card.classList.add('in-view');
+            });
+        } else {
+            var intelObserver = new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('in-view');
+                    obs.unobserve(entry.target);
+                });
+            }, { threshold: 0.18 });
+
+            intelCards.forEach(function (card) {
+                intelObserver.observe(card);
+            });
+        }
+    }
+
     // ── Guide steps: scroll-in animation via IntersectionObserver ────
     var guideSteps = document.querySelectorAll('.guide-flow-step');
     if (guideSteps.length && aboutSlide) {
+        if (prefersReducedMotion) {
+            guideSteps.forEach(function (step) {
+                step.classList.add('in-view');
+            });
+            return;
+        }
         var stepObserver = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {

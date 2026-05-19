@@ -35,13 +35,23 @@ try {
 }
 
 $topPerformer = $leaderboard[0] ?? null;
-$challengeCount = count($activeChallenges);
 $activityCount = count($recentActivity);
 $trendMax = 0;
 foreach ($weeklyTrend as $trend) {
     $trendMax = max($trendMax, (int)$trend['earned_tokens'], (int)$trend['submissions_count']);
 }
 $trendMax = max($trendMax, 1);
+$weeklyEarnedTotal = 0;
+$weeklySubmissionTotal = 0;
+foreach ($weeklyTrend as $trend) {
+    $weeklyEarnedTotal += (int)($trend['earned_tokens'] ?? 0);
+    $weeklySubmissionTotal += (int)($trend['submissions_count'] ?? 0);
+}
+$leaderboardMax = 1;
+foreach ($leaderboard as $row) {
+    $leaderboardMax = max($leaderboardMax, (int)($row['total_earned'] ?? 0));
+}
+$isAuthed = isset($_SESSION['employee_id']);
 
 $formatDate = static function ($value, string $format = 'd M Y'): string {
     if ($value instanceof DateTimeInterface) {
@@ -51,6 +61,49 @@ $formatDate = static function ($value, string $format = 'd M Y'): string {
         $timestamp = strtotime($value);
         if ($timestamp !== false) {
             return date($format, $timestamp);
+        }
+    }
+    return '-';
+};
+
+$maskPublicName = static function (string $name): string {
+    $name = trim($name);
+    if ($name === '') {
+        return 'ไม่ระบุชื่อ';
+    }
+    $first = mb_substr($name, 0, 1, 'UTF-8');
+    return $first . '●●●●';
+};
+
+$buildActivityLine = static function (array $item): string {
+    $title = trim((string)($item['challenge_title'] ?? 'ภารกิจ'));
+    $status = (string)($item['status'] ?? 'pending');
+    $awarded = (int)($item['token_awarded'] ?? 0);
+
+    if (in_array($status, ['approved', 'auto_approved'], true)) {
+        if ($awarded > 0) {
+            return 'เคลียร์ "' . $title . '" แล้วรับ +' . formatTokens($awarded) . ' Token';
+        }
+        return 'เคลียร์ "' . $title . '" เรียบร้อยแล้ว';
+    }
+    if ($status === 'pending') {
+        return 'ส่ง "' . $title . '" แล้ว รอลุ้นผลตรวจ';
+    }
+    if ($status === 'rejected') {
+        return 'ภารกิจ "' . $title . '" ยังไม่ผ่าน ลุยใหม่ได้เลย';
+    }
+    return 'อัปเดตกิจกรรม "' . $title . '" แล้ว';
+};
+
+$thaiDayShort = static function ($value): string {
+    $days = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
+    if ($value instanceof DateTimeInterface) {
+        return $days[(int)$value->format('w')] ?? '-';
+    }
+    if (is_string($value) && $value !== '') {
+        $timestamp = strtotime($value);
+        if ($timestamp !== false) {
+            return $days[(int)date('w', $timestamp)] ?? '-';
         }
     }
     return '-';
@@ -80,22 +133,22 @@ require_once __DIR__ . '/includes/header.php';
 
         <!-- Floating coins (right) -->
         <div class="hero-coins" aria-hidden="true">
-            <div class="hcoin hcoin-1"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
-            <div class="hcoin hcoin-2"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
-            <div class="hcoin hcoin-3"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
-            <div class="hcoin hcoin-4"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
-            <div class="hcoin hcoin-5"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
-            <div class="hcoin hcoin-6"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" loading="lazy"></div>
+            <div class="hcoin hcoin-1"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
+            <div class="hcoin hcoin-2"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
+            <div class="hcoin hcoin-3"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
+            <div class="hcoin hcoin-4"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
+            <div class="hcoin hcoin-5"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
+            <div class="hcoin hcoin-6"><img src="<?= BASE_URL ?>/assets/images/token.png" alt="" role="presentation" loading="lazy"></div>
         </div>
 
         <!-- Hero content (always centered) -->
         <div class="relative z-10 max-w-2xl mx-auto text-center px-6 py-16">
             <img src="<?= BASE_URL ?>/assets/images/logo.png" alt="JOURNAL" class="hero-logo mx-auto mb-6">
-            <h1 class="text-5xl font-bold tracking-[0.04em] text-j-ivory sm:text-7xl lg:text-8xl leading-tight">
+            <h1 class="text-4xl font-bold tracking-[0.04em] text-j-ivory sm:text-7xl lg:text-8xl leading-tight">
                 MISSION<br>
                 <span class="text-j-gold">TOKEN</span>
             </h1>
-            <p class="mt-6 text-base leading-8 text-j-slate max-w-md mx-auto">
+            <p class="mt-6 text-base leading-8 home-hero-sub max-w-md mx-auto">
                 สะสม Token จากภารกิจ พิชิตทุก challenge<br class="hidden sm:block">
                 และเฝ้าดูยอดสะสมของพนักงานเติบโตขึ้นทุกวัน
             </p>
@@ -178,6 +231,134 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </div>
 
+            <section class="home-intel-board" aria-label="ภาพรวมความเคลื่อนไหวล่าสุด">
+                <div class="home-intel-grid">
+
+                    <article class="home-intel-leader home-intel-card-reveal">
+                        <div class="home-intel-head">
+                            <p class="home-intel-kicker">อันดับล่าสุด</p>
+                            <h3 class="home-intel-title">Leaderboard</h3>
+                        </div>
+
+                        <?php if ($topPerformer): ?>
+                            <div class="home-top-performer">
+                                <p class="home-top-label">แต้มสูงสุดตอนนี้</p>
+                                <p class="home-top-name">
+                                    <?= e($isAuthed ? (string)$topPerformer['full_name'] : $maskPublicName((string)$topPerformer['full_name'])) ?>
+                                </p>
+                                <p class="home-top-value">+<?= formatTokens((int)$topPerformer['total_earned']) ?> TOKEN</p>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($leaderboard): ?>
+                            <div class="home-lb-list" role="list">
+                                <?php foreach ($leaderboard as $row): ?>
+                                    <?php
+                                        $earned = (int)($row['total_earned'] ?? 0);
+                                        $barWidth = max(8, (int)round($earned / $leaderboardMax * 100));
+                                    ?>
+                                    <div class="home-lb-item" role="listitem">
+                                        <div class="home-lb-main">
+                                            <span class="home-lb-rank">#<?= (int)($row['rank'] ?? 0) ?></span>
+                                            <span class="home-lb-name">
+                                                <?= e($isAuthed ? (string)($row['full_name'] ?? '-') : $maskPublicName((string)($row['full_name'] ?? ''))) ?>
+                                            </span>
+                                            <span class="home-lb-token"><?= formatTokens($earned) ?></span>
+                                        </div>
+                                        <div class="home-lb-track" aria-hidden="true">
+                                            <div class="home-lb-fill" style="width: <?= $barWidth ?>%"></div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <p class="home-intel-empty">ยังไม่มีข้อมูลอันดับในตอนนี้</p>
+                        <?php endif; ?>
+                    </article>
+
+                    <div class="home-intel-side">
+
+                        <article class="home-intel-trend home-intel-card-reveal">
+                            <div class="home-intel-head home-intel-head--tight">
+                                <p class="home-intel-kicker">ย้อนหลัง 7 วัน</p>
+                                <h3 class="home-intel-title">แนวโน้ม Token</h3>
+                            </div>
+
+                            <?php if ($weeklyTrend): ?>
+                                <div class="home-trend-bars" role="img" aria-label="กราฟแนวโน้ม Token 7 วันล่าสุด">
+                                    <?php foreach ($weeklyTrend as $day): ?>
+                                        <?php
+                                            $earned = (int)($day['earned_tokens'] ?? 0);
+                                            $subCount = (int)($day['submissions_count'] ?? 0);
+                                            $barHeight = max(10, (int)round($earned / $trendMax * 100));
+                                            $dayLabel = $thaiDayShort($day['trend_date'] ?? null);
+                                        ?>
+                                        <div class="home-trend-col" title="<?= e($formatDate($day['trend_date'] ?? null, 'd/m/Y')) ?>: <?= formatTokens($earned) ?> token / <?= $subCount ?> งาน">
+                                            <div class="home-trend-bar-wrap">
+                                                <div class="home-trend-bar" style="height: <?= $barHeight ?>%"></div>
+                                            </div>
+                                            <span class="home-trend-day"><?= e($dayLabel) ?></span>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="home-trend-summary">
+                                    <div>
+                                        <p class="home-trend-summary-label">รวมสัปดาห์นี้</p>
+                                        <p class="home-trend-summary-value">+<?= formatTokens($weeklyEarnedTotal) ?> Token</p>
+                                    </div>
+                                    <div>
+                                        <p class="home-trend-summary-label">ส่งภารกิจ</p>
+                                        <p class="home-trend-summary-value"><?= formatTokens($weeklySubmissionTotal) ?> ครั้ง</p>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <p class="home-intel-empty">ยังไม่มีข้อมูลแนวโน้มในรอบสัปดาห์</p>
+                            <?php endif; ?>
+                        </article>
+
+                        <article class="home-intel-activity home-intel-card-reveal">
+                            <div class="home-intel-head home-intel-head--tight">
+                                <p class="home-intel-kicker">สดจากระบบ</p>
+                                <h3 class="home-intel-title">กิจกรรมล่าสุด</h3>
+                            </div>
+
+                            <?php if ($recentActivity): ?>
+                                <div class="home-activity-list" role="list" aria-label="กิจกรรมล่าสุดของระบบ">
+                                    <?php foreach ($recentActivity as $item): ?>
+                                        <?php
+                                            $line = $buildActivityLine($item);
+                                            $status = (string)($item['status'] ?? 'pending');
+                                            $badgeClass = $status === 'rejected'
+                                                ? 'is-rejected'
+                                                : ($status === 'pending' ? 'is-pending' : 'is-approved');
+                                        ?>
+                                        <div class="home-activity-item" role="listitem">
+                                            <span class="home-activity-dot <?= $badgeClass ?>" aria-hidden="true"></span>
+                                            <div class="home-activity-content">
+                                                <p class="home-activity-line"><?= e($line) ?></p>
+                                                <p class="home-activity-meta">
+                                                    <?= e($isAuthed ? (string)($item['full_name'] ?? '-') : $maskPublicName((string)($item['full_name'] ?? ''))) ?>
+                                                    · <?= e($formatDate($item['submitted_at'] ?? null, 'd/m H:i')) ?>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else: ?>
+                                <p class="home-intel-empty">ยังไม่มีกิจกรรมล่าสุด แวะมาอีกครั้งได้เลย</p>
+                            <?php endif; ?>
+
+                            <p class="home-activity-footnote">
+                                วันนี้มีการส่งภารกิจแล้ว <?= formatTokens($activityCount) ?> รายการ สนุกขึ้นทุกวัน
+                            </p>
+                        </article>
+
+                    </div>
+
+                </div>
+            </section>
+
             <!-- ── Scroll hint (absolute at bottom of about-section) ── -->
             <div class="about-scroll-hint" aria-hidden="true">
                 <span>GUIDE</span>
@@ -207,7 +388,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div class="guide-flow-content">
                         <p class="guide-flow-title">เข้าสู่ระบบ</p>
-                        <p class="guide-flow-desc">ใช้รหัสพนักงานและรหัสผ่านของคุณ — ถ้าเข้าครั้งแรก ให้ใช้รหัสพนักงานเป็นรหัสผ่าน</p>
+                        <p class="guide-flow-desc">ใช้รหัสพนักงานและรหัสผ่านของคุณ; ถ้าเข้าครั้งแรก ให้ใช้รหัสพนักงานเป็นรหัสผ่าน</p>
                     </div>
                 </div>
 
@@ -229,7 +410,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div class="guide-flow-content">
                         <p class="guide-flow-title">ทำและส่งงาน</p>
-                        <p class="guide-flow-desc">ตอบคำถามให้ถูกทุกข้อ หรือถ่ายรูปหลักฐานแล้วส่ง — ผลจะแจ้งในหน้าประวัติ</p>
+                        <p class="guide-flow-desc">ตอบคำถามให้ถูกทุกข้อ หรือถ่ายรูปหลักฐานแล้วส่ง: ผลจะแจ้งในหน้าประวัติ</p>
                     </div>
                 </div>
 
@@ -267,7 +448,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div class="guide-flow-content">
                         <p class="guide-flow-title">เข้าสู่ระบบ</p>
-                        <p class="guide-flow-desc">ใช้บัญชี HR เข้าสู่ระบบ — ระบบจะพาไปหน้าจัดการโดยอัตโนมัติ ไม่ต้องตั้งค่าอื่นเพิ่ม</p>
+                        <p class="guide-flow-desc">ใช้บัญชี HR เข้าสู่ระบบ; ระบบจะพาไปหน้าจัดการโดยอัตโนมัติ ไม่ต้องตั้งค่าอื่นเพิ่ม</p>
                     </div>
                 </div>
 

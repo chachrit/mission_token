@@ -244,7 +244,7 @@ $notifCount = count($allNotifs);
                 </div>
 
                 <!-- Desktop Nav Links -->
-                <div class="hidden md:flex items-center">
+                <div class="hidden md:flex flex-1 min-w-0 items-center justify-center overflow-x-auto">
                     <?php
                     // Pending counts (admin/hr/it zone only)
                     $pendingRedemptionCount = 0;
@@ -259,6 +259,7 @@ $notifCount = count($allNotifs);
                     if ($isAdminOrHr && $isAdminPage) {
                         // ไปยัง /hr/ ใช้ admin nav
                         $navLinks = [
+                            'admin_dashboard'    => ['label' => 'ภาพรวม',          'href' => BASE_URL . '/hr/dashboard.php'],
                             'admin_challenges'   => ['label' => 'จัดการภารกิจ',    'href' => BASE_URL . '/hr/challenges/index.php'],
                             'admin_submissions'  => ['label' => 'อนุมัติงาน',     'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
                             'admin_rewards'      => ['label' => 'จัดการรางวัล',   'href' => BASE_URL . '/hr/rewards/index.php'],
@@ -272,6 +273,7 @@ $notifCount = count($allNotifs);
                             'challenges' => ['label' => 'ภารกิจ',    'href' => BASE_URL . '/pages/challenges.php'],
                             'rewards'    => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
                             'history'    => ['label' => 'ประวัติ',    'href' => BASE_URL . '/pages/history.php'],
+                            'help'       => ['label' => 'ช่วยเหลือ',  'href' => BASE_URL . '/pages/help.php'],
                         ];
                     }
 
@@ -280,7 +282,7 @@ $notifCount = count($allNotifs);
                         $isActive = ($currentActive === $key);
                     ?>
                     <a href="<?php echo $link['href']; ?>"
-                              class="nav-link-hover relative flex items-center gap-1.5 px-4 py-5 text-sm font-medium transition-colors <?php echo $isActive ? 'nav-active' : 'nav-link-default'; ?>"
+                              class="nav-link-hover relative flex items-center gap-1.5 px-3 lg:px-4 py-5 text-sm font-medium whitespace-nowrap transition-colors <?php echo $isActive ? 'nav-active' : 'nav-link-default'; ?>"
                               <?php echo $isActive ? 'aria-current="page"' : ''; ?>>
                         <?php echo $link['label']; ?>
                         <?php if (!empty($link['badge']) && $link['badge'] > 0): ?>

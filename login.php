@@ -298,7 +298,7 @@ if (isPost()) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ — JOURNAL Mission Token</title>
+    <title>เข้าสู่ระบบ | JOURNAL Mission Token</title>
     <meta name="csrf-token" content="<?php echo e(csrfToken()); ?>">
 
     <script>

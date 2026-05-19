@@ -271,7 +271,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
                 <span class="hy-row-date"><?= $q['challenge_type'] === 'quiz' ? 'Quiz' : 'Photo' ?></span>
                 <span class="hy-rd-token-value <?= (int)$q['token_awarded'] > 0 ? '' : 'hy-wallet-card-color--count' ?>">
-                    <?= (int)$q['token_awarded'] > 0 ? '+' . number_format((int)$q['token_awarded']) : '—' ?>
+                    <?= (int)$q['token_awarded'] > 0 ? '+' . number_format((int)$q['token_awarded']) : 'ไม่มี' ?>
                 </span>
                 <span class="hy-status-chip <?= e($qs['class']) ?>"><?= $qs['label'] ?></span>
             </div>
@@ -332,7 +332,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <div id="hy-coupon-box-<?= (int)$rd['redemption_id'] ?>" class="hy-coupon-box">
                         <div class="hy-coupon-info">
-                            <span class="hy-coupon-meta">อนุมัติโดย: <?= e($rd['processed_by_name'] ?? '—') ?></span>
+                            <span class="hy-coupon-meta">อนุมัติโดย: <?= e($rd['processed_by_name'] ?? 'ไม่ระบุ') ?></span>
                             <span class="hy-coupon-code"><?= e($rd['coupon_code']) ?></span>
                         </div>
                         <button id="hy-coupon-copy-<?= (int)$rd['redemption_id'] ?>" class="hy-coupon-copy-btn" title="คัดลอก" type="button" data-hy-copy-coupon="<?= e($rd['coupon_code']) ?>" data-hy-copy-id="<?= (int)$rd['redemption_id'] ?>" aria-label="คัดลอกรหัสคูปอง">
@@ -766,7 +766,7 @@ function openHyQuestModal(subId) {
         tokenEl.textContent = '+' + d.token.toLocaleString() + ' Token';
         tokenEl.className = 'hy-quest-token-value hy-quest-token-value--has';
     } else {
-        tokenEl.textContent = '—';
+        tokenEl.textContent = 'ไม่มี';
         tokenEl.className = 'hy-quest-token-value hy-quest-token-value--none';
     }
     document.getElementById('hyq-at').textContent = d.at;
@@ -780,7 +780,7 @@ function openHyQuestModal(subId) {
         reviewerWrap.classList.add('hy-hidden');
     }
 
-    document.getElementById('hyq-note').textContent = d.note || '—';
+    document.getElementById('hyq-note').textContent = d.note || 'ไม่มีหมายเหตุ';
     _hyOpen('quest');
 }
 

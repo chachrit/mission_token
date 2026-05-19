@@ -112,7 +112,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </svg>
                     </div>
                     <div class="hp-section-body">
-                        <p class="hp-intro">ใช้ <strong>รหัสพนักงาน</strong> และ <strong>รหัสผ่าน</strong> เดิมที่ใช้กับ <strong>JOURNAL Web Portal</strong> ได้เลย — ไม่ต้องสมัครใหม่</p>
+                        <p class="hp-intro">ใช้ <strong>รหัสพนักงาน</strong> และ <strong>รหัสผ่าน</strong> เดิมที่ใช้กับ <strong>JOURNAL Web Portal</strong> ได้เลย; ไม่ต้องสมัครใหม่</p>
                         <p class="hp-text hp-mb-04"><strong class="hp-c-ivory">ลืมหรือต้องการเปลี่ยนรหัสผ่าน?</strong></p>
                         <ol class="hp-steps">
                             <li><span class="hp-step-num">1</span><span>กดที่ <strong class="hp-c-ivory">ชื่อของคุณ</strong> (มุมบนขวา) → เลือก <strong>"โปรไฟล์ของฉัน"</strong></span></li>
@@ -131,7 +131,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="hp-section" id="emp-dashboard" data-keywords="dashboard หน้าแรก token streak อันดับ leaderboard">
                     <div class="hp-section-header" data-action="toggleSection">
                         <div class="hp-section-icon hp-fs-06">DS</div>
-                        <span class="hp-section-title-text">หน้า Dashboard — ภาพรวมของคุณ</span>
+                        <span class="hp-section-title-text">หน้า Dashboard: ภาพรวมของคุณ</span>
                         <svg class="hp-section-chevron" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -141,27 +141,27 @@ require_once __DIR__ . '/../includes/header.php';
                         <ol class="hp-steps">
                             <li>
                                 <span class="hp-step-num hp-bg-gold-soft">1</span>
-                                <span><strong class="hp-c-gold">กระเป๋า Token</strong> — Token คงเหลือ (ใช้แลกรางวัลได้), Token ที่ได้รับทั้งหมด, Token ที่ใช้ไปแล้ว</span>
+                                <span><strong class="hp-c-gold">กระเป๋า Token</strong>: Token คงเหลือ (ใช้แลกรางวัลได้), Token ที่ได้รับทั้งหมด, Token ที่ใช้ไปแล้ว</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">2</span>
-                                <span><strong class="hp-c-ivory">อันดับของคุณ</strong> — ลำดับใน Leaderboard นับจาก Token ที่ได้รับทั้งหมด (ไม่ใช่คงเหลือ)</span>
+                                <span><strong class="hp-c-ivory">อันดับของคุณ</strong>: ลำดับใน Leaderboard นับจาก Token ที่ได้รับทั้งหมด (ไม่ใช่คงเหลือ)</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">3</span>
-                                <span><strong class="hp-c-ivory">Streak</strong> — จำนวนวันติดต่อกันที่ทำภารกิจผ่านแล้ว</span>
+                                <span><strong class="hp-c-ivory">Streak</strong>: จำนวนวันติดต่อกันที่ทำภารกิจผ่านแล้ว</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">4</span>
-                                <span><strong class="hp-c-ivory">Token เดือนนี้</strong> — Token ที่ได้รับในเดือนปัจจุบัน</span>
+                                <span><strong class="hp-c-ivory">Token เดือนนี้</strong>: Token ที่ได้รับในเดือนปัจจุบัน</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">5</span>
-                                <span><strong class="hp-c-ivory">ภารกิจที่เปิดอยู่</strong> — แสดงภารกิจที่ทำได้พร้อม Token รางวัล</span>
+                                <span><strong class="hp-c-ivory">ภารกิจที่เปิดอยู่</strong>: แสดงภารกิจที่ทำได้พร้อม Token รางวัล</span>
                             </li>
                             <li>
                                 <span class="hp-step-num">6</span>
-                                <span><strong class="hp-c-ivory">กิจกรรมล่าสุด</strong> — 6 รายการล่าสุดที่คุณส่งงาน พร้อมสถานะ</span>
+                                <span><strong class="hp-c-ivory">กิจกรรมล่าสุด</strong>: 6 รายการล่าสุดที่คุณส่งงาน พร้อมสถานะ</span>
                             </li>
                         </ol>
                     </div>

@@ -6,38 +6,38 @@ product
 
 ## Users
 
-พนักงานทั้งหมดในองค์กร JOURNAL (~216 คน) ทุกระดับและทุกฝ่าย
-ส่วนใหญ่ใช้บน PC ที่ทำงาน มีบางส่วนที่เปิดบนมือถือ
-Context การใช้งาน: ระหว่างวันทำงาน เปิดดูภารกิจ ส่งงาน และเช็ค token balance
-HR และ Admin ใช้หน้าจัดการแยกต่างหาก (hr/ zone)
+พนักงานองค์กร JOURNAL ทุกระดับ — ใช้บนทั้ง desktop (ที่ทำงาน) และ mobile
+งาน primary ทุกอย่างมีความสำคัญเท่ากัน: ดู token balance, เปิดภารกิจใหม่, ส่งงาน, แลกรางวัล
+HR และ Admin ใช้ interface ชุดเดียวกัน (role-gated) เพื่ออนุมัติงานและบริหารภารกิจ
 
 ## Product Purpose
 
-Mission Token คือระบบ gamification ภายในองค์กร — พนักงานทำ "ภารกิจ" (quiz หรือส่งรูปหลักฐาน)
-เพื่อสะสม Token แล้วนำไปแลกรางวัลจริงในร้านรางวัล
-เป้าหมาย: สร้าง engagement, ทำให้งาน HR feel rewarding, ให้พนักงานรู้สึกว่าการมีส่วนร่วมมีคุณค่าจริงๆ
+ระบบ gamification ภายในองค์กรที่ทำให้การทำภารกิจประจำวันรู้สึกเป็นเรื่องที่มีความหมายและมีน้ำหนัก ไม่ใช่แค่ตาราง HR
+พนักงานสะสม Token จากการทำภารกิจ (quiz / photo submission) แล้วนำไปแลกรางวัลในร้านรางวัล
+ความสำเร็จ = พนักงานกลับมาใช้สม่ำเสมอและรู้สึก engaged กับองค์กร
 
 ## Brand Personality
 
-Playful-Premium: สนุก อยากมีส่วนร่วม แต่ไม่ใช่ cartoon — รู้สึกว่ารางวัลมีมูลค่าจริง
-สามคำ: Bold, Rewarding, Operative
-โทน: เหมือน ops dashboard ที่ถูกฉาบด้วย gold — dark และ sharp แต่มี warmth จาก token economy
+Elite, Covert, Purposeful — "ภารกิจลับที่คุ้มค่าจะถูกจดจำ"
+เสียงสงบ ตรงไปตรงมา มีน้ำหนัก ไม่ประดับประดา ไม่ตื่นเต้นเกินจริง
+ใกล้เคียง Linear × JOURNAL Brand Book (Dark Edition): structural discipline ของ Linear
+แต่แทนที่ความ cold ด้วยความอบอุ่นจาก รงทอง (j-gold) + ขนคอหางนกยูง (j-teal)
 
 ## Anti-references
 
-- Duolingo — การ์ตูน/เด็กเกินไป ไม่ดู professional
-- Generic HR SaaS (BambooHR, Workday) — ขาว-ฟ้า น่าเบื่อ ดู corporate เกินไป ไม่มี personality
-- Crypto/NFT sites — neon บน black ดูไม่น่าเชื่อถือ ไม่เหมาะ internal tool
+- **Enterprise HR portal** (Workday, SAP SuccessFactors): gray, cold, ไร้บุคลิก, table-heavy
+- **Crypto/NFT aesthetic**: neon on black, over-the-top, decorative ไม่มีแก่นสาร
 
 ## Design Principles
 
-1. **Gold เป็น signal ของ value** — สีทองปรากฏเฉพาะเมื่อมีรางวัล token หรือ achievement จริงๆ ไม่ใช้เป็นสีตกแต่ง
-2. **Dark ด้วยเหตุผล** — พนักงานเปิดดูระหว่างวัน บน PC หน้าจอปกติ dark theme ลด distraction และทำให้ gold pop
-3. **Clarity ก่อน delight** — workflow ต้องเร็วและชัด (ดูภารกิจ → ส่งงาน → เห็นผล) ความสวยงามเสริม ไม่ขัด
-4. **ภาษาไทยเป็นหลัก** — copy ทั้งหมดเป็นภาษาไทย ยกเว้น technical label ที่เป็น English ได้ตามธรรมชาติ
-5. **Reward feels real** — ทุก token amount, progress bar, และ redemption ต้องรู้สึกมีน้ำหนัก ไม่ใช่ number ลอยๆ
+1. **Gravity over glitter** — ทุก element ต้องมีน้ำหนักและเหตุผล ไม่ใช่แค่สวยงาม
+2. **Discipline before decoration** — โครงสร้าง layout ต้องชัดก่อน จึงค่อยเพิ่ม accent
+3. **Gold is earned, not scattered** — j-gold ใช้เฉพาะจุดที่มีความหมาย: primary action, data highlight, milestone
+4. **Thai at home** — Prompt font ต้องอ่านง่ายเสมอ ทั้งภาษาไทยและอังกฤษ ทุกขนาด
+5. **One surface, two scales** — desktop อ่านลึก, mobile อ่านเร็ว: ทั้งคู่ต้องทำงานได้เต็มประสิทธิภาพ
 
 ## Accessibility & Inclusion
 
-Standard browser support — ไม่มี WCAG requirement พิเศษ
-ข้อความภาษาไทยต้องอ่านออกชัดเจนบน dark background (contrast ratio ≥ 4.5:1)
+ไม่มี WCAG requirement เฉพาะจากองค์กร แต่ยึดหลัก AA contrast สำหรับ text บน dark background
+Focus ring ใช้ j-gold outline เสมอ เพื่อให้เห็นชัดบน dark surface
+ไม่ใช้ animation เป็น sole indicator ของ state change

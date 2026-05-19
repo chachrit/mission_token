@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'Quiz: ' . $challenge['title']);
                 setFlash('success', "ยินดีด้วย! ตอบถูกทั้งหมด {$totalQ}/{$totalQ} ข้อ ได้รับ +{$awarded} Token");
             } else {
-                setFlash('error', "ตอบถูก {$correctCount}/{$totalQ} ข้อ — ไม่ผ่านเกณฑ์ ไม่ได้รับ Token (ไม่สามารถลองใหม่ได้)");
+                setFlash('error', "ตอบถูก {$correctCount}/{$totalQ} ข้อ: ไม่ผ่านเกณฑ์ ไม่ได้รับ Token (ไม่สามารถลองใหม่ได้)");
             }
         } catch (Throwable $e) {
             $pdo->rollBack();
@@ -1176,7 +1176,7 @@ require_once __DIR__ . '/../includes/header.php';
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
                     </svg>
-                    <span class="ch-detail-modal-warning-text">ตอบได้ 1 ครั้งเท่านั้น — ต้องตอบถูกทุกข้อจึงจะได้รับ Token</span>
+                    <span class="ch-detail-modal-warning-text">ตอบได้ 1 ครั้งเท่านั้น; ต้องตอบถูกทุกข้อจึงจะได้รับ Token</span>
                 </div>
                 <!-- Start button -->
                 <a id="qm-start-btn" href="#"

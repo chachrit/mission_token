@@ -385,7 +385,7 @@ require_once __DIR__ . '/../includes/header.php';
                         </div>
                         <span class="ds-activity-status <?= $statusClass ?>"><?= $sl2['text'] ?></span>
                         <span class="ds-activity-token <?= $awarded > 0 ? 'ds-activity-token--earned' : 'ds-activity-token--none' ?>">
-                            <?= $awarded > 0 ? '+' . formatTokens($awarded) : '—' ?>
+                            <?= $awarded > 0 ? '+' . formatTokens($awarded) : 'ไม่มี' ?>
                         </span>
                         <span class="ds-activity-date"><?= $dateStr ?></span>
                     </div>
