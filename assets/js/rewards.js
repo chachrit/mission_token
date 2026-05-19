@@ -5,6 +5,13 @@
 (function () {
     'use strict';
 
+    function mtDelay(ms) {
+        if (window.mtMotion && typeof window.mtMotion.delay === 'function') {
+            return window.mtMotion.delay(ms);
+        }
+        return ms;
+    }
+
     /* ── Category icon / tone helpers ──────────────────────────────────── */
 
     function rwCategoryIconSvg(category) {
@@ -38,6 +45,9 @@
     var _redeemLastFocus = null;
     var _rdDetailLastFocus = null;
     var _pendingLastFocus = null;
+    var _redeemTrap = null;
+    var _rdDetailTrap = null;
+    var _pendingTrap = null;
 
     window.filterCat = function (btn, cat) {
         document.querySelectorAll('.rw-cat-pill').forEach(function (p) {
@@ -77,6 +87,10 @@
         redeemModal.classList.add('open');
         redeemModal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        if (_redeemTrap && typeof _redeemTrap.release === 'function') _redeemTrap.release();
+        if (window.mtModalFocusTrap) {
+            _redeemTrap = window.mtModalFocusTrap.activate(redeemModal, document.querySelector('#redeem-modal .rw-modal-box'));
+        }
         setTimeout(function () {
             var focusBtn = document.getElementById('modal-confirm-btn');
             if (focusBtn) focusBtn.focus();
@@ -89,6 +103,10 @@
         redeemModal.classList.remove('open');
         redeemModal.setAttribute('aria-hidden', 'true');
         document.body.style.overflow = '';
+        if (_redeemTrap && typeof _redeemTrap.release === 'function') {
+            _redeemTrap.release();
+            _redeemTrap = null;
+        }
         if (_redeemLastFocus && typeof _redeemLastFocus.focus === 'function') {
             _redeemLastFocus.focus();
         }
@@ -517,6 +535,10 @@
         void card.offsetWidth;
         overlay.classList.add('rd-ov-in');
         card.classList.add('rd-card-in');
+        if (_rdDetailTrap && typeof _rdDetailTrap.release === 'function') _rdDetailTrap.release();
+        if (window.mtModalFocusTrap) {
+            _rdDetailTrap = window.mtModalFocusTrap.activate(overlay, card);
+        }
         setTimeout(function () {
             card.focus();
         }, 0);
@@ -534,10 +556,14 @@
             overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
             overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_rdDetailTrap && typeof _rdDetailTrap.release === 'function') {
+                _rdDetailTrap.release();
+                _rdDetailTrap = null;
+            }
             if (_rdDetailLastFocus && typeof _rdDetailLastFocus.focus === 'function') {
                 _rdDetailLastFocus.focus();
             }
-        }, 160);
+        }, mtDelay(160));
     }
     window.closeRdDetail = closeRdDetail;
 
@@ -585,7 +611,7 @@
                 var navBal = document.getElementById('nav-balance');
                 if (navBal) navBal.textContent = data.new_balance.toLocaleString('th-TH');
                 closeRdDetail();
-                setTimeout(function () { location.reload(); }, 165);
+                setTimeout(function () { location.reload(); }, mtDelay(165));
             } else {
                 cb.disabled  = false;
                 cb.innerHTML = data.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่';
@@ -624,7 +650,7 @@
                 row.onmouseout  = function () { this.style.background = ''; };
                 row.onclick = function () {
                     closePendingList();
-                    setTimeout(function () { openRdDetail(parseInt(rdId)); }, 140);
+                    setTimeout(function () { openRdDetail(parseInt(rdId)); }, mtDelay(140));
                 };
                 row.innerHTML = [
                     '<span class="rw-pending-icon ' + toneClass + '">' +
@@ -656,6 +682,10 @@
         void card.offsetWidth;
         overlay.classList.add('rd-ov-in');
         card.classList.add('rd-card-in');
+        if (_pendingTrap && typeof _pendingTrap.release === 'function') _pendingTrap.release();
+        if (window.mtModalFocusTrap) {
+            _pendingTrap = window.mtModalFocusTrap.activate(overlay, card);
+        }
         setTimeout(function () { card.focus(); }, 0);
     }
     window.openPendingList = openPendingList;
@@ -671,10 +701,14 @@
             overlay.classList.remove('rd-ov-out'); card.classList.remove('rd-card-out');
             overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
+            if (_pendingTrap && typeof _pendingTrap.release === 'function') {
+                _pendingTrap.release();
+                _pendingTrap = null;
+            }
             if (_pendingLastFocus && typeof _pendingLastFocus.focus === 'function') {
                 _pendingLastFocus.focus();
             }
-        }, 160);
+        }, mtDelay(160));
     }
     window.closePendingList = closePendingList;
 

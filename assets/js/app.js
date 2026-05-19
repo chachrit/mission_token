@@ -8,6 +8,25 @@
 // Counter Animation (count-up effect)
 // ============================================================
 
+function prefersReducedMotion() {
+    return typeof window.matchMedia === 'function'
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function getMotionDuration(ms) {
+    return prefersReducedMotion() ? 0 : ms;
+}
+
+function getMotionBehavior() {
+    return prefersReducedMotion() ? 'auto' : 'smooth';
+}
+
+window.mtMotion = window.mtMotion || {
+    reduced: prefersReducedMotion,
+    delay: getMotionDuration,
+    scrollBehavior: getMotionBehavior
+};
+
 /**
  * Animate a number element counting up to target.
  * @param {HTMLElement} el  — element to update
@@ -15,6 +34,11 @@
  * @param {number}      duration ms
  */
 function animateCounter(el, target, duration = 1200) {
+    if (prefersReducedMotion()) {
+        el.textContent = target.toLocaleString('th-TH');
+        return;
+    }
+
     const start     = parseInt(el.textContent.replace(/[^0-9]/g, '')) || 0;
     const range     = target - start;
     const startTime = performance.now();
@@ -46,6 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
 const CONFETTI_COLORS = ['#dab937', '#f8e769', '#518e5c', '#4f8b98', '#d2592a', '#2f4e9d', '#eeebe1'];
 
 function showConfetti(count = 90) {
+    if (prefersReducedMotion()) return;
+
     // Inject keyframe once
     if (!document.getElementById('confetti-kf')) {
         const style = document.createElement('style');
@@ -84,7 +110,7 @@ function showConfetti(count = 90) {
         container.appendChild(piece);
     }
 
-    setTimeout(() => container.remove(), 4000);
+    setTimeout(() => container.remove(), getMotionDuration(4000) || 300);
 }
 
 // ============================================================
@@ -92,6 +118,7 @@ function showConfetti(count = 90) {
 // ============================================================
 
 function showTokenReward(amount, message = '') {
+    var reduced = prefersReducedMotion();
     const el = document.createElement('div');
     el.style.cssText = [
         'position:fixed', 'top:50%', 'left:50%',
@@ -100,7 +127,7 @@ function showTokenReward(amount, message = '') {
         'border-radius:20px', 'padding:2rem 3rem',
         'text-align:center', 'z-index:10000',
         'box-shadow:0 20px 60px rgba(0,0,0,0.4)',
-        'transition:transform 0.3s cubic-bezier(0.22,1,0.36,1), opacity 0.3s',
+        'transition:transform ' + (reduced ? '0ms' : '0.3s cubic-bezier(0.22,1,0.36,1)') + ', opacity ' + (reduced ? '0ms' : '0.3s'),
         'opacity:0'
     ].join(';');
 
@@ -125,8 +152,8 @@ function showTokenReward(amount, message = '') {
     setTimeout(() => {
         el.style.transform = 'translate(-50%,-50%) scale(0.8)';
         el.style.opacity   = '0';
-        setTimeout(() => el.remove(), 300);
-    }, 2500);
+        setTimeout(() => el.remove(), getMotionDuration(300) || 120);
+    }, getMotionDuration(2500) || 900);
 
     showConfetti(70);
 }
@@ -243,12 +270,79 @@ function setButtonLoading(btn, loading = true, loadingText = 'กำลังด
 }
 
 // ============================================================
+// Modal Focus Trap Utility
+// ============================================================
+
+(function () {
+    function getFocusable(container) {
+        if (!container) return [];
+        var selector = [
+            'a[href]:not([tabindex="-1"])',
+            'button:not([disabled]):not([tabindex="-1"])',
+            'textarea:not([disabled]):not([tabindex="-1"])',
+            'input:not([disabled]):not([type="hidden"]):not([tabindex="-1"])',
+            'select:not([disabled]):not([tabindex="-1"])',
+            '[tabindex]:not([tabindex="-1"])'
+        ].join(',');
+
+        return Array.prototype.filter.call(container.querySelectorAll(selector), function (el) {
+            return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+        });
+    }
+
+    function createTrap(overlayEl, containerEl) {
+        if (!overlayEl || !containerEl) {
+            return { release: function () {} };
+        }
+
+        function onKeyDown(e) {
+            if (e.key !== 'Tab') return;
+
+            var focusables = getFocusable(containerEl);
+            if (!focusables.length) {
+                e.preventDefault();
+                if (typeof containerEl.focus === 'function') containerEl.focus();
+                return;
+            }
+
+            var first = focusables[0];
+            var last = focusables[focusables.length - 1];
+            var active = document.activeElement;
+
+            if (e.shiftKey) {
+                if (active === first || !containerEl.contains(active)) {
+                    e.preventDefault();
+                    last.focus();
+                }
+            } else if (active === last || !containerEl.contains(active)) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+
+        overlayEl.addEventListener('keydown', onKeyDown);
+        return {
+            release: function () {
+                overlayEl.removeEventListener('keydown', onKeyDown);
+            }
+        };
+    }
+
+    window.mtModalFocusTrap = {
+        activate: function (overlayEl, containerEl) {
+            return createTrap(overlayEl, containerEl);
+        }
+    };
+})();
+
+// ============================================================
 // Home Page — Morphing Slide Transition (clip-path expand)
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function () {
     var scrollBtn  = document.getElementById('hero-scroll-btn');
     var aboutSlide = document.getElementById('about');
+    var aboutTitle = document.getElementById('about-title');
     var backBtn    = document.getElementById('about-back-btn');
 
     if (!scrollBtn || !aboutSlide) return;
@@ -263,8 +357,15 @@ document.addEventListener('DOMContentLoaded', function () {
         isOpen = true;
         wheelAccum = 0;
         aboutSlide.classList.add('slide-open');
+        aboutSlide.setAttribute('aria-hidden', 'false');
+        scrollBtn.setAttribute('aria-expanded', 'true');
         document.body.classList.add('about-open');
         if (backBtn) backBtn.classList.add('btn-visible');
+        if (aboutTitle) {
+            setTimeout(function () {
+                aboutTitle.focus();
+            }, 320);
+        }
     }
 
     function closeAbout() {
@@ -272,10 +373,13 @@ document.addEventListener('DOMContentLoaded', function () {
         isOpen = false;
         wheelAccum = 0;
         aboutSlide.classList.remove('slide-open');
+        aboutSlide.setAttribute('aria-hidden', 'true');
+        scrollBtn.setAttribute('aria-expanded', 'false');
         document.body.classList.remove('about-open');
         if (backBtn) backBtn.classList.remove('btn-visible');
         // Reset scroll so next open always starts clip-path from the button origin
         aboutSlide.scrollTop = 0;
+        scrollBtn.focus();
     }
 
     // Click on scroll indicator
@@ -371,11 +475,42 @@ function switchGuideTab(tab) {
     var hrGrid  = document.getElementById('guide-hr');
     var tabEmp  = document.getElementById('tab-employee');
     var tabHr   = document.getElementById('tab-hr');
-    if (empGrid) empGrid.style.display = tab === 'employee' ? 'grid' : 'none';
-    if (hrGrid)  hrGrid.style.display  = tab === 'hr'       ? 'grid' : 'none';
-    if (tabEmp)  tabEmp.classList.toggle('active',  tab === 'employee');
-    if (tabHr)   tabHr.classList.toggle('active',   tab === 'hr');
+    var isEmployee = tab === 'employee';
+
+    if (empGrid) empGrid.hidden = !isEmployee;
+    if (hrGrid)  hrGrid.hidden  = isEmployee;
+
+    if (tabEmp) {
+        tabEmp.classList.toggle('active', isEmployee);
+        tabEmp.setAttribute('aria-selected', isEmployee ? 'true' : 'false');
+        tabEmp.tabIndex = isEmployee ? 0 : -1;
+    }
+    if (tabHr) {
+        tabHr.classList.toggle('active', !isEmployee);
+        tabHr.setAttribute('aria-selected', !isEmployee ? 'true' : 'false');
+        tabHr.tabIndex = !isEmployee ? 0 : -1;
+    }
 }
+
+document.addEventListener('keydown', function (e) {
+    var tabBtn = e.target.closest('.guide-tab-btn[role="tab"]');
+    if (!tabBtn) return;
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('.guide-tab-btn[role="tab"]'));
+    var idx = tabs.indexOf(tabBtn);
+    if (idx < 0) return;
+
+    e.preventDefault();
+    var nextIdx = e.key === 'ArrowRight'
+        ? (idx + 1) % tabs.length
+        : (idx - 1 + tabs.length) % tabs.length;
+    var nextTab = tabs[nextIdx];
+    if (!nextTab) return;
+
+    switchGuideTab(nextTab.id === 'tab-employee' ? 'employee' : 'hr');
+    nextTab.focus();
+});
 
 // ============================================================
 // Login Page — Password Toggle & Form Submit
@@ -436,6 +571,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Admin Redemptions — action modal (fulfill / cancel)
 // ============================================================
 var _ardLastFocus = null;
+var _ardTrap = null;
 
 function ardOpenAction(id, action, empName, rewardTitle) {
     _ardLastFocus = document.activeElement;
@@ -463,6 +599,12 @@ function ardOpenAction(id, action, empName, rewardTitle) {
     modal.classList.add('open');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    if (_ardTrap && typeof _ardTrap.release === 'function') {
+        _ardTrap.release();
+    }
+    if (window.mtModalFocusTrap) {
+        _ardTrap = window.mtModalFocusTrap.activate(modal, modal.querySelector('.ard-modal-box'));
+    }
     setTimeout(function () {
         var submitBtn = document.getElementById('ard-modal-submit-btn');
         if (submitBtn) submitBtn.focus();
@@ -474,6 +616,10 @@ function ardCloseAction() {
     modal.classList.remove('open');
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_ardTrap && typeof _ardTrap.release === 'function') {
+        _ardTrap.release();
+        _ardTrap = null;
+    }
     if (_ardLastFocus && typeof _ardLastFocus.focus === 'function') {
         _ardLastFocus.focus();
     }
@@ -569,6 +715,8 @@ function confirmReject(id) {
 var _empAdjustMode = 'add'; // 'add' | 'deduct'
 var _empAdjustLastFocus = null;
 var _empPwLastFocus = null;
+var _empAdjustTrap = null;
+var _empPwTrap = null;
 
 function empSetMode(mode) {
     _empAdjustMode = mode;
@@ -615,6 +763,12 @@ function empOpenAdjust(empId, name, balance, qs) {
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    if (_empAdjustTrap && typeof _empAdjustTrap.release === 'function') {
+        _empAdjustTrap.release();
+    }
+    if (window.mtModalFocusTrap) {
+        _empAdjustTrap = window.mtModalFocusTrap.activate(modal, modal.querySelector('.jp-modal-content'));
+    }
     setTimeout(function() { document.getElementById('emp-adjust-amount').focus(); }, 80);
 }
 function empCloseAdjust() {
@@ -622,6 +776,10 @@ function empCloseAdjust() {
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_empAdjustTrap && typeof _empAdjustTrap.release === 'function') {
+        _empAdjustTrap.release();
+        _empAdjustTrap = null;
+    }
     if (_empAdjustLastFocus && typeof _empAdjustLastFocus.focus === 'function') {
         _empAdjustLastFocus.focus();
     }
@@ -639,6 +797,12 @@ function empOpenPw(empId, name, qs) {
     modal.style.display = 'flex';
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    if (_empPwTrap && typeof _empPwTrap.release === 'function') {
+        _empPwTrap.release();
+    }
+    if (window.mtModalFocusTrap) {
+        _empPwTrap = window.mtModalFocusTrap.activate(modal, modal.querySelector('.jp-modal-content'));
+    }
     setTimeout(function() { document.getElementById('emp-pw-new').focus(); }, 80);
 }
 function empClosePw() {
@@ -646,6 +810,10 @@ function empClosePw() {
     modal.style.display = 'none';
     modal.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
+    if (_empPwTrap && typeof _empPwTrap.release === 'function') {
+        _empPwTrap.release();
+        _empPwTrap = null;
+    }
     if (_empPwLastFocus && typeof _empPwLastFocus.focus === 'function') {
         _empPwLastFocus.focus();
     }

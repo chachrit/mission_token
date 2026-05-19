@@ -342,7 +342,10 @@ document.addEventListener('keydown', function (e) {
 
         var section = document.getElementById(sectionId);
         if (section) {
-            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            var behavior = (window.mtMotion && typeof window.mtMotion.scrollBehavior === 'function')
+                ? window.mtMotion.scrollBehavior()
+                : 'smooth';
+            section.scrollIntoView({ behavior: behavior, block: 'start' });
         }
     });
 })();

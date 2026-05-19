@@ -1045,7 +1045,12 @@ require_once __DIR__ . '/../includes/header.php';
                     <div id="pm-csrf"></div>
                     <input type="hidden" name="action" value="submit_photo">
                     <input type="hidden" name="challenge_id" id="pm-cid-input" value="">
-                    <input type="file" name="photos[]" accept="image/*" multiple required class="ch-file-input">
+                    <div id="pm-dropzone" class="ch-upload-dropzone" role="button" tabindex="0" aria-label="ลากและวางไฟล์รูป หรือกดเพื่อเลือกไฟล์">
+                        <p class="ch-upload-dropzone-title">ลากและวางรูปที่นี่ หรือกดเพื่อเลือกไฟล์</p>
+                        <p class="ch-upload-dropzone-sub">รองรับสูงสุด 5 รูป</p>
+                        <input id="pm-photo-input" type="file" name="photos[]" accept="image/*" multiple required class="ch-file-input">
+                    </div>
+                    <p id="pm-file-count" class="ch-file-count" aria-live="polite"></p>
                     <p class="ch-file-hint">JPG, PNG, WebP &bull; สูงสุด 5 รูป &bull; แต่ละรูปไม่เกิน 20MB &bull; ได้รับ Token หลัง HR อนุมัติ</p>
                     <button type="submit" class="ch-detail-modal-submit ch-detail-modal-submit--gold">
                         ส่งหลักฐาน

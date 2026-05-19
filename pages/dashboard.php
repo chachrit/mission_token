@@ -264,10 +264,15 @@ require_once __DIR__ . '/../includes/header.php';
 
             <?php if ($activeChallenges): ?>
             <div id="quest-scroll-track"
+                  tabindex="0"
+                  role="region"
+                  aria-label="เลื่อนดูภารกิจที่เปิดอยู่"
                  data-onmousedown="questDragStart(event,this)"
                  data-onmousemove="questDragMove(event,this)"
                  data-onmouseup="questDragEnd(this)"
-                 data-onmouseleave="questDragEnd(this)">
+                  data-onmouseleave="questDragEnd(this)"
+                  data-onkeydown="questScrollKey(event,this)"
+                  data-onwheel="questWheelScroll(event,this)">
                 <?php
                 usort($activeChallenges, static function ($a, $b) {
                     $rank = static function ($status) {
@@ -511,6 +516,31 @@ require_once __DIR__ . '/../includes/header.php';
             window.questDragEnd = function (el) {
                 _qdragging = false;
                 el.style.cursor = 'grab';
+            };
+
+            window.questScrollKey = function (e, el) {
+                if (!el) return;
+                var step = 260;
+                if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    el.scrollBy({ left: step, behavior: 'smooth' });
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    el.scrollBy({ left: -step, behavior: 'smooth' });
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    el.scrollTo({ left: 0, behavior: 'smooth' });
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    el.scrollTo({ left: el.scrollWidth, behavior: 'smooth' });
+                }
+            };
+
+            window.questWheelScroll = function (e, el) {
+                if (!el) return;
+                if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
+                e.preventDefault();
+                el.scrollLeft += e.deltaY;
             };
         })();
         </script>

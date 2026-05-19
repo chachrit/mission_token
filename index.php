@@ -131,14 +131,14 @@ require_once __DIR__ . '/includes/header.php';
         </div>
 
         <!-- Scroll indicator -->
-        <div class="hero-scroll-indicator" id="hero-scroll-btn" role="button" tabindex="0" aria-label="เลื่อนลงเพื่ออ่านต่อ" data-onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('hero-scroll-btn').click();}">        
+        <button type="button" class="hero-scroll-indicator" id="hero-scroll-btn" aria-label="เลื่อนลงเพื่ออ่านต่อ" aria-expanded="false" aria-controls="about">
             <span>SCROLL</span>
             <div class="hero-scroll-arrow"></div>
-        </div>
+        </button>
     </div>
 
     <!-- ── ABOUT MORPH OVERLAY ────────────────────────────────────── -->
-    <section id="about" class="about-morph">
+    <section id="about" class="about-morph" aria-hidden="true">
         <div class="about-section">
             <?php if ($dataError): ?>
                 <div class="mb-6 rounded-2xl border border-orange-900/40 bg-orange-950/30 px-5 py-4 text-sm text-j-orange">
@@ -147,7 +147,7 @@ require_once __DIR__ . '/includes/header.php';
             <?php endif; ?>
 
             <p class="quest-label mb-4">ABOUT THE SYSTEM</p>
-            <h2 class="about-title">Mission Token คืออะไร?</h2>
+            <h2 id="about-title" class="about-title" tabindex="-1">Mission Token คืออะไร?</h2>
             <p class="about-desc">
                 ระบบสะสมคะแนนสำหรับพนักงาน JOURNAL — ทำภารกิจที่ได้รับมอบหมาย รับ Token เป็นรางวัล<br class="hidden md:block">
                 และติดตามอันดับของพนักงานบน Leaderboard
@@ -192,13 +192,13 @@ require_once __DIR__ . '/includes/header.php';
             <p class="quest-label hm-u001">วิธีใช้งาน</p>
 
             <!-- Tab switcher -->
-            <div class="guide-tabs hm-u002">
-                <button type="button" class="guide-tab-btn active" id="tab-employee" data-onclick="switchGuideTab('employee')">พนักงาน</button>
-                <button type="button" class="guide-tab-btn" id="tab-hr" data-onclick="switchGuideTab('hr')">HR</button>
+            <div class="guide-tabs hm-u002" role="tablist" aria-label="คู่มือการใช้งาน">
+                <button type="button" class="guide-tab-btn active" id="tab-employee" role="tab" aria-selected="true" aria-controls="guide-employee" tabindex="0" data-onclick="switchGuideTab('employee')">พนักงาน</button>
+                <button type="button" class="guide-tab-btn" id="tab-hr" role="tab" aria-selected="false" aria-controls="guide-hr" tabindex="-1" data-onclick="switchGuideTab('hr')">HR</button>
             </div>
 
             <!-- Employee flow -->
-            <div id="guide-employee" class="guide-flow">
+            <div id="guide-employee" class="guide-flow" role="tabpanel" aria-labelledby="tab-employee">
 
                 <div class="guide-flow-step">
                     <div class="guide-flow-left">
@@ -258,7 +258,7 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <!-- HR flow -->
-            <div id="guide-hr" class="guide-flow hm-u003">
+            <div id="guide-hr" class="guide-flow hm-u003" role="tabpanel" aria-labelledby="tab-hr" hidden>
 
                 <div class="guide-flow-step">
                     <div class="guide-flow-left">
