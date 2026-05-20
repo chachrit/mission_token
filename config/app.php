@@ -46,8 +46,10 @@ define('APP_VERSION', '1.0.0');
     define('EMP_API_URL', $apiBase . '/emp_api/api/employee.php');
     define('AUTH_API_URL', $apiBase . '/emp_api/api/auth.php');
 })();
-define('EMP_API_KEY', 'my-secret-key-12345');
 define('AUTH_API_TIMEOUT', 8);
+
+// Load API credentials from secrets file (not committed to git)
+require_once __DIR__ . '/secrets.php';
 
 // File Upload settings
 define('UPLOAD_PATH',    __DIR__ . '/../uploads/submissions/');
