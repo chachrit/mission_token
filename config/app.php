@@ -44,8 +44,10 @@ define('APP_VERSION', '1.0.0');
     );
     $apiBase = $isSameServer ? 'http://127.0.0.1' : "http://{$apiExternalIp}";
     define('EMP_API_URL', $apiBase . '/emp_api/api/employee.php');
+    define('AUTH_API_URL', $apiBase . '/emp_api/api/auth.php');
 })();
 define('EMP_API_KEY', 'my-secret-key-12345');
+define('AUTH_API_TIMEOUT', 8);
 
 // File Upload settings
 define('UPLOAD_PATH',    __DIR__ . '/../uploads/submissions/');

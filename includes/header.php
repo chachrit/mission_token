@@ -273,7 +273,6 @@ $notifCount = count($allNotifs);
                             'challenges' => ['label' => 'ภารกิจ',    'href' => BASE_URL . '/pages/challenges.php'],
                             'rewards'    => ['label' => 'ร้านรางวัล', 'href' => BASE_URL . '/pages/rewards.php'],
                             'history'    => ['label' => 'ประวัติ',    'href' => BASE_URL . '/pages/history.php'],
-                            'help'       => ['label' => 'ช่วยเหลือ',  'href' => BASE_URL . '/pages/help.php'],
                         ];
                     }
 
@@ -471,14 +470,6 @@ $notifCount = count($allNotifs);
                                 Strava Dashboard
                             </a>
                             <?php endif; ?>
-                            <a href="<?php echo BASE_URL; ?>/pages/help.php"
-                                         class="nav-dd-link nav-dd-item flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                                ความช่วยเหลือ
-                            </a>
                             <a href="<?php echo BASE_URL; ?>/logout.php"
                                          class="nav-dd-link nav-dd-link--danger nav-dd-item flex items-center gap-2 px-4 py-3 text-sm transition-colors">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
