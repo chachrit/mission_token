@@ -32,7 +32,7 @@ define('APP_VERSION', '1.0.0');
 // External Employee API
 // ถ้า production server อยู่เครื่องเดียวกับ API → ใช้ localhost หลีกเลี่ยง self-referencing ผ่าน external IP
 (function () {
-    $apiExternalIp = '203.154.130.236';
+    $apiExternalIp = defined('EMP_API_IP') ? EMP_API_IP : '127.0.0.1';
     // ตรวจ HTTP_HOST และ SERVER_ADDR ว่าอยู่บนเครื่องเดียวกับ API ไหม
     $httpHost  = $_SERVER['HTTP_HOST']   ?? '';
     $serverIp  = $_SERVER['SERVER_ADDR'] ?? '';
