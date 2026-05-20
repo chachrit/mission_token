@@ -26,7 +26,5 @@ sql/seed.php
 # One-time setup script — never commit
 setup_git.php
 
-# Project context doc — internal, not for public repo
+# Internal project context — not for public repo
 claude.md
-
-# as it only triggers git pull (no shell injection possible)
