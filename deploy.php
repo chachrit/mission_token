@@ -7,8 +7,8 @@
  * DELETE or restrict access to this file in production when not in use.
  */
 
-// ── Secret key — change this to something random ──────────
-define('DEPLOY_SECRET', 'deploy_mt_2026_J4k9mPqW');
+// ── Load secret key from secrets.php ──────────────────────
+require_once __DIR__ . '/config/secrets.php';
 
 // ── Auth check ─────────────────────────────────────────────
 $token = $_SERVER['HTTP_X_DEPLOY_TOKEN'] ?? ($_GET['token'] ?? '');

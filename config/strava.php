@@ -9,8 +9,7 @@
  * 3. Fill in Client ID and Client Secret below
  */
 
-define('STRAVA_CLIENT_ID',     '236444');            // ← replace with your Client ID
-define('STRAVA_CLIENT_SECRET', 'c6fc3306476fdc9896fc58fb26d0ddcef0482861');   // ← replace with your Client Secret
+// STRAVA_CLIENT_ID and STRAVA_CLIENT_SECRET are loaded from config/secrets.php
 
 define('STRAVA_REDIRECT_URI',  BASE_URL . '/strava_callback.php');
 define('STRAVA_API_BASE',      'https://www.strava.com/api/v3');

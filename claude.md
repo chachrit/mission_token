@@ -107,7 +107,7 @@ mission_token/
 
 ### Login (login.php)
 1. รับ `employee_code` + `password` + CSRF token
-2. ดึงข้อมูลจาก External API: `http://203.154.130.236/emp_api/api/employee.php` (key: `my-secret-key-12345`)
+2. ดึงข้อมูลจาก External API: `http://203.154.130.236/emp_api/api/employee.php` (key: อยู่ใน `config/secrets.php`)
 3. ถ้า API ไม่ตอบสนอง → fallback หา local DB
 4. `syncEmployeeFromAPI()` → upsert ข้อมูลพนักงานเข้า local DB (full_name, department, position, email, start_date)
 5. verify `password_hash` กับ bcrypt
