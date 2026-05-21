@@ -379,7 +379,7 @@ if (isPost()) {
 
         <!-- Login Form -->
         <form method="POST" action="" id="login-form" novalidate>
-            <?php echo csrfField(); ?>
+            <?= csrfField() ?>
             <?php if ($redirect !== ''): ?>
                 <input type="hidden" name="redirect" value="<?php echo e($redirect); ?>">
             <?php endif; ?>

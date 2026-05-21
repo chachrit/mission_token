@@ -29,6 +29,9 @@ define('APP_VERSION', '1.0.0');
     define('BASE_URL', $protocol . '://' . $host . $subPath);
 })();
 
+// Load secrets first — EMP_API_IP must be defined before the API URL IIFE runs
+require_once __DIR__ . '/secrets.php';
+
 // External Employee API
 // ถ้า production server อยู่เครื่องเดียวกับ API → ใช้ localhost หลีกเลี่ยง self-referencing ผ่าน external IP
 (function () {
@@ -39,17 +42,13 @@ define('APP_VERSION', '1.0.0');
     $isSameServer = (
         str_contains($httpHost, $apiExternalIp) ||
         $serverIp === $apiExternalIp ||
-        $serverIp === '127.0.0.1'     // กรณี reverse proxy / Apache binding
-        && str_contains($httpHost, $apiExternalIp)
+        ($serverIp === '127.0.0.1' && str_contains($httpHost, $apiExternalIp))
     );
     $apiBase = $isSameServer ? 'http://127.0.0.1' : "http://{$apiExternalIp}";
     define('EMP_API_URL', $apiBase . '/emp_api/api/employee.php');
     define('AUTH_API_URL', $apiBase . '/emp_api/api/auth.php');
 })();
 define('AUTH_API_TIMEOUT', 8);
-
-// Load API credentials from secrets file (not committed to git)
-require_once __DIR__ . '/secrets.php';
 
 // File Upload settings
 define('UPLOAD_PATH',    __DIR__ . '/../uploads/submissions/');
