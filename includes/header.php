@@ -264,6 +264,7 @@ $notifCount = count($allNotifs);
                             'admin_submissions'  => ['label' => 'อนุมัติงาน',     'href' => BASE_URL . '/hr/submissions.php', 'badge' => $pendingCount],
                             'admin_rewards'      => ['label' => 'จัดการรางวัล',   'href' => BASE_URL . '/hr/rewards/index.php'],
                             'admin_redemptions'  => ['label' => 'คำขอแลก', 'href' => BASE_URL . '/hr/rewards/redemptions.php', 'badge' => $pendingRedemptionCount],
+                            'admin_qrcodes'      => ['label' => 'QR Token',         'href' => BASE_URL . '/hr/qrcodes.php'],
                             'admin_employees'    => ['label' => 'จัดการพนักงาน',  'href' => BASE_URL . '/hr/employees.php'],
                         ];
                     } else {

@@ -505,6 +505,7 @@ function txTypeLabel(string $txType): string
         'bonus'         => 'โบนัส',
         'redemption'    => 'แลกรางวัล',
         'strava_reward' => 'Strava สำเร็จ',
+        'qr_claim'      => 'รับ Token QR Code',
         default         => $txType,
     };
 }
@@ -521,6 +522,137 @@ function statusBadge(string $status): array
         'rejected'      => ['label' => 'ไม่ผ่าน',        'color' => '#d2592a',  'bg' => '#fdf0ea'],
         default         => ['label' => $status,          'color' => '#6b6e77',  'bg' => '#f5f5f4'],
     };
+}
+
+// ============================================================
+// QR Code Token Claim
+// ============================================================
+
+/**
+ * ดึง QR code record พร้อมตรวจสอบสถานะ
+ * คืน array ของ record หรือ null ถ้าไม่พบ
+ */
+function getQrCode(string $code): ?array
+{
+    $pdo  = getDB();
+    $stmt = $pdo->prepare("
+        SELECT q.*, e.full_name AS created_by_name
+        FROM   dbo.token_qr_codes q
+        LEFT JOIN dbo.employees e ON e.employee_id = q.created_by
+        WHERE  q.code = ?
+    ");
+    $stmt->execute([$code]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $row ?: null;
+}
+
+/**
+ * ตรวจสอบว่าพนักงานรับ QR code นี้แล้วหรือยัง
+ */
+function hasClaimedQr(int $qrId, int $employeeId): bool
+{
+    $pdo  = getDB();
+    $stmt = $pdo->prepare("
+        SELECT COUNT(*) FROM dbo.token_qr_claims
+        WHERE qr_id = ? AND employee_id = ?
+    ");
+    $stmt->execute([$qrId, $employeeId]);
+    return (int)$stmt->fetchColumn() > 0;
+}
+
+/**
+ * บันทึกการรับ QR code + ให้ token
+ * ใช้ UPDLOCK ป้องกัน race condition
+ * คืน ['ok'=>bool, 'message'=>string]
+ */
+function claimQrToken(int $qrId, int $employeeId): array
+{
+    $pdo = getDB();
+    try {
+        $pdo->beginTransaction();
+
+        // Lock row และดึงข้อมูลล่าสุด
+        $stmt = $pdo->prepare("
+            SELECT qr_id, token_amount, max_uses, used_count,
+                   per_user_limit, expires_at, is_active, label
+            FROM   dbo.token_qr_codes WITH (UPDLOCK, ROWLOCK)
+            WHERE  qr_id = ?
+        ");
+        $stmt->execute([$qrId]);
+        $qr = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$qr || !(bool)$qr['is_active']) {
+            $pdo->rollBack();
+            return ['ok' => false, 'message' => 'QR Code นี้ไม่สามารถใช้งานได้'];
+        }
+
+        // ตรวจหมดอายุ
+        if ($qr['expires_at'] !== null && strtotime($qr['expires_at']) < time()) {
+            $pdo->rollBack();
+            return ['ok' => false, 'message' => 'QR Code นี้หมดอายุแล้ว'];
+        }
+
+        // ตรวจ max_uses
+        if ($qr['max_uses'] !== null && (int)$qr['used_count'] >= (int)$qr['max_uses']) {
+            $pdo->rollBack();
+            return ['ok' => false, 'message' => 'QR Code นี้ถูกใช้ครบจำนวนแล้ว'];
+        }
+
+        // ตรวจว่าคนนี้เคยรับแล้วไหม
+        $claimed = $pdo->prepare("
+            SELECT COUNT(*) FROM dbo.token_qr_claims
+            WHERE qr_id = ? AND employee_id = ?
+        ");
+        $claimed->execute([$qrId, $employeeId]);
+        if ((int)$claimed->fetchColumn() >= (int)$qr['per_user_limit']) {
+            $pdo->rollBack();
+            return ['ok' => false, 'message' => 'คุณได้รับ Token จาก QR Code นี้แล้ว'];
+        }
+
+        // บันทึก claim
+        $pdo->prepare("
+            INSERT INTO dbo.token_qr_claims (qr_id, employee_id)
+            VALUES (?, ?)
+        ")->execute([$qrId, $employeeId]);
+
+        // อัปเดต used_count
+        $pdo->prepare("
+            UPDATE dbo.token_qr_codes SET used_count = used_count + 1 WHERE qr_id = ?
+        ")->execute([$qrId]);
+
+        $pdo->commit();
+
+        // ให้ token (ต้องทำนอก transaction เพราะ awardTokens มี transaction ของตัวเอง)
+        awardTokens(
+            $employeeId,
+            (int)$qr['token_amount'],
+            'qr_claim',
+            $qrId,
+            'QR Code: ' . $qr['label']
+        );
+
+        return ['ok' => true, 'message' => 'รับ Token สำเร็จ', 'amount' => (int)$qr['token_amount']];
+
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        error_log('[MissionToken] claimQrToken error: ' . $e->getMessage());
+        return ['ok' => false, 'message' => 'เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่'];
+    }
+}
+
+/**
+ * ดึงรายการ QR codes ทั้งหมด (สำหรับ HR)
+ */
+function getAllQrCodes(): array
+{
+    $pdo  = getDB();
+    $stmt = $pdo->query("
+        SELECT q.*, e.full_name AS created_by_name
+        FROM   dbo.token_qr_codes q
+        LEFT JOIN dbo.employees e ON e.employee_id = q.created_by
+        ORDER  BY q.created_at DESC
+    ");
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // ============================================================
