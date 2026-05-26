@@ -282,8 +282,10 @@ if (isPost()) {
                             : BASE_URL . '/pages/dashboard.php';
                         if ($redirect !== '') {
                             $decoded = urldecode($redirect);
-                            if (str_starts_with($decoded, '/mission_token/')) {
-                                $dest = 'http://localhost' . $decoded;
+                            // Only follow relative paths (starts with /) — prevents open redirect
+                            if (str_starts_with($decoded, '/')) {
+                                $proto = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+                                $dest  = $proto . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . $decoded;
                             }
                         }
                         redirect($dest);
