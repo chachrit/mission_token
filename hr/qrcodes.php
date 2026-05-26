@@ -34,7 +34,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             setFlash('error', 'กรุณากรอกชื่อและจำนวน Token ให้ถูกต้อง');
         } else {
             $maxUsesVal   = ($maxUses !== '' && (int)$maxUses > 0) ? (int)$maxUses : null;
-            $expiresVal   = ($expiresRaw !== '') ? $expiresRaw : null;
+            // datetime-local sends "YYYY-MM-DDTHH:MM" — replace T with space for SQL Server
+            $expiresVal   = ($expiresRaw !== '') ? str_replace('T', ' ', $expiresRaw) . ':00' : null;
             $code         = bin2hex(random_bytes(32)); // 64 hex chars
 
             $pdo->prepare("
@@ -58,6 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 WHERE qr_id = ?
             ")->execute([$qrId]);
             setFlash('success', 'อัปเดตสถานะ QR Code แล้ว');
+        }
+        redirect(BASE_URL . '/hr/qrcodes.php');
+    }
+
+    // ── Delete QR ──────────────────────────────────────────
+    if ($action === 'delete') {
+        $qrId = (int)($_POST['qr_id'] ?? 0);
+        if ($qrId > 0) {
+            // Delete claims first (FK), then the code
+            $pdo->prepare("DELETE FROM dbo.token_qr_claims WHERE qr_id = ?")->execute([$qrId]);
+            $pdo->prepare("DELETE FROM dbo.token_qr_codes  WHERE qr_id = ?")->execute([$qrId]);
+            setFlash('success', 'ลบ QR Code แล้ว');
         }
         redirect(BASE_URL . '/hr/qrcodes.php');
     }
@@ -308,6 +321,20 @@ body:has(.qr-wrap) { background-color: #091113; }
 }
 .qr-btn-qr:hover { background: rgba(218,185,55,0.1); }
 
+.qr-btn-delete {
+    padding: 0.4rem 0.55rem;
+    font-size: 0.78rem;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(210,89,42,0.3);
+    background: transparent;
+    color: rgba(210,89,42,0.7);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.qr-btn-delete:hover { background: rgba(210,89,42,0.12); color: #e06040; border-color: rgba(210,89,42,0.55); }
+
 /* QR Preview Modal */
 .qr-modal-overlay {
     display: none;
@@ -518,12 +545,33 @@ body:has(.qr-wrap) { background-color: #091113; }
                     </button>
 
                     <?php if ($canManage): ?>
-                    <form method="POST" style="display:inline">
+                    <!-- Toggle switch -->
+                    <form method="POST" style="display:inline" id="toggle-qr-<?= (int)$qr['qr_id'] ?>">
                         <?= csrfField() ?>
                         <input type="hidden" name="action" value="toggle">
                         <input type="hidden" name="qr_id" value="<?= (int)$qr['qr_id'] ?>">
-                        <button type="submit" class="qr-btn-toggle">
-                            <?= $isActive ? 'ปิด' : 'เปิด' ?>
+                        <label class="ac-toggle-switch" title="<?= $isActive ? 'คลิกเพื่อปิด' : 'คลิกเพื่อเปิด' ?>">
+                            <input type="checkbox"
+                                   <?= $isActive ? 'checked' : '' ?>
+                                   onchange="this.form.submit()">
+                            <span class="ac-toggle-track">
+                                <span class="ac-toggle-thumb"></span>
+                            </span>
+                        </label>
+                    </form>
+
+                    <!-- Delete button -->
+                    <form method="POST" style="display:inline"
+                          data-onsubmit="ลบ QR Code '<?= e(addslashes($qr['label'])) ?>'?\nประวัติการรับ Token จะถูกลบทั้งหมด\nการกระทำนี้ไม่สามารถย้อนกลับได้">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="qr_id" value="<?= (int)$qr['qr_id'] ?>">
+                        <button type="submit" class="qr-btn-delete" title="ลบ QR Code">
+                            <svg width="13" height="13" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor" stroke-width="2"
+                                 stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
                         </button>
                     </form>
                     <?php endif; ?>
@@ -572,6 +620,15 @@ body:has(.qr-wrap) { background-color: #091113; }
     }
 
     function closeModal() { modal.classList.remove('open'); }
+
+    // Confirm-on-submit for delete forms
+    document.querySelectorAll('form[data-onsubmit]').forEach(function (form) {
+        form.addEventListener('submit', function (e) {
+            if (!window.confirm(form.dataset.onsubmit)) {
+                e.preventDefault();
+            }
+        });
+    });
 
     document.querySelectorAll('.js-show-qr').forEach(function (btn) {
         btn.addEventListener('click', function () {
