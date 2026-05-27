@@ -545,7 +545,7 @@ body.about-open {
     font-weight: 600;
     letter-spacing: 0.24em;
     text-transform: uppercase;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
 }
 .hero-stat-divider {
     width: 1px;
@@ -801,14 +801,12 @@ body.about-open {
     font-family: 'Prompt', sans-serif;
     border: none;
     cursor: pointer;
-    transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+    transition: background 0.2s, transform 0.12s;
     text-decoration: none;
-    box-shadow: 0 4px 24px rgba(218,185,55,0.40);
     letter-spacing: 0.04em;
 }
 .btn-hero-login:hover {
     background: var(--j-gold-l);
-    box-shadow: 0 8px 36px rgba(218,185,55,0.60);
     transform: translateY(-2px);
 }
 
@@ -897,6 +895,7 @@ body.about-open {
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 20px;
     padding: 2rem 1.5rem;
+    text-align: center;
     transition: border-color 0.25s cubic-bezier(0.22,1,0.36,1), transform 0.25s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s cubic-bezier(0.22,1,0.36,1);
 }
 .about-pillar:hover {
@@ -914,13 +913,18 @@ body.about-open {
     background: rgba(218,185,55,0.10);
     border: 1px solid rgba(218,185,55,0.20);
     color: var(--j-gold);
-    margin: 0 auto 1.25rem;
+    margin: 0 auto 1rem;
+    flex-shrink: 0;
 }
 .about-pillar-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     font-size: 1.05rem;
     font-weight: 700;
     color: var(--j-white);
     margin-bottom: 0.6rem;
+    gap: 0;
 }
 .about-pillar-desc {
     font-size: 0.8rem;
@@ -1007,13 +1011,13 @@ body.about-open {
     border: 1px solid rgba(218,185,55,0.24);
     border-radius: 14px;
     padding: 0.75rem 0.85rem;
-    background: linear-gradient(140deg, rgba(218,185,55,0.10), rgba(13,22,24,0.72));
+    background: rgba(13,22,24,0.90);
     margin-bottom: 0.8rem;
 }
 
 .home-top-label {
     font-size: 0.62rem;
-    color: rgba(206,205,205,0.85);
+    color: rgba(238,235,225,0.60);
     letter-spacing: 0.12em;
     text-transform: uppercase;
 }
@@ -1110,10 +1114,12 @@ body.about-open {
 
 .home-trend-bar {
     width: 100%;
+    height: 100%;
     border-radius: 999px;
     background: linear-gradient(180deg, rgba(248,231,105,0.95), rgba(218,185,55,0.88));
-    min-height: 10%;
-    transition: height 0.42s cubic-bezier(0.22,1,0.36,1);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 0.42s ease-out;
 }
 
 .home-trend-day {
@@ -1182,14 +1188,14 @@ body.about-open {
 
 .home-activity-meta {
     margin-top: 0.1rem;
-    font-size: 0.66rem;
-    color: rgba(206,205,205,0.78);
+    font-size: 0.875rem;
+    color: rgba(238,235,225,0.60);
 }
 
 .home-activity-footnote {
     margin-top: 0.7rem;
-    font-size: 0.68rem;
-    color: rgba(206,205,205,0.84);
+    font-size: 0.875rem;
+    color: rgba(238,235,225,0.60);
 }
 
 .home-intel-empty {

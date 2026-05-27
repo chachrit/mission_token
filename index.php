@@ -209,24 +209,30 @@ require_once __DIR__ . '/includes/header.php';
             <!-- 3 pillars -->
             <div class="about-pillars">
                 <div class="about-pillar">
-                    <div class="about-pillar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                    </div>
-                    <h3 class="about-pillar-title">รับภารกิจ</h3>
+                    <h3 class="about-pillar-title">
+                        <span class="about-pillar-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                        </span>
+                        รับภารกิจ
+                    </h3>
                     <p class="about-pillar-desc">เลือก Quest ที่เปิดรับ ทำตามเงื่อนไข แล้วส่งหลักฐานเพื่อให้แอดมินอนุมัติ</p>
                 </div>
                 <div class="about-pillar">
-                    <div class="about-pillar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-                    </div>
-                    <h3 class="about-pillar-title">รับ Token</h3>
+                    <h3 class="about-pillar-title">
+                        <span class="about-pillar-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                        </span>
+                        รับ Token
+                    </h3>
                     <p class="about-pillar-desc">งานที่ผ่านการอนุมัติจะได้รับ Token ตามมูลค่าของแต่ละภารกิจ สะสมไว้ใน Wallet ของคุณ</p>
                 </div>
                 <div class="about-pillar">
-                    <div class="about-pillar-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" /></svg>
-                    </div>
-                    <h3 class="about-pillar-title">Leaderboard</h3>
+                    <h3 class="about-pillar-title">
+                        <span class="about-pillar-icon" aria-hidden="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="28" height="28"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" /></svg>
+                        </span>
+                        Leaderboard
+                    </h3>
                     <p class="about-pillar-desc">ยอด Token สะสมรวมจะถูกจัดอันดับ เปรียบเทียบกับพนักงานคนอื่นแบบ Real-time</p>
                 </div>
             </div>
@@ -295,7 +301,7 @@ require_once __DIR__ . '/includes/header.php';
                                         ?>
                                         <div class="home-trend-col" title="<?= e($formatDate($day['trend_date'] ?? null, 'd/m/Y')) ?>: <?= formatTokens($earned) ?> token / <?= $subCount ?> งาน">
                                             <div class="home-trend-bar-wrap">
-                                                <div class="home-trend-bar" style="height: <?= $barHeight ?>%"></div>
+                                                <div class="home-trend-bar" data-h="<?= $barHeight ?>"></div>
                                             </div>
                                             <span class="home-trend-day"><?= e($dayLabel) ?></span>
                                         </div>
@@ -510,6 +516,12 @@ require_once __DIR__ . '/includes/header.php';
 </button>
 
 </div><!-- end .home-page-wrap -->
+
+<script>
+document.querySelectorAll('.home-trend-bar[data-h]').forEach(function (el) {
+    el.style.transform = 'scaleY(' + ((parseFloat(el.dataset.h) || 0) / 100) + ')';
+});
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
 
