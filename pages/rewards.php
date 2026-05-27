@@ -446,7 +446,7 @@ require_once __DIR__ . '/../includes/header.php';
 
                 <!-- Body -->
                 <div class="rw-card-body">
-                    <h3 class="rw-card-title"><?= e($rw['title']) ?></h3>
+                    <h2 class="rw-card-title"><?= e($rw['title']) ?></h2>
                     <?php if (!empty($rw['description'])): ?>
                     <p class="rw-card-desc"><?= e($rw['description']) ?></p>
                     <?php endif; ?>
