@@ -494,7 +494,7 @@ require_once __DIR__ . '/../includes/header.php';
                 /* ── Leaderboard bar fill animation ── */
                 setTimeout(function () {
                     document.querySelectorAll('.ds-lb-bar-fill[data-bar]').forEach(function (el) {
-                        el.style.width = el.dataset.bar + '%';
+                        el.style.transform = 'scaleX(' + (parseInt(el.dataset.bar, 10) / 100) + ')';
                     });
                 }, 380);
             });

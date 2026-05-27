@@ -332,7 +332,9 @@ require_once __DIR__ . '/../../includes/header.php';
                                     data-onchange="handleTypeChange(this.value)">
                                 <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>Quiz (ตอบคำถาม)</option>
                                 <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>Photo (ส่งรูปภาพ)</option>
+                                <?php /* STRAVA: hidden until feature is ready
                                 <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>Strava (กิจกรรมออกกำลังกาย)</option>
+                                */ ?>
                             </select>
                         </div>
                         <div>
@@ -356,6 +358,7 @@ require_once __DIR__ . '/../../includes/header.php';
                         </div>
                     </div>
 
+                    <?php /* STRAVA: hidden until feature is ready
                     <!-- Strava condition (strava only) -->
                     <div id="strava-condition-wrap" class="<?= $f['type'] !== 'strava' ? 'ace-hidden' : '' ?>">
                         <div class="ace-strava-box">
@@ -404,6 +407,7 @@ require_once __DIR__ . '/../../includes/header.php';
                             </div>
                         </div>
                     </div>
+                    */ ?>
 
                     <!-- Instructions (photo only) -->
                     <div id="instructions-wrap" class="<?= $f['type'] !== 'photo' ? 'ace-hidden' : '' ?>">
@@ -673,6 +677,7 @@ require_once __DIR__ . '/../../includes/header.php';
 <script>
 var _aceNewQuestionLastFocus = null;
 
+/* STRAVA: hidden until feature is ready
 function stravaDistUnitChange(unit) {
     const input = document.getElementById('strava-dist-input');
     const label = document.getElementById('dist-unit-label');
@@ -703,6 +708,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const inp = document.getElementById('strava-dist-input');
     if (sel && inp) inp.dataset.lastUnit = sel.value;
 });
+*/
 
 function handleTypeChange(type) {
     const instrWrap  = document.getElementById('instructions-wrap');
@@ -711,7 +717,8 @@ function handleTypeChange(type) {
     const quizNewForm = document.getElementById('new-question-form');
     const isCreateMode = <?= $isEdit ? 'false' : 'true' ?>;
     if (instrWrap)  instrWrap.classList.toggle('ace-hidden', type !== 'photo');
-    if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
+    // stravaWrap hidden — Strava feature not ready
+    // if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
     if (quizWrap)   quizWrap.classList.toggle('ace-hidden', type !== 'quiz');
 
     // In create mode, open quiz input form immediately when quiz type is selected.

@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── GET: load all challenges ─────────────────────────────────
 $pdo = getDB();
 $typeFilter = (string)($_GET['type'] ?? '');
-$allowedTypes = ['quiz', 'photo', 'strava'];
+$allowedTypes = ['quiz', 'photo']; // 'strava' hidden until feature is ready
 if (!in_array($typeFilter, $allowedTypes, true)) $typeFilter = '';
 
 if ($typeFilter) {
@@ -137,7 +137,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <!-- Row 2: type filter pills -->
             <div class="ac-filter-row">
                 <?php
-                $filters = ['' => 'ทั้งหมด', 'quiz' => 'Quiz', 'photo' => 'Photo', 'strava' => 'Strava'];
+                $filters = ['' => 'ทั้งหมด', 'quiz' => 'Quiz', 'photo' => 'Photo']; // 'strava' => 'Strava' hidden
                 foreach ($filters as $val => $label):
                     $isActive = ($typeFilter === $val);
                 ?>
@@ -213,8 +213,10 @@ require_once __DIR__ . '/../../includes/header.php';
                 <div>
                     <?php if ($isQuiz): ?>
                     <span class="ac-type-badge ac-type-badge--quiz">Quiz</span>
-                    <?php elseif ($isStrava): ?>
+                    <?php /* elseif ($isStrava): strava hidden
                     <span class="ac-type-badge ac-type-badge--strava">Strava</span>
+                    */ elseif ($isStrava): ?>
+                    <span class="ac-type-badge ac-type-badge--photo">Photo</span>
                     <?php else: ?>
                     <span class="ac-type-badge ac-type-badge--photo">Photo</span>
                     <?php endif; ?>

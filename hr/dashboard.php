@@ -99,7 +99,7 @@ require_once __DIR__ . '/../includes/header.php';
                     </span>
                     <div>
                         <p class="hrd-queue-label">งานรอตรวจสอบ</p>
-                        <p class="hrd-queue-sub">Photo / Strava submissions</p>
+                        <p class="hrd-queue-sub">Photo submissions</p>
                     </div>
                 </div>
                 <svg class="hrd-queue-arrow" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
