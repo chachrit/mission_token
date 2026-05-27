@@ -2740,9 +2740,9 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 
 /* -- Quiz Breadcrumb -- */
 .ch-breadcrumb         { color: #4a4e57; }
-.ch-breadcrumb-link    { color: var(--j-slate); text-decoration: none; }
+.ch-breadcrumb-link    { color: rgba(238,235,225,0.60); text-decoration: none; }
 .ch-breadcrumb-link:hover { color: var(--j-gold); }
-.ch-breadcrumb-sep     { color: var(--j-slate); }
+.ch-breadcrumb-sep     { color: rgba(238,235,225,0.40); }
 .ch-breadcrumb-current { color: var(--j-white); font-weight: 500; }
 
 /* -- Mission Info Strip -- */
@@ -2752,7 +2752,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     border-radius: 12px;
 }
 .ch-mission-title   { color: var(--j-white); }
-.ch-mission-desc    { color: var(--j-slate); }
+.ch-mission-desc    { color: rgba(238,235,225,0.60); }
 .ch-mission-divider { border-left: 1px solid rgba(255,255,255,0.08); }
 
 /* -- Quiz Progress Bar -- */
@@ -2806,7 +2806,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     width: 32px; height: 32px; border-radius: 8px;
     background: rgba(255,255,255,0.06); border: 1.5px solid rgba(255,255,255,0.10);
     display: flex; align-items: center; justify-content: center;
-    font-size: 0.78rem; font-weight: 700; color: var(--j-slate); flex-shrink: 0;
+    font-size: 0.78rem; font-weight: 700; color: rgba(238,235,225,0.70); flex-shrink: 0;
     transition: background 0.18s, border-color 0.18s, color 0.18s;
 }
 .quiz-opt.selected .quiz-opt-letter { background: var(--j-gold); border-color: var(--j-gold); color: var(--j-dark); }
@@ -2831,7 +2831,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 .ch-quiz-token-badge { background: rgba(218,185,55,0.12); color: var(--j-gold-l); border: 1px solid rgba(218,185,55,0.28); }
 .ch-quiz-body        { background: rgba(255,255,255,0.025); }
 .ch-quiz-qnum        { background: var(--j-gold); color: var(--j-dark); }
-.ch-quiz-footnote    { background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.06); color: var(--j-slate); }
+.ch-quiz-footnote    { background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,255,255,0.06); color: rgba(238,235,225,0.60); }
 
 /* -- Processing Modal -- */
 .ch-processing-modal {
@@ -2862,7 +2862,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 @keyframes qpm-fadein { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
 #quiz-processing-modal[style*="flex"] > div { animation: qpm-fadein 0.22s ease-out both; }
 .ch-qpm-title { color: var(--j-white); }
-.ch-qpm-sub   { color: var(--j-slate); }
+.ch-qpm-sub   { color: rgba(238,235,225,0.60); }
 
 /* -- Quest Board Hero (dark glass card) -- */
 .ch-board-hero {
@@ -2899,15 +2899,15 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 }
 .ch-board-hero-label { color: rgba(218,185,55,0.80); letter-spacing: 0.24em; }
 .ch-hero-title       { color: var(--j-white); }
-.ch-hero-sub         { color: var(--j-slate); max-width: 65ch; }
-.ch-board-progress-track { width: 180px; height: 8px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
-.ch-board-progress-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--j-gold), var(--j-gold-l)); box-shadow: 0 0 10px rgba(218,185,55,0.45); }
+.ch-hero-sub         { color: rgba(238,235,225,0.60); max-width: 65ch; }
+.ch-board-progress-track { width: 180px; height: 8px; background: rgba(255,255,255,0.12); border-radius: 99px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.40); }
+.ch-board-progress-fill  { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--j-gold), var(--j-gold-l)); box-shadow: 0 0 14px rgba(218,185,55,0.65), 0 0 4px rgba(248,231,105,0.40); }
 
 /* -- Section bars & badges -- */
 .ch-section-bar        { width: 4px; height: 28px; background: linear-gradient(180deg, var(--j-gold), var(--j-gold-dk)); border-radius: 999px; flex-shrink: 0; }
 .ch-section-bar--muted { background: rgba(255,255,255,0.12); }
 .ch-section-heading        { font-size: 1.15rem; font-weight: 700; color: var(--j-white); margin: 0; }
-.ch-section-heading--muted { font-size: 1.05rem; font-weight: 600; color: var(--j-slate); }
+.ch-section-heading--muted { font-size: 1.05rem; font-weight: 600; color: rgba(238,235,225,0.60); }
 .ch-count-badge        { font-size: 0.72rem; font-weight: 700; color: var(--j-dark); background: var(--j-gold); border-radius: 999px; padding: 0.2rem 0.65rem; }
 .ch-count-badge--muted { color: var(--j-white); background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15); }
 
@@ -2978,7 +2978,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 .ch-type-badge    { font-size: 0.63rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.22rem 0.65rem; border-radius: 6px; background: rgba(218,185,55,0.10); color: var(--j-gold); border: 1px solid rgba(218,185,55,0.22); }
 .ch-quest-content { flex: 1; }
 .ch-quest-title   { font-size: 0.95rem; font-weight: 700; color: var(--j-white); margin: 0 0 0.35rem; line-height: 1.35; }
-.ch-quest-desc    { font-size: 0.78rem; color: var(--j-slate); margin: 0; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ch-quest-desc    { font-size: 0.78rem; color: rgba(238,235,225,0.60); margin: 0; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .ch-quest-meta    { font-size: 0.7rem; color: #4a4e57; margin: 0.4rem 0 0; }
 .ch-quest-footer  { padding-top: 0.75rem; border-top: 1px solid rgba(255,255,255,0.07); }
 .ch-rejected-msg  { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; font-weight: 600; color: var(--j-orange); }
@@ -3034,7 +3034,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 .ch-upload-dropzone-sub {
     margin: 0 0 0.55rem;
     font-size: 0.64rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
 }
 .ch-file-input::-webkit-file-upload-button {
     background: rgba(218,185,55,0.12); color: var(--j-gold); border: none;
@@ -3047,7 +3047,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     color: rgba(248,231,105,0.92);
 }
 .ch-file-hint    { font-size: 0.65rem; color: #4a4e57; margin: 0; }
-.ch-instructions { font-size: 0.72rem; color: var(--j-slate); margin: 0; background: rgba(218,185,55,0.06); border: 1px solid rgba(218,185,55,0.14); border-radius: 8px; padding: 0.5rem 0.7rem; }
+.ch-instructions { font-size: 0.72rem; color: rgba(238,235,225,0.60); margin: 0; background: rgba(218,185,55,0.06); border: 1px solid rgba(218,185,55,0.14); border-radius: 8px; padding: 0.5rem 0.7rem; }
 
 /* -- Token Reward Badge (animated) -- */
 .token-reward-badge {
@@ -3700,7 +3700,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 .ch-flip-back-instructions-label { font-size: 0.63rem; font-weight: 700; color: var(--j-gold); margin: 0 0 0.3rem; letter-spacing: 0.06em; text-transform: uppercase; }
 .ch-flip-back-instructions-text  { font-size: 0.73rem; color: var(--j-muted); margin: 0; line-height: 1.55; }
-.ch-flip-back-info-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; color: var(--j-slate); flex-wrap: wrap; }
+.ch-flip-back-info-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.72rem; color: rgba(238,235,225,0.60); flex-wrap: wrap; }
 .ch-flip-action { margin-top: auto; padding-top: 0.65rem; border-top: 1px solid rgba(255,255,255,0.07); }
 
 /* Challenges Phase A utilities */
@@ -3709,7 +3709,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 
 .ch-board-progress-value { color: var(--j-gold); }
 .ch-board-progress-total { color: var(--j-muted); }
-.ch-board-progress-percent { color: #6b7278; }
+.ch-board-progress-percent { color: rgba(238,235,225,0.60); }
 
 .ch-type-badge--strava {
     background: rgba(252,76,2,0.18);
