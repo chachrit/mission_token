@@ -2299,7 +2299,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
 
 .jp-subtitle {
     font-size: 0.82rem;
-    color: #6b6e77;
+    color: rgba(238,235,225,0.60);
     margin: 0;
 }
 
@@ -2348,12 +2348,12 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     border-radius: 16px;
     padding: 5rem 2rem;
     background: rgba(255,255,255,0.02);
-    border: 1px dashed rgba(255,255,255,0.08);
+    border: 1px dashed rgba(238,235,225,0.20);
 }
 
 .jp-empty-note {
     font-size: 0.88rem;
-    color: #6b6e77;
+    color: rgba(238,235,225,0.60);
     margin: 0;
 }
 
@@ -4444,7 +4444,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 .ac-page-subtitle {
     font-size: 0.82rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     margin: 0;
 }
 .ac-total-chip {
@@ -4591,7 +4591,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 
 .ac-date-cell {
-    font-size: 0.72rem;
+    font-size: 0.82rem;
     line-height: 1.6;
 }
 .ac-expired-pill {
@@ -8907,7 +8907,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 }
 .hrd-page-sub {
     font-size: 0.875rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     margin: 0;
 }
 .hrd-cta-btn {
@@ -8957,7 +8957,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
     margin: 0 0 1rem;
 }
 
@@ -9007,7 +9007,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
     border-radius: 10px;
     background: rgba(255,255,255,0.05);
     border: 1px solid #1e2628;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     font-size: 1.25rem;
     font-weight: 700;
     display: flex;
@@ -9029,10 +9029,10 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 }
 .hrd-queue-sub {
     font-size: 0.75rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
     margin: 0;
 }
-.hrd-queue-arrow { color: var(--j-slate); flex-shrink: 0; }
+.hrd-queue-arrow { color: rgba(238,235,225,0.50); flex-shrink: 0; }
 .hrd-queue-item:hover .hrd-queue-arrow { color: var(--j-white); }
 .hrd-queue-divider {
     display: flex;
@@ -9043,7 +9043,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
     font-weight: 700;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
 }
 .hrd-queue-divider::before,
 .hrd-queue-divider::after {
@@ -9066,7 +9066,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
     align-items: center;
     gap: 0.5rem;
     padding: 2rem 0;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
     font-size: 0.85rem;
 }
 
@@ -9112,7 +9112,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 .hrd-economy-num--gold { color: var(--j-gold); }
 .hrd-economy-desc {
     font-size: 0.8rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     line-height: 1.4;
 }
 .hrd-economy-divider {
@@ -9150,7 +9150,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 }
 .hrd-health-label {
     font-size: 0.75rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
     line-height: 1.4;
 }
 
@@ -9183,7 +9183,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
     height: 24px;
     border-radius: 50%;
     background: rgba(255,255,255,0.06);
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     font-size: 0.75rem;
     font-weight: 700;
     display: flex;
@@ -9213,7 +9213,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 }
 .hrd-earner-dept {
     font-size: 0.75rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
 }
 .hrd-earner-tokens {
     font-size: 0.9rem;
@@ -9257,11 +9257,11 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 }
 .hrd-feed-dept {
     display: block;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.55);
     font-size: 0.75rem;
 }
 .hrd-feed-cell--challenge { color: var(--j-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.hrd-feed-cell--time { color: var(--j-slate); font-size: 0.78rem; text-align: right; }
+.hrd-feed-cell--time { color: rgba(238,235,225,0.55); font-size: 0.78rem; text-align: right; }
 .hrd-status-pill {
     display: inline-block;
     padding: 2px 10px;
