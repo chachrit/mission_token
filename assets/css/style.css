@@ -3269,7 +3269,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 .pf-sub {
     font-size: 0.82rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     margin: 0 0 0.3rem;
 }
 .pf-dot { margin: 0 0.4rem; color: var(--j-charcoal); }
@@ -3329,7 +3329,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--j-charcoal);
+    color: rgba(238,235,225,0.55);
     margin: 0;
 }
 
@@ -3365,7 +3365,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--j-charcoal);
+    color: rgba(238,235,225,0.55);
     margin: 0 0 1rem;
 }
 
@@ -3411,7 +3411,7 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 .pf-tenure-since {
     font-size: 0.78rem;
-    color: var(--j-slate);
+    color: rgba(238,235,225,0.60);
     margin: 0;
     display: flex;
     align-items: center;
@@ -3443,10 +3443,12 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 }
 .pf-tenure-fill {
     height: 100%;
+    width: 100%;
     border-radius: 999px;
     background: linear-gradient(90deg, var(--j-gold-dk), var(--j-gold-l));
-    transition: width 0.8s cubic-bezier(.22,.97,.5,1.18);
-    box-shadow: 0 0 8px rgba(218,185,55,0.40);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.8s ease-out;
 }
 .pf-tenure-markers {
     display: flex;
@@ -3473,13 +3475,12 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
 .pf-tenure-marker-dot.reached {
     border-color: var(--j-gold);
     background: var(--j-gold);
-    box-shadow: 0 0 6px rgba(218,185,55,0.55);
 }
 .pf-tenure-marker-label {
     font-size: 0.56rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    color: var(--j-charcoal);
+    color: rgba(238,235,225,0.55);
     text-transform: uppercase;
     margin-top: 0.45rem;
     white-space: nowrap;
@@ -9583,8 +9584,8 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 .pf-stat-teal { color: #4f8b98; }
 .pf-stat-green { color: #518e5c; }
 
-.pf-card-strava-on { border: 1px solid rgba(252,76,2,0.35); }
-.pf-card-strava-off { border: 1px solid rgba(255,255,255,0.07); }
+.pf-card-strava-on { border: 1px solid rgba(252,76,2,0.35); display: none; }
+.pf-card-strava-off { border: 1px solid rgba(255,255,255,0.07); display: none; }
 
 .pf-strava-connect-btn {
     display: inline-flex;

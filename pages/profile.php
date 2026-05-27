@@ -505,7 +505,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <script>
 document.querySelectorAll('.pf-tenure-fill[data-width]').forEach(function (el) {
-    el.style.width = (el.dataset.width || '0') + '%';
+    el.style.transform = 'scaleX(' + ((parseFloat(el.dataset.width) || 0) / 100) + ')';
 });
 document.querySelectorAll('.pf-tenure-marker[data-left]').forEach(function (el) {
     el.style.left = (el.dataset.left || '0') + '%';
