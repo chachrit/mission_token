@@ -2301,6 +2301,7 @@ body:has(.ace-edit-wrap)       { background-color: var(--j-dark); }
     font-size: 0.82rem;
     color: rgba(238,235,225,0.60);
     margin: 0;
+    max-width: 65ch;
 }
 
 .jp-chip-row {
@@ -4729,6 +4730,7 @@ body:has(.ar-rewards-wrap) { background-color: var(--j-dark); }
 }
 
 .ar-page-header-row-gap { margin-bottom: 0.75rem; }
+.ar-page-header-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap; }
 .ar-total-chip {
     margin-left: 0.4rem;
     font-size: 0.68rem;
@@ -4988,8 +4990,8 @@ body:has(.ar-rewards-wrap) { background-color: var(--j-dark); }
     text-overflow: ellipsis;
 }
 .ar-reward-desc {
-    font-size: 0.70rem;
-    color: var(--j-slate);
+    font-size: 0.80rem;
+    color: rgba(238,235,225,0.55);
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
