@@ -389,7 +389,8 @@ body.about-open {
     background: #0b1519;
     /* collapsed to a 0-radius circle at the scroll indicator */
     clip-path: circle(0% at 50% 90%);
-    transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    /* closing transition: ease-in-out so collapse feels gradual, not snap */
+    transition: clip-path 0.85s cubic-bezier(0.4, 0, 0.6, 1);
     will-change: clip-path;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -406,6 +407,14 @@ body.about-open {
     /* expand circle to cover full viewport (160% of diagonal) */
     clip-path: circle(160% at 50% 90%);
     pointer-events: auto;
+    /* opening transition: ease-out so it feels snappy and fluid */
+    transition: clip-path 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* IntersectionObserver-driven expand: consistent 0.7s every time */
+.about-morph.pillar-active {
+    clip-path: circle(160% at 50% 90%);
+    pointer-events: auto;
+    transition: clip-path 0.7s ease-out;
 }
 
 /* Content morphs in after clip-path circle reaches content area */
@@ -414,9 +423,10 @@ body.about-open {
     transform: scale(0.94) translateY(24px);
     transition:
         opacity   0.6s ease 0.45s,
-        transform 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.45s;
+        transform 0.65s ease-out 0.45s;
 }
-.about-morph.slide-open .about-section {
+.about-morph.slide-open .about-section,
+.about-morph.pillar-active .about-section {
     opacity: 1;
     transform: scale(1) translateY(0);
 }
@@ -1312,7 +1322,7 @@ body.about-open {
 /* Guide section wrapper � inside about-morph (second snap section) */
 .guide-section {
     width: 100%;
-    padding: 4rem 1.5rem 7rem;
+    padding: 4rem 1.5rem 30vh;
     position: relative;
     min-height: 100svh;
     flex-shrink: 0;

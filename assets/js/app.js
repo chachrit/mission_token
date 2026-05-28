@@ -907,3 +907,34 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+// ── Pillar / section viewport observer (IntersectionObserver-based) ──────────
+// ควบคุม .about-morph และ .guide-section ให้ toggle animation class
+// ตามจังหวะ viewport จริง ไม่ใช่ pixel position แบบ real-time
+document.addEventListener('DOMContentLoaded', function () {
+
+    // ตั้งค่าเงื่อนไขการตรวจจับพื้นที่พิลลาร์
+    var observerOptions = {
+        root: null,                      // อ้างอิงตามกรอบหน้าจอเบราว์เซอร์
+        rootMargin: '-5% 0px -10% 0px', // ดักจับก่อนถึงขอบจอเล็กน้อย เพื่อความสมูท
+        threshold: 0.15                  // คอนเทนต์โผล่มาเกิน 15% ค่อยเริ่มทำงาน
+    };
+
+    var pillarObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('pillar-active');
+                entry.target.classList.remove('is-circle');
+                // ไม่ถอด pillar-active เมื่อเลื่อนออกจากจอ — lock ไว้ตลอด
+                pillarObserver.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // ผูกตัวตรวจจับเข้ากับ guide-section เท่านั้น
+    // (.about-morph เป็น position:fixed — ควบคุมด้วยระบบ slide-open เดิม ไม่ใช้ IntersectionObserver)
+    var targetSections = document.querySelectorAll('.guide-section');
+    targetSections.forEach(function (section) {
+        pillarObserver.observe(section);
+    });
+});

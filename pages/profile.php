@@ -1,7 +1,7 @@
 ﻿<?php
 /**
  * pages/profile.php
- * Employee profile — view info, work tenure, change password
+ * Employee profile — view info, work tenure
  */
 
 require_once __DIR__ . '/../includes/auth_check.php';
@@ -83,39 +83,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         setFlash('success', 'ลบรูปโปรไฟล์แล้ว');
         redirect(BASE_URL . '/pages/profile.php');
 
-    // ── change password ──────────────────────────────────────
-    } else {
-        $currentPw  = (string)($_POST['current_password']  ?? '');
-        $newPw      = (string)($_POST['new_password']       ?? '');
-        $confirmPw  = (string)($_POST['confirm_password']   ?? '');
-
-        $errors = [];
-
-        if ($currentPw === '') $errors[] = 'กรุณากรอกรหัสผ่านปัจจุบัน';
-        if (strlen($newPw) < 8) $errors[] = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร';
-        if ($newPw !== $confirmPw) $errors[] = 'รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน';
-
-        if (empty($errors)) {
-            $pdo  = getDB();
-            $stmt = $pdo->prepare("SELECT password_hash FROM dbo.employees WHERE employee_id = ?");
-            $stmt->execute([$employeeId]);
-            $row  = $stmt->fetch();
-
-            if (!$row || !password_verify($currentPw, $row['password_hash'])) {
-                $errors[] = 'รหัสผ่านปัจจุบันไม่ถูกต้อง';
-            } else {
-                $newHash = password_hash($newPw, PASSWORD_BCRYPT);
-                $pdo->prepare("UPDATE dbo.employees SET password_hash = ? WHERE employee_id = ?")
-                    ->execute([$newHash, $employeeId]);
-                setFlash('success', 'เปลี่ยนรหัสผ่านสำเร็จ');
-                redirect(BASE_URL . '/pages/profile.php');
-            }
-        }
-
-        if (!empty($errors)) {
-            setFlash('error', implode(' / ', $errors));
-            redirect(BASE_URL . '/pages/profile.php');
-        }
     }
 }
 
@@ -348,82 +315,9 @@ require_once __DIR__ . '/../includes/header.php';
             </div><!-- /pf-col left -->
 
             <!-- ═══════════════════════════════════════
-                 RIGHT COLUMN — Change Password
+                 RIGHT COLUMN
             ═══════════════════════════════════════ -->
             <div class="pf-col">
-                <div class="pf-card">
-                    <p class="pf-card-label">เปลี่ยนรหัสผ่าน</p>
-                    <form method="POST" action="<?= BASE_URL ?>/pages/profile.php" id="pw-form">
-                        <?= csrfField() ?>
-                        <div class="pf-form-fields">
-
-                            <div class="pf-field">
-                                <label for="current_password" class="pf-field-label">รหัสผ่านปัจจุบัน</label>
-                                <div class="pf-input-wrap">
-                                    <input type="password" id="current_password" name="current_password"
-                                           autocomplete="current-password" class="pf-input" required>
-                                    <button type="button" class="pf-eye-btn"
-                                            data-toggle-pw="current_password"
-                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
-                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="pf-field">
-                                <label for="new_password" class="pf-field-label">
-                                    รหัสผ่านใหม่
-                                    <span class="pf-field-hint">(อย่างน้อย 8 ตัวอักษร)</span>
-                                </label>
-                                <div class="pf-input-wrap">
-                                    <input type="password" id="new_password" name="new_password"
-                                           autocomplete="new-password" minlength="8"
-                                           class="pf-input" required>
-                                    <button type="button" class="pf-eye-btn"
-                                            data-toggle-pw="new_password"
-                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
-                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="pf-field">
-                                <label for="confirm_password" class="pf-field-label">ยืนยันรหัสผ่านใหม่</label>
-                                <div class="pf-input-wrap">
-                                    <input type="password" id="confirm_password" name="confirm_password"
-                                           autocomplete="new-password" class="pf-input" required>
-                                    <button type="button" class="pf-eye-btn"
-                                            data-toggle-pw="confirm_password"
-                                            aria-label="แสดง/ซ่อนรหัสผ่าน">
-                                        <svg class="pf-eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <p id="pw-match-hint" class="pf-match-hint" aria-live="polite"></p>
-                            </div>
-
-                        </div><!-- /pf-form-fields -->
-
-                        <div class="pf-form-actions">
-                            <button type="submit" class="btn-gold">บันทึกรหัสผ่าน</button>
-                            <button type="reset" class="btn-outline pf-u002">ล้างฟอร์ม</button>
-                        </div>
-                    </form>
-                </div>
                 <!-- Strava Connect card -->
                 <div class="pf-card <?= $stravaOk ? 'pf-card-strava-on' : 'pf-card-strava-off' ?>">
                     <div class="pf-u003">

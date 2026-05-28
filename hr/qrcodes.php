@@ -63,6 +63,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(BASE_URL . '/hr/qrcodes.php');
     }
 
+    // ── Edit QR ────────────────────────────────────────────
+    if ($action === 'edit') {
+        $qrId       = (int)($_POST['qr_id'] ?? 0);
+        $label      = trim((string)($_POST['label'] ?? ''));
+        $amount     = (int)($_POST['token_amount'] ?? 0);
+        $maxUses    = trim((string)($_POST['max_uses'] ?? ''));
+        $expiresRaw = trim((string)($_POST['expires_at'] ?? ''));
+
+        if ($qrId < 1 || $label === '' || $amount < 1) {
+            setFlash('error', 'กรุณากรอกชื่อและจำนวน Token ให้ถูกต้อง');
+        } else {
+            $maxUsesVal = ($maxUses !== '' && (int)$maxUses > 0) ? (int)$maxUses : null;
+            $expiresVal = ($expiresRaw !== '') ? str_replace('T', ' ', $expiresRaw) . ':00' : null;
+
+            $pdo->prepare("
+                UPDATE dbo.token_qr_codes
+                SET label = ?, token_amount = ?, max_uses = ?, expires_at = ?
+                WHERE qr_id = ?
+            ")->execute([$label, $amount, $maxUsesVal, $expiresVal, $qrId]);
+
+            setFlash('success', 'แก้ไข QR Code สำเร็จ');
+        }
+        redirect(BASE_URL . '/hr/qrcodes.php');
+    }
+
     // ── Delete QR ──────────────────────────────────────────
     if ($action === 'delete') {
         $qrId = (int)($_POST['qr_id'] ?? 0);
@@ -79,6 +104,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── Load all QR codes ────────────────────────────────────────
 $qrCodes = getAllQrCodes();
 $flash   = getFlash();
+
+$thaiMonths = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+$formatThaiDate = static function (string $dateStr) use ($thaiMonths): string {
+    $ts = strtotime($dateStr);
+    if ($ts === false) return '-';
+    $d = (int)date('j', $ts);
+    $m = (int)date('n', $ts) - 1;
+    $y = (int)date('Y', $ts) + 543;
+    return $d . ' ' . $thaiMonths[$m] . ' ' . $y;
+};
 
 $pageTitle  = 'QR Token';
 $activePage = 'admin_qrcodes';
@@ -412,6 +447,97 @@ body:has(.qr-wrap) { background-color: #091113; }
     border-radius: 0.5rem;
     cursor: pointer;
 }
+
+/* Edit button */
+.qr-btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.42rem 0.75rem;
+    background: rgba(79,139,152,0.15);
+    border: 1px solid rgba(79,139,152,0.35);
+    color: #4f8b98;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: 0.45rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    font-family: inherit;
+}
+.qr-btn-edit:hover {
+    background: rgba(79,139,152,0.28);
+    border-color: rgba(79,139,152,0.6);
+}
+
+/* Edit modal */
+.qr-edit-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    z-index: 600;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+.qr-edit-modal-overlay.open { display: flex; }
+.qr-edit-modal {
+    background: #13191c;
+    border: 1px solid rgba(218,185,55,0.3);
+    border-radius: 1.25rem;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+}
+.qr-edit-modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #dab937;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 1.25rem;
+}
+.qr-edit-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+.qr-edit-form-group label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgba(238,235,225,0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.4rem;
+}
+.qr-edit-form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+.qr-edit-btn-save {
+    padding: 0.6rem 1.4rem;
+    background: linear-gradient(135deg,#dab937,#c9a830);
+    color: #091113;
+    font-weight: 700;
+    font-size: 0.85rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+.qr-edit-btn-cancel {
+    padding: 0.6rem 1.2rem;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(238,235,225,0.6);
+    font-size: 0.85rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-family: inherit;
+}
 </style>
 
 <div class="qr-wrap">
@@ -517,13 +643,13 @@ body:has(.qr-wrap) { background-color: #091113; }
 
                         <?php if ($qr['expires_at'] !== null): ?>
                         <span class="qr-item-meta-chip">
-                            หมดอายุ <?= e(date('d/m/Y', strtotime($qr['expires_at']))) ?>
+                            หมดอายุ <?= e($formatThaiDate($qr['expires_at'])) ?>
                         </span>
                         <?php endif; ?>
 
                         <span class="qr-item-meta-chip" style="opacity:0.6">
                             สร้างโดย <?= e($qr['created_by_name'] ?? 'ไม่ทราบ') ?>
-                            · <?= e(date('d/m/Y', strtotime($qr['created_at']))) ?>
+                            · <?= e($formatThaiDate($qr['created_at'])) ?>
                         </span>
                     </div>
                 </div>
@@ -545,6 +671,20 @@ body:has(.qr-wrap) { background-color: #091113; }
                     </button>
 
                     <?php if ($canManage): ?>
+                    <!-- Edit button -->
+                    <button type="button" class="qr-btn-edit js-edit-qr" title="แก้ไข QR Code"
+                        data-qr-id="<?= (int)$qr['qr_id'] ?>"
+                        data-label="<?= e($qr['label']) ?>"
+                        data-amount="<?= (int)$qr['token_amount'] ?>"
+                        data-max-uses="<?= $qr['max_uses'] !== null ? (int)$qr['max_uses'] : '' ?>"
+                        data-expires="<?= $qr['expires_at'] !== null ? e(date('Y-m-d\TH:i', strtotime($qr['expires_at']))) : '' ?>">
+                        <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        แก้ไข
+                    </button>
+
                     <!-- Toggle switch -->
                     <form method="POST" style="display:inline" id="toggle-qr-<?= (int)$qr['qr_id'] ?>">
                         <?= csrfField() ?>
@@ -600,6 +740,44 @@ body:has(.qr-wrap) { background-color: #091113; }
     </div>
 </div>
 
+<!-- Edit Modal -->
+<div class="qr-edit-modal-overlay" id="qr-edit-modal" role="dialog" aria-modal="true" aria-labelledby="qr-edit-title">
+    <div class="qr-edit-modal">
+        <div class="qr-edit-modal-title" id="qr-edit-title">แก้ไข QR Code</div>
+        <form method="POST" id="qr-edit-form">
+            <?= csrfField() ?>
+            <input type="hidden" name="action" value="edit">
+            <input type="hidden" name="qr_id" id="edit-qr-id">
+            <div class="qr-edit-form-grid">
+                <div class="qr-edit-form-group" style="grid-column: span 2">
+                    <label for="edit-label">ชื่อ / ชื่อกิจกรรม *</label>
+                    <input id="edit-label" name="label" type="text" class="qr-input"
+                           placeholder="เช่น วันเกิดองค์กร ครบ 10 ปี" maxlength="200" required>
+                </div>
+                <div class="qr-edit-form-group">
+                    <label for="edit-amount">จำนวน Token *</label>
+                    <input id="edit-amount" name="token_amount" type="number" class="qr-input"
+                           placeholder="50" min="1" max="99999" required>
+                </div>
+                <div class="qr-edit-form-group">
+                    <label for="edit-max-uses">จำนวนสิทธิ์สูงสุด</label>
+                    <input id="edit-max-uses" name="max_uses" type="number" class="qr-input"
+                           placeholder="ไม่จำกัด" min="1">
+                </div>
+                <div class="qr-edit-form-group" style="grid-column: span 2">
+                    <label for="edit-expires">วันหมดอายุ</label>
+                    <input id="edit-expires" name="expires_at" type="datetime-local" class="qr-input">
+                    <div class="qr-input-hint">ว่างเปล่า = ไม่มีวันหมดอายุ</div>
+                </div>
+            </div>
+            <div class="qr-edit-form-actions">
+                <button type="button" class="qr-edit-btn-cancel" id="qr-edit-cancel">ยกเลิก</button>
+                <button type="submit" class="qr-edit-btn-save">บันทึก</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
 (function () {
     const modal     = document.getElementById('qr-modal');
@@ -648,6 +826,38 @@ body:has(.qr-wrap) { background-color: #091113; }
     });
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeModal();
+    });
+})();
+
+// ── Edit modal ──────────────────────────────────────────────────────────────
+(function () {
+    var editOverlay = document.getElementById('qr-edit-modal');
+    var editCancel  = document.getElementById('qr-edit-cancel');
+
+    function openEdit(btn) {
+        document.getElementById('edit-qr-id').value   = btn.dataset.qrId;
+        document.getElementById('edit-label').value   = btn.dataset.label;
+        document.getElementById('edit-amount').value  = btn.dataset.amount;
+        document.getElementById('edit-max-uses').value = btn.dataset.maxUses || '';
+        document.getElementById('edit-expires').value  = btn.dataset.expires || '';
+        editOverlay.classList.add('open');
+        document.getElementById('edit-label').focus();
+    }
+
+    function closeEdit() {
+        editOverlay.classList.remove('open');
+    }
+
+    document.querySelectorAll('.js-edit-qr').forEach(function (btn) {
+        btn.addEventListener('click', function () { openEdit(btn); });
+    });
+
+    editCancel.addEventListener('click', closeEdit);
+    editOverlay.addEventListener('click', function (e) {
+        if (e.target === editOverlay) closeEdit();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && editOverlay.classList.contains('open')) closeEdit();
     });
 })();
 </script>
