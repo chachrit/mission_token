@@ -364,7 +364,7 @@ function getHomeOverviewStats(): array
         SELECT
             (SELECT COUNT(*)
              FROM employees
-             WHERE role = 'employee' AND is_active = 1) AS active_employees,
+             WHERE is_active = 1) AS active_employees,
             (SELECT ISNULL(SUM(w.balance), 0)
              FROM token_wallets w
              JOIN employees e ON e.employee_id = w.employee_id
