@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * login.php — Employee Login Page
  * Mission Token | JOURNAL Employee Gamification

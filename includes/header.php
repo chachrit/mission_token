@@ -463,7 +463,6 @@ $notifCount = count($allNotifs);
                                 </svg>
                                 โปรไฟล์
                             </a>
-                            <?php /* STRAVA: hidden until feature is ready
                             <a href="<?php echo BASE_URL; ?>/pages/strava_dashboard.php"
                                          class="nav-dd-link nav-dd-link--strava nav-dd-item flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-b">
                                 <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -471,7 +470,6 @@ $notifCount = count($allNotifs);
                                 </svg>
                                 Strava Dashboard
                             </a>
-                            */ ?>
                             <?php endif; ?>
                             <a href="<?php echo BASE_URL; ?>/logout.php"
                                          class="nav-dd-link nav-dd-link--danger nav-dd-item flex items-center gap-2 px-4 py-3 text-sm transition-colors">

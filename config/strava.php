@@ -15,4 +15,5 @@ define('STRAVA_REDIRECT_URI',  BASE_URL . '/strava_callback.php');
 define('STRAVA_API_BASE',      'https://www.strava.com/api/v3');
 define('STRAVA_AUTH_URL',      'https://www.strava.com/oauth/authorize');
 define('STRAVA_TOKEN_URL',     'https://www.strava.com/api/v3/oauth/token');
+define('STRAVA_REVOKE_URL',    'https://www.strava.com/oauth/revoke');
 define('STRAVA_SCOPE',         'activity:read_all');

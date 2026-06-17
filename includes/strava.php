@@ -38,6 +38,27 @@ function getStravaTokenRow(int $employeeId): ?array
     }
 }
 
+// ── Minimal-safe logger for Strava integration ────────────────
+function stravaLog(string $message): void
+{
+    error_log('[Strava] ' . $message);
+}
+
+// ── Parse short message from JSON response for logs ───────────
+function stravaExtractApiMessage(string $body): string
+{
+    $decoded = json_decode($body, true);
+    if (is_array($decoded)) {
+        if (!empty($decoded['message'])) {
+            return (string)$decoded['message'];
+        }
+        if (!empty($decoded['errors'][0]['message'])) {
+            return (string)$decoded['errors'][0]['message'];
+        }
+    }
+    return '';
+}
+
 // ── Refresh token if it expires within 10 minutes ────────────
 // Returns valid access_token string, or null on failure
 function refreshStravaTokenIfNeeded(int $employeeId): ?string
@@ -73,13 +94,14 @@ function refreshStravaTokenIfNeeded(int $employeeId): ?string
     curl_close($ch);
 
     if ($err || !$body) {
-        error_log('[Strava] refresh cURL error: ' . $err);
+        stravaLog('refresh cURL error');
         return null;
     }
 
     $data = json_decode($body, true);
     if (empty($data['access_token'])) {
-        error_log('[Strava] refresh token error: ' . $body);
+        $msg = stravaExtractApiMessage((string)$body);
+        stravaLog('refresh token error' . ($msg !== '' ? ': ' . $msg : ''));
         return null;
     }
 
@@ -126,15 +148,64 @@ function callStravaAPI(int $employeeId, string $endpoint): ?array
     curl_close($ch);
 
     if ($err) {
-        error_log("[Strava] API cURL error on {$endpoint}: {$err}");
+        stravaLog("API cURL error on {$endpoint}");
         return null;
     }
     if ($httpCode !== 200) {
-        error_log("[Strava] API HTTP {$httpCode} on {$endpoint}: {$body}");
+        $msg = stravaExtractApiMessage((string)$body);
+        if ($httpCode === 429) {
+            stravaLog("API rate-limited (429) on {$endpoint}");
+        } else {
+            stravaLog("API HTTP {$httpCode} on {$endpoint}" . ($msg !== '' ? ": {$msg}" : ''));
+        }
         return null;
     }
 
     return json_decode($body, true) ?? null;
+}
+
+// ── Revoke Strava token (recommended deauthorization endpoint) ──
+function revokeStravaToken(string $token): bool
+{
+    require_once __DIR__ . '/../config/strava.php';
+
+    if ($token === '') {
+        return false;
+    }
+
+    $basic = base64_encode((string)STRAVA_CLIENT_ID . ':' . (string)STRAVA_CLIENT_SECRET);
+
+    $ch = curl_init(STRAVA_REVOKE_URL);
+    curl_setopt_array($ch, [
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_POST           => true,
+        CURLOPT_HTTPHEADER     => [
+            'Authorization: Basic ' . $basic,
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+        CURLOPT_POSTFIELDS     => http_build_query([
+            'token' => $token,
+            'token_type_hint' => 'refresh_token',
+        ]),
+        CURLOPT_TIMEOUT        => 15,
+    ]);
+    $body = curl_exec($ch);
+    $err = curl_error($ch);
+    $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($err) {
+        stravaLog('revoke cURL error');
+        return false;
+    }
+
+    if ($httpCode !== 200) {
+        $msg = stravaExtractApiMessage((string)$body);
+        stravaLog('revoke HTTP ' . $httpCode . ($msg !== '' ? ': ' . $msg : ''));
+        return false;
+    }
+
+    return true;
 }
 
 // ── Fetch activities within a time range (paginated up to 5 pages) ──
@@ -200,6 +271,18 @@ function checkStravaCondition(int $employeeId, array $condition, int $afterTs, i
 // ── Disconnect Strava (NULL out all columns) ──────────────────
 function disconnectStrava(int $employeeId): void
 {
+    $row = getStravaTokenRow($employeeId);
+    $revokeToken = '';
+    if ($row) {
+        $revokeToken = (string)($row['strava_refresh_token'] ?? '');
+        if ($revokeToken === '') {
+            $revokeToken = (string)($row['strava_access_token'] ?? '');
+        }
+    }
+    if ($revokeToken !== '') {
+        revokeStravaToken($revokeToken);
+    }
+
     $pdo = getDB();
     $pdo->prepare("
         UPDATE employees
@@ -210,6 +293,52 @@ function disconnectStrava(int $employeeId): void
             strava_scope            = NULL
         WHERE employee_id = ?
     ")->execute([$employeeId]);
+}
+
+// ── Delete local Strava-derived user data + disconnect ─────────
+function deleteLocalStravaDataForEmployee(int $employeeId): void
+{
+    $row = getStravaTokenRow($employeeId);
+    $revokeToken = '';
+    if ($row) {
+        $revokeToken = (string)($row['strava_refresh_token'] ?? '');
+        if ($revokeToken === '') {
+            $revokeToken = (string)($row['strava_access_token'] ?? '');
+        }
+    }
+    if ($revokeToken !== '') {
+        revokeStravaToken($revokeToken);
+    }
+
+    $pdo = getDB();
+    $pdo->beginTransaction();
+    try {
+        // Remove Strava activity details from historical submissions.
+        $stmt = $pdo->prepare(" 
+            UPDATE challenge_submissions
+            SET photo_path = NULL
+            WHERE employee_id = ? AND submission_type = 'strava'
+        ");
+        $stmt->execute([$employeeId]);
+
+        $clear = $pdo->prepare(" 
+            UPDATE employees
+            SET strava_athlete_id       = NULL,
+                strava_access_token     = NULL,
+                strava_refresh_token    = NULL,
+                strava_token_expires_at = NULL,
+                strava_scope            = NULL
+            WHERE employee_id = ?
+        ");
+        $clear->execute([$employeeId]);
+
+        $pdo->commit();
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        throw $e;
+    }
 }
 
 // ── Build Strava OAuth authorization URL ─────────────────────

@@ -3943,7 +3943,15 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     background: rgba(252,76,2,0.06);
     border: 1px solid rgba(252,76,2,0.2);
     border-radius: 12px;
-    padding: 1.1rem 1.25rem;
+    padding: 1rem 1.1rem 1.1rem;
+}
+.ace-strava-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.75rem;
 }
 .ace-strava-title {
     font-size: 0.72rem;
@@ -3951,16 +3959,50 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     color: rgba(252,76,2,0.8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin: 0 0 0.9rem;
+    margin: 0;
+}
+.ace-strava-subtitle {
+    font-size: 0.75rem;
+    color: rgba(238,235,225,0.72);
+    margin: 0;
 }
 .ace-dist-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.5rem;
+    align-items: center;
 }
 .ace-dist-input { flex: 1; }
 .ace-dist-unit {
-    width: 90px;
+    width: 100px;
     flex-shrink: 0;
+}
+.ace-strava-hint-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.8rem;
+}
+.ace-strava-hint-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.22rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: rgba(248,231,105,0.92);
+    border: 1px solid rgba(248,231,105,0.22);
+    background: rgba(248,231,105,0.08);
+}
+
+#strava-condition-wrap .journal-input {
+    min-height: 42px;
+}
+
+#strava-condition-wrap input,
+#strava-condition-wrap select {
+    font-size: 0.92rem;
 }
 
 .ace-active-row {
@@ -4218,6 +4260,14 @@ body:has(.pf-profile-wrap) { background-color: var(--j-dark); }
     .ace-grid-strava,
     .ace-grid-2-sm {
         grid-template-columns: 1fr;
+    }
+
+    .ace-dist-row {
+        grid-template-columns: 1fr;
+    }
+
+    .ace-dist-unit {
+        width: 100%;
     }
 }
 
@@ -9586,6 +9636,7 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 .sc-u012 { font-size:0.72rem; color:#4f8b98; margin:0.15rem 0 0; }
 .sc-u013 { background:rgba(210,89,42,0.15); border:1px solid rgba(210,89,42,0.4); color:#d2592a; padding:0.55rem 1.1rem; border-radius:8px; font-family:'Prompt',sans-serif; font-size:0.85rem; cursor:pointer; transition:background 0.2s; }
 .sc-u014 { font-size:0.85rem; color:var(--j-muted); margin:0 0 1.5rem; line-height:1.6; }
+.sc-u014-compact { margin-top:-0.7rem; margin-bottom:1rem; }
 .sc-u015 { color:#eeebe1; }
 .sc-u016 { border:none; border-top:1px solid #2a3038; margin:1.75rem 0; }
 .sc-u017 { font-size:0.78rem; font-weight:600; color:#6b6e77; letter-spacing:0.06em; margin:0 0 0.85rem; text-transform:uppercase; }
@@ -9594,6 +9645,119 @@ body:has(.hrd-wrap) { background-color: var(--j-dark); }
 .sc-u020 { font-size:1rem; flex-shrink:0; display:inline-flex; align-items:center; }
 .sc-u021 { font-size:0.82rem; color:var(--j-muted); line-height:1.5; }
 .sc-u022 { margin-top:1.25rem; text-align:center; }
+.sc-policy-link { color:#FC5200; text-decoration:underline; text-underline-offset:2px; }
+.sc-policy-link:hover { color:#e04400; }
+.sc-connect-btn--strava-brand {
+    background:#FC5200 !important;
+    color:#fff !important;
+    border:1px solid rgba(252,82,0,0.75) !important;
+    font-weight:700;
+    letter-spacing:0.01em;
+}
+.sc-connect-btn--strava-brand:hover { background:#e04400 !important; }
+
+/* ── Strava Connect Page (scp-*) ─────────────────────────── */
+body:has(.scp-wrap) { background:#091113; }
+.scp-wrap { position:relative; min-height:100vh; overflow:hidden; }
+.scp-blob { position:fixed; border-radius:50%; filter:blur(90px); opacity:0.10; pointer-events:none; z-index:0; }
+.scp-blob-1 { width:500px; height:500px; background:#FC4C02; top:-140px; right:-120px; }
+.scp-blob-2 { width:380px; height:380px; background:#dab937; bottom:-100px; left:-100px; }
+.scp-inner { position:relative; z-index:1; max-width:600px; margin:0 auto; padding:2rem 1rem; }
+
+.scp-flash { padding:0.7rem 1rem; border-radius:10px; font-size:0.84rem; margin-bottom:1.25rem; }
+.scp-flash--success { background:rgba(81,142,92,0.13); border:1px solid rgba(81,142,92,0.28); color:#7ec98a; }
+.scp-flash--error { background:rgba(210,89,42,0.13); border:1px solid rgba(210,89,42,0.28); color:#e88a6a; }
+
+.scp-card { background:rgba(13,22,24,0.97); border:1px solid rgba(255,255,255,0.08); border-radius:18px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.45); }
+
+.scp-head {
+    background:linear-gradient(135deg, rgba(252,76,2,0.18) 0%, rgba(9,17,19,1) 70%);
+    border-bottom:1px solid rgba(255,255,255,0.07);
+    padding:1.4rem 1.75rem;
+    display:flex; align-items:center; gap:1rem;
+}
+.scp-icon { width:44px; height:44px; background:#FC4C02; border-radius:11px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.scp-title { font-size:1.08rem; font-weight:700; color:#eeebe1; margin:0; }
+.scp-subtitle { font-size:0.74rem; color:#6b6e77; margin:0.15rem 0 0; }
+.scp-badge-connected { margin-left:auto; font-size:0.66rem; font-weight:700; padding:3px 10px; background:rgba(81,142,92,0.18); color:#7ec98a; border:1px solid rgba(81,142,92,0.38); border-radius:999px; flex-shrink:0; }
+
+.scp-body { padding:1.75rem; }
+
+.scp-athlete-panel { background:rgba(81,142,92,0.08); border:1px solid rgba(81,142,92,0.22); border-radius:12px; padding:1rem 1.25rem; display:flex; align-items:flex-start; gap:0.85rem; margin-bottom:1.25rem; }
+.scp-athlete-dot { width:9px; height:9px; background:#518e5c; border-radius:50%; margin-top:5px; flex-shrink:0; box-shadow:0 0 8px rgba(81,142,92,0.55); }
+.scp-athlete-id { font-size:0.88rem; font-weight:600; color:#eeebe1; margin:0 0 0.2rem; }
+.scp-athlete-scope { font-size:0.74rem; color:#dab937; margin:0 0 0.12rem; }
+.scp-athlete-exp { font-size:0.7rem; color:#4f8b98; margin:0; }
+
+.scp-intro { font-size:0.88rem; color:#cecdcd; line-height:1.62; margin:0 0 0.45rem; }
+.scp-note { font-size:0.81rem; color:#6b6e77; margin:0 0 0.9rem; }
+.scp-consent { font-size:0.77rem; color:#6b6e77; line-height:1.6; margin:0 0 1.2rem; }
+
+.scp-btn-connect {
+    display:inline-flex; align-items:center; gap:8px;
+    background:#FC4C02; color:#fff;
+    font-family:'Prompt',sans-serif; font-size:0.9rem; font-weight:700;
+    padding:0.62rem 1.45rem; border-radius:10px;
+    text-decoration:none; transition:background 0.2s, transform 0.12s;
+    margin-bottom:0.8rem;
+}
+.scp-btn-connect:hover { background:#e04400; transform:translateY(-1px); }
+
+.scp-privacy-hint { font-size:0.74rem; color:#6b6e77; margin:0 0 0.5rem; }
+
+.scp-btn-danger { display:inline-flex; align-items:center; gap:7px; background:rgba(210,89,42,0.12); color:#d2592a; border:1px solid rgba(210,89,42,0.28); border-radius:8px; padding:0.48rem 1rem; font-family:'Prompt',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:background 0.2s; margin-bottom:0.5rem; }
+.scp-btn-danger:hover { background:rgba(210,89,42,0.22); }
+
+.scp-btn-ghost-danger { display:inline-flex; align-items:center; background:transparent; color:rgba(210,89,42,0.55); border:1px solid rgba(210,89,42,0.18); border-radius:8px; padding:0.42rem 0.9rem; font-family:'Prompt',sans-serif; font-size:0.77rem; cursor:pointer; margin-top:0.5rem; transition:all 0.2s; }
+.scp-btn-ghost-danger:hover { color:#d2592a; border-color:rgba(210,89,42,0.38); background:rgba(210,89,42,0.08); }
+
+.scp-form { margin:0; }
+.scp-divider { border:none; border-top:1px solid rgba(255,255,255,0.06); margin:1.5rem 0; }
+.scp-section-label { font-size:0.67rem; font-weight:700; color:#6b6e77; letter-spacing:0.1em; text-transform:uppercase; margin:0 0 0.7rem; }
+
+.scp-rights { list-style:none; padding:0; margin:0 0 1rem; display:flex; flex-direction:column; gap:0.45rem; }
+.scp-rights li { font-size:0.81rem; color:#9ba1ad; padding-left:1rem; position:relative; line-height:1.5; }
+.scp-rights li::before { content:'–'; position:absolute; left:0; color:#FC4C02; font-weight:700; }
+
+.scp-steps { display:flex; flex-direction:column; gap:0.55rem; }
+.scp-step { display:flex; align-items:center; gap:0.75rem; }
+.scp-step-num { width:22px; height:22px; background:rgba(252,76,2,0.14); border:1px solid rgba(252,76,2,0.28); border-radius:50%; font-size:0.67rem; font-weight:700; color:#FC4C02; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.scp-step-text { font-size:0.83rem; color:#cecdcd; }
+
+.scp-link { color:#FC4C02; text-decoration:underline; text-underline-offset:2px; }
+.scp-link:hover { color:#e04400; }
+
+.scp-back-row { margin-top:1.2rem; text-align:center; }
+.scp-back-link { font-size:0.82rem; color:#6b6e77; text-decoration:none; transition:color 0.2s; }
+.scp-back-link:hover { color:#eeebe1; }
+
+/* Strava privacy page */
+.sp-wrap { min-height:100vh; display:flex; align-items:flex-start; justify-content:center; padding:2rem 1rem; }
+.sp-card {
+    width:min(900px, 100%);
+    background:rgba(13,22,24,0.96);
+    border:1px solid rgba(255,255,255,0.10);
+    border-radius:16px;
+    padding:1.35rem 1.35rem 1.15rem;
+    box-shadow:0 20px 60px rgba(0,0,0,0.35);
+}
+.sp-head { padding-bottom:0.85rem; border-bottom:1px solid rgba(255,255,255,0.08); margin-bottom:1rem; }
+.sp-kicker { margin:0 0 0.3rem; font-size:0.7rem; letter-spacing:0.14em; color:#FC5200; text-transform:uppercase; font-weight:700; }
+.sp-title { margin:0; color:#eeebe1; font-size:1.25rem; font-weight:700; }
+.sp-meta { margin:0.4rem 0 0; color:#9ba1ad; font-size:0.8rem; }
+.sp-section { margin:0 0 1rem; }
+.sp-section h2 { margin:0 0 0.35rem; font-size:0.92rem; color:#f8e769; }
+.sp-section p { margin:0; font-size:0.86rem; line-height:1.62; color:#cecdcd; }
+.sp-foot {
+    margin-top:1.2rem;
+    padding-top:0.9rem;
+    border-top:1px solid rgba(255,255,255,0.08);
+    display:flex;
+    flex-wrap:wrap;
+    gap:0.75rem 1rem;
+}
+.sp-link { color:#FC5200; font-size:0.85rem; font-weight:600; text-decoration:none; }
+.sp-link:hover { color:#e04400; text-decoration:underline; }
 
 /* Auto-migrated from inline styles in pages/dashboard.php */
 .dsx-u001 { background:rgba(210,89,42,0.10); border:1px solid rgba(210,89,42,0.28); color:#d2592a; }

@@ -75,13 +75,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($type === 'strava') {
         // Convert distance to meters based on selected unit
         $distUnit  = ($_POST['strava_dist_unit'] ?? 'm') === 'km' ? 'km' : 'm';
-        $rawDist   = max(0, (float)($_POST['strava_min_distance'] ?? 0));
+        $distRawInput = str_replace(',', '.', (string)($_POST['strava_min_distance'] ?? '0'));
+        $timeRawInput = preg_replace('/[^0-9]/', '', (string)($_POST['strava_min_moving_time'] ?? '0'));
+        $elevRawInput = str_replace(',', '.', (string)($_POST['strava_min_elevation'] ?? '0'));
+
+        $distNormalized = preg_replace('/[^0-9.]/', '', $distRawInput);
+        $elevNormalized = preg_replace('/[^0-9.]/', '', $elevRawInput);
+
+        if (substr_count($distNormalized, '.') > 1) {
+            $firstDot = strpos($distNormalized, '.');
+            $distNormalized = substr($distNormalized, 0, $firstDot + 1) . str_replace('.', '', substr($distNormalized, $firstDot + 1));
+        }
+        if (substr_count($elevNormalized, '.') > 1) {
+            $firstDot = strpos($elevNormalized, '.');
+            $elevNormalized = substr($elevNormalized, 0, $firstDot + 1) . str_replace('.', '', substr($elevNormalized, $firstDot + 1));
+        }
+
+        $rawDist   = max(0, (float)($distNormalized !== '' ? $distNormalized : '0'));
         $minDistM  = $distUnit === 'km' ? $rawDist * 1000 : $rawDist;
         $stravaConditionJson = json_encode([
             'sport_type'      => trim((string)($_POST['strava_sport_type']     ?? 'Run')),
             'min_distance'    => $minDistM,
-            'min_moving_time' => max(0, (int)($_POST['strava_min_moving_time'] ?? 0)),
-            'min_elevation'   => max(0, (float)($_POST['strava_min_elevation'] ?? 0)),
+            'min_moving_time' => max(0, (int)($timeRawInput !== '' ? $timeRawInput : '0')),
+            'min_elevation'   => max(0, (float)($elevNormalized !== '' ? $elevNormalized : '0')),
         ], JSON_UNESCAPED_UNICODE);
     }
 
@@ -332,9 +348,7 @@ require_once __DIR__ . '/../../includes/header.php';
                                     data-onchange="handleTypeChange(this.value)">
                                 <option value="quiz"   <?= $f['type'] === 'quiz'   ? 'selected' : '' ?>>Quiz (ตอบคำถาม)</option>
                                 <option value="photo"  <?= $f['type'] === 'photo'  ? 'selected' : '' ?>>Photo (ส่งรูปภาพ)</option>
-                                <?php /* STRAVA: hidden until feature is ready
                                 <option value="strava" <?= $f['type'] === 'strava' ? 'selected' : '' ?>>Strava (กิจกรรมออกกำลังกาย)</option>
-                                */ ?>
                             </select>
                         </div>
                         <div>
@@ -358,11 +372,13 @@ require_once __DIR__ . '/../../includes/header.php';
                         </div>
                     </div>
 
-                    <?php /* STRAVA: hidden until feature is ready
                     <!-- Strava condition (strava only) -->
                     <div id="strava-condition-wrap" class="<?= $f['type'] !== 'strava' ? 'ace-hidden' : '' ?>">
                         <div class="ace-strava-box">
-                            <p class="ace-strava-title">Strava Conditions</p>
+                            <div class="ace-strava-head">
+                                <p class="ace-strava-title">Strava Conditions</p>
+                                <p class="ace-strava-subtitle">กำหนดเงื่อนไขอย่างน้อย 1 อย่าง นอกนั้นใส่ 0 ได้</p>
+                            </div>
                             <div class="ace-grid-strava">
                                 <div>
                                     <label class="ace-label">ประเภทกิจกรรม</label>
@@ -380,9 +396,10 @@ require_once __DIR__ . '/../../includes/header.php';
                                 <div>
                                     <label class="ace-label">ระยะทางขั้นต่ำ <span id="dist-unit-label"><?= $scMinDist >= 1000 ? '(กิโลเมตร)' : '(เมตร)' ?></span> 0=ไม่กำหนด</label>
                                     <div class="ace-dist-row">
-                                        <input type="number" name="strava_min_distance" id="strava-dist-input"
-                                               min="0"
-                                               step="<?= $scMinDist >= 1000 ? '0.1' : '100' ?>"
+                                         <input type="text" name="strava_min_distance" id="strava-dist-input"
+                                             inputmode="decimal"
+                                             autocomplete="off"
+                                             data-oninput="sanitizeNumericInput(this, true)"
                                                value="<?= $scMinDist >= 1000 ? rtrim(rtrim(number_format($scMinDist / 1000, 2, '.', ''), '0'), '.') : (int)$scMinDist ?>"
                                                class="journal-input ace-dist-input"
                                                placeholder="0">
@@ -396,18 +413,28 @@ require_once __DIR__ . '/../../includes/header.php';
                                 </div>
                                 <div>
                                     <label class="ace-label">เวลาขั้นต่ำ (วินาที) 0=ไม่กำหนด</label>
-                                    <input type="number" name="strava_min_moving_time" min="0" step="60"
+                                    <input type="text" name="strava_min_moving_time"
+                                           inputmode="numeric"
+                                           autocomplete="off"
+                                           data-oninput="sanitizeNumericInput(this, false)"
                                            value="<?= (int)$scMinTime ?>" class="journal-input" placeholder="เช่น 1800 = 30 นาที">
                                 </div>
                                 <div>
                                     <label class="ace-label">ความสูงขั้นต่ำ (เมตร) 0=ไม่กำหนด</label>
-                                    <input type="number" name="strava_min_elevation" min="0" step="10"
+                                    <input type="text" name="strava_min_elevation"
+                                           inputmode="decimal"
+                                           autocomplete="off"
+                                           data-oninput="sanitizeNumericInput(this, true)"
                                            value="<?= (int)$scMinElev ?>" class="journal-input" placeholder="0">
                                 </div>
                             </div>
+                            <div class="ace-strava-hint-row">
+                                <span class="ace-strava-hint-chip">ตัวอย่าง: วิ่ง 5 กม.</span>
+                                <span class="ace-strava-hint-chip">หรือ เวลารวม 1800 วินาที</span>
+                                <span class="ace-strava-hint-chip">หรือ สะสมความสูง 100 ม.</span>
+                            </div>
                         </div>
                     </div>
-                    */ ?>
 
                     <!-- Instructions (photo only) -->
                     <div id="instructions-wrap" class="<?= $f['type'] !== 'photo' ? 'ace-hidden' : '' ?>">
@@ -677,18 +704,31 @@ require_once __DIR__ . '/../../includes/header.php';
 <script>
 var _aceNewQuestionLastFocus = null;
 
-/* STRAVA: hidden until feature is ready
+function sanitizeNumericInput(el, allowDecimal) {
+    if (!el) return;
+    let value = String(el.value || '');
+    value = value.replace(',', '.');
+    value = value.replace(allowDecimal ? /[^0-9.]/g : /[^0-9]/g, '');
+    if (allowDecimal) {
+        const firstDot = value.indexOf('.');
+        if (firstDot !== -1) {
+            value = value.slice(0, firstDot + 1) + value.slice(firstDot + 1).replace(/\./g, '');
+        }
+    }
+    el.value = value;
+}
+
 function stravaDistUnitChange(unit) {
     const input = document.getElementById('strava-dist-input');
     const label = document.getElementById('dist-unit-label');
     if (!input) return;
+    sanitizeNumericInput(input, true);
     const cur = parseFloat(input.value) || 0;
     if (unit === 'km') {
         // was meters → convert to km
         if (input.dataset.lastUnit !== 'km') {
             input.value = cur >= 1000 ? +(cur / 1000).toFixed(2) : cur;
         }
-        input.step = '0.1';
         input.placeholder = 'เช่น 5 = 5 กม';
         if (label) label.textContent = '(กิโลเมตร)';
     } else {
@@ -696,7 +736,6 @@ function stravaDistUnitChange(unit) {
         if (input.dataset.lastUnit === 'km') {
             input.value = Math.round(cur * 1000);
         }
-        input.step = '100';
         input.placeholder = 'เช่น 5000 = 5 กม';
         if (label) label.textContent = '(เมตร)';
     }
@@ -706,9 +745,16 @@ function stravaDistUnitChange(unit) {
 document.addEventListener('DOMContentLoaded', function() {
     const sel = document.getElementById('strava-dist-unit');
     const inp = document.getElementById('strava-dist-input');
-    if (sel && inp) inp.dataset.lastUnit = sel.value;
+    if (sel && inp) {
+        inp.dataset.lastUnit = sel.value;
+        sanitizeNumericInput(inp, true);
+    }
+
+    const minTime = document.querySelector('input[name="strava_min_moving_time"]');
+    const minElev = document.querySelector('input[name="strava_min_elevation"]');
+    if (minTime) sanitizeNumericInput(minTime, false);
+    if (minElev) sanitizeNumericInput(minElev, true);
 });
-*/
 
 function handleTypeChange(type) {
     const instrWrap  = document.getElementById('instructions-wrap');
@@ -717,8 +763,7 @@ function handleTypeChange(type) {
     const quizNewForm = document.getElementById('new-question-form');
     const isCreateMode = <?= $isEdit ? 'false' : 'true' ?>;
     if (instrWrap)  instrWrap.classList.toggle('ace-hidden', type !== 'photo');
-    // stravaWrap hidden — Strava feature not ready
-    // if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
+    if (stravaWrap) stravaWrap.classList.toggle('ace-hidden', type !== 'strava');
     if (quizWrap)   quizWrap.classList.toggle('ace-hidden', type !== 'quiz');
 
     // In create mode, open quiz input form immediately when quiz type is selected.

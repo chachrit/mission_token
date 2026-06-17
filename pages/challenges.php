@@ -248,7 +248,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } catch (Throwable $e) {
             if ($pdo->inTransaction()) { $pdo->rollBack(); }
             error_log('[MissionToken] strava submit error: ' . $e->getMessage());
-            setFlash('error', 'เกิดข้อผิดพลาดขณะตรวจสอบ Strava: ' . $e->getMessage());
+            setFlash('error', 'เกิดข้อผิดพลาดขณะตรวจสอบ Strava กรุณาลองใหม่หรือติดต่อผู้ดูแลระบบ');
         }
 
         redirect(BASE_URL . '/pages/challenges.php');

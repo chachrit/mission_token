@@ -52,20 +52,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // ── GET: load all challenges ─────────────────────────────────
 $pdo = getDB();
 $typeFilter = (string)($_GET['type'] ?? '');
-$allowedTypes = ['quiz', 'photo']; // 'strava' hidden until feature is ready
+$allowedTypes = ['quiz', 'photo', 'strava'];
 if (!in_array($typeFilter, $allowedTypes, true)) $typeFilter = '';
 
 if ($typeFilter) {
     $stmt = $pdo->prepare("SELECT c.challenge_id, c.title, c.type, c.token_reward,
            c.start_date, c.end_date, c.is_active, c.created_at,
-           (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id) AS submission_count,
+           (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id AND cs.status <> 'rejected') AS submission_count,
            (SELECT COUNT(*) FROM quiz_questions qq WHERE qq.challenge_id = c.challenge_id) AS question_count
     FROM challenges c WHERE c.type = ? ORDER BY c.created_at DESC");
     $stmt->execute([$typeFilter]);
 } else {
     $stmt = $pdo->query("SELECT c.challenge_id, c.title, c.type, c.token_reward,
            c.start_date, c.end_date, c.is_active, c.created_at,
-           (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id) AS submission_count,
+           (SELECT COUNT(*) FROM challenge_submissions cs WHERE cs.challenge_id = c.challenge_id AND cs.status <> 'rejected') AS submission_count,
            (SELECT COUNT(*) FROM quiz_questions qq WHERE qq.challenge_id = c.challenge_id) AS question_count
     FROM challenges c ORDER BY c.created_at DESC");
 }
@@ -137,7 +137,7 @@ require_once __DIR__ . '/../../includes/header.php';
             <!-- Row 2: type filter pills -->
             <div class="ac-filter-row">
                 <?php
-                $filters = ['' => 'ทั้งหมด', 'quiz' => 'Quiz', 'photo' => 'Photo']; // 'strava' => 'Strava' hidden
+                $filters = ['' => 'ทั้งหมด', 'quiz' => 'Quiz', 'photo' => 'Photo', 'strava' => 'Strava'];
                 foreach ($filters as $val => $label):
                     $isActive = ($typeFilter === $val);
                 ?>
@@ -171,12 +171,12 @@ require_once __DIR__ . '/../../includes/header.php';
                 $isQuiz    = $ch['type'] === 'quiz';
                 $isStrava  = $ch['type'] === 'strava';
 
-                // Date status
-                $now   = time();
-                $start = strtotime((string)$ch['start_date']);
-                $end   = strtotime((string)$ch['end_date']);
-                $isExpired  = $end !== false && $now > $end;
-                $isUpcoming = $start !== false && $now < $start;
+                // Date status (date-only): challenge remains active through end_date.
+                $today = date('Y-m-d');
+                $startDate = date('Y-m-d', strtotime((string)$ch['start_date']));
+                $endDate = date('Y-m-d', strtotime((string)$ch['end_date']));
+                $isExpired  = $today > $endDate;
+                $isUpcoming = $today < $startDate;
 
                 if ($isExpired) {
                     $dateClass = 'ac-date-cell--expired';
@@ -213,10 +213,8 @@ require_once __DIR__ . '/../../includes/header.php';
                 <div>
                     <?php if ($isQuiz): ?>
                     <span class="ac-type-badge ac-type-badge--quiz">Quiz</span>
-                    <?php /* elseif ($isStrava): strava hidden
+                    <?php elseif ($isStrava): ?>
                     <span class="ac-type-badge ac-type-badge--strava">Strava</span>
-                    */ elseif ($isStrava): ?>
-                    <span class="ac-type-badge ac-type-badge--photo">Photo</span>
                     <?php else: ?>
                     <span class="ac-type-badge ac-type-badge--photo">Photo</span>
                     <?php endif; ?>
