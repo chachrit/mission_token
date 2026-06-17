@@ -443,23 +443,6 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.key === 'Escape' && isOpen) closeAbout();
     });
 
-    // ── Guide section: clip-path circle expand (mirrors about-morph open) ──
-    var guideSection = document.querySelector('.guide-section');
-    if (guideSection && aboutSlide) {
-        if (prefersReducedMotion) {
-            guideSection.classList.add('in-view');
-        }
-        var sectionObserver = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    guideSection.classList.add('in-view');
-                    sectionObserver.unobserve(guideSection);
-                }
-            });
-        }, { root: aboutSlide, threshold: 0.04 });
-        sectionObserver.observe(guideSection);
-    }
-
     if (intelCards.length) {
         if (prefersReducedMotion) {
             intelCards.forEach(function (card) {
@@ -480,77 +463,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ── Guide steps: scroll-in animation via IntersectionObserver ────
-    var guideSteps = document.querySelectorAll('.guide-flow-step');
-    if (guideSteps.length && aboutSlide) {
-        if (prefersReducedMotion) {
-            guideSteps.forEach(function (step) {
-                step.classList.add('in-view');
-            });
-            return;
-        }
-        var stepObserver = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    var delay = parseInt(entry.target.dataset.delay) || 0;
-                    setTimeout(function () {
-                        entry.target.classList.add('in-view');
-                    }, delay);
-                    stepObserver.unobserve(entry.target);
-                }
-            });
-        }, { root: aboutSlide, threshold: 0.12 });
-
-        guideSteps.forEach(function (step, i) {
-            step.dataset.delay = i * 80;
-            stepObserver.observe(step);
-        });
-    }
-});
-
-// ============================================================
-// Guide tab switcher (global — called via onclick in index.php)
-// ============================================================
-function switchGuideTab(tab) {
-    var empGrid = document.getElementById('guide-employee');
-    var hrGrid  = document.getElementById('guide-hr');
-    var tabEmp  = document.getElementById('tab-employee');
-    var tabHr   = document.getElementById('tab-hr');
-    var isEmployee = tab === 'employee';
-
-    if (empGrid) empGrid.hidden = !isEmployee;
-    if (hrGrid)  hrGrid.hidden  = isEmployee;
-
-    if (tabEmp) {
-        tabEmp.classList.toggle('active', isEmployee);
-        tabEmp.setAttribute('aria-selected', isEmployee ? 'true' : 'false');
-        tabEmp.tabIndex = isEmployee ? 0 : -1;
-    }
-    if (tabHr) {
-        tabHr.classList.toggle('active', !isEmployee);
-        tabHr.setAttribute('aria-selected', !isEmployee ? 'true' : 'false');
-        tabHr.tabIndex = !isEmployee ? 0 : -1;
-    }
-}
-
-document.addEventListener('keydown', function (e) {
-    var tabBtn = e.target.closest('.guide-tab-btn[role="tab"]');
-    if (!tabBtn) return;
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-
-    var tabs = Array.prototype.slice.call(document.querySelectorAll('.guide-tab-btn[role="tab"]'));
-    var idx = tabs.indexOf(tabBtn);
-    if (idx < 0) return;
-
-    e.preventDefault();
-    var nextIdx = e.key === 'ArrowRight'
-        ? (idx + 1) % tabs.length
-        : (idx - 1 + tabs.length) % tabs.length;
-    var nextTab = tabs[nextIdx];
-    if (!nextTab) return;
-
-    switchGuideTab(nextTab.id === 'tab-employee' ? 'employee' : 'hr');
-    nextTab.focus();
 });
 
 // ============================================================
@@ -908,33 +820,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// ── Pillar / section viewport observer (IntersectionObserver-based) ──────────
-// ควบคุม .about-morph และ .guide-section ให้ toggle animation class
-// ตามจังหวะ viewport จริง ไม่ใช่ pixel position แบบ real-time
-document.addEventListener('DOMContentLoaded', function () {
-
-    // ตั้งค่าเงื่อนไขการตรวจจับพื้นที่พิลลาร์
-    var observerOptions = {
-        root: null,                      // อ้างอิงตามกรอบหน้าจอเบราว์เซอร์
-        rootMargin: '-5% 0px -10% 0px', // ดักจับก่อนถึงขอบจอเล็กน้อย เพื่อความสมูท
-        threshold: 0.15                  // คอนเทนต์โผล่มาเกิน 15% ค่อยเริ่มทำงาน
-    };
-
-    var pillarObserver = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('pillar-active');
-                entry.target.classList.remove('is-circle');
-                // ไม่ถอด pillar-active เมื่อเลื่อนออกจากจอ — lock ไว้ตลอด
-                pillarObserver.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // ผูกตัวตรวจจับเข้ากับ guide-section เท่านั้น
-    // (.about-morph เป็น position:fixed — ควบคุมด้วยระบบ slide-open เดิม ไม่ใช้ IntersectionObserver)
-    var targetSections = document.querySelectorAll('.guide-section');
-    targetSections.forEach(function (section) {
-        pillarObserver.observe(section);
-    });
-});

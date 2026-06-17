@@ -191,7 +191,7 @@
                 <div class="flex items-center gap-3">
                     <span class="site-footer-brand">JOURNAL</span>
                     <span class="site-footer-divider w-px h-4 inline-block"></span>
-                    <span class="site-footer-sub">Mission Token v<?php echo APP_VERSION; ?></span>
+                    <span class="site-footer-sub">Mission Token</span>
                 </div>
                 <p class="site-footer-sub">
                     © <?php echo date('Y'); ?> JOURNAL. All rights reserved.

@@ -8,7 +8,6 @@
 // Application Constants
 // ============================================================
 define('APP_NAME',    'Mission Token');
-define('APP_VERSION', '1.0.0');
 // Auto-detect BASE_URL from current request — works on any server without manual config
 (function () {
     $protocol  = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
